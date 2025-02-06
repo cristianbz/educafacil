@@ -1,0 +1,95 @@
+/**************************************/
+	/*  ELIMINA LOS BORDES DE UN PANELGRID DE PRIMEFACES */
+	/*****************************************************/
+.panelNoBorder, .panelNoBorder tr, .panelNoBorder td{
+	border: hidden;
+	border-color: white;
+}
+
+.abs-center {
+  	border: solid;
+	border-radius: 5px;
+	padding: 17px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+}
+@media(max-width:400px){
+	.abs-center{
+		width:90%;
+	}
+}
+.fondoVerde {
+    background-color: rgb(38, 162, 105) !important;
+}
+.fondoRojo {
+    background-color: red !important;
+}
+.textoBlanco {
+    color: rgb(255, 255, 255) !important;
+}
+.form {
+  width: 450px;
+}
+.tamanioiconos{
+	color:green;
+	font-size: 2em;
+}
+.colorTextoRojo{
+	color: red;
+	font-style: italic;
+}
+.colorTitulos{
+	color:blue;
+	font-weight: bold;
+}
+.ui-outputlabel {
+font-size: 14px;
+font-family: 'open_sansregular';
+color: #116FBF;/*#29506b;*/
+}
+
+.ui-datatable thead th {
+    background-image: none !important;
+    background-color: #116FBF !important;
+    color: #FFFFFF !important;
+}
+.ui-selectoneradio label{
+	color: #f49c04 !important;
+	font-size:small;
+}
+.ui-datatable thead th .ui-column-title {
+	font-size:small;
+
+}
+body {
+	    /* Aqu� el origen de la imagen */
+  background-image: url(../img/edificios.jpg);
+
+  /* Fijar la imagen de fondo este vertical y
+    horizontalmente y centrado */
+  background-position: center center;
+
+  /* Esta imagen no debe de repetirse */
+  background-repeat: no-repeat;
+
+  /* COn esta regla fijamos la imagen en la pantalla. */
+  background-attachment: fixed;
+
+  /* La imagen ocupa el 100% y se reescala */
+  background-size: cover;
+
+  /* Damos un color de fondo mientras la imagen est� cargando  */
+  background-color: #464646;
+	
+}
+.espacios{
+  white-space: pre-line;
+}
+.ui-card {
+  background-color: rgb(222, 221, 218) !important;
+}
+.chipstamanio{
+	font-size:11px !important;
+}

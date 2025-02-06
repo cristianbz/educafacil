@@ -1,0 +1,111 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"			
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
+	
+	<ui:define name="contenido">
+			<f:event listener="#{backingLogin.validarSesion()}"
+		type="preRenderView" />
+	<h:form id="form" prependId="false">
+		<p:growl id="growl" life="3000" showDetail="true" />
+		
+		<p:dialog widgetVar="dlgEnProc" draggable="false" modal="true"
+			resizable="false" closable="false" responsive="true"
+			style="font-size: 10px;">
+			<h:graphicImage value="/resources/img/cargando.gif" width="200"
+				height="200" />
+		</p:dialog>
+		<p:dialog widgetVar="dlgCargarInfo" modal="true" closable="false"
+			header="#{titulos['selInformacion']}">
+			<p:outputPanel id="campanias">						
+				<h:panelGrid columns="3">					
+					<p:outputLabel value="#{etiquetas['curso']}"/>										
+					<p:selectOneMenu id="idcursos" converter="selectOneMenuConverter"	
+						filterMatchMode="contains" filter="true" panelStyle="width:300px;" style="width:300px;"														
+					value="#{backingReporteMatriculas.beanReportes.cursoSeleccionado}">
+					<f:selectItems 
+						value="#{backingReporteMatriculas.beanReportes.listaCursos}"
+						var="cur" itemLabel="#{cur.cursNombre}" itemValue="#{cur}"
+						required="true" requiredMessage="#{mensajes['campoRequerido']}" />
+					<p:ajax process="@this idcursos"  partialSubmit="true" update="ofertacurso"
+						 event="change" listener="#{backingReporteMatriculas.cargarOfertaCursos()}"/>
+					</p:selectOneMenu>
+					<p:message for="idcursos"/>	
+					
+					<p:outputLabel value="#{etiquetas['fechaInicioFin']}"/>
+					<p:selectOneListbox  id="ofertacurso" value="#{backingReporteMatriculas.beanReportes.ofertaSeleccionada}" scrollHeight="150"  
+						converter="selectOneMenuConverter">
+						<f:selectItems value="#{backingReporteMatriculas.beanReportes.listaOfertaCursos}" var="oferta" itemLabel="#{backingReporteMatriculas.formatDate(oferta.ocurFechaInicio,'yyyy-MM-dd')} / #{backingReporteMatriculas.formatDate(oferta.ocurFechaFin,'yyyy-MM-dd')}" itemValue="#{oferta}"/>
+						
+					</p:selectOneListbox>											
+				</h:panelGrid>	
+				
+			</p:outputPanel>
+			<h:panelGrid columns="2">
+				<p:commandButton value="#{botones['aceptar']}" update="pnlDatos growl tblmatriculas" process="@this ofertacurso tblmatriculas" 
+					icon="#{botones['icono.select']}"  
+					partialSubmit="true" actionListener="#{backingReporteMatriculas.cargaMatriculas}"/>
+				<p:commandButton value="#{botones['cancelar']}" 
+					icon="#{botones['icono.cancelar']}"
+					process="@this" partialSubmit="true" oncomplete="PF('dlgCargarInfo').hide()"/>
+			</h:panelGrid>
+		</p:dialog>
+		<p:fieldset>
+			<br />
+			<div class="ui-fluid p-formgrid p-grid">
+				<div class="p-field p-col-12 p-md-4"></div>
+				<div class="p-field p-col-12 p-md-4">
+					<p:commandButton value="#{botones['nuevaBusqueda']}"  
+						icon="#{botones['icono.select']}" process="@this pnlDatos" update="tblmatriculas" partialSubmit="true" actionListener="#{backingSeguimientoClientes.mostrarDialogoCargaInfo()}">
+						
+					</p:commandButton>	
+				</div>
+				
+				<div class="p-field p-col-12 p-md-4"></div>
+			</div>
+
+			<p:outputPanel id="pnlDatos">
+				<p:outputLabel rendered="#{backingReporteMatriculas.beanReportes.activaInfoCurso}" id="infoCurso" value="#{etiquetas['curso']}: #{backingReporteMatriculas.beanReportes.cursoSeleccionado.cursNombre} [Inicio: #{backingReporteMatriculas.formatDate(backingReporteMatriculas.beanReportes.ofertaSeleccionada.ocurFechaInicio,'yyyy-MM-dd')} Fin: #{backingReporteMatriculas.formatDate(backingReporteMatriculas.beanReportes.ofertaSeleccionada.ocurFechaFin,'yyyy-MM-dd')}]"/>
+				<p:dataTable id="tblmatriculas" widgetVar="tblSeg" value="#{backingReporteMatriculas.beanReportes.listaMatriculas}" var="mat"
+					rows="10" paginator="true">
+					<p:column headerText="#{etiquetas['estudiante']}">
+						<p:outputLabel value="#{mat.estudiante.persona.persApellidos.toUpperCase()} #{mat.estudiante.persona.persNombres.toUpperCase()} "/>
+					</p:column>
+					<p:column headerText="#{etiquetas['estado']}" style="width:200px;">
+						<p:outputLabel value="#{mat.matrEstado.equals('INSMAT01')?'INSCRITO':mat.matrEstado.equals('INSMAT02')?'MATRICULADO':mat.matrEstado.equals('INSMAT03')?'DESERTADO':'CULMINADO'}"/>
+					</p:column>
+					<p:column headerText="#{etiquetas['datosMatCerti']}"
+							style="width:100px;">							
+							<p:commandButton icon="#{botones['icono.pdf']}"
+								title="#{tooltip['docMatricula']}"
+								action="#{backingReporteMatriculas.generarPdf}" process="@this"
+								immediate="true"
+								disabled="#{mat.ofertaCursos.ocurEstado.equals('OCUR03')?true:false}"
+								ajax="false">
+								<f:setPropertyActionListener value="#{mat}"
+									target="#{backingReporteMatriculas.beanReportes.matriculaSeleccionada}" />
+							</p:commandButton>
+							<p:commandButton icon="#{botones['icono.pdf']}"
+								title="#{tooltip['certCurso']}"
+								action="#{backingReporteMatriculas.generaCertificadoPdf}"
+								immediate="true" alt="Certificado" process="@this"
+								disabled="#{mat.matrEstado.equals('INSMAT05')?false:true}"
+								ajax="false">
+								<f:setPropertyActionListener value="#{mat}"
+									target="#{backingReporteMatriculas.beanReportes.matriculaSeleccionada}" />
+							</p:commandButton>
+						</p:column>
+				</p:dataTable>
+			</p:outputPanel>
+		</p:fieldset>
+	</h:form>
+		
+	</ui:define>
+
+</ui:composition>
+
+</html>

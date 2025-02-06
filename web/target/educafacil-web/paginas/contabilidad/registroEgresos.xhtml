@@ -1,0 +1,287 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:comp="http://java.sun.com/jsf/composite/componentes"
+	xmlns:val="http://java.sun.com/jsf/composite/componentes"
+	xmlns:p="http://primefaces.org/ui">
+
+<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+<ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
+	<ui:define name="contenido">
+		<f:event listener="#{backingLogin.validarSesion()}"
+			type="preRenderView" />
+		<h:form>
+			<p:growl id="growl" life="3000" showDetail="true" />
+			<p:dialog widgetVar="dlgEnProc" draggable="false" modal="true"
+				resizable="false" closable="false" responsive="true"
+				style="font-size: 10px;">
+				<h:graphicImage value="/resources/img/cargando.gif" width="300"
+					height="200" />
+			</p:dialog>
+			
+			<p:dialog widgetVar="dlgBuscaEgresos" closable="true" header="#{titulos['buscaEgresos']}" >
+				<p:outputPanel id="busqueda">
+					<p:scrollPanel mode="native" style="max-height:350px; max-width:450px;">
+						<div class="ui-fluid p-formgrid p-grid">
+						<div class="p-field p-col-12 p-md-12" >
+						<span class="ui-float-label ui-input-icon-right" style="margin-top: 2em">
+						<p:datePicker value="#{backingEgresos.beanEgresos.fechaInicial}" pattern="yyyy-MM-dd" tabindex="3" monthNavigator="true" yearNavigator="true"
+							id="fechaUno" locale="es_ES" required="true" requiredMessage="#{mensajes['campoRequerido']}"/><p:outputLabel value="#{etiquetas['fechaInicio']}:*"/>
+						</span>
+						<p:message for="fechaUno"/>
+						</div>
+						
+						<div class="p-field p-col-12 p-md-12" >
+						<span class="ui-float-label ui-input-icon-right" style="margin-top: 2em">
+						<p:datePicker value="#{backingEgresos.beanEgresos.fechaFinal}" pattern="yyyy-MM-dd"  tabindex="4" monthNavigator="true" yearNavigator="true"
+							id="fechaDos" locale="es_ES" required="true" requiredMessage="#{mensajes['campoRequerido']}"/><p:outputLabel value="#{etiquetas['fechaFin']}:*"/>
+						</span>
+						
+						<p:message for="fechaDos"/>	
+						</div>		
+						</div>			
+					</p:scrollPanel>
+				</p:outputPanel>
+				<h:panelGrid columns="2" style="margin: 0 auto; text-align: center;">
+					<p:commandButton value="#{botones['aceptar']}" tabindex="1" 
+						update="growl listaEgresosRegistrados busqueda" actionListener="#{backingEgresos.buscarEgresos()}"
+						process="@this busqueda"  onstart="PF('dlgEnProc').show()" oncomplete="PF('dlgEnProc').hide()"
+						icon="#{botones['icono.select']}" partialSubmit="true"
+						 />
+					<p:commandButton value="#{botones['cancelar']}" tabindex="2"
+						icon="#{botones['icono.cancelar']}" process="@this"
+						partialSubmit="true" oncomplete="PF('dlgBuscaEgresos').hide()" />
+				</h:panelGrid>	
+			</p:dialog>
+			
+			
+			<p:dialog widgetVar="dlgRegProveedor" closable="true" header="#{titulos['registroProveedor']}" >
+				<p:outputPanel id="proveedor">
+					<p:scrollPanel mode="native" style="max-height:350px; max-width:450px;">
+						<div class="ui-fluid p-formgrid p-grid">
+						<div class="p-field p-col-12 p-md-12" >
+						<span class="ui-float-label ui-input-icon-right" style="margin-top: 2em">
+						<p:inputText id="nuevoProveedor" onkeypress="if (event.keyCode == 13) { return false; }" tabindex="1" value="#{backingEgresos.beanEgresos.nuevoProveedor.provRuc}" required="true" requiredMessage="#{mensajes['campoRequerido']}"/>
+						<p:outputLabel value="#{etiquetas['ruc']}:*" />
+						</span>
+						<p:message for="nuevoProveedor"/>
+						</div>
+					
+						<div class="p-field p-col-12 p-md-12" >
+						<span class="ui-float-label ui-input-icon-right" 
+						style="margin-top: 2em">
+						<p:inputText id="nuevoNombreProveedor" tabindex="2" value="#{backingEgresos.beanEgresos.nuevoProveedor.provNombre}" required="true" requiredMessage="#{mensajes['campoRequerido']}"/>
+						<p:outputLabel value="#{etiquetas['proveedor']}:*" />
+						
+						</span>
+						<p:message for="nuevoNombreProveedor"/>
+						</div>
+						
+						<div class="p-field p-col-12 p-md-12" >
+						<span class="ui-float-label ui-input-icon-right" 
+						style="margin-top: 2em">
+						<p:inputText id="nuevoDireccionProveedor" tabindex="3" value="#{backingEgresos.beanEgresos.nuevoProveedor.provDireccion}" maxlength="50" required="true" requiredMessage="#{mensajes['campoRequerido']}"/>
+						<p:outputLabel value="#{etiquetas['direccion']}:*" />
+						
+						</span>
+						<p:message for="nuevoDireccionProveedor"/>
+						</div>
+						
+						<div class="p-field p-col-12 p-md-12" >
+						<span class="ui-float-label ui-input-icon-right" 
+						style="margin-top: 2em">
+						<p:inputText id="nuevoTelefonoProveedor" onkeypress="if( (event.which &lt; 48 || event.which &gt; 57) ) return false;" tabindex="4" value="#{backingEgresos.beanEgresos.nuevoProveedor.provTelefono}" maxlength="10" required="true" requiredMessage="#{mensajes['campoRequerido']}"/>
+						<p:outputLabel value="#{etiquetas['telefono']}:*" />
+						
+						</span>
+						<p:message for="nuevoTelefonoProveedor"/>
+						</div>
+					
+						<div class="p-field p-col-12 p-md-12" >
+						<span class="ui-float-label ui-input-icon-right" 
+						style="margin-top: 2em">
+						<p:inputText id="nuevoCorreoProveedor" tabindex="5" value="#{backingEgresos.beanEgresos.nuevoProveedor.provCorreo}" 
+							maxlength="100" required="true" requiredMessage="#{mensajes['campoRequerido']}">
+							<p:ajax event="blur" process="@this" />
+								<f:validateRegex
+									pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$" />
+						</p:inputText><p:outputLabel value="#{etiquetas['correo']}:*" />
+						</span>	
+						<p:message for="nuevoCorreoProveedor"/>
+						</div>
+						
+					</div>						
+					</p:scrollPanel>
+				</p:outputPanel>	
+				<center>
+				<h:panelGrid columns="2">
+					<p:commandButton value="#{botones['aceptar']}" tabindex="6" 
+						update="growl registroEgresos proveedor" actionListener="#{backingEgresos.registrarProveedor()}"
+						process="@this proveedor"  onstart="PF('dlgEnProc').show()" oncomplete="PF('dlgEnProc').hide()"
+						icon="#{botones['icono.select']}" partialSubmit="true"
+						 />
+					<p:commandButton value="#{botones['cancelar']}" tabindex="7"
+						icon="#{botones['icono.cancelar']}" process="@this"
+						partialSubmit="true" oncomplete="PF('dlgRegProveedor').hide()" />
+				</h:panelGrid>
+				</center>
+			</p:dialog>
+			
+			<p:dialog widgetVar="dlgRegEgreso" modal="true" closable="false"
+				header="#{titulos['infoEgresos']}">
+				<p:outputPanel id="registroEgresos">
+					<p:scrollPanel mode="native" style="max-height:350px; max-width:450px;">
+						<div class="ui-fluid p-formgrid p-grid">
+						<div class="p-field p-col-12 p-md-6" >
+						<p:outputLabel value="#{etiquetas['fecha']}:" />
+						</div>
+						<div class="p-field p-col-12 p-md-6" >
+						<p:outputLabel value="#{backingEgresos.beanEgresos.egreso.egreFecha}" id="idegrfecha">
+							<f:convertDateTime for="idegrfecha" pattern="yyyy-MM-dd"/>
+						</p:outputLabel>
+						</div>
+						<div class="p-field p-col-12 p-md-12" >						
+						<span class="ui-float-label ui-input-icon-right" 
+						style="margin-top: 2em">
+						<p:inputText value="#{backingEgresos.beanEgresos.egreso.egreNumFactura}" maxlength="20" tabindex="1">
+						</p:inputText><p:outputLabel value="#{etiquetas['numeroFactura']}:" />
+						</span>
+						</div>
+						
+						<div class="p-field p-col-12 p-md-10" >
+						<span class="ui-float-label ui-input-icon-right" 
+						style="margin-top: 2em">
+						<p:selectOneMenu id="idprov" converter="selectOneMenuConverter" tabindex="2"
+							filterMatchMode="contains" filter="true" required="true" requiredMessage="#{mensajes['campoRequerido']}"
+							panelStyle="width:300px;" style="width:300px;"
+							value="#{backingEgresos.beanEgresos.proveedorSeleccionado}">
+							<f:selectItems
+								value="#{backingEgresos.beanEgresos.listaProveedores}"
+								var="prov" itemLabel="#{prov.provNombre}" itemValue="#{prov}"
+								required="true" requiredMessage="#{mensajes['campoRequerido']}" />							
+						</p:selectOneMenu>
+						<p:outputLabel value="#{etiquetas['proveedor']}:"/>
+						</span>
+						</div>
+						
+						<div class="p-field p-col-12 p-md-2" >
+						<p:commandButton icon="#{botones['icono.agregar']}" title="#{tooltip['registraProveedor']}" process="@this" actionListener="#{backingEgresos.nuevoProveedor()}" update="proveedor" resetValues="true"/>
+						</div>
+						<div class="p-field p-col-12 p-md-12" >
+						<span class="ui-float-label ui-input-icon-right" 
+						style="margin-top: 2em">
+						<p:selectOneMenu id="idegreso" converter="selectOneMenuConverter" tabindex="3"
+							filterMatchMode="contains" filter="true" required="true" requiredMessage="#{mensajes['campoRequerido']}"
+							panelStyle="width:300px;" style="width:300px;"
+							value="#{backingEgresos.beanEgresos.egresoSeleccionado}">
+							<f:selectItems
+								value="#{backingEgresos.beanEgresos.listaTipoEgreso}"
+								var="egre" itemLabel="#{egre.cataDescripcion}" itemValue="#{egre}"
+								required="true" requiredMessage="#{mensajes['campoRequerido']}" />							
+						</p:selectOneMenu><p:outputLabel value="#{etiquetas['egreso']}:" />
+						</span>
+						<p:message for="idegreso" />
+						</div>
+						
+						<div class="p-field p-col-12 p-md-12" >
+						<span class="ui-float-label ui-input-icon-right" 
+						style="margin-top: 2em"><p:inputNumber id="valoregreso" value="#{backingEgresos.beanEgresos.egreso.egreValor}" 
+							tabindex="4" required="true" requiredMessage="#{mensajes['campoRequerido']}"/>
+						<p:outputLabel value="#{etiquetas['valor']}:" />
+						</span>
+						<p:message for="valoregreso" />
+						</div>
+						
+						<div class="p-field p-col-12 p-md-12" >
+						<span class="ui-float-label ui-input-icon-right" 
+						style="margin-top: 2em">
+						<p:inputTextarea id="detalleegreso" value="#{backingEgresos.beanEgresos.egreso.egreDetalle}" 
+						 tabindex="5"	maxlength="200" required="true" requiredMessage="#{mensajes['campoRequerido']}"/>
+						<p:outputLabel value="#{etiquetas['detalleEgreso']}:" />
+						</span>
+						<p:message for="detalleegreso" />
+						</div>
+						
+					
+					</div>
+					</p:scrollPanel>
+
+				</p:outputPanel>
+				<center>
+				<h:panelGrid columns="2">
+					<p:commandButton value="#{botones['aceptar']}" tabindex="6"
+						update="growl tblegresos registroEgresos" actionListener="#{backingEgresos.registrarEgreso()}"
+						process="@this registroEgresos tblegresos " onstart="PF('dlgEnProc').show()" oncomplete="PF('dlgEnProc').hide()"
+						icon="#{botones['icono.select']}" partialSubmit="true"/>
+					<p:commandButton value="#{botones['cancelar']}" tabindex="7"
+						icon="#{botones['icono.cancelar']}" process="@this"
+						partialSubmit="true" oncomplete="PF('dlgRegEgreso').hide()" />
+				</h:panelGrid>
+				</center>
+			</p:dialog>
+			<p:breadCrumb>
+				<p:menuitem value="Categorias" url="#" />
+				<p:menuitem value="Contabilidad" url="#" />
+				<p:menuitem value="Registrar Egresos" url="#" />
+			</p:breadCrumb>			
+			<br />
+
+			 <p:splitButton value="#{etiquetas['accionesRealizar']}">
+	            <p:menuitem value="#{botones['nuevoRegistro']}" action="#{backingEgresos.nuevoRegistroEgreso()}" process="@this" update="registroEgresos" icon="pi pi-file"/>
+	            <p:menuitem value="#{botones['cargarregistrodatos']}" action="#{backingEgresos.dialogoBuscaEgresos}"  icon="pi pi-upload" process="@this" update="busqueda"/>
+	            
+	        </p:splitButton>
+			<br/>				
+			<br/>
+				<div class="ui-fluid p-formgrid p-grid">
+
+
+					<div class="p-field p-col-12 p-md-12">
+					<p:outputPanel id="listaEgresosRegistrados">
+						<p:dataTable var="egreso" id="tblegresos" reflow="true" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+							paginator="true" rows="10"
+							value="#{backingEgresos.beanEgresos.listaEgresosRegistrados}">
+							<f:facet name="{Exporters}">
+								<div style="float: right; padding-top: 5px;">
+									<h:commandLink immediate="true">
+										<h:graphicImage library="img" name="excel.png" />
+										<p:dataExporter type="xls" target="tblegresos"
+											fileName="egresos" />
+									</h:commandLink>
+		
+								</div>
+							</f:facet>
+							<p:column headerText="#{etiquetas['proveedor']}">
+								<p:outputLabel value="#{egreso.proveedor.provNombre}" />
+							</p:column>
+							<p:column headerText="#{etiquetas['egreso']}">
+								<p:outputLabel value="#{egreso.catalogo.cataDescripcion}" />
+							</p:column>							
+							<p:column headerText="#{etiquetas['detalleEgreso']}">
+								<p:outputLabel value="#{egreso.egreDetalle}" />
+							</p:column>
+							<p:column headerText="#{etiquetas['valor']}" width="80">
+								<p:outputLabel value="#{egreso.egreValor}" />
+							</p:column>
+							<p:column headerText="#{etiquetas['fecha']}" width="100">
+								<p:outputLabel value="#{egreso.egreFecha}" id="tblfechaegr">
+									<f:convertDateTime for="tblfechaegr" pattern="yyyy-MM-dd"/>
+								</p:outputLabel>
+							</p:column>
+							<f:facet name="footer" >
+					            <span class="p-text-bold" style="text-align:right">Total egresos: #{backingEgresos.beanEgresos.listaEgresosRegistrados.stream().map(c->c.egreValor).sum()}</span>
+					        </f:facet>
+						</p:dataTable>
+						</p:outputPanel>
+					</div>
+				</div>
+		</h:form>
+	</ui:define>
+</ui:composition>
+
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:comp="http://java.sun.com/jsf/composite/componentes/matricula" xmlns:val="http://java.sun.com/jsf/composite/componentes">
+	<ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">	
+		<ui:define name="contenido">
+			<f:event listener="#{backingLogin.validarSesion()}" type="preRenderView" />
+			<h:form prependId="false">
+				<p:growl id="growl" life="3000" showDetail="true" />
+				<!-- DIALOGO DETALLES ALUMNO -->
+				<p:dialog widgetVar="dlgMatriculaSeleccionda" header="#{titulos['datosEstudiante']}">
+					<p:panelGrid id="datosMatriculaSeleccionada" styleClass="panelNoBorder">
+						<p:row>
+							<p:column>
+								<p:outputLabel value="#{etiquetas['cedularuc']}:"/>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.estudiante.persona.persDocumentoIdentidad}"/>
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column>
+								<p:outputLabel value="#{etiquetas['nombres']}:"/>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.estudiante.persona.persApellidos} #{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.estudiante.persona.persNombres}"/>
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column>
+								<p:outputLabel value="#{etiquetas['telefonoCasa']}:"/>
+							</p:column>
+							<p:column>
+								<p:outputLabel value=" #{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.estudiante.persona.persTelefonoCasa}"/>
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column>
+								<p:outputLabel value="#{etiquetas['telefonoMobil']}:"/>
+							</p:column>
+							<p:column>
+								<p:outputLabel value=" #{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.estudiante.persona.persTelefonoMobil}"/>
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column>
+								<p:outputLabel value="#{etiquetas['correo']}:"/>
+							</p:column>
+							<p:column>
+								<p:outputLabel value=" #{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.estudiante.persona.persCorreoElectronico}"/>
+							</p:column>
+						</p:row>
+
+						<p:row rendered="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.ofertaCursos.ocurEstado.equals('OCUR03')?false:true}">
+							<p:column>
+								<p:outputLabel value="#{etiquetas['curso']}:"/>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.ofertaCursos.ofertaCapacitacion.curso.cursNombre}"/>
+							</p:column>							
+						</p:row>
+						<p:row rendered="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.ofertaCursos.ocurEstado.equals('OCUR03')?false:true}">
+							<p:column>
+								<p:outputLabel value="#{etiquetas['fechaInicio']}:"/>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.ofertaCursos.ocurFechaInicio}" id="fInicio">
+									<f:convertDateTime for="fInicio" pattern="yyyy-MM-dd"/>
+								</p:outputLabel>
+								 
+							</p:column>
+						</p:row>
+						<p:row rendered="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.ofertaCursos.ocurEstado.equals('OCUR03')?false:true}">
+							<p:column>
+								<p:outputLabel value="#{etiquetas['fechaFin']}:"/>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.ofertaCursos.ocurFechaFin}" id="fFin">
+									<f:convertDateTime for="fFin" pattern="yyyy-MM-dd"/>
+								</p:outputLabel>
+								 
+							</p:column>
+						</p:row>						
+						<p:row>
+							<p:column>
+								<p:outputLabel value="#{etiquetas['observacion']}:"/>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.matrObservacion}"/>
+							</p:column>
+						</p:row>
+					</p:panelGrid>
+				</p:dialog>
+				<p:fieldset legend="#{titulos['datosReportes']}" style="margin-bottom:20px">	
+					
+				<p:panel>
+					<p:panelGrid styleClass="panelNoBorder" id="panelDatosBusqueda">
+						<p:row>
+							<p:column>
+								<h:graphicImage value="/imagenes/utilitarios/asterisco.gif"
+												width="5" height="5" />
+							</p:column>
+							<p:column>
+								<p:outputLabel value="#{etiquetas['fechaInicio']}"/>
+							</p:column>
+							<p:column>
+								<p:calendar value="#{backingListadoEstudiantes.beanListadoEstudiantes.fechaInicio}" navigator="true" locale="es"
+									pattern="yyyy-MM-dd" required="true" requiredMessage="#{mensajes['campoRequerido']}"
+									id="fechaInicio"/>
+							</p:column>
+							<p:column>
+								<p:message for="fechaInicio"/>
+							</p:column>
+							<p:column>
+								<h:graphicImage value="/imagenes/utilitarios/asterisco.gif"
+												width="5" height="5" />
+							</p:column>
+							<p:column>
+								<p:outputLabel value="#{etiquetas['fechaFin']}"/>
+							</p:column>
+							<p:column>
+								<p:calendar value="#{backingListadoEstudiantes.beanListadoEstudiantes.fechaFin}" navigator="true" locale="es"
+									pattern="yyyy-MM-dd" required="true" requiredMessage="#{mensajes['campoRequerido']}"
+									id="fechaFin"/>
+							</p:column>
+							<p:column>
+								<p:message for="fechaFin"/>
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column>
+								<h:graphicImage value="/imagenes/utilitarios/asterisco.gif"
+												width="5" height="5" />
+							</p:column>
+							<p:column>
+								<p:outputLabel value="#{etiquetas['estado']}"/>
+							</p:column>
+							<p:column>
+								<p:selectOneMenu value="#{backingListadoEstudiantes.beanListadoEstudiantes.codigoEstadoMatricula}" id="comboEstados" 
+									required="true" requiredMessage="#{mensajes['campoRequerido']}">
+									<f:selectItem
+										itemLabel="#{etiquetas['seleccionar']}"
+										itemValue="#{null}" noSelectionOption="true" />
+									<f:selectItems value="#{backingListadoEstudiantes.beanListadoEstudiantes.listaEstadosMatricula}" 
+										itemLabel="#{estados.label}" itemValue="#{estados.codigo}" 
+										var="estados"/>
+									<p:ajax process="@this listaMatriculas" event="change" listener="#{backingListadoEstudiantes.vaciarTablaDatos()}" update="listaMatriculas"/>	
+								</p:selectOneMenu>
+							</p:column>
+							<p:column colspan="5">
+								<p:message for="comboEstados"/>
+							</p:column>
+						</p:row>	
+	
+						<p:row>
+							<p:column>
+							
+							</p:column>
+							<p:column>
+								<p:commandButton icon="#{botones['icono.nuevo']}" value="#{botones['nuevo']}"
+									resetValues="true" immediate="true"
+									actionListener="#{backingListadoEstudiantes.nuevaBusqueda()}" process="@this panelDatosBusqueda" update="listaMatriculas panelDatosBusqueda"/>
+							</p:column>
+							<p:column>
+								<p:commandButton icon="#{botones['icono.buscar']}" value="#{botones['buscar']}" 
+									actionListener="#{backingListadoEstudiantes.buscarMatriculas()}"
+									process="@this panelDatosBusqueda" update="listaMatriculas panelDatosBusqueda"/>
+							</p:column>
+						</p:row>				
+					</p:panelGrid>
+					<p:spacer height="20px;"/>
+					<p:dataTable value="#{backingListadoEstudiantes.beanListadoEstudiantes.listaMatriculas}" id="listaMatriculas" 
+						rows="15" rowKey="#{matricula.matrId}" paginator="true"
+						var="matricula">
+						<p:column headerText="#{etiquetas['estudiante']}" filterBy="#{matricula.estudiante.persona.persApellidos} #{matricula.estudiante.persona.persNombres}" filterMatchMode="contains">
+							#{matricula.estudiante.persona.persApellidos} #{matricula.estudiante.persona.persNombres}  
+						</p:column>
+						<p:column headerText="#{etiquetas['fechaInscripcion']}" width="120px;">
+							<p:outputLabel value="#{matricula.matrFechaInscripcion}" id="fechaInscripcion">
+								<f:convertDateTime for="fechaIncripcion" pattern="yyyy-MM-dd"/>
+							</p:outputLabel>							
+						</p:column>
+						<p:column  headerText="#{etiquetas['fechaMatricula']}" width="120px;">
+							<p:outputLabel value="#{matricula.matrFechaMatricula}" id="fechaMatricula">
+								<f:convertDateTime for="fechaMatricula" pattern="yyyy-MM-dd"/>
+							</p:outputLabel>
+						</p:column>
+						<p:column  headerText="#{etiquetas['curso']}" filterBy="#{matricula.ofertaCursos.ofertaCapacitacion.curso.cursNombre}" filterMatchMode="contains">
+							<p:outputLabel value="#{matricula.ofertaCursos.ofertaCapacitacion.curso.cursNombre}"/>
+						</p:column>						
+						<p:column headerText="#{etiquetas['observacion']}">
+							#{matricula.matrObservacion}
+						</p:column>
+						<p:column headerText="#{etiquetas['datosMatCerti']}">
+							<p:commandButton icon="#{botones['icono.notas']}" oncomplete="PF('dlgMatriculaSeleccionda').show();" process="@this" update="datosMatriculaSeleccionada">
+								<f:setPropertyActionListener value="#{matricula}" target="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada}"/>
+							</p:commandButton>
+							<p:commandButton icon="#{botones['icono.pdf']}" action="#{backingListadoEstudiantes.generarPdf}" process="@this" disabled="#{matricula.ofertaCursos.ocurEstado.equals('OCUR03')?true:false}" ajax="false">
+								<f:setPropertyActionListener value="#{matricula}" target="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada}"/>
+							</p:commandButton>
+							<p:commandButton icon="#{botones['icono.pdf']}" action="#{backingListadoEstudiantes.generaCertificadoPdf}" alt="Certificado"
+							process="@this" disabled="#{matricula.matrEstado.equals('INSMAT05')?false:true}" ajax="false">
+								<f:setPropertyActionListener value="#{matricula}" target="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada}"/>
+							</p:commandButton>
+						</p:column>
+					</p:dataTable>
+				</p:panel>
+				</p:fieldset>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</html>		

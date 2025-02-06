@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:comp="http://java.sun.com/jsf/composite/componentes/matricula" 
+	xmlns:val="http://java.sun.com/jsf/composite/componentes">
+<ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
+	
+	<ui:define name="contenido">
+			<f:event listener="#{backingLogin.validarSesion()}" type="preRenderView" />
+			<h:form id="form" >
+				<p:dialog widgetVar="dlgMatricula" showEffect="fade" 
+				hideEffect="fade" modal="true" appendTo="@(body)" 
+				header="#{titulos['grabarMatricula']}" width="250"
+				closable="true" resizable="false">
+					<h:panelGrid columns="2" id="panelBotones">
+						<p:commandButton value="#{botones['grabar']}" actionListener="#{backingMatricula.grabarMatricula}" update="@form"  id="btngrabar" 
+							oncomplete="PF('dlgMatricula').hide();" process="@this " icon="#{botones['icono.grabar']}"/>
+						<p:commandButton icon="#{botones['icono.cancelar']}" value="#{botones['cancelar']}" oncomplete="PF('dlgMatricula').hide();" process="@this"/>
+					</h:panelGrid>					
+				</p:dialog>
+				<p:blockUI block="panelBotones" trigger="btngrabar" />
+				<p:fieldset legend="#{titulos['matriculaCliente']}" style="margin-bottom:20px">				
+					<center>
+						<p:commandButton value="#{botones['nuevaMatricula']}" process="@this" update="@form" icon="#{botones['icono.nuevo']}"
+						immediate="true" resetValues="true" actionListener="#{backingMatricula.nuevaInscripcion}"/>	
+					</center>
+					<comp:componentematricula id="matricula" componenteBackingMatriculaInscripcion="#{backingMatricula.componenteBackingMatriculaInscripcion}"/>
+				</p:fieldset> 
+				<center>
+					<h:panelGrid columns="2">					
+						<p:commandButton value="#{botones['matricular']}" process="@this :form:matricula:idpanelMatriculaInscripcion"  partialSubmit="true" update=":form:matricula:idpanelMatriculaInscripcion" 					
+						actionListener="#{backingMatricula.mostrarDialogoGrabar}" icon="#{botones['icono.matricular']}"/>					
+					</h:panelGrid>		
+				</center>	  
+			</h:form>
+	</ui:define>
+
+</ui:composition>
+
+</html>

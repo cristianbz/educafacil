@@ -1,0 +1,254 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
+
+	<ui:define name="contenido">
+
+		<f:event listener="#{backingLogin.validarSesion()}"
+			type="preRenderView" />
+
+		<h:form id="form" prependId="false">
+			<p:growl id="growl" life="3000" showDetail="true" />
+			<p:dialog widgetVar="dlgEnProc" draggable="false" modal="true"
+				resizable="false" closable="false" responsive="true"
+				style="font-size: 10px;">
+				<h:graphicImage value="/resources/img/cargando.gif" width="200"
+					height="200" />
+			</p:dialog>
+
+			<p:breadCrumb>
+				<p:menuitem value="Categorias" url="#" />
+				<p:menuitem value="Secretaria" url="#" />
+				<p:menuitem value="Gestion Vendedores" url="#" />
+			</p:breadCrumb>
+			<br/>
+			
+			<p:splitButton value="#{etiquetas['accionesRealizar']}">
+				<p:menuitem value="#{botones['asignarVendedor']}" partialSubmit="true"
+					icon="pi pi-briefcase" resetValues="true"
+					actionListener="#{backingGestionVendedores.asignarVendedor()}"
+					process="@this " update="datosVendedores growl pnlVendedor pnlventasReport" />
+				<p:menuitem value="#{botones['consultarVentas']}" partialSubmit="true"
+					icon="pi pi-chart-line" resetValues="true"
+					actionListener="#{backingGestionVendedores.consultarVentas()}"
+					process="@this " 
+					update="datosConsultasVendedores growl pnlVendedor pnlventasReport"/>	
+			</p:splitButton>
+			<br />
+			<!-- Diálogo Asignar Vendedor -->
+			<p:dialog header="#{titulos['asignarVendedor']}"
+				id="nuevoVendedor" widgetVar="dlgAsignarVendedor" modal="true"
+				resizable="false" closable="false">
+				<p:scrollPanel mode="native"
+					style="max-height:450px; max-width:500px;">
+				<p:outputPanel id="datosVendedores">
+					<div class="ui-fluid p-formgrid p-grid">
+						<div class="p-field p-col-12 p-md-12">
+							 <span class="ui-float-label" style="margin-top: 2em">
+		                       <p:selectOneMenu id="cmbCursosAso" autoWidth="false"  value="#{backingGestionVendedores.beanGestionVendedores.cursoSeleccionado}" converter="selectOneMenuConverter">		                         
+		                            <f:selectItems value="#{backingGestionVendedores.beanGestionVendedores.listaCursos}" var="curs" itemLabel="#{curs.curso.cursNombre}" itemValue="#{curs}"  />	
+		                            <p:ajax process="@this"  partialSubmit="true" event="change" listener="#{backingGestionVendedores.cargarClientesPotenciales}" update="listClientePotencial growl"/>                            
+		                        </p:selectOneMenu>
+		                        <p:outputLabel for="@previous" value="#{etiquetas['curso']}" />
+		                    </span>
+		                    
+		                    <p:message for="cmbCursosAso" id="msgCursos"/>
+						</div>
+						<div class="p-field p-col-12 p-md-12">
+								<p:outputLabel for="@previous" value="#{etiquetas['vendedor']}" />
+		                       	<p:selectOneRadio value="#{backingGestionVendedores.beanGestionVendedores.vendedorSeleccionado}" 
+								layout="pageDirection"  unselectable="false" converter="selectOneMenuConverter"
+								id="listVendedores" required="true" requiredMessage="#{mensajes['campoRequerido']}">
+								<f:selectItems value="#{backingGestionVendedores.beanGestionVendedores.listaVendedores}" itemValue="#{vend}" itemLabel="#{vend.persona.persNombres}" 
+								var="vend" />
+								</p:selectOneRadio>
+		                    <p:message for="listVendedores" id="msgVendedor"/>
+						</div>
+						<div class="p-field p-col-12 p-md-12">
+							
+							<p:dataTable value="#{backingGestionVendedores.beanGestionVendedores.listaSeguimientoClientesSinVendedores}" selectionPageOnly="false" rowSelectMode="none"
+								selection="#{backingGestionVendedores.beanGestionVendedores.listaSeguimientoClientesSelect}" rowKey="#{seg.segcId}" emptyMessage="#{mensajes['noRegistros']}"
+								var="seg" id="listClientePotencial" paginator="true" rows="10">
+								 <p:column selectionMode="multiple" style="width:16px;text-align:center" />
+								<p:column headerText="#{etiquetas['clientePotencial']}">
+									#{seg.segcCliente}
+								</p:column>	
+							</p:dataTable>
+							
+							<p:message for="listClientePotencial" id="msgCliente"/>
+						</div>
+						<div class="p-field p-col-12 p-md-6">
+							<p:commandButton icon="#{botones['icono.grabar']}" value="#{botones['grabar']}" style="margin-right: 10px;" partialSubmit="true" 
+							process="@this datosVendedores listClientePotencial tablaVendedor" action="#{backingGestionVendedores.guardarAsignacionVendedor()}" 
+							update="growl datosVendedores msgCliente tablaVendedor msgCursos msgVendedor" 
+							onstart="PF('dlgEnProc').show();"
+							oncomplete="PF('dlgEnProc').hide();"/>
+						</div>
+						<div class="p-field p-col-12 p-md-6">	
+							<p:commandButton icon="#{botones['icono.cancelar']}" value="#{botones['cancelar']}"  style="margin-right: 10px;" partialSubmit="true" process="@this"
+							onclick="PF('dlgAsignarVendedor').hide()" />
+						</div>
+					</div>
+				</p:outputPanel>
+				</p:scrollPanel>
+			</p:dialog>
+			<!-- Diálogo Consultar Ventas De Vendedor -->
+			<p:dialog header="#{titulos['consultarVendedor']}"
+				id="nuevaConsulta" widgetVar="dlgConsultarVentas" modal="true"
+				resizable="false" closable="false">
+				<p:scrollPanel mode="native"
+					style="max-height:450px; max-width:500px;">
+				<p:outputPanel id="datosConsultasVendedores">
+					<div class="ui-fluid p-formgrid p-grid">
+						<div class="p-field p-col-12 p-md-12">
+							<span class="ui-float-label" style="margin-top: 2em">
+								<p:selectOneMenu id="cmbVendedores" autoWidth="false"  value="#{backingGestionVendedores.beanGestionVendedores.vendedorSeleccionadoReporte}" converter="selectOneMenuConverter">		                         
+		                            <f:selectItems value="#{backingGestionVendedores.beanGestionVendedores.listaVendedoresReporte}" itemValue="#{vendReporte}" itemLabel="#{vendReporte.persona.persNombres}" 
+								var="vendReporte" />	                         
+		                        </p:selectOneMenu>
+							<p:outputLabel value="#{etiquetas['vendedor']}"/>
+							</span>
+						</div>
+						<div class="p-field p-col-12 p-md-12">
+							<p:outputLabel for="@previous" value="Campañas Previas Gestionadas" />
+						</div>
+						<div class="p-field p-col-12 p-md-12">
+							<p:toggleSwitch value="#{backingGestionVendedores.beanGestionVendedores.campaniasFinalizadas}" >
+								<p:ajax listener="#{backingGestionVendedores.cargarCampaniasPasadas()}" update="cmbCursosAsoRep" process="@this datosConsultasVendedores" partialSubmit="true"
+								onstart="PF('dlgEnProc').show();"
+								oncomplete="PF('dlgEnProc').hide();"/>
+							</p:toggleSwitch>
+						</div>
+						<div class="p-field p-col-12 p-md-12">
+							<span class="ui-float-label" style="margin-top: 2em">
+		                       <p:selectOneMenu id="cmbCursosAsoRep" autoWidth="false"  value="#{backingGestionVendedores.beanGestionVendedores.cursoSeleccionadoReporte}" converter="selectOneMenuConverter">		                         
+		                            <f:selectItems value="#{backingGestionVendedores.beanGestionVendedores.listaCursosReporte}" var="curs" itemLabel="#{curs.campDescripcion}" itemValue="#{curs}"  />	
+		                                                    
+		                        </p:selectOneMenu>
+		                        <p:outputLabel for="@previous" value="#{etiquetas['curso']}" />
+		                    </span>
+						</div>
+						<div class="p-field p-col-12 p-md-12">
+								<p:outputLabel for="@previous" value="#{etiquetas['seguimiento']}" />
+		                       	<p:selectManyCheckbox id="estados" value="#{backingGestionVendedores.beanGestionVendedores.estadosSeleccionados}" layout="responsive"
+						                              columns="3">
+						            <f:selectItems var="estado"
+										value="#{backingGestionVendedores.beanGestionVendedores.enumEstadosContacto}"
+										itemValue="#{estado.codigo}" itemLabel="#{estado.label}" />
+						        </p:selectManyCheckbox>
+						</div>
+						<div class="p-field p-col-12 p-md-6">	
+							<p:commandButton icon="#{botones['icono.buscar']}" value="#{botones['buscar']}" style="margin-right: 10px;" partialSubmit="true" 
+							process="@this cmbCursosAsoRep cmbVendedores estados pnlventasReport" 
+							update="growl pnlventasReport" action="#{backingGestionVendedores.consultarVentasVendedores() }" 
+							onstart="PF('dlgEnProc').show();"
+							oncomplete="PF('dlgEnProc').hide();"/>
+						</div>
+						<div class="p-field p-col-12 p-md-6">
+							<p:commandButton icon="#{botones['icono.cancelar']}" value="#{botones['cancelar']}"  style="margin-right: 10px;" partialSubmit="true" process="@this"
+							onclick="PF('dlgConsultarVentas').hide()" />
+						</div>
+					</div>
+				</p:outputPanel>
+				</p:scrollPanel>
+			</p:dialog>
+			
+			<!-- Tabla de visualizacion de datos del vendedor -->
+			<br/>
+			<p:outputPanel id="pnlVendedor"  >
+			<center>
+			<p:outputLabel value="#{etiquetas['clientePotencial']}" style="text-align:center" rendered="#{backingGestionVendedores.mostrarPanelVendedorCliente}"/>
+			</center>
+			<p:dataTable id="tablaVendedor" var="segc" value="#{backingGestionVendedores.beanGestionVendedores.listaSeguimientoClientes}"
+			paginator="true" rows="10" rendered="#{backingGestionVendedores.mostrarPanelVendedorCliente}" >
+				<p:column headerText="#{etiquetas['id']}" class="p-field p-col-12 p-md-10">
+				#{segc.segcId}
+				</p:column>	
+				<p:column headerText="#{etiquetas['cliente']}" class="p-field p-col-12 p-md-10" rendered="#{backingGestionVendedores.mostrarPanelVendedorCliente}">
+				#{segc.segcCliente}
+				</p:column>
+				<p:column headerText="#{etiquetas['estado']}" class="p-field p-col-12 p-md-10" rendered="#{backingGestionVendedores.mostrarPanelVendedorCliente}">
+				<p:outputLabel value="#{segc.segcEstado.equals('CONTAC01')?'EN SEGUIMIENTO':segc.segcEstado.equals('CONTAC02')?'ABANDONADO':segc.segcEstado.equals('CONTAC03')?'MATRICULADO':segc.segcEstado.equals('CONTAC04')?'CANDIDATO':'PROXIMAOCASION'}" />
+				</p:column>
+				<p:column headerText="#{etiquetas['curso']}" class="p-field p-col-12 p-md-10" rendered="#{backingGestionVendedores.mostrarPanelVendedorCliente}">
+				#{segc.curso.cursNombre}
+				</p:column>		
+			</p:dataTable>
+			</p:outputPanel>
+			<!-- 
+			Panel de visualizacion de datos
+			 -->
+			<p:outputPanel id="pnlventasReport" >
+			<center>
+			<p:outputLabel value="#{titulos['ventasVend']} #{backingGestionVendedores.beanGestionVendedores.vendedorSeleccionadoReporte.persona.persNombres} #{backingGestionVendedores.beanGestionVendedores.vendedorSeleccionadoReporte.persona.persApellidos}" 
+			rendered="#{backingGestionVendedores.mostrarTituloPanel}"/>
+			</center>
+			<div class="ui-fluid p-formgrid p-grid">
+
+			<div class="p-field p-col-12 p-md-2 p-sm-4">
+				<p:card style="margin-bottom: 2em" rendered="#{backingGestionVendedores.mostrarPanelTotalSeguimiento}" >
+				    <f:facet name="title" >
+				        <p:outputLabel value="#{etiquetas['totalSeguimiento']}" />
+				    </f:facet>				
+				    <p:badge value="#{backingGestionVendedores.beanGestionVendedores.totalSeguimiento}" size="xlarge" severity="success" ></p:badge>				
+				</p:card>
+			</div>
+			<div class="p-field p-col-12 p-md-2 p-sm-4">	
+				<p:card style=" margin-bottom: 2em" rendered="#{backingGestionVendedores.mostrarPanelTotalCandidato}">
+				    <f:facet name="title">
+				        <p:outputLabel value="#{etiquetas['totalCandidato']}" />
+				    </f:facet>
+				    <p:badge value="#{backingGestionVendedores.beanGestionVendedores.totalCandidato}" size="xlarge" severity="info"></p:badge>
+				</p:card>
+			</div>
+
+			<div class="p-field p-col-12 p-md-2 p-sm-4">
+				<p:card style=" margin-bottom: 2em" rendered="#{backingGestionVendedores.mostrarPanelTotalMatriculado}">
+				    <f:facet name="title">
+				        <p:outputLabel value="#{etiquetas['totalMatriculas']}"/>
+				    </f:facet>				
+				    <p:badge value="#{backingGestionVendedores.beanGestionVendedores.totalMatriculado}" size="xlarge" severity="info"></p:badge>				
+				</p:card>
+			</div>
+
+			<div class="p-field p-col-12 p-md-2 p-sm-4">	
+				<p:card style=" margin-bottom: 2em" rendered="#{backingGestionVendedores.mostrarPanelTotalAbandonado}">
+				    <f:facet name="title">
+				        <p:outputLabel value="#{etiquetas['totalAbandonado']}"/>
+				    </f:facet>
+				    <p:badge value="#{backingGestionVendedores.beanGestionVendedores.totalAbandonado}" size="xlarge" severity="danger"></p:badge>
+				</p:card>
+			</div>
+			<div class="p-field p-col-12 p-md-2 p-sm-4">	
+			    <p:card style="margin-bottom: 2em;  "  rendered="#{backingGestionVendedores.mostrarPanelTotalProximaOcasion}">
+			        <f:facet name="title" >
+			            <p:outputLabel value="#{etiquetas['totalProximaOcasion']}"/>
+			        </f:facet>				
+			        <p:badge value="#{backingGestionVendedores.beanGestionVendedores.totalProximaOcasion}" size="xlarge" severity="warning"></p:badge>				
+			    </p:card>
+			</div>
+
+			<div class="p-field p-col-12 p-md-12 p-sm-12">
+				<p:card style="margin-bottom: 2em" rendered="#{backingGestionVendedores.mostrarPanelReportesVentas}">
+				    <f:facet name="title">
+				    	<p:outputLabel value="#{titulos['matriculados']} #{backingGestionVendedores.beanGestionVendedores.cursoSeleccionadoReporte.campDescripcion}" />
+				    </f:facet>
+				    <p:barChart model="#{backingGestionVendedores.beanGestionVendedores.barModel}" style="width: 100%; height: 500px;"/>
+				 	
+				</p:card> 
+				
+			</div>
+			</div>
+			</p:outputPanel>
+		</h:form>
+	</ui:define>
+</ui:composition>
+</html>	
+					
+					
+					

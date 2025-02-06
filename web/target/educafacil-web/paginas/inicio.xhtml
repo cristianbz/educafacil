@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core"
+      xmlns:h="jakarta.faces.html"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	
+</h:head>
+<h:body>
+	
+	<h:form id="frm">
+		<p:growl id="msgs" showDetail="true" />
+
+		<center>
+			<br />
+
+			<h:panelGrid style="margin:0 auto;">
+				<p:outputLabel value="Sistema de Gestión de cursos de capacitación"></p:outputLabel>
+				<br />
+				<br />
+			</h:panelGrid>
+			<h:panelGrid columns="3">
+				<p:menubar style="width:400px" model="#{backingLogin.menumodel}">
+				
+				</p:menubar> 
+				<p:tieredMenu style="width:400px" model="#{backingLogin.menumodel}">
+					
+				</p:tieredMenu>  
+				<!--
+				<div class="card">
+				<p:menubar model="#{backingLogin.menumodel}">
+				</p:menubar>
+				</div>
+				-->
+				<h:panelGrid width="550">
+				
+				</h:panelGrid>
+				
+				<p:commandLink action="#{backingLogin.cerrarSesion()}"
+					process="@this" partialSubmit="true" async="true" global="false">
+					<i class="fa fa-power-off"></i>
+					<span>Salir</span>
+				</p:commandLink>
+			</h:panelGrid>
+		</center>
+
+	</h:form>
+</h:body>
+</html>

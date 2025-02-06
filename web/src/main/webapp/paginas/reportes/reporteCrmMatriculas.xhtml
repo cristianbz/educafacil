@@ -1,0 +1,108 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"			
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
+	
+	<ui:define name="contenido">
+			<f:event listener="#{backingLogin.validarSesion()}"
+		type="preRenderView" />
+	<h:form id="form" prependId="false">
+		<p:growl id="growl" life="3000" showDetail="true" />
+			<p:breadCrumb>
+				<p:menuitem value="Categorias" url="#" />
+				<p:menuitem value="Marketing" url="#" />
+				<p:menuitem value="DashBoard CRM" url="#"/>
+			</p:breadCrumb>
+			<center>
+			<p:outputLabel value="#{titulos['resumenCRM']}"/>
+		</center>
+		<div class="ui-fluid p-formgrid p-grid">
+			<div class="p-field p-col-12 p-md-2 p-sm-4">
+				<p:card style="margin-bottom: 2em">
+				    <f:facet name="title">
+				        <p:outputLabel value="#{etiquetas['totalSeguimiento']}"/>
+				    </f:facet>				
+				    <p:badge value="#{backingReporteMatriculasCrm.beanReporte.totalSeguimiento}" size="xlarge" severity="success"></p:badge>				
+				</p:card>
+			</div>
+
+			<div class="p-field p-col-12 p-md-2 p-sm-4">	
+				<p:card style=" margin-bottom: 2em">
+				    <f:facet name="title">
+				        <p:outputLabel value="#{etiquetas['totalCandidato']}"/>
+				    </f:facet>
+				
+				    <p:badge value="#{backingReporteMatriculasCrm.beanReporte.totalCandidato}" size="xlarge" severity="info"></p:badge>
+				
+				</p:card>
+			</div>
+
+			<div class="p-field p-col-12 p-md-2 p-sm-4">
+				<p:card style=" margin-bottom: 2em">
+				    <f:facet name="title">
+				        <p:outputLabel value="#{etiquetas['totalVentas']}"/>
+				    </f:facet>				
+				    <p:badge value="#{backingReporteMatriculasCrm.beanReporte.totalMatriculado}" size="xlarge" severity="info"></p:badge>				
+				</p:card>
+			</div>
+
+			<div class="p-field p-col-12 p-md-2 p-sm-4">	
+				<p:card style=" margin-bottom: 2em">
+				    <f:facet name="title">
+				        <p:outputLabel value="#{etiquetas['totalAbandonado']}"/>
+				    </f:facet>
+				
+				    <p:badge value="#{backingReporteMatriculasCrm.beanReporte.totalAbandonado}" size="xlarge" severity="danger"></p:badge>
+				
+				</p:card>
+			</div>
+			<div class="p-field p-col-12 p-md-2 p-sm-4">	
+				<p:card style=" margin-bottom: 2em">
+				    <f:facet name="title">
+				        <p:outputLabel value="#{etiquetas['totalProximaOcasion']}"/>
+				    </f:facet>				
+				    <p:badge value="#{backingReporteMatriculasCrm.beanReporte.totalProximaOcasion}" size="xlarge" severity="warning"></p:badge>				
+				</p:card>
+			</div>
+			<div class="p-field p-col-12 p-md-2 p-sm-4">	
+				<p:card style="margin-bottom: 2em">
+				    <f:facet name="title">
+				        <p:outputLabel value="#{etiquetas['totalGastoCampania']}"/>
+				    </f:facet>				
+				    <p:badge value="#{backingReporteMatriculasCrm.beanReporte.totalGastoCampania}" size="xlarge" severity="success"></p:badge>				
+				</p:card>
+			</div>
+			
+			<div class="p-field p-col-12 p-md-12 p-sm-12">
+				<p:card style="margin-bottom: 2em">
+				    <f:facet name="title">
+				    	<p:outputLabel value="#{titulos['interesadosCurso']}"/>
+				    </f:facet>
+				 	<p:barChart model="#{backingReporteMatriculasCrm.beanReporte.barmodel}" />
+				</p:card> 
+			</div>
+			<div class="p-field p-col-12 p-md-6 p-sm-12">
+				<p:card style="margin-bottom: 2em">
+				    <f:facet name="title">
+				    	<p:outputLabel value="#{titulos['ventasCurso']}"/>
+				    </f:facet>
+				 	<p:barChart model="#{backingReporteMatriculasCrm.beanReporte.barmodelVenta}" />
+				</p:card> 
+			</div>
+			<div class="p-field p-col-12 p-md-6 p-sm-12">
+				<p:card style="margin-bottom: 2em">
+				    <f:facet name="title">
+				    	<p:outputLabel value="#{titulos['sinInteresCurso']}"/>
+				    </f:facet>
+				 	<p:barChart model="#{backingReporteMatriculasCrm.beanReporte.barmodelAbandona}" />
+				</p:card> 
+			</div>
+		</div>		
+	</h:form>
+	</ui:define>
+</ui:composition>		
+</html>

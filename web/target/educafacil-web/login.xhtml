@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="jakarta.faces.facelets"
+      	xmlns:f="jakarta.faces.core"
+      	xmlns:h="jakarta.faces.html"
+    xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/WEB-INF/templates/templateLogin.xhtml">
+	<ui:define name="contenido">
+		<h:form>
+			<p:growl id="growl" life="3000" showDetail="true"/>
+			<div class="container">
+				<div class="abs-center">
+					<div class="card form">
+						<div class="card-header">
+							<h2 style="color:red;">Ingrese sus datos</h2>												
+						</div>
+						<div class="card-body">
+							<p:panel id="panelusuario">
+
+								<p:outputPanel id="panelContenedor">
+									
+									<p:panel  id="panelDocumento" rendered="#{backingLogin.beanLogin.panelDocumento}">
+										<div class="ui-fluid p-formgrid p-grid">
+											<div class="p-field p-col-12 p-md-12">
+												<i class="pi pi-user" style="font-size: 1rem;color:green;font-weight: bold;"></i> &nbsp;
+												<p:outputLabel value="#{etiquetas['usuario']}" style="color:green;font-weight: bold;"/>
+											</div>
+											<div class="p-field p-col-12 p-md-12">	
+												
+												<p:inputText value="#{backingLogin.beanLogin.documentoIdentidad}" title="#{tooltip['usuario']}" required="true" requiredMessage="#{mensajes['campoRequerido']}"/>
+											</div>
+											<div class="p-field p-col-12 p-md-12">
+												<p:commandButton value="#{botones['validar']}" process="@this panelContenedor" ajax="panelContenedor growl"
+													icon="pi pi-check-circle" update="panelContenedor growl" action="#{backingLogin.validarDocumentoIdentidadUsuario()}"/>
+											</div>
+											<div class="p-field p-col-12 p-md-12">
+												<p:commandButton value="#{titulos['reseteoClave']}" process="@this" update="panelContenedor" partialSubmit="true" icon="pi pi-sync">
+													<f:setPropertyActionListener value="true" target="#{backingLogin.beanLogin.panelCambiaClave}"></f:setPropertyActionListener>
+													<f:setPropertyActionListener value="false" target="#{backingLogin.beanLogin.panelDocumento}"></f:setPropertyActionListener>
+												</p:commandButton>
+											</div>
+										</div>	
+									</p:panel>
+									<p:panel columns="2" id="panelValidacion" rendered="#{backingLogin.beanLogin.panelValida}">
+									<div class="ui-fluid p-formgrid p-grid">
+											<div class="p-field p-col-12 p-md-12">
+												<i class="pi pi-user" style="font-size: 1rem;color:green;font-weight: bold;"></i> &nbsp;
+												<p:outputLabel value="#{etiquetas['usuario']}" style="color:green;font-weight: bold;"/>
+											</div>
+											<div class="p-field p-col-12 p-md-12">
+												<p:outputLabel value="#{backingLogin.beanLogin.usuario.persona.persNombres} #{backingLogin.beanLogin.usuario.persona.persApellidos}"/>
+											</div>
+											<div class="p-field p-col-12 p-md-12"> 
+												<i class="pi pi-key" style="font-size: 1rem;color:green;font-weight: bold;"></i> &nbsp;
+												<p:outputLabel value="#{etiquetas['clave']}" style="color:green;font-weight: bold;"/>
+											</div>
+											<div class="p-field p-col-12 p-md-12">	
+												<p:password value="#{backingLogin.beanLogin.clave}" title="#{tooltip['clave']}" required="true" requiredMessage="#{mensajes['campoRequerido']}"/>
+											</div>
+											<div class="p-field p-col-12 p-md-12">												
+												<p:commandButton value="#{botones['validar']}" partialSubmit="true"
+												icon="pi pi-check-circle" process="@this panelValidacion" update="panelDocumento panelValidacion growl" action="#{backingLogin.validarUsuario()}"/>
+											</div>
+											<div class="p-field p-col-12 p-md-12">
+												<p:commandButton value="#{botones['regresar']}" partialSubmit="true"
+													icon="pi pi-arrow-left" process="@this " update="panelContenedor " actionListener="#{backingLogin.retornarLogin()}"/>
+											</div>
+										</div>			
+									</p:panel>
+									<p:panel columns="2" id="panelReseteoClave" rendered="#{backingLogin.beanLogin.panelCambiaClave}">
+									<div class="ui-fluid p-formgrid p-grid">
+											<div class="p-field p-col-12 p-md-12">
+												<i class="pi pi-envelope" style="font-size: 1rem;color:green;font-weight: bold;"></i> &nbsp;
+												<p:outputLabel value="#{etiquetas['correo']}:" style="color:green;font-weight: bold;" />
+											</div>
+											<div class="p-field p-col-12 p-md-12">	
+												<p:inputText value="#{backingLogin.beanLogin.correo}" required="true" requiredMessage="#{mensajes['campoRequerido']}"/>
+											</div>
+											<div class="p-field p-col-12 p-md-12">
+												<i class="pi pi-id-card" style="font-size: 1rem;color:green;font-weight: bold;"></i> &nbsp;
+												<p:outputLabel value="#{etiquetas['cedularuc']}:" style="color:green;font-weight: bold;" />
+											</div>
+											<div class="p-field p-col-12 p-md-12">	
+												<p:password value="#{backingLogin.beanLogin.cedula}" required="true" requiredMessage="#{mensajes['campoRequerido']}"/>
+											</div>
+											<div class="p-field p-col-12 p-md-12">
+												<p:commandButton value="#{botones['validar']}"  partialSubmit="true"
+												icon="pi pi-check-circle" process="@this panelReseteoClave" update="panelDocumento panelValidacion growl" action="#{backingLogin.validarCambioClave()}"/>
+											</div>
+											<div class="p-field p-col-12 p-md-12">
+												<p:commandButton value="#{botones['regresar']}" partialSubmit="true"
+													icon="pi pi-arrow-left" process="@this " update="panelContenedor " actionListener="#{backingLogin.retornarLogin()}">
+													<f:setPropertyActionListener value="false" target="#{backingLogin.beanLogin.panelCambiaClave}"></f:setPropertyActionListener>
+													<f:setPropertyActionListener value="true" target="#{backingLogin.beanLogin.panelDocumento}"></f:setPropertyActionListener>
+												</p:commandButton>
+											</div>
+										</div>			
+									</p:panel>
+								</p:outputPanel>
+							</p:panel>
+						</div>
+						
+					</div>
+				</div>
+
+				
+			</div>
+		</h:form>
+	</ui:define>
+
+</ui:composition>
+
+</html>

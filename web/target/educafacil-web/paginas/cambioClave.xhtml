@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+	xmlns:a4j="http://primefaces.org/ui">
+
+<ui:composition template="/WEB-INF/templates/templateCambioClave.xhtml">
+	
+	<ui:define name="contenido">
+
+		<h:form id="form-principal">
+			<p:poll id="poll" widgetVar="poll" interval="1" listener="#{cambioClaveBacking.redireccionar()}" update="cambioExitosoId" autoStart="false" />
+			<p:growl id="growl" life="5000" showDetail="true" />
+
+
+			<p:panel id="basic" header="#{titulos['cambioClave']}" style="margin-bottom:20px; height:auto; width:500px;margin: auto; margin-top: 100px;" rendered="#{cambioClaveBacking.usuarioValido}">
+
+				<p:outputPanel id="gridCambioClave" style="width:100%" styleClass="panelNoBorder">
+					<div class="ui-fluid p-formgrid p-grid">
+						
+						<div class="p-field p-col-12 p-md-6">
+							<p:outputLabel value="#{etiquetas.usuario}:" />
+						</div>
+						<div class="p-field p-col-12 p-md-6">
+							<p:inputText value="#{cambioClaveBacking.usuario}" disabled="true" style="text-decoration-color:blue;color:blue;font-weight: bold;"/>
+						</div>
+						
+					</div>	
+				</p:outputPanel>
+				<p:panelGrid style="width:100%" styleClass="panelNoBorder">
+					<p:row>
+						<p:column>
+							<h:outputLabel value="#{etiquetas['requisitosNuevaClave']}:" />
+
+							<ul>
+								<ui:repeat value="#{cambioClaveBacking.items}" var="item">
+									<li><h:outputText value="#{item}" /></li>
+								</ui:repeat>
+							</ul>
+						</p:column>
+					</p:row>
+				</p:panelGrid>
+				
+					<div class="ui-fluid p-formgrid p-grid">
+						
+						<div class="p-field p-col-12 p-md-6">
+							<p:outputLabel value="#{etiquetas['clave']}:" for="txtPassword" />
+						</div>
+						<div class="p-field p-col-12 p-md-6">
+							<p:password id="txtPassword" value="#{cambioClaveBacking.password}" redisplay="true" maxlength="50" required="true" requiredMessage="#{mensajes['campoRequerido']}" autocomplete="false"/>
+						</div>
+						
+						
+						
+						<div class="p-field p-col-12 p-md-6">
+							<p:outputLabel value="#{etiquetas['confirmarClave']}: *" for="txtPassword2" />
+						</div>
+						<div class="p-field p-col-12 p-md-6">
+							<p:password id="txtPassword2" value="#{cambioClaveBacking.password2}" redisplay="true" maxlength="50" style="text-transform: none" autocomplete="false" />
+						</div>
+							
+						<div class="p-field p-col-12 p-md-12">
+								<p:commandButton icon="pi pi-check-circle" value="#{botones['aceptar']}" action="#{cambioClaveBacking.cambiarClaveUsuario}" id="cbmCambiarClaveUsuario" update="@form" />
+						</div>
+					</div>	
+				
+				<f:facet name="footer">
+					<div id="mensaje_clave">
+						<p:outputLabel value="#{etiquetas['usoClave1']}" />
+						<br />
+						<p:outputLabel value="#{etiquetas['usoClave2']}" />
+					</div>
+				</f:facet>
+			</p:panel>
+			<p:panel rendered="#{cambioClaveBacking.usuarioInvalido}">
+				<p:panelGrid>
+					<p:row>
+						<p:column>
+							<p:outputLabel value="#{etiquetas['claveExpirada']}" />
+						</p:column>
+					</p:row>
+				</p:panelGrid>
+			</p:panel>
+			<p:panel id="cambioExitosoId" rendered="#{cambioClaveBacking.cambioExitoso}">
+				<p:panelGrid>
+				<p:row>
+						<p:column>
+							<p:outputLabel value="#{etiquetas['espereRedireccion1']} #{cambioClaveBacking.numero} #{etiquetas['espereRedireccion2']}" />
+						</p:column>
+				</p:row>			
+				</p:panelGrid>
+			</p:panel>
+			
+		</h:form>
+	</ui:define>
+</ui:composition>
+</html>

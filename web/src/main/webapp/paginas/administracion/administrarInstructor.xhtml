@@ -1,0 +1,293 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
+	
+	<ui:define name="contenido">
+			<f:event listener="#{backingLogin.validarSesion()}"
+		type="preRenderView" />
+	<h:form id="formInstructor" prependId="false">
+		<p:growl id="growl" life="3000" showDetail="true" />
+		<!-- Dialogo informacion instructor -->
+		<p:dialog widgetVar="dlgNuevoInstructor" showEffect="fade" header="#{titulos['datosInstructor']}"
+			hideEffect="fade"  resizable="true" modal="true"
+			appendTo="@(body)">
+			<p:scrollPanel mode="native"
+				style="max-height:450px; max-width:1200px;">
+			<p:outputPanel id="panelInstructor">
+
+					<p:tabView id="iddatosInstructor"
+						rendered="#{backingAdminInstructor.beanAdminInstructor.mostrarDatosInstructor}">
+						<p:tab title="#{etiquetas['datosPersonales']}">
+							<p:outputPanel id="datosPersonales">
+
+								<div class="ui-fluid p-formgrid p-grid">
+									<div class="p-field p-col-12 p-md-2">
+										<p:outputLabel value="#{etiquetas['cedularuc']}:*" />
+									</div>
+									<div class="p-field p-col-12 p-md-2">
+										<p:inputText required="true"
+											requiredMessage="#{mensajes['campoRequerido']}" id="idCedula"
+											maxlength="15"
+											value="#{backingAdminInstructor.beanAdminInstructor.cedula}">
+											<p:ajax event="blur" process="@this" listener="#{backingAdminInstructor.buscaPersonaCedula()}" update="datosPersonales" partialSubmit="true"/>
+										</p:inputText>
+									</div>
+									<div class="p-field p-col-12 p-md-2">
+										<p:message for="idCedula" />
+									</div>
+									<div class="p-field p-col-12 p-md-2">
+										<p:outputLabel value="#{etiquetas['apellidos']}:*" />
+									</div>
+									<div class="p-field p-col-12 p-md-2">
+										<p:inputText maxlength="30" id="idApellidos" required="true"
+											requiredMessage="#{mensajes['campoRequerido']}"
+											value="#{backingAdminInstructor.beanAdminInstructor.persona.persApellidos}" />
+									</div>
+									<div class="p-field p-col-12 p-md-2">
+										<p:message for="idApellidos" />
+									</div>
+
+									<div class="p-field p-col-12 p-md-2">
+										<p:outputLabel value="#{etiquetas['nombres']}:*" />
+									</div>
+									<div class="p-field p-col-12 p-md-2">
+										<p:inputText maxlength="30" id="idNombres" required="true"
+											requiredMessage="#{mensajes['campoRequerido']}"
+											value="#{backingAdminInstructor.beanAdminInstructor.persona.persNombres}">
+											<p:ajax event="blur" process="@this" />
+										</p:inputText>
+									</div>
+									<div class="p-field p-col-12 p-md-2">
+										<p:message for="idNombres" />
+									</div>
+									<div class="p-field p-col-12 p-md-2">
+										<p:outputLabel value="#{etiquetas['telefonoMobil']}:*" />
+									</div>
+									<div class="p-field p-col-12 p-md-2">
+										<p:inputMask maxlength="16" id="idTelefonoMobil"
+											required="true"
+											requiredMessage="#{mensajes['campoRequerido']}"
+											value="#{backingAdminInstructor.beanAdminInstructor.persona.persTelefonoMobil}"
+											mask="9999999999">
+											<p:ajax event="blur" process="@this" />
+										</p:inputMask>
+									</div>
+									<div class="p-field p-col-12 p-md-2">
+										<p:message for="idTelefonoMobil" />
+									</div>
+
+									<div class="p-field p-col-12 p-md-2">
+										<p:outputLabel value="#{etiquetas['telefonoCasa']}:" />
+									</div>
+									<div class="p-field p-col-12 p-md-2">
+										<p:inputMask maxlength="16" mask="999999999"
+											value="#{backingAdminInstructor.beanAdminInstructor.persona.persTelefonoCasa}">
+											<p:ajax event="blur" process="@this" />
+										</p:inputMask>
+									</div>
+									<div class="p-field p-col-12 p-md-2"></div>
+									<div class="p-field p-col-12 p-md-2">
+										<p:outputLabel value="#{etiquetas['fechaNacimiento']}:*" />
+									</div>
+									<div class="p-field p-col-12 p-md-2">
+										<p:calendar id="fechaNacimiento" pattern="yyyy-MM-dd"
+											locale="es" navigator="true" required="true"
+											requiredMessage="#{mensajes['campoRequerido']}"
+											validatorMessage="#{mensajes['campoRequerido']}"
+											value="#{backingAdminInstructor.beanAdminInstructor.persona.persFechaNacimiento}">
+											<p:ajax event="blur" process="@this " partialSubmit="true" />
+										</p:calendar>
+									</div>
+									<div class="p-field p-col-12 p-md-2">
+										<p:message for="fechaNacimiento" />
+									</div>
+
+									<div class="p-field p-col-12 p-md-2">
+										<p:outputLabel value="#{etiquetas['correo']}:*" />
+									</div>
+									<div class="p-field p-col-12 p-md-2">
+										<p:inputText maxlength="60" id="idCorreo" required="true"
+											requiredMessage="#{mensajes['campoRequerido']}"
+											validatorMessage="#{mensajes['correoInvalido']}"
+											value="#{backingAdminInstructor.beanAdminInstructor.persona.persCorreoElectronico}">
+											<p:ajax event="blur" process="@this" update="msgCorreo" />
+											<f:validateRegex
+												pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$" />
+										</p:inputText>
+									</div>
+									<div class="p-field p-col-12 p-md-2">
+										<p:message for="idCorreo" id="msgCorreo" />
+									</div>
+									<div class="p-field p-col-12 p-md-2">
+										<p:outputLabel value="#{etiquetas['fechaIngreso']}:*" />
+									</div>
+									<div class="p-field p-col-12 p-md-2">
+										<p:calendar id="fechaIngreso" pattern="yyyy-MM-dd" locale="es"
+											navigator="true" required="true"
+											requiredMessage="#{mensajes['campoRequerido']}"
+											validatorMessage="#{mensajes['campoRequerido']}"
+											value="#{backingAdminInstructor.beanAdminInstructor.instructor.instFechaIngreso}">
+											<p:ajax event="blur" process="@this " partialSubmit="true" />
+										</p:calendar>
+									</div>
+									<div class="p-field p-col-12 p-md-2">
+										<p:message for="fechaIngreso" />
+									</div>
+
+									<div class="p-field p-col-12 p-md-2">
+										<p:outputLabel value="#{etiquetas['fechaSalida']}:" />
+									</div>
+									<div class="p-field p-col-12 p-md-2">
+										<p:calendar id="fechaSalida" pattern="yyyy-MM-dd" locale="es"
+											navigator="true"
+											value="#{backingAdminInstructor.beanAdminInstructor.instructor.instFechaSalida}">
+											<p:ajax event="blur" process="@this " partialSubmit="true" />
+										</p:calendar>
+									</div>
+									<div class="p-field p-col-12 p-md-2"></div>
+									<div class="p-field p-col-12 p-md-2">
+										<p:outputLabel value="#{etiquetas['estado']}:" />
+									</div>
+									<div class="p-field p-col-12 p-md-4">
+										<p:toggleSwitch
+											value="#{backingAdminInstructor.beanAdminInstructor.instructor.instActivo}" />
+									</div>
+
+									<div class="p-field p-col-12 p-md-3">
+										<p:commandButton value="#{botones['grabar']}"
+											process="@this panelInstructor" update="panelInstructor listaInstructores growl"
+											icon="#{botones['icono.grabar']}" partialSubmit="true"
+											actionListener="#{backingAdminInstructor.mostrarDialogoGrabaDatosPersonales()}" />
+									</div>
+									<div class="p-field p-col-12 p-md-3">
+										<p:commandButton value="#{botones['cancelar']}"
+											process="@this" oncomplete="PF('dlgNuevoInstructor').hide()"
+											icon="#{botones['icono.cancelar']}" immediate="true">
+											<f:setPropertyActionListener value="false"
+												target="#{backingAdminInstructor.beanAdminInstructor.mostrarDatosInstructor}" />
+										</p:commandButton>
+									</div>
+									<div class="p-field p-col-12 p-md-6"></div>
+								</div>
+							</p:outputPanel>
+
+						</p:tab>
+						<p:tab title="#{etiquetas['datosAcademicos']}">
+							<h:panelGrid>
+								<p:panelGrid>
+									<p:row>
+										<p:column>
+											<h:graphicImage value="/imagenes/utilitarios/asterisco.gif"
+												width="5" height="5" />
+										</p:column>
+										<p:column>
+											<p:outputLabel value="#{etiquetas['nivelEstudio']}" />
+										</p:column>
+										<p:column>
+											<p:selectOneMenu>
+												<f:selectItems />
+											</p:selectOneMenu>
+										</p:column>
+									</p:row>
+									<p:row>
+										<p:column>
+											<h:graphicImage value="/imagenes/utilitarios/asterisco.gif"
+												width="5" height="5" />
+										</p:column>
+										<p:column>
+											<p:outputLabel value="#{etiquetas['tituloAcademico']}" />
+										</p:column>
+										<p:column>
+
+										</p:column>
+									</p:row>
+								</p:panelGrid>
+								<p:dataTable>
+
+								</p:dataTable>
+							</h:panelGrid>
+						</p:tab>
+					</p:tabView>
+				
+			</p:outputPanel>
+			</p:scrollPanel>
+		</p:dialog>
+			<p:breadCrumb>
+				<p:menuitem value="Categorias" url="#" />
+				<p:menuitem value="Administración" url="#" />
+				<p:menuitem value="Instructores" url="#" />
+			</p:breadCrumb>
+			<br />
+			
+			<p:splitButton value="#{etiquetas['accionesRealizar']}">
+	            <p:menuitem value="#{botones['nuevoInstructor']}"
+						process="@this panelInstructor" 
+						actionListener="#{backingAdminInstructor.nuevoInstructor()}"
+						update="iddatosInstructor panelInstructor" />                        
+	        </p:splitButton>	
+
+			<p:outputPanel id="listaInstructores">
+				<br />
+				
+				<p:dataTable reflow="true"
+					value="#{backingAdminInstructor.beanAdminInstructor.listaInstructores}"
+					var="instructor">
+					<p:column headerText="#{etiquetas['instructor']}">
+							#{instructor.persona.persApellidos} #{instructor.persona.persNombres}
+						</p:column>
+					<p:column style="width:150px" headerText="#{etiquetas['fechaIngreso']}">
+						<p:outputLabel value="#{instructor.instFechaIngreso}"
+							id="idFechaIngreso">
+							<f:convertDateTime for="idFechaIngreso" pattern="yyyy-MM-dd" />
+						</p:outputLabel>
+
+					</p:column>
+					<p:column style="width:150px" headerText="#{etiquetas['fechaSalida']}">
+						<p:outputLabel value="#{instructor.instFechaSalida}"
+							id="idFechaSalida">
+							<f:convertDateTime for="idFechaSalida" pattern="yyyy-MM-dd" />
+						</p:outputLabel>
+					</p:column>
+					<p:column headerText="#{etiquetas['estado']}" style="width:80px">
+						<p:outputLabel
+							value="#{instructor.instActivo==true?'Activo':'Inactivo'}" />
+					</p:column>
+					<p:column style="width:50px">
+						<p:commandLink icon="#{botones['icono.seleccion']}" title="#{tooltip['editar']}"
+							action="#{backingAdminInstructor.mostrarInstructor()}"
+							process="@this " update="panelInstructor">
+							<f:setPropertyActionListener value="#{instructor}"
+								target="#{backingAdminInstructor.beanAdminInstructor.instructor}" />
+							<f:setPropertyActionListener value="true"
+								target="#{backingAdminInstructor.beanAdminInstructor.mostrarDatosInstructor}" />
+							<i class="pi pi-chevron-circle-down" style="font-size: 1em; color: green;"></i>		
+						</p:commandLink>
+					</p:column>
+				</p:dataTable>
+			</p:outputPanel>
+		
+
+		<p:dialog widgetVar="dlggrabar" modal="true"
+			header="#{titulos['grabar']}">
+			<h:panelGrid columns="2">
+				<p:commandButton value="#{botones['grabar']}"
+					icon="#{botones['icono.grabar']}" process="@this panelInstructor"
+					oncomplete="PF('dlggrabar').hide();" partialSubmit="true"
+					actionListener="#{backingAdminInstructor.grabarDatosPersonales()}"
+					update="growl  listaInstructores" />
+				<p:commandButton value="#{botones['cancelar']}"
+					icon="#{botones['icono.cancelar']}" process="@this"
+					resetValues="true" oncomplete="PF('dlggrabar').hide();" />
+			</h:panelGrid>
+		</p:dialog>
+		</h:form>
+	</ui:define>
+
+</ui:composition>
+
+</html>

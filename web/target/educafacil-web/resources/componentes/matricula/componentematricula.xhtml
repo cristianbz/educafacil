@@ -1,0 +1,625 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:composite="http://java.sun.com/jsf/composite">
+<composite:interface>
+	<composite:attribute name="componenteBackingMatriculaInscripcion"
+		required="true" />
+</composite:interface>
+<composite:implementation>
+	<p:growl id="growl" life="3000" showDetail="true" />
+	<p:dialog widgetVar="dlgOfertaCursos" showEffect="fade"
+		hideEffect="fade" modal="false" appendTo="@(body)"
+		header="#{titulos['seleccioneCurso']}" width="750" closable="true"
+		resizable="false">
+		<p:outputPanel id="panelGrupos">
+			<p:dataTable id="tablaGrupos"
+				value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.listaOfertaCursos}"
+				rowKey="#{grupo.ocurId}"
+				rowStyleClass="#{grupo.ocurFechaFin.compareTo(cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.fechaActual) le 0?'background-color: #fca752 !important;':'background-color: #fca752 !important;'}"
+				selection="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.ofertaCursosSeleccionado}"
+				var="grupo">
+				<p:column selectionMode="single"
+					style="width:16px;text-align:center" />
+				<p:column headerText="#{etiquetas['curso']}">
+						#{grupo.ofertaCapacitacion.curso.cursNombre}
+					</p:column>
+				<p:column headerText="#{etiquetas['fechaInicio']}">
+					<p:outputLabel value="#{grupo.ocurFechaInicio}" id="fechaInicio">
+						<f:convertDateTime pattern="yyyy-MM-dd" for="fechaInicio" />
+					</p:outputLabel>
+				</p:column>
+				<p:column headerText="#{etiquetas['fechaFin']}">
+					<p:outputLabel value="#{grupo.ocurFechaFin}" id="fechaFin">
+						<f:convertDateTime pattern="yyyy-MM-dd" for="fechaFin" />
+					</p:outputLabel>
+				</p:column>
+				<p:column headerText="#{etiquetas['valor']}">
+						#{grupo.ocurValor}
+					</p:column>
+				<p:column headerText="#{etiquetas['descuento']}">
+						#{grupo.ocurDescuento}
+					</p:column>
+				<f:facet name="footer">
+
+				</f:facet>
+			</p:dataTable>
+			<p:commandButton value="#{etiquetas['aceptar']}"
+				icon="#{botones['icono.seleccion']}"
+				process="@this :form:matricula:panelGrupos"
+				update=":form:matricula:idpanelMatriculaInscripcion"
+				partialSubmit="true"
+				actionListener="#{cc.attrs.componenteBackingMatriculaInscripcion.cerrarDialogoOfertaCursos}">
+			</p:commandButton>
+
+		</p:outputPanel>
+
+
+	</p:dialog>
+	<!-- DIALOGO ACTUALIZAR PERSONA -->
+	<p:dialog widgetVar="dlgActualizar" showEffect="fade" hideEffect="fade"
+		modal="true" appendTo="@(body)" header="#{titulos['actualizar']}"
+		width="250" closable="true" resizable="false">
+		<h:panelGrid columns="2">
+			<p:commandButton value="#{botones['grabar']}"
+				actionListener="#{cc.attrs.componenteBackingMatriculaInscripcion.actualizarPersona()}"
+				oncomplete="PF('dlgActualizar').hide();" process="@this "
+				icon="#{botones['icono.grabar']}" />
+			<p:commandButton icon="#{botones['icono.cancelar']}"
+				value="#{botones['cancelar']}"
+				oncomplete="PF('dlgActualizar').hide();" process="@this" />
+		</h:panelGrid>
+	</p:dialog>
+	<!-- DIALOGO CLIENTES REGISTRADOS -->
+	<p:dialog widgetVar="dlgRegistrados" showEffect="fade"
+		id="iddlgregistrados" hideEffect="fade" modal="false"
+		appendTo="@(body)" header="#{titulos['actualizar']}" width="750"
+		closable="true" resizable="true">
+
+
+
+	</p:dialog>
+	<!-- PANEL MATRICULA -->
+	<p:outputPanel id="idpanelMatriculaInscripcion">
+		<div class="container">
+			<p:tabView
+				activeIndex="#{cc.attrs.componenteBackingMatriculaInscripcion.indiceTab}"
+				id="tabs">
+				<p:ajax event="tabChange"
+					listener="#{cc.attrs.componenteBackingMatriculaInscripcion.validaTabs}"
+					process="@this :form:matricula:tabs:panelPersona "  />
+				<p:tab title="#{etiquetas['datosestudiante']}">
+					<p:outputPanel id="panelPersona">
+						<div class="ui-fluid p-formgrid p-grid">
+							<div class="p-field p-col-12 p-md-1">
+								<p:outputLabel value="#{etiquetas['cedularuc']}:*"
+									rendered="#{cc.attrs.componenteBackingMatriculaInscripcion.esMatricula}" />
+							</div>
+							<div class="p-field p-col-12 p-md-2">
+								<p:inputText required="true"
+									requiredMessage="#{mensajes['campoRequerido']}" id="idCedula"
+									maxlength="15"
+									onkeypress="if( (event.which &lt; 48 || event.which &gt; 57) ) return false;"
+									rendered="#{cc.attrs.componenteBackingMatriculaInscripcion.esMatricula}"
+									value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.persona.persDocumentoIdentidad}">
+									<p:ajax event="blur"
+										listener="#{cc.attrs.componenteBackingMatriculaInscripcion.buscaPersonaPorCedula}"
+										process="@this" update="panelPersona panelDatosCurso" />
+								</p:inputText>
+							</div>
+							<div class="p-field p-col-12 p-md-1">
+								<p:message for="idCedula"
+									rendered="#{cc.attrs.componenteBackingMatriculaInscripcion.esMatricula}" />
+							</div>
+							<div class="p-field p-col-12 p-md-1">
+								<p:commandButton value="#{botones['buscar']}"
+									icon="#{botones['icono.buscar']}"
+									rendered="#{cc.attrs.componenteBackingMatriculaInscripcion.esMatricula}"
+									actionListener="#{cc.attrs.componenteBackingMatriculaInscripcion.buscaPersonaPorCedula}"
+									process="@this"
+									update="panelPersona panelDatosCurso panelEsMatricula :form:matricula:growl" />
+							</div>
+							<div class="p-field p-col-12 p-md-7"></div>
+
+							<div class="p-field p-col-12 p-md-1">
+								<p:outputLabel value="#{etiquetas['apellidos']}:*" />
+							</div>
+							<div class="p-field p-col-12 p-md-2">
+								<p:inputText maxlength="30" id="idApellidos" required="true"
+									requiredMessage="#{mensajes['campoRequerido']}"
+									value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.persona.persApellidos}">
+									<p:ajax event="blur"
+										process="@this :form:matricula:panelListaPersonas"
+										listener="#{cc.attrs.componenteBackingMatriculaInscripcion.buscaPersonaPorApellidos}"
+										update=":form:matricula:panelListaPersonas" />
+								</p:inputText>
+							</div>
+							<div class="p-field p-col-12 p-md-1">
+								<p:message for="idApellidos" />
+							</div>
+							<div class="p-field p-col-12 p-md-1">
+								<p:outputLabel value="#{etiquetas['nombres']}:*" />
+							</div>
+							<div class="p-field p-col-12 p-md-2">
+								<p:inputText maxlength="30" id="idNombres" required="true"
+									requiredMessage="#{mensajes['campoRequerido']}"
+									value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.persona.persNombres}">
+									<p:ajax event="blur" process="@this" />
+								</p:inputText>
+							</div>
+							<div class="p-field p-col-12 p-md-1">
+								<p:message for="idNombres" />
+							</div>
+							<div class="p-field p-col-12 p-md-4"></div>
+
+							<div class="p-field p-col-12 p-md-1">
+								<p:outputLabel value="#{etiquetas['telefonoMobil']}:*" />
+							</div>
+							<div class="p-field p-col-12 p-md-2">
+								<p:inputText maxlength="16" id="idTelefonoMobil" required="true"
+									requiredMessage="#{mensajes['campoRequerido']}"
+									onkeypress="if( (event.which &lt; 48 || event.which &gt; 57) ) return false;"
+									value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.persona.persTelefonoMobil}"
+									>
+									<p:ajax event="blur" process="@this" />
+								</p:inputText>
+							</div>
+							<div class="p-field p-col-12 p-md-1">
+								<p:message for="idTelefonoMobil" />
+							</div>
+							<div class="p-field p-col-12 p-md-1">
+								<p:outputLabel value="#{etiquetas['telefonoCasa']}:" />
+							</div>
+							<div class="p-field p-col-12 p-md-2">
+								<p:inputText maxlength="16" onkeypress="if( (event.which &lt; 48 || event.which &gt; 57) ) return false;"
+									value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.persona.persTelefonoCasa}">
+									<p:ajax event="blur" process="@this" />
+								</p:inputText>
+							</div>
+							<div class="p-field p-col-12 p-md-5"></div>
+
+							<div class="p-field p-col-12 p-md-1">
+								<p:outputLabel value="#{etiquetas['correo']}:*" />
+							</div>
+							<div class="p-field p-col-12 p-md-2">
+								<p:inputText maxlength="60" id="idCorreo" required="true"
+									requiredMessage="#{mensajes['campoRequerido']}"
+									validatorMessage="#{mensajes['correoInvalido']}"
+									value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.persona.persCorreoElectronico}">
+									<p:ajax event="blur" process="@this" />
+									<f:validateRegex
+										pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$" />
+								</p:inputText>
+							</div>
+							<div class="p-field p-col-12 p-md-1">
+								<p:message for="idCorreo" />
+							</div>
+							<div class="p-field p-col-12 p-md-1">
+								<p:outputLabel value="#{etiquetas['telefonoTrabajo']}:"
+									rendered="#{cc.attrs.componenteBackingMatriculaInscripcion.esMatricula}" />
+							</div>
+							<div class="p-field p-col-12 p-md-2">
+								<p:inputText maxlength="16" onkeypress="if( (event.which &lt; 48 || event.which &gt; 57) ) return false;"
+									rendered="#{cc.attrs.componenteBackingMatriculaInscripcion.esMatricula}"
+									value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.estudiante.estuTelefonoTrabajo}">
+									<p:ajax event="blur" process="@this"
+										rendered="#{cc.attrs.componenteBackingMatriculaInscripcion.esMatricula}" />
+								</p:inputText>
+							</div>
+							<div class="p-field p-col-12 p-md-5"></div>
+
+
+							<div class="p-field p-col-12 p-md-1">
+								<p:outputLabel value="#{etiquetas['fechaNacimiento']}:*"
+									rendered="#{cc.attrs.componenteBackingMatriculaInscripcion.esMatricula}" />
+							</div>
+							<div class="p-field p-col-12 p-md-2">
+								<p:calendar id="fechaNacimiento" pattern="yyyy-MM-dd"
+									locale="es" navigator="true" required="true"
+									requiredMessage="#{mensajes['campoRequerido']}"
+									validatorMessage="#{mensajes['campoRequerido']}"
+									rendered="#{cc.attrs.componenteBackingMatriculaInscripcion.esMatricula}"
+									value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.persona.persFechaNacimiento}">
+									<p:ajax event="blur" process="@this " partialSubmit="true" />
+								</p:calendar>
+							</div>
+							<div class="p-field p-col-12 p-md-1">
+								<p:message for="fechaNacimiento"
+									rendered="#{cc.attrs.componenteBackingMatriculaInscripcion.esMatricula}" />
+							</div>
+							<div class="p-field p-col-12 p-md-1">
+								<p:outputLabel value="#{etiquetas['domicilio']}:*"
+									rendered="#{cc.attrs.componenteBackingMatriculaInscripcion.esMatricula}" />
+							</div>
+							<div class="p-field p-col-12 p-md-2">
+								<p:inputTextarea id="idDomicilio" required="true"
+									requiredMessage="#{mensajes['campoRequerido']}" maxlength="50"
+									rendered="#{cc.attrs.componenteBackingMatriculaInscripcion.esMatricula}"
+									value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.persona.persDomicilio}">
+									<p:ajax event="blur" process="@this" />
+								</p:inputTextarea>
+							</div>
+							<div class="p-field p-col-12 p-md-1">
+								<p:message for="idDomicilio"
+									rendered="#{cc.attrs.componenteBackingMatriculaInscripcion.esMatricula}" />
+							</div>
+							<div class="p-field p-col-12 p-md-4"></div>
+
+							<div class="p-field p-col-12 p-md-1">
+								<p:outputLabel value="#{etiquetas['direccionTrabajo']}:*"
+									rendered="#{cc.attrs.componenteBackingMatriculaInscripcion.esMatricula}" />
+							</div>
+							<div class="p-field p-col-12 p-md-2">
+								<p:inputTextarea id="idTrabajo" required="true"
+									requiredMessage="#{mensajes['campoRequerido']}" maxlength="50"
+									rendered="#{cc.attrs.componenteBackingMatriculaInscripcion.esMatricula}"
+									value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.estudiante.estuDireccionTrabajo}">
+									<p:ajax event="blur" process="@this" />
+								</p:inputTextarea>
+							</div>
+							<div class="p-field p-col-12 p-md-1">
+								<p:message for="idTrabajo"
+									rendered="#{cc.attrs.componenteBackingMatriculaInscripcion.esMatricula}" />
+							</div>
+							<div class="p-field p-col-12 p-md-1">
+								<p:outputLabel value="#{etiquetas['cargoDesempenia']}:*"
+									rendered="#{cc.attrs.componenteBackingMatriculaInscripcion.esMatricula}" />
+							</div>
+							<div class="p-field p-col-12 p-md-2">
+								<p:selectOneMenu
+									value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.codigoCargo}"
+									id="idCargo"
+									rendered="#{cc.attrs.componenteBackingMatriculaInscripcion.esMatricula}"
+									required="true" requiredMessage="#{mensajes['campoRequerido']}">
+									<f:selectItem itemLabel="#{etiquetas['seleccionar']}"
+										itemValue="#{null}" noSelectionOption="true" />
+									<f:selectItems var="cargo"
+										value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.enumCargoTrabajo}"
+										itemValue="#{cargo.codigo}" itemLabel="#{cargo.label}" />
+									<p:ajax event="change" process="@this" />
+								</p:selectOneMenu>
+							</div>
+							<div class="p-field p-col-12 p-md-1">
+								<p:message for="idCargo"
+									rendered="#{cc.attrs.componenteBackingMatriculaInscripcion.esMatricula}" />
+							</div>
+							<div class="p-field p-col-12 p-md-4"></div>
+
+							<div class="p-field p-col-12 p-md-1">
+								<p:outputLabel value="#{etiquetas['nivelEstudio']}:*"
+									rendered="#{cc.attrs.componenteBackingMatriculaInscripcion.esMatricula}" />
+							</div>
+							<div class="p-field p-col-12 p-md-2">
+								<p:selectOneMenu
+									value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.codigoNivelEstudio}"
+									rendered="#{cc.attrs.componenteBackingMatriculaInscripcion.esMatricula}"
+									id="idNivel" required="true"
+									requiredMessage="#{mensajes['campoRequerido']}">
+									<f:selectItem itemLabel="#{etiquetas['seleccionar']}"
+										itemValue="#{null}" noSelectionOption="true" />
+									<f:selectItems var="nivel"
+										value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.enumNivelEstudio}"
+										itemValue="#{nivel.codigo}" itemLabel="#{nivel.label}" />
+									<p:ajax event="change" process="@this" />
+								</p:selectOneMenu>
+							</div>
+							<div class="p-field p-col-12 p-md-1">
+								<p:message for="idNivel"
+									rendered="#{cc.attrs.componenteBackingMatriculaInscripcion.esMatricula}" />
+							</div>
+							<div class="p-field p-col-12 p-md-1">
+								<p:outputLabel value="#{etiquetas['modalidadcurso']}:*"
+									rendered="#{cc.attrs.componenteBackingMatriculaInscripcion.esMatricula}" />
+							</div>
+							<div class="p-field p-col-12 p-md-2">
+								<p:selectOneMenu
+									value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.codigoModalidadCurso}"
+									rendered="#{cc.attrs.componenteBackingMatriculaInscripcion.esMatricula}"
+									id="idModalidad" required="true"
+									requiredMessage="#{mensajes['campoRequerido']}">
+									<f:selectItem itemLabel="#{etiquetas['seleccionar']}"
+										itemValue="#{null}" noSelectionOption="true" />
+									<f:selectItems var="nivel"
+										value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.enumModalidadCurso}"
+										itemValue="#{nivel.codigo}" itemLabel="#{nivel.label}" />
+									<p:ajax event="change" process="@this" />
+								</p:selectOneMenu>
+							</div>
+							<div class="p-field p-col-12 p-md-1">
+								<p:message for="idModalidad"
+									rendered="#{cc.attrs.componenteBackingMatriculaInscripcion.esMatricula}" />
+							</div>
+							<div class="p-field p-col-12 p-md-4"></div>
+							
+							<div class="p-field p-col-12 p-md-1">
+								<p:outputLabel value="#{etiquetas['ingresoMensual']}:*"
+								 	rendered="#{cc.attrs.componenteBackingMatriculaInscripcion.esMatricula}" />
+									
+							</div>
+							<div class="p-field p-col-12 p-md-2">
+								<p:selectOneMenu 
+									value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.codigoIngresosMensuales}"
+									id="idIngresos" required="true"
+									requiredMessage="#{mensajes['campoRequerido']}">
+									<f:selectItem itemLabel="#{etiquetas['seleccionar']}"
+										itemValue="#{null}" noSelectionOption="true" />
+									<f:selectItems var="ingresos"
+										value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.enumIngresos}"
+										itemValue="#{ingresos.codigo}" itemLabel="#{ingresos.label}" />
+									<p:ajax event="change" process="@this" /> 
+								</p:selectOneMenu>
+							</div>
+							<div class="p-field p-col-12 p-md-1">
+								<p:message for="idIngresos"
+									rendered="#{cc.attrs.componenteBackingMatriculaInscripcion.esMatricula}" />
+							</div>
+							<div class="p-field p-col-12 p-md-8"></div>
+						</div>
+					</p:outputPanel>
+					<br />
+					<!-- 
+					
+					 -->
+				</p:tab>
+				<p:tab title="#{etiquetas['datoscurso']}">
+					<p:outputPanel id="panelDatosCurso">
+						<p:dataTable id="tablaCursosDisponibles"
+							value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.listaOfertaCursos}"
+							rows="10" paginator="true" rowKey="#{grupo.ocurId}"
+							rowStyleClass="#{grupo.ocurFechaFin.compareTo(cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.fechaActual) le 0?'background-color: #fca752 !important;':'background-color: #fca752 !important;'}"
+							selection="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.ofertaCursosSeleccionado}"
+							var="grupo">
+							<p:column selectionMode="single"
+								style="width:16px;text-align:center" />
+							<p:column headerText="#{etiquetas['curso']}"
+								filterBy="#{grupo.ofertaCapacitacion.curso.cursNombre}"
+								filterMatchMode="contains">
+													#{grupo.ofertaCapacitacion.curso.cursNombre}
+												</p:column>
+							<p:column headerText="#{etiquetas['fechaInicio']}">
+								<p:outputLabel value="#{grupo.ocurFechaInicio}" id="fechaInicio">
+									<f:convertDateTime pattern="yyyy-MM-dd" for="fechaInicio" />
+								</p:outputLabel>
+							</p:column>
+							<p:column headerText="#{etiquetas['fechaFin']}">
+								<p:outputLabel value="#{grupo.ocurFechaFin}" id="fechaFin">
+									<f:convertDateTime pattern="yyyy-MM-dd" for="fechaFin" />
+								</p:outputLabel>
+							</p:column>
+							<p:column headerText="#{etiquetas['valor']}">
+													#{grupo.ocurValor}
+												</p:column>
+							<p:column headerText="#{etiquetas['descuento']}">
+													#{grupo.ocurDescuento}
+							</p:column>
+						</p:dataTable>
+						<br/>
+						<br/>
+						<p:outputPanel id="cursoSeleccionado"
+							rendered="#{cc.attrs.componenteBackingMatriculaInscripcion.datosCursoSeleccionado}">
+							<div class="p-field p-col-12 p-md-2">
+								<p:outputLabel value="#{etiquetas['fechaInicio']}:" />
+							</div>
+							<div class="p-field p-col-12 p-md-2">
+								<h:outputLabel
+									value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.ofertaCursosSeleccionado.ocurFechaInicio}"
+									id="fechaCursoInicio">
+									<f:convertDateTime for="fechaCursoInicio" pattern="yyyy-MM-dd" />
+								</h:outputLabel>
+							</div>
+							<div class="p-field p-col-12 p-md-2">
+								<p:outputLabel value="#{etiquetas['fechaFin']}:" />
+							</div>
+							<div class="p-field p-col-12 p-md-2">
+								<h:outputLabel
+									value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.ofertaCursosSeleccionado.ocurFechaFin}"
+									id="fechaCursoFin">
+									<f:convertDateTime for="fechaCursoFin" pattern="yyyy-MM-dd" />
+								</h:outputLabel>
+							</div>
+							<div class="p-field p-col-12 p-md-2">
+								<p:outputLabel value="#{etiquetas['instructor']}:" />
+							</div>
+							<div class="p-field p-col-12 p-md-2">
+								<h:outputLabel
+									value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.ofertaCursosSeleccionado.instructor.persona.persNombres} #{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.ofertaCursosSeleccionado.instructor.persona.persApellidos}" />
+							</div>
+						</p:outputPanel>
+						<div class="ui-fluid p-formgrid p-grid">
+							<div class="p-field p-col-12 p-md-2">
+								<p:outputLabel value="#{etiquetas['medioInformacion']}:*" />
+							</div>
+							<div class="p-field p-col-12 p-md-3">
+								<p:selectOneMenu
+									value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.codigoMedioInformacion}"
+									id="idmedio" required="true"
+									requiredMessage="#{mensajes['campoRequerido']}">
+									<f:selectItem itemLabel="#{etiquetas['seleccionar']}"
+										itemValue="#{null}" noSelectionOption="true" />
+
+									<f:selectItems var="medio"
+										value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.enumMedioInformacion}"
+										itemValue="#{medio.codigo}" itemLabel="#{medio.label}" />
+									<p:ajax process="@this" event="change" />
+								</p:selectOneMenu>
+							</div>
+							<div class="p-field p-col-12 p-md-2">
+								<p:message for="idmedio" />
+							</div>
+							<div class="p-field p-col-12 p-md-2">
+								<p:outputLabel value="#{etiquetas['observacion']}:" />
+							</div>
+							<div class="p-field p-col-12 p-md-3">
+								<p:inputTextarea
+									value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.matricula.matrObservacion}"
+									maxlength="300">
+									<p:ajax process="@this" event="blur" />
+								</p:inputTextarea>
+							</div>
+						</div>
+					</p:outputPanel>
+					<h:panelGrid columns="4"
+						rendered="#{cc.attrs.componenteBackingMatriculaInscripcion.esMatricula}"
+						id="panelEsMatricula">
+						<p:selectBooleanCheckbox
+							value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.matricula.matrFacturacionEmpresa}"
+							itemLabel="#{titulos['facturarEmpresa']}">
+							<p:ajax
+								listener="#{backingMatricula.mostrarDialogoSeleccionEmpresa}"
+								process="@this" update=":form:matricula:panelEmpresas" />
+						</p:selectBooleanCheckbox>
+						<p:outputLabel id="idFactEmpresa"
+							value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.empresa.emprNombre} "
+							styleClass="colorTextoRojo" />
+
+					</h:panelGrid>
+
+				</p:tab>
+			</p:tabView>
+		</div>
+	</p:outputPanel>
+	<!-- Dialogo filtro persona -->
+	<p:dialog widgetVar="dlgfiltroPersona" showEffect="fade" width="400"
+		header="#{titulos['seleccionePersona']}" closable="true"
+		hideEffect="fade" modal="true" appendTo="@(body)">
+		<p:outputPanel id="panelListaPersonas">
+			<p:selectOneListbox id="listApellidos"
+				value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.codigoPersona}">
+				<f:selectItems var="persona"
+					value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.listaPersonas}"
+					itemLabel="#{persona.persApellidos} #{persona.persNombres}"
+					itemValue="#{persona.persId}" />
+				<p:ajax event="change" process="@this" partialSubmit="true" />
+			</p:selectOneListbox>
+			<br />
+			<br />
+			<p:commandButton process="@this"
+				actionListener="#{cc.attrs.componenteBackingMatriculaInscripcion.seleccionarPersona}"
+				icon="#{botones['icono.seleccion']}"
+				value="#{botones['seleccionar']}"
+				update=":form:matricula:tabs:panelPersona :form:matricula:tabs:panelDatosCurso :form:matricula:tabs:panelEsMatricula" />
+		</p:outputPanel>
+	</p:dialog>
+	<!-- Dialogo seleccion empresa -->
+	<p:dialog widgetVar="dlgEmpresa" showEffect="fade" width="600"
+		header="#{titulos['datosFacturacionEmpresa']}" closable="false"
+		hideEffect="fade" modal="true" appendTo="@(body)">
+		<p:outputPanel id="panelEmpresas">
+			<p:dataTable
+				value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.listaEmpresas}"
+				var="empresa" rowKey="#{empresa.emprId}" rows="10"
+				filteredValue="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.listaEmpresasFiltradas}"
+				paginator="true"
+				selection="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.empresaSeleccionada}"
+				id="listaEmpresas">
+				<p:column selectionMode="single"
+					style="width:16px;text-align:center" />
+				<p:column headerText="#{etiquetas['razonSocial']}"
+					filterMatchMode="contains" filterBy="#{empresa.emprNombre}">
+					<p:outputLabel value="#{empresa.emprNombre}" />
+				</p:column>
+				<p:column headerText="#{etiquetas['ruc']}">
+					<p:outputLabel value="#{empresa.emprRuc}" />
+				</p:column>
+				<p:column headerText="#{etiquetas['telefono']}">
+					<p:outputLabel value="#{empresa.emprTelefono}" />
+				</p:column>
+				<p:column headerText="#{etiquetas['correo']}">
+					<p:outputLabel value="#{empresa.emprMail}" />
+				</p:column>
+
+			</p:dataTable>
+		</p:outputPanel>
+		<br />
+		<h:panelGrid columns="3">
+			<p:commandButton value="#{botones['nuevo']}"
+				icon="#{botones['icono.nuevo']}"
+				process="@this :form:matricula:panelNuevaEmpresa"
+				partialSubmit="true" update=":form:matricula:panelNuevaEmpresa"
+				immediate="true">
+				<f:setPropertyActionListener value="true"
+					target="#{cc.attrs.componenteBackingMatriculaInscripcion.nuevaEmpresa}" />
+			</p:commandButton>
+			<p:commandButton value="#{botones['seleccionar']}"
+				partialSubmit="true"
+				process="@this :form:matricula:panelEmpresas :form:matricula:tabs:panelEsMatricula"
+				update=":form:matricula:tabs:panelEsMatricula"
+				actionListener="#{backingMatricula.seleccionarEmpresa}"
+				icon="#{botones['icono.seleccion']}" />
+			<p:commandButton value="#{botones['cancelar']}"
+				icon="#{botones['icono.cancelar']}" process="@this"
+				actionListener="#{backingMatricula.cancelarIngresoMatricula()}" />
+		</h:panelGrid>
+		<p:outputPanel id="panelNuevaEmpresa">
+			<p:panel
+				rendered="#{cc.attrs.componenteBackingMatriculaInscripcion.nuevaEmpresa}">
+				<h:panelGrid columns="3" id="datosEmpresa">
+					<h:graphicImage value="/imagenes/utilitarios/asterisco.gif"
+						width="5" height="5" />
+					<h:outputLabel value="#{etiquetas['ruc']}:" />
+					<p:inputMask
+						value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.empresa.emprRuc}"
+						required="true" requiredMessage="#{mensajes['campoRequerido']}"
+						mask="9999999999999">
+						<p:ajax event="blur" process="@this" />
+					</p:inputMask>
+
+					<h:graphicImage value="/imagenes/utilitarios/asterisco.gif"
+						width="5" height="5" />
+					<h:outputLabel value="#{etiquetas['razonSocial']}:" />
+					<p:inputText
+						value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.empresa.emprNombre}"
+						maxlength="50" required="true"
+						requiredMessage="#{mensajes['campoRequerido']}">
+						<p:ajax event="blur" process="@this" />
+					</p:inputText>
+
+					<h:graphicImage value="/imagenes/utilitarios/asterisco.gif"
+						width="5" height="5" />
+					<h:outputLabel value="#{etiquetas['telefono']}:" />
+					<p:inputText
+						value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.empresa.emprTelefono}"
+						required="true" requiredMessage="#{mensajes['campoRequerido']}">
+						<p:ajax event="blur" process="@this" />
+					</p:inputText>
+
+					<h:graphicImage value="/imagenes/utilitarios/asterisco.gif"
+						width="5" height="5" />
+					<h:outputLabel value="#{etiquetas['correo']}:" />
+					<p:inputText
+						value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.empresa.emprMail}"
+						required="true" requiredMessage="#{mensajes['campoRequerido']}">
+						<p:ajax event="blur" process="@this" />
+					</p:inputText>
+
+					<h:graphicImage value="/imagenes/utilitarios/asterisco.gif"
+						width="5" height="5" />
+					<h:outputLabel value="#{etiquetas['direccion']}:" />
+					<p:inputTextarea
+						value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.empresa.emprDireccion}"
+						required="true" requiredMessage="#{mensajes['campoRequerido']}"
+						maxlength="50">
+						<p:ajax event="blur" process="@this" />
+					</p:inputTextarea>
+					<p:commandButton value="#{botones['grabar']}"
+						icon="#{botones['icono.grabar']}" partialSubmit="true"
+						process="@this panelNuevaEmpresa"
+						update="panelNuevaEmpresa listaEmpresas"
+						actionListener="#{backingMatricula.agregarEmpresa}" />
+					<p:commandButton process="@this" update="panelNuevaEmpresa"
+						value="#{botones['cancelar']}" icon="#{botones['icono.cancelar']}">
+						<f:setPropertyActionListener value="false"
+							target="#{cc.attrs.componenteBackingMatriculaInscripcion.nuevaEmpresa}"></f:setPropertyActionListener>
+					</p:commandButton>
+				</h:panelGrid>
+			</p:panel>
+		</p:outputPanel>
+
+	</p:dialog>
+</composite:implementation>
+</html>

@@ -1,0 +1,563 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
+
+	<ui:define name="contenido">
+
+		<f:event listener="#{backingLogin.validarSesion()}"
+			type="preRenderView" />
+
+		<h:form id="form" prependId="false">
+			<p:growl id="growl" life="3000" showDetail="true" />
+			<p:dialog widgetVar="dlgEnProc" draggable="false" modal="true"
+				resizable="false" closable="false" responsive="true"
+				style="font-size: 10px;">
+				<h:graphicImage value="/resources/img/cargando.gif" width="200"
+					height="200" />
+			</p:dialog>
+
+			<p:breadCrumb>
+				<p:menuitem value="#{rutas['categorias']}" url="#" />
+				<p:menuitem value="#{rutas['calidadCap']}" url="#" />
+				<p:menuitem value="#{rutas['confPreguntas']}" url="#" />
+			</p:breadCrumb>
+			<br/>
+			
+			<p:splitButton value="#{etiquetas['accionesRealizar']}">
+				<p:menuitem value="#{botones['nuevoObjeto']}" partialSubmit="true"
+					icon="pi pi-file" resetValues="true"
+					actionListener="#{backingConfPreguntas.nuevoObjeto()}"
+					process="@this " update="growl datosObjetoEvaluacion" />
+				<p:menuitem value="#{botones['nuevoTipo']}" partialSubmit="true"
+					icon="pi pi-file" resetValues="true"
+					actionListener="#{backingConfPreguntas.nuevoTipoEncuesta()}"
+					process="@this " update="growl datosTipoEncuesta" />
+				<p:menuitem value="#{botones['nuevaCategoria']}"
+					partialSubmit="true" icon="pi pi-file" resetValues="true"
+					actionListener="#{backingConfPreguntas.nuevaCategoria()}"
+					process="@this " update="growl datosCategoriaRespuesta" />
+				<p:menuitem value="#{botones['nuevaPregunta']}"
+					partialSubmit="true" icon="pi pi-file" resetValues="true"
+					actionListener="#{backingConfPreguntas.nuevaPregunta()}"
+					process="@this " update="growl nuevaPreguntaDialog" />
+			
+			</p:splitButton>
+			<br/>
+			<!-- Diálogo Nuevo Objeto Evaluacion -->
+			<p:dialog header="#{titulos['nuevoObjetoEvaluacion']}"
+				id="nuevoObjetoDialog" widgetVar="dlgObjeto" modal="true"
+				resizable="false" closable="false">
+				<p:outputPanel id="datosObjetoEvaluacion">
+					<!-- Título: Objeto de Evaluación -->
+					<div class="ui-fluid p-formgrid p-grid">
+
+						<div class="p-field p-col-12 p-md-8">
+							<span class="ui-float-label ui-input-icon-right"
+								style="margin-top: 2em"> <p:inputText id="nuevoOE"
+									value="#{backingConfPreguntas.beanConfPreguntas.objetoEvaluacion.objeNombre}"
+									required="true" requiredMessage="#{mensajes['campoRequerido']}" />
+								<p:outputLabel value="#{etiquetas['objetoEvaluacion']}"
+									style="margin-right: 10px;" />
+							</span>
+						</div>
+						<div class="p-field p-col-12 p-md-4">
+							<p:message for="nuevoOE" />
+						</div>
+					</div>
+					<!-- Título: Estado -->
+					<div class="ui-fluid p-formgrid p-grid">
+						<div class="p-field p-col-12 p-md-12">
+							<p:outputLabel value="#{etiquetas['estado']}"
+								style="margin-right: 10px;" />
+								
+						</div>
+						<div class="p-field p-col-12 p-md-12">
+							<p:chip label="#{etiquetas['activo']} " icon="pi pi-file-edit"
+								rendered="#{backingConfPreguntas.beanConfPreguntas.objetoEvaluacion.objeId==null}" 
+								styleClass="#{objeto.objeEstado ? 'colorDesertado' : 'colorMatriculado'}"/>				
+							<p:toggleSwitch label="#{etiquetas['activo']}"
+								rendered="#{backingConfPreguntas.beanConfPreguntas.objetoEvaluacion.objeId>0}"
+								value="#{backingConfPreguntas.beanConfPreguntas.objetoEvaluacion.objeEstado}">
+							</p:toggleSwitch>
+						</div>
+						<!-- Botones de acción -->
+						<div class="p-field p-col-12 p-md-6">
+							<p:commandButton icon="#{botones['icono.grabar']}"
+								value="#{botones['grabar']}" style="margin-right: 10px;"
+								partialSubmit="true" process="datosObjetoEvaluacion @this"
+								action="#{backingConfPreguntas.guardarObjeto()}"
+								update="growl datosObjetoEvaluacion tabsOpciones:tablaOE" 
+								onstart="PF('dlgEnProc').show();"
+							    oncomplete="PF('dlgEnProc').hide();"/>
+						</div>
+						<div class="p-field p-col-12 p-md-6">
+							<p:commandButton icon="#{botones['icono.cancelar']}" process="@this" partialSubmit="true"
+								value="#{botones['cancelar']}" style="margin-left: 10px;"
+								onclick="PF('dlgObjeto').hide()" />
+						</div>
+					</div>
+				</p:outputPanel>
+			</p:dialog>
+
+			<!-- Diálogo Nuevo Tipo de Encuesta -->
+			<p:dialog header="#{titulos['nuevoTipoEncuesta']}"
+				id="nuevotipoDialog" widgetVar="dlgTipoEncuesta" modal="true"
+				resizable="false" closable="false">
+				<p:scrollPanel mode="native"
+					style="max-height:450px; max-width:500px;">
+				<p:outputPanel id="datosTipoEncuesta">
+					<!-- Título: Tipo de Encuesta -->
+					<div class="ui-fluid p-formgrid p-grid">
+						<div class="p-field p-col-12 p-md-8">
+							 <span class="ui-float-label" style="margin-top: 2em">
+		                       <p:selectOneMenu id="cmbObjetoEstudio" autoWidth="false"  value="#{backingConfPreguntas.beanConfPreguntas.objetoEvaluacionSeleccionado}">		                            
+		                            <f:selectItems value="#{backingConfPreguntas.beanConfPreguntas.listaObjetoEvaluacion}" var="objev" itemLabel="#{objev.objeNombre}" itemValue="#{objev.objeId}"  />	
+		                            <p:ajax process="@this"  partialSubmit="true"
+								 		event="change" />                            
+		                        </p:selectOneMenu>
+		                        <p:outputLabel for="@previous" value="#{etiquetas['objetoEvaluacion']}" />
+		                    </span>
+						</div>
+						<div class="p-field p-col-12 p-md-4">
+							<p:message for="cmbObjetoEstudio" />
+						</div>
+						<div class="p-field p-col-12 p-md-8">
+							<span class="ui-float-label ui-input-icon-right"
+								style="margin-top: 2em"> <p:inputText id="nuevoTE"
+									value="#{backingConfPreguntas.beanConfPreguntas.tipoEncuesta.tipeDescripcion}"
+									required="true" requiredMessage="#{mensajes['campoRequerido']}" />
+								<p:outputLabel value="#{etiquetas['tipoEncuesta']}"
+									style="margin-right: 10px;" />
+							</span>
+						</div>
+						<div class="p-field p-col-12 p-md-4">
+							<p:message for="nuevoTE" />
+						</div>
+						<!-- Título: Estado -->
+						<div class="p-field p-col-12 p-md-12">
+							<p:outputLabel value="#{etiquetas['estado']}"
+								style="margin-right: 10px;" />
+						</div>
+						<div class="p-field p-col-12 p-md-12">
+							
+							<p:toggleSwitch label="#{etiquetas['activo']}"
+								
+								value="#{backingConfPreguntas.beanConfPreguntas.tipoEncuesta.tipeEstado}">
+							</p:toggleSwitch>
+						</div>
+															
+						<!-- Botones de acción -->
+						<div class="p-field p-col-12 p-md-6">
+							<p:commandButton icon="#{botones['icono.grabar']}"
+								value="#{botones['grabar']}" style="margin-right: 10px;"
+								partialSubmit="true" process="datosTipoEncuesta @this tabsOpciones"
+								action="#{backingConfPreguntas.guardarTipo()}"
+								update="growl tabsOpciones tabsOpciones:tablaTE " 
+								onstart="PF('dlgEnProc').show();"
+							oncomplete="PF('dlgEnProc').hide();"/>
+						</div>
+						<div class="p-field p-col-12 p-md-6">
+							<p:commandButton icon="#{botones['icono.cancelar']}" partialSubmit="true" process="@this"
+								value="#{botones['cancelar']}" style="margin-left: 10px;"
+								onclick="PF('dlgTipoEncuesta').hide()" />
+						</div>
+					</div>
+				</p:outputPanel>
+				</p:scrollPanel>
+			</p:dialog>
+
+			<!-- Diálogo Nueva Categoria Respuesta -->
+			<p:dialog header="#{titulos['nuevaCategoriaRespuesta']}"
+				id="nuevaCategoriaDialog" widgetVar="dlgCategoria" modal="true"
+				resizable="false" closable="false">
+				<p:scrollPanel mode="native"
+					style="max-height:450px; max-width:500px;">
+				<p:outputPanel id="datosCategoriaRespuesta">
+					<!-- Título: Categoria Respuesta -->
+					<div class="ui-fluid p-formgrid p-grid">
+						<div class="p-field p-col-12 p-md-8">
+							<span class="ui-float-label ui-input-icon-right"
+								style="margin-top: 2em"> <p:inputText id="nuevoCR"
+									value="#{backingConfPreguntas.beanConfPreguntas.categoriaRespuesta.catrNombre}"
+									required="true" requiredMessage="#{mensajes['campoRequerido']}" />
+								<p:outputLabel value="#{titulos['categoriaRespuesta']}"
+									style="margin-right: 10px;" />
+							</span>
+						</div>
+						<div class="p-field p-col-12 p-md-4">
+							<p:message for="nuevoCR" />
+						</div>
+						<!-- Título: Estado -->
+						<div class="p-field p-col-12 p-md-12">
+							<p:outputLabel value="#{etiquetas['estado']}"
+								style="margin-right: 10px;" />
+						</div>
+						<div class="p-field p-col-12 p-md-12">
+							<p:chip label="#{etiquetas['activo']} " icon="pi pi-file-edit"
+								rendered="#{backingConfPreguntas.beanConfPreguntas.categoriaRespuesta.catrId==null}" 
+								styleClass="#{objeto.objeEstado ? 'colorDesertado' : 'colorMatriculado'}"/>
+							<p:toggleSwitch label="#{etiquetas['activo']}"
+								rendered="#{backingConfPreguntas.beanConfPreguntas.categoriaRespuesta.catrId>0}"
+								value="#{backingConfPreguntas.beanConfPreguntas.categoriaRespuesta.catrEstado}">
+							</p:toggleSwitch>
+						</div>
+						<div class="p-field p-col-12 p-md-10">
+							<p:chip label="Ingrese las respuestas asociadas mediante el boton" styleClass="fondoVerde textoBlanco" />
+						</div>
+						<div class="p-field p-col-12 p-md-2">
+								<p:commandButton process="@this tablarespuestas" 
+ 									actionListener="#{backingConfPreguntas.agregarRespuestas()}"
+									icon="#{botones['icono.agregar']}" partialSubmit="true"
+									update="growl tablarespuestas " />
+						</div>
+						<div class="p-field p-col-12 p-md-12">
+							<p:dataTable id="tablarespuestas" reflow="true" value="#{backingConfPreguntas.beanConfPreguntas.listaRespuestas}" var="resp" >
+								
+								<p:column headerText="#{etiquetas['respuestas']}">
+									<p:inputText value="#{resp.respDescripcion}" required="true" requiredMessage="#{mensajes['campoRequerido']}">	
+										<p:ajax process="@this" event="blur" partialSubmit="true"/>
+									</p:inputText>
+								</p:column>
+								<p:column headerText="#{etiquetas['orden']}" width="70px;">
+									<p:spinner value="#{resp.respOrden}"/>
+								</p:column>
+								<p:column style="width:30px;">
+                        						<p:commandLink title="#{tooltip['eliminar']}"
+													action="#{backingConfPreguntas.eliminarRespuesta()}" process="@this tablarespuestas" immediate="true"
+													partialSubmit="true" 
+													 update="tablarespuestas growl">
+													<f:setPropertyActionListener value="#{resp}"
+														target="#{backingConfPreguntas.beanConfPreguntas.respuestaSeleccionada}" />														
+													<i class="pi pi-trash" style="font-size: 1em; color: green;"></i>
+												</p:commandLink>	
+                        					</p:column>
+							</p:dataTable>
+								
+						</div>
+						<div class="p-field p-col-12 p-md-12">
+									<p:message for="tablarespuestas" />
+								</div>
+					<!-- Botones de acción -->
+					<div class="p-field p-col-12 p-md-6">
+						<p:commandButton icon="#{botones['icono.grabar']}" value="#{botones['grabar']}" style="margin-right: 10px;"
+							partialSubmit="true" process="datosCategoriaRespuesta @this tabsOpciones"
+							action="#{backingConfPreguntas.grabarRespuestas()}"
+							update="growl datosCategoriaRespuesta tablarespuestas  tabsOpciones  " 
+							onstart="PF('dlgEnProc').show();"
+							oncomplete="PF('dlgEnProc').hide();"/>
+					</div>
+					<div class="p-field p-col-12 p-md-6">	
+						<p:commandButton icon="#{botones['icono.cancelar']}" value="#{botones['cancelar']}"  style="margin-right: 10px;" partialSubmit="true" process="@this"
+							onclick="PF('dlgCategoria').hide()" />
+					</div>
+					</div>
+				</p:outputPanel>
+				</p:scrollPanel>
+			</p:dialog>
+			
+			<!-- Dialogo nuevas Preguntas -->
+			<p:dialog header="#{titulos['nuevaPregunta']}"
+				id="nuevaPreguntaDialog" widgetVar="dlgPregunta" modal="true"
+				resizable="false" closable="false">
+				<p:scrollPanel mode="native"
+					style="max-height:450px; max-width:500px;">
+				<p:outputPanel id="datosPregunta">
+					
+					<div class="ui-fluid p-formgrid p-grid">
+						<div class="p-field p-col-12 p-md-8">							
+						<span class="ui-float-label ui-input-icon-right"
+								style="margin-top: 2em"> <p:inputTextarea id="nuevaPregunta"
+									value="#{backingConfPreguntas.beanConfPreguntas.pregunta.pregDescripcion}"
+									required="true" requiredMessage="#{mensajes['campoRequerido']}" />
+								<p:outputLabel value="#{etiquetas['ingresePregunta']}"
+									style="margin-right: 10px;" />
+						</span>
+						</div>
+						<div class="p-field p-col-12 p-md-4">
+							<p:message for="nuevaPregunta" />
+						</div>
+						<!-- Título: Estado -->
+						<div class="p-field p-col-12 p-md-12">
+							<p:outputLabel value="#{etiquetas['estado']}"
+								style="margin-right: 10px;" />
+						</div>
+						<div class="p-field p-col-12 p-md-12">
+							<p:chip label="#{etiquetas['activo']} " icon="pi pi-file-edit"
+								rendered="#{backingConfPreguntas.beanConfPreguntas.pregunta.pregId==null}" 
+								styleClass="#{objeto.objeEstado ? 'colorDesertado' : 'colorMatriculado'}"/>
+							<p:toggleSwitch label="#{etiquetas['activo']}"
+								rendered="#{backingConfPreguntas.beanConfPreguntas.pregunta.pregId>0}"
+								value="#{backingConfPreguntas.beanConfPreguntas.pregunta.pregEstado}">
+							</p:toggleSwitch>
+						</div>	
+						
+						<div class="p-field p-col-12 p-md-6">
+							<p:outputLabel value="#{titulos['selecionCategoriaResp']}"/>
+							<p:selectOneRadio value="#{backingConfPreguntas.beanConfPreguntas.categoriaRespuestaSeleccionada.catrId}" 
+								layout="pageDirection"  unselectable="false" 
+								id="listcategoriaRespuesta" required="true" requiredMessage="#{mensajes['campoRequerido']}">
+								<f:selectItems value="#{backingConfPreguntas.beanConfPreguntas.listaCategoriaRespuesta}" itemValue="#{cat.catrId}" itemLabel="#{cat.catrNombre}" 
+								var="cat" />
+								<p:ajax process="@this" partialSubmit="true" update="lstrespuestas" listener="#{backingConfPreguntas.cargarRespuestasCategoria()}" event="change"/>
+							</p:selectOneRadio>
+								<div class="p-field p-col-12 p-md-12">
+									<p:message for="listcategoriaRespuesta" />
+								</div>
+							</div>
+						
+						<div class="p-field p-col-12 p-md-6">
+							<p:outputLabel value="#{titulos['respuestasAsociadas']}"/>
+							<p:selectOneListbox id="lstrespuestas" disabled="true">
+								<f:selectItems itemValue="#{resp.respId}" itemLabel="#{resp.respDescripcion}" var="resp" value="#{backingConfPreguntas.beanConfPreguntas.listaRespuestas}"/>
+				                
+				            </p:selectOneListbox>
+				        
+						</div>
+						<div class="p-field p-col-12 p-md-6">
+							<p:commandButton icon="#{botones['icono.grabar']}" value="#{botones['grabar']}" style="margin-right: 10px;" partialSubmit="true" 
+							process="@this datosPregunta" action="#{backingConfPreguntas.grabarPregunta()}" 
+							update="growl datosPregunta tabsOpciones" 
+							onstart="PF('dlgEnProc').show();"
+							oncomplete="PF('dlgEnProc').hide();"/>
+						</div>
+						<div class="p-field p-col-12 p-md-6">	
+							<p:commandButton icon="#{botones['icono.cancelar']}" value="#{botones['cancelar']}"  style="margin-right: 10px;" partialSubmit="true" process="@this"
+							onclick="PF('dlgPregunta').hide()" />
+						</div>
+					</div>
+				</p:outputPanel>
+				</p:scrollPanel>
+			</p:dialog >
+			
+			<!-- Dialogo Preguntas Asociadas -->
+			<p:dialog header="#{titulos['preguntasAsociadas']}"
+				id="PreguntaAsociadasDialog" widgetVar="dlgPreguntaAsociadas" modal="true"
+				resizable="false" closable="false">
+				<p:scrollPanel mode="native"
+					style="max-height:450px; max-width:500px;">
+				<p:outputPanel id="datosPreguntaAsociadas">
+				<div class="ui-fluid p-formgrid p-grid">
+					
+						<div class="p-field p-col-12 p-md-12">
+							<p:outputLabel value="#{etiquetas['tipoEncuesta']} [#{backingConfPreguntas.beanConfPreguntas.tipoEncuesta.tipeDescripcion}]"
+								style="margin-right: 10px;" />
+						</div>
+						
+						<div class="p-field p-col-12 p-md-12">
+						<p:panel header="#{etiquetas['CategoriaRespuesta']}" style="margin-bottom: 10px;">
+						    <p:selectOneMenu id="catSeleccionada" value="#{backingConfPreguntas.beanConfPreguntas.categoriaRespuestaSeleccionada}" 
+						    	style="width: 150px" converter="selectOneMenuConverter">
+						         
+						        <f:selectItem itemLabel="Seleccione una categoria" itemValue="" noSelectionOption="true"/>
+						        <f:selectItems value="#{backingConfPreguntas.beanConfPreguntas.listaCategoriaRespuesta}" var="categoria" itemLabel="#{categoria.catrNombre}" itemValue="#{categoria}"/>
+								<p:ajax listener="#{backingConfPreguntas.cargaPreguntasPorCategorias}" process="@this" partialSubmit="true" update="tblpreguntasTE growl" />						    
+						    </p:selectOneMenu>
+						</p:panel>
+						</div>
+						<div class="p-field p-col-12 p-md-12">
+							<p:dataTable value="#{backingConfPreguntas.beanConfPreguntas.listaPreguntasTE}" selectionPageOnly="false" rowSelectMode="none"
+								selection="#{backingConfPreguntas.beanConfPreguntas.listaPreguntasSelec}" rowKey="#{preg.pregId}" emptyMessage="#{mensajes['noRegistros']}"
+								var="preg" id="tblpreguntasTE">
+								 <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
+								<p:column>
+									#{preg.pregDescripcion}
+								</p:column>	
+							</p:dataTable>
+						   	</div> 
+						<div class="p-field p-col-12 p-md-6">
+							<p:commandButton icon="#{botones['icono.grabar']}" value="#{botones['grabar']}" style="margin-right: 10px;" partialSubmit="true" 
+							process="@this datosPreguntaAsociadas :tabsOpciones:tablaTE" action="#{backingConfPreguntas.guardarTipoEncuestaPregunta()}" 
+							update="growl  :tabsOpciones:tablaTE " 
+							onstart="PF('dlgEnProc').show();"
+							oncomplete="PF('dlgEnProc').hide();"/>
+						</div>
+						<div class="p-field p-col-12 p-md-6">	
+							<p:commandButton icon="#{botones['icono.cancelar']}" value="#{botones['cancelar']}"  style="margin-right: 10px;" partialSubmit="true" process="@this"
+							onclick="PF('dlgPreguntaAsociadas').hide()" />
+						</div>
+				
+				</div>	
+				</p:outputPanel>
+				</p:scrollPanel>
+			</p:dialog>
+			<br/>			
+			<!-- Tabla de visualizacion -->
+			<p:tabView id="tabsOpciones" activeIndex="#{backingConfPreguntas.beanConfPreguntas.tabActivo}">
+				<!-- Pestaña Objetos Evaluacion -->
+				<p:tab title="#{titulos['objetoEvaluacion']}">
+					<p:dataTable id="tablaOE" var="objeto"
+						value="#{backingConfPreguntas.beanConfPreguntas.listaObjetoEvaluacion}">
+						<p:column headerText="#{etiquetas['objeto']}"
+							class="p-field p-col-12 p-md-10">
+                            #{objeto.objeNombre} 
+                        </p:column>
+						<p:column headerText="#{etiquetas['estado']}"
+							width="90px;">
+							<p:chip
+								label="#{objeto.objeEstado ? etiquetas['activo'] : etiquetas['inactivo']}"
+								styleClass="#{objeto.objeEstado ? 'colorMatriculado' : 'colorDesertado'}"
+								icon="pi pi-file-edit" />
+						</p:column>
+						<p:column headerText="#{etiquetas['acciones']}"
+							width="70px;">
+							<!-- Botones de Acciones -->
+							<p:commandLink title="#{tooltip['editar']}"
+								action="#{backingConfPreguntas.editarObjeto()}" process="@this"
+								partialSubmit="true" icon="#{botones['editarBoton']}"
+								resetValues="true" update="datosObjetoEvaluacion">
+								<f:setPropertyActionListener value="#{objeto}"
+									target="#{backingConfPreguntas.beanConfPreguntas.objetoEvaluacionEditar}" />
+								<i class="pi pi-check-circle"
+									style="font-size: 1em; color: green;"></i>
+							</p:commandLink>
+
+						</p:column>
+					</p:dataTable>
+				</p:tab>
+				<!-- Contenido de la pestaña Tipo de Encuesta -->
+				<p:tab title="#{titulos['tipoEncuesta']}">
+					<p:dataTable id="tablaTE" var="tipo" sortBy="#{tipo.objetoEvaluacion.objeNombre}" 
+							value="#{backingConfPreguntas.beanConfPreguntas.listaTipoEncuesta}">
+						<p:column headerText="#{etiquetas['objetoEvaluacion']}" style="width:200px;" groupRow="true">
+                            	#{tipo.objetoEvaluacion.objeNombre}
+                        </p:column>
+						<p:column headerText="#{titulos['tipoEncuesta']}">
+                            	#{tipo.tipeDescripcion}
+                        </p:column>
+                        
+                        <p:column>
+                        		<p:accordionPanel activeIndex="null">
+                        			<p:tab title="#{etiquetas['preguntasAsociadas']}">
+                        				<p:dataTable value="#{tipo.tipoEncuestaPregunta}" var="tep" emptyMessage="#{mensajes['noRegistros']}" id="tblPreguntasTEP">
+                        					<p:column>
+                        						#{tep.pregunta.pregDescripcion}
+                        					</p:column>
+                        					<p:column style="width:30px;">
+                        						<p:commandLink title="#{tooltip['eliminar']}"
+													action="#{backingConfPreguntas.eliminarTipoEncuestaPregunta()}" process="@this :tabsOpciones:tablaTE"
+													partialSubmit="true" 
+													 update=":tabsOpciones:tablaTE growl tblPreguntasTEP">
+													<f:setPropertyActionListener value="#{tep}"
+														target="#{backingConfPreguntas.beanConfPreguntas.tipoEncuestaPreguntaSeleccionada}" />														
+													<i class="pi pi-trash" style="font-size: 1em; color: green;"></i>
+												</p:commandLink>	
+                        					</p:column>
+                        				</p:dataTable>
+                        			</p:tab>
+                        		</p:accordionPanel>
+                        	</p:column>
+						<p:column headerText="#{etiquetas['estado']}"
+								width="90px;">
+								<p:chip
+									label="#{tipo.tipeEstado ? etiquetas['activo'] : etiquetas['inactivo']}"
+									styleClass="#{tipo.tipeEstado ? 'colorMatriculado' : 'colorDesertado'}"
+									icon="pi pi-file-edit" />
+						</p:column>
+						<p:column headerText="#{etiquetas['acciones']}"
+								width="70px;">
+								<!-- Botones de Acciones -->
+								<p:commandLink title="#{tooltip['editar']}"
+									action="#{backingConfPreguntas.editarTipo()}" process="@this cmbObjetoEstudio"
+									partialSubmit="true" icon="#{botones['editarBoton']}"
+									resetValues="true" update="datosTipoEncuesta cmbObjetoEstudio">
+									<f:setPropertyActionListener value="#{tipo}"
+										target="#{backingConfPreguntas.beanConfPreguntas.tipoEncuestaEditar}" />
+									<i class="pi pi-check-circle" style="font-size: 1em; color: green;"></i>
+								</p:commandLink>
+								<p:commandLink title="#{tooltip['preguntas']}"
+									action="#{backingConfPreguntas.nuevoTipoEncuestaPregunta()}" process="@this"
+									partialSubmit="true" icon="#{botones['icono.info']}"
+									 update="datosPreguntaAsociadas">
+									<f:setPropertyActionListener value="#{tipo}"
+										target="#{backingConfPreguntas.beanConfPreguntas.tipoEncuesta}" />
+									<i class="pi pi-box" style="font-size: 1em; color: green;"></i>
+								
+								</p:commandLink>
+						</p:column>
+						</p:dataTable>
+					</p:tab>				
+					<!-- Contenido de la pestaña Categoria de Respuesta -->
+					<p:tab title="#{titulos['categoriaRespuesta']}">
+						<p:dataTable var="categoria" id="tblCategoria" 
+							value="#{backingConfPreguntas.beanConfPreguntas.listaCategoriaRespuesta}">
+							<p:column headerText="#{etiquetas['categoria']}"
+								>
+                            	#{categoria.catrNombre}
+                        	</p:column>
+							<p:column headerText="#{etiquetas['respuesta']}">
+								<p:accordionPanel activeIndex="null">
+                        			<p:tab title="#{etiquetas['respuesta']}">
+                        				<p:dataTable value="#{categoria.respuestas}" var="res" emptyMessage="#{mensajes['noRegistros']}" id="tblRespuestasE">
+                        					<p:column>
+                        						#{res.respDescripcion}
+                        					</p:column>
+                        					
+                        				</p:dataTable>	                            
+		                            	
+		                            </p:tab>
+		                        </p:accordionPanel>    		
+	                        </p:column>	                        
+	                        <p:column headerText="#{etiquetas['estado']}"
+								width="90px;">
+								<p:chip
+									label="#{categoria.catrEstado ? etiquetas['activo'] : etiquetas['inactivo']}"
+									styleClass="#{categoria.catrEstado ? 'colorMatriculado' : 'colorDesertado'}"
+									icon="pi pi-file-edit" />
+							</p:column>
+							<p:column headerText="#{etiquetas['acciones']}" width="70px;">
+									<!-- Botones de Acciones -->
+									<p:commandLink title="#{tooltip['editar']}"
+									action="#{backingConfPreguntas.editarCategoriaRespuesta()}" process="@this"
+									partialSubmit="true" icon="#{botones['editarBoton']}"
+									resetValues="true" update="datosCategoriaRespuesta">
+									<f:setPropertyActionListener value="#{categoria}"
+										target="#{backingConfPreguntas.beanConfPreguntas.categoriaRespuestaEditar}" />
+									<i class="pi pi-check-circle"
+										style="font-size: 1em; color: green;"></i>
+								</p:commandLink>
+							</p:column>
+						</p:dataTable>
+					</p:tab>
+					<!-- Contenido de preguntas -->	
+					<p:tab title="#{titulos['pregunta']}">
+						<p:dataTable var="pregunta" id="tblPregunta" sortBy="#{pregunta.categoriaRespuesta.catrNombre}"
+							rows="10" paginator="true"
+								value="#{backingConfPreguntas.beanConfPreguntas.listaPreguntas}">
+							<p:column headerText="#{etiquetas['categoria']}" groupRow="true">
+                        	 	#{pregunta.categoriaRespuesta.catrNombre}
+                        	</p:column>
+							<p:column headerText="#{etiquetas['pregunta']}">
+                            	#{pregunta.pregDescripcion}
+                        	</p:column >
+                        	                        	
+                        	<p:column headerText="#{etiquetas['estado']}"
+                        	width="90px;">
+								<p:chip
+									label="#{pregunta.pregEstado ? etiquetas['activo'] : etiquetas['inactivo']}"
+									styleClass="#{pregunta.pregEstado ? 'colorMatriculado' : 'colorDesertado'}"
+									icon="pi pi-file-edit" />
+                        	</p:column>
+                        	<p:column headerText="#{etiquetas['acciones']}" style="width:90px;">
+                        	<!-- Botones de Acciones -->
+									<p:commandLink title="#{tooltip['editar']}"
+									 action="#{backingConfPreguntas.editarPregunta()}" process="@this "
+									partialSubmit="true" icon="#{botones['editarBoton']}"
+									 update="datosPregunta listcategoriaRespuesta">
+									<f:setPropertyActionListener value="#{pregunta}"
+										target="#{backingConfPreguntas.beanConfPreguntas.pregunta}" />  
+									<i class="pi pi-check-circle"
+										style="font-size: 1em; color: green;"></i>
+								</p:commandLink>
+                        	</p:column>
+						</p:dataTable>
+					</p:tab>			
+			</p:tabView>
+		</h:form>
+	</ui:define>
+</ui:composition>
+</html>

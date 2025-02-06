@@ -1,0 +1,249 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
+	
+	<ui:define name="contenido">
+					<f:event listener="#{backingLogin.validarSesion()}" type="preRenderView" />
+			<h:form prependId="false">
+				<p:growl id="growl" life="3000" showDetail="true" />
+				<p:dialog  widgetVar="dlgEnProc" header="Por favor espere.."
+	                  draggable="false" 
+	                  modal="true" resizable="false" closable="false" responsive="true"
+	                  style="font-size: 10px;">             
+	            	<h:graphicImage value="/resources/img/cargando.gif" width="250" height="250"/>
+	            </p:dialog>
+	            
+	            <p:dialog widgetVar="dlgBuscar" appendTo="@(body)" resizable="false" modal="true" closable="false"  height="100px;" header="#{titulos['opcionesBusqueda']}">
+	            	<p:scrollPanel mode="native"
+						style="max-height:350px; max-width:300px;">
+	            	<p:outputPanel id="panelBuscar" >
+	            		<div class="ui-fluid p-formgrid p-grid">
+	            			<div class="p-field p-col-12 p-md-12" >
+								<span class="ui-float-label ui-input-icon-right" style="margin-top: 2em">
+	            			<p:selectOneMenu id="idCurso"																
+								value="#{backingListadoEstudiantes.beanListadoEstudiantes.cursoSeleccionado}"
+								converter="selectOneMenuConverter"
+								filter="true" filterMatchMode="contains" style="width:250px;"
+								required="true" requiredMessage="#{mensajes['campoRequerido']}">
+								<f:selectItem itemLabel="#{etiquetas['seleccionar']}"
+									itemValue="#{null}" noSelectionOption="true" />
+								<f:selectItems
+									value="#{backingListadoEstudiantes.beanListadoEstudiantes.listaCursos}"
+									var="curso" itemLabel="#{curso.cursNombre}"
+									itemValue="#{curso}" />
+									<p:ajax process="@this idCurso"  partialSubmit="true" update="ofertacurso" onstart="PF('dlgEnProc').show();" oncomplete="PF('dlgEnProc').hide();"
+								 event="change" listener="#{backingListadoEstudiantes.cargarOfertaCursos()}"/>
+							</p:selectOneMenu>
+							<p:outputLabel value="#{etiquetas['curso']}:" for="@previous"/>
+							</span>	
+							<p:message for="idCurso"/>	
+							</div>						
+							
+							<div class="p-field p-col-12 p-md-12" >
+								<span class="ui-float-label " style="margin-top: 2em">							
+									<p:selectOneListbox  id="ofertacurso" value="#{backingListadoEstudiantes.beanListadoEstudiantes.ofertaSeleccionada}" scrollHeight="250"
+										required="true"  requiredMessage="#{mensajes['campoRequerido']}" style="width:250px;"
+										converter="selectOneMenuConverter">
+										<f:selectItems value="#{backingListadoEstudiantes.beanListadoEstudiantes.listaOfertaCursos}" 
+											var="oferta" itemLabel="#{backingListadoEstudiantes.formatDate(oferta.ocurFechaInicio,'yyyy-MM-dd')} / #{backingReporteMatriculas.formatDate(oferta.ocurFechaFin,'yyyy-MM-dd')}" itemValue="#{oferta}"/>										
+									</p:selectOneListbox>
+									<p:outputLabel value="#{etiquetas['inicioFin']}" for="ofertacurso"/>
+								</span>
+								<p:message for="ofertacurso"/>	
+							</div>		
+							
+							<div class="p-field p-col-12 p-md-6" >								
+								<p:commandButton icon="#{botones['icono.buscar']}" value="#{botones['buscar']}" partialSubmit="true"
+									actionListener="#{backingListadoEstudiantes.buscarMatriculas()}" onstart="PF('dlgEnProc').show();" oncomplete="PF('dlgEnProc').hide(); "
+									process="@this panelDatosBusqueda panelBuscar" update=" panelDatosBusqueda panelBuscar"/>
+							</div>
+							<div class="p-field p-col-12 p-md-6" >		
+								<p:commandButton process="@this" value="#{botones['cancelar']}" icon="#{botones['icono.cancelar']}" oncomplete="PF('dlgBuscar').hide();"/>
+							</div>										
+	            		</div>          	
+	            	</p:outputPanel>
+	            	</p:scrollPanel>
+	            </p:dialog>
+	            
+				<!-- DIALOGO DETALLES ALUMNO -->
+				<p:dialog widgetVar="dlgMatriculaSeleccionda" header="#{titulos['datosEstudiante']}">
+					<p:panelGrid id="datosMatriculaSeleccionada" styleClass="panelNoBorder">
+						<p:row>
+							<p:column>
+								<p:outputLabel value="#{etiquetas['cedularuc']}:"/>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.estudiante.persona.persDocumentoIdentidad}"/>
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column>
+								<p:outputLabel value="#{etiquetas['nombres']}:"/>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.estudiante.persona.persApellidos} #{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.estudiante.persona.persNombres}"/>
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column>
+								<p:outputLabel value="#{etiquetas['telefonoCasa']}:"/>
+							</p:column>
+							<p:column>
+								<p:outputLabel value=" #{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.estudiante.persona.persTelefonoCasa}"/>
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column>
+								<p:outputLabel value="#{etiquetas['telefonoMobil']}:"/>
+							</p:column>
+							<p:column>
+								<p:outputLabel value=" #{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.estudiante.persona.persTelefonoMobil}"/>
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column>
+								<p:outputLabel value="#{etiquetas['correo']}:"/>
+							</p:column>
+							<p:column>
+								<p:outputLabel value=" #{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.estudiante.persona.persCorreoElectronico}"/>
+							</p:column>
+						</p:row>
+
+						<p:row rendered="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.ofertaCursos.ocurEstado.equals('OCUR03')?false:true}">
+							<p:column>
+								<p:outputLabel value="#{etiquetas['curso']}:"/>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.ofertaCursos.ofertaCapacitacion.curso.cursNombre}"/>
+							</p:column>							
+						</p:row>
+						<p:row rendered="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.ofertaCursos.ocurEstado.equals('OCUR03')?false:true}">
+							<p:column>
+								<p:outputLabel value="#{etiquetas['fechaInicio']}:"/>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.ofertaCursos.ocurFechaInicio}" id="fInicio">
+									<f:convertDateTime for="fInicio" pattern="yyyy-MM-dd"/>
+								</p:outputLabel>
+								 
+							</p:column>
+						</p:row>
+						<p:row rendered="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.ofertaCursos.ocurEstado.equals('OCUR03')?false:true}">
+							<p:column>
+								<p:outputLabel value="#{etiquetas['fechaFin']}:"/>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.ofertaCursos.ocurFechaFin}" id="fFin">
+									<f:convertDateTime for="fFin" pattern="yyyy-MM-dd"/>
+								</p:outputLabel>
+								 
+							</p:column>
+						</p:row>						
+						<p:row>
+							<p:column>
+								<p:outputLabel value="#{etiquetas['observacion']}:"/>
+							</p:column>
+							<p:column>
+								<p:outputLabel value="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.matrObservacion}"/>
+							</p:column>
+						</p:row>
+					</p:panelGrid>
+				</p:dialog>
+			<p:breadCrumb>
+				<p:menuitem value="Categorias" url="#" />
+				<p:menuitem value="Secretaria" url="#" />
+				<p:menuitem value="Reporte clientes" url="#" />
+			</p:breadCrumb>				
+			<br/>
+			<p:splitButton value="#{etiquetas['accionesRealizar']}">
+	            <p:menuitem value="#{botones['nuevaBusqueda']}" process="@this" 
+							update="panelDatosBusqueda panelBuscar" resetValues="true"
+							partialSubmit="true" icon="#{botones['icono.nuevo']}" actionListener="#{backingListadoEstudiantes.mostrarDialogoBuscar()}"/>
+	        </p:splitButton>	
+			<br/>	
+			<br/>
+					<p:panel id="panelDatosBusqueda">	
+						<h:panelGrid columns="2">
+							<p:outputLabel value="#{etiquetas['curso']}: #{backingListadoEstudiantes.beanListadoEstudiantes.cursoSeleccionado.cursNombre} [Inicio: #{backingListadoEstudiantes.formatDate(backingListadoEstudiantes.beanListadoEstudiantes.ofertaSeleccionada.ocurFechaInicio,'yyyy-MM-dd')} Fin: #{backingListadoEstudiantes.formatDate(backingListadoEstudiantes.beanListadoEstudiantes.ofertaSeleccionada.ocurFechaFin,'yyyy-MM-dd')}] #{etiquetas['horario']}: #{backingListadoEstudiantes.beanListadoEstudiantes.ofertaSeleccionada.ocurHorario}"/>
+							<p:commandLink  title="#{tooltip['usuariosMoodle']}" action="#{backingListadoEstudiantes.csvMoodle()}" immediate="true" alt="#{tooltip['usuariosMoodle']}"
+							disabled="#{backingListadoEstudiantes.beanListadoEstudiantes.listaMatriculas.size()==0?true:false}"
+							process="@this"  ajax="false">
+								
+								<i class="pi pi-download" style="font-size: 1em; color: green;"></i>
+							</p:commandLink>
+						</h:panelGrid>
+					
+				
+					<p:spacer height="20px;"/>
+					<p:dataTable value="#{backingListadoEstudiantes.beanListadoEstudiantes.listaMatriculas}" id="listaMatriculas" reflow="true"
+						rows="15" rowKey="#{matricula.matrId}" paginator="true" widgetVar="tblmatriculas" 
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+						var="matricula">
+						<f:facet name="{Exporters}">
+							<div style="float: right; padding-top: 5px;">
+								<h:commandLink immediate="true">
+									<h:graphicImage library="img" name="excel.png" />
+									<p:dataExporter type="xls" target="listaMatriculas"
+										fileName="interesados" />
+								</h:commandLink>
+	
+							</div>
+						</f:facet>
+						<p:column headerText="#{etiquetas['estudiante']}" filterBy="#{matricula.estudiante.persona.persApellidos} #{matricula.estudiante.persona.persNombres}" filterMatchMode="contains">
+							<p:outputLabel value="#{matricula.estudiante.persona.persApellidos} #{matricula.estudiante.persona.persNombres}"/>  
+						</p:column>	
+						<p:column  headerText="#{etiquetas['correo']}" style="width:300px;">
+							<p:outputLabel value="#{matricula.estudiante.persona.persCorreoElectronico}"/>
+						</p:column>					
+						<p:column  headerText="#{etiquetas['cedularuc']}" style="width:100px;">
+							<p:outputLabel value="#{matricula.estudiante.persona.persDocumentoIdentidad}"/>
+						</p:column>
+						<p:column  headerText="#{etiquetas['telefono']}" style="width:100px;">
+							<p:outputLabel value="#{matricula.estudiante.persona.persTelefonoMobil}"/>
+						</p:column>
+						<p:column headerText="#{etiquetas['estado']}" filterMatchMode="exact" filterBy="#{matricula.matrEstado}" style="width:150px;">
+							<f:facet name="filter">
+							<p:selectOneMenu onchange="PF('tblmatriculas').filter()">
+								<f:selectItem itemLabel="Todos" itemValue="#{null}" noSelectionOption="true"/>
+								<f:selectItem itemLabel="INSCRITO" itemValue="INSMAT01"/>
+								<f:selectItem itemLabel="MATRICULADO" itemValue="INSMAT02"/>
+								<f:selectItem itemLabel="DESERTADO" itemValue="INSMAT03"/>
+								<f:selectItem itemLabel="CULMINADO" itemValue="INSMAT05"/>								
+							</p:selectOneMenu>
+						</f:facet>
+								<p:chip label="MATRICULADO" icon="pi pi-file-edit" styleClass="colorMatriculado chipstamanio" rendered="#{matricula.matrEstado.equals('INSMAT02')}" />
+								<p:chip label="CULMINADO" icon="pi pi-check-circle" styleClass="colorCulminado chipstamanio" rendered="#{matricula.matrEstado.equals('INSMAT05')}"/>
+								<p:chip label="DESERTADO" icon="pi pi-times-circle" styleClass="colorDesertado chipstamanio" rendered="#{matricula.matrEstado.equals('INSMAT03')}"/>	
+						
+						</p:column>
+						<p:column headerText="#{etiquetas['datosMatCerti']}" style="width:100px;"> 
+							<p:commandLink  title="#{tooltip['infoEstudiante']}" oncomplete="PF('dlgMatriculaSeleccionda').show();" process="@this" update="datosMatriculaSeleccionada">
+								<f:setPropertyActionListener value="#{matricula}" target="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada}"/>
+								<i class="pi pi-users" style="font-size: 1em; color: green;"></i>
+							</p:commandLink>
+							
+							<p:commandLink  title="#{tooltip['docMatricula']}" action="#{backingListadoEstudiantes.generarPdf}" process="@this" immediate="true" disabled="#{matricula.ofertaCursos.ocurEstado.equals('OCUR03')?true:false}" ajax="false">
+								<f:setPropertyActionListener value="#{matricula}" target="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada}"/>
+								<i class="pi pi-file-pdf" style="font-size: 1em; color: green;"></i>
+							</p:commandLink>
+							
+							<p:commandLink  title="#{tooltip['certCurso']}" action="#{backingListadoEstudiantes.generaCertificadoPdf}" immediate="true" alt="Certificado"
+							process="@this" disabled="#{matricula.matrEstado.equals('INSMAT05')?false:true}" ajax="false">
+								<f:setPropertyActionListener value="#{matricula}" target="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada}"/>
+								<i class="pi pi-file-pdf" style="font-size: 1em; color: green;"></i>
+							</p:commandLink>
+						</p:column>
+					</p:dataTable>
+				</p:panel>
+				
+			</h:form>
+	</ui:define>
+
+</ui:composition>
+
+</html>

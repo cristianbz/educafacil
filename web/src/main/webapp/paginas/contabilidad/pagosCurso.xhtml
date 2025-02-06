@@ -1,0 +1,367 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:comp="http://java.sun.com/jsf/composite/componentes"
+	xmlns:val="http://java.sun.com/jsf/composite/componentes"
+	xmlns:p="http://primefaces.org/ui">
+
+<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+<ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
+	<ui:define name="contenido">
+		<f:event listener="#{backingLogin.validarSesion()}"
+			type="preRenderView" />
+		<h:form id="form">
+
+			<p:dialog widgetVar="dlgGrabar" draggable="false" modal="true"
+				resizable="false" closable="false" responsive="true"
+				header="#{etiquetas['registroPago']}" style="font-size: 10px;">
+				<h:panelGrid columns="2">
+					<p:commandButton value="#{botones['si']}"
+						actionListener="#{backingPagos.grabarPago()}"
+						process="@this formapago panelpagos"
+						partialSubmit="true"
+						update="growl  tablaDetalle panelpagos"
+						styleClass="ui-confirmdialog-yes"
+						icon="#{botones['icono.select']}" />
+					<p:commandButton value="#{botones['no']}"
+						oncomplete="PF('dlgGrabar').hide()"
+						styleClass="ui-confirmdialog-no"
+						icon="#{botones['icono.cancelar']}" />
+				</h:panelGrid>
+			</p:dialog>
+			
+			<p:dialog widgetVar="dlgresumenPagos" header="#{titulos['resumenpagos']}" modal="true">
+				<div class="ui-fluid p-formgrid p-grid">							
+							<div class="p-field p-col-12 p-md-12">								
+									<p:outputLabel id="nombreEstudiante" value="#{backingPagos.beanPagos.matricula.estudiante.persona.persApellidos} #{backingPagos.beanPagos.matricula.estudiante.persona.persNombres}" style="color:red;" />								
+							</div>
+							<div class="p-field p-col-12 p-md-12">
+							<p:dataTable id="tablapagos" var="det"
+										value="#{backingPagos.beanPagos.listaDetallePagosRealizados}">
+										<p:column headerText="#{etiquetas['servicio']}">
+											<p:outputLabel value="#{det.catalogo.cataDescripcion}" />
+										</p:column>	
+										<p:column headerText="#{etiquetas['numeroFactura']}">
+											<p:outputLabel value="#{det.pagos.pagoNumeroFactura}" />
+										</p:column>									
+										<p:column headerText="#{etiquetas['observacion']}">
+											<p:outputLabel value="#{det.depaObservacion}"/>
+										</p:column>
+										<p:column headerText="#{etiquetas['fecha']}" style="width:100px;">
+											<p:outputLabel value="#{det.pagos.pagoFecha}"
+												id="fechaPagoDet">
+												<f:convertDateTime for="fechaPagoDet" pattern="yyyy-MM-dd" />
+											</p:outputLabel>
+										</p:column>
+										<p:column headerText="#{etiquetas['formaPago']}" style="width:150px;">
+											<p:outputLabel
+												value="#{det.depaFormaPago.equals('FORMP01')?'EFECTIVO':det.depaFormaPago.equals('FORMP02')?'TRANSFERENCIA':'TARJETA'}" />
+										</p:column>
+										<p:column headerText="#{etiquetas['valor']}" style="width:90px;">
+											<p:outputLabel value="#{det.depaValor}" />
+										</p:column>
+										<f:facet name="footer">
+									            <span class="font-bold">Total cancelado #{backingPagos.beanPagos.listaDetallePagosRealizados.stream().map(c->c.depaValor).sum()} </span>
+									        </f:facet>
+									</p:dataTable>
+							</div>
+				</div>
+			</p:dialog>
+			
+			
+			<p:growl id="growl" life="3000" showDetail="true" />
+			<p:dialog widgetVar="dlgEnProc" draggable="false" modal="true"
+				resizable="false" closable="false" responsive="true"
+				style="font-size: 10px;">
+				<h:graphicImage value="/resources/img/cargando.gif" width="200"
+					height="200" />
+			</p:dialog>
+
+			<p:dialog widgetVar="dlgCursos" draggable="false" modal="true"
+				resizable="false" closable="false" responsive="true"
+				header="#{titulos['escojerCurso']}" style="font-size: 10px;width:100px;">
+				<p:scrollPanel mode="native" style="max-height:350px; max-width:350px;">
+				<div class="ui-fluid p-formgrid p-grid">
+					<div class="p-field p-col-12 p-md-6" >
+					<p:outputLabel value="#{etiquetas['cursosFinalizados']}:"/>
+					</div>
+					<div class="p-field p-col-12 p-md-6" >
+					<p:toggleSwitch value="#{backingPagos.beanPagos.cursosFinalizados}" >
+						<p:ajax listener="#{backingPagos.cargarCursosActivosCerrados}" update="idcurso" process="@this" partialSubmit="true"/>
+					</p:toggleSwitch>
+					</div>
+					<div class="p-field p-col-12 p-md-12" >
+					<span class="ui-float-label ui-input-icon-right" style="margin-top: 2em">
+					<p:selectOneMenu id="idcurso" tabindex="1" filter="true" filterMatchMode="contains"
+							requiredMessage="#{mensajes['campoRequerido']}" required="true"
+							value="#{backingPagos.beanPagos.cursoSeleccionado}"
+							converter="selectOneMenuConverter" panelStyle="width:380px"
+							style="width:300px;" effect="fade" var="c">
+							<f:selectItem itemLabel="#{mensajes['seleccionElemento']}"
+									itemValue="#{null}" noSelectionOption="true" />
+							<f:selectItems
+								value="#{backingPagos.beanPagos.listaOfertaCursos}" var="obj"
+								itemLabel="#{obj.ofertaCapacitacion.curso.cursNombre} - #{obj.ocurHorario}"
+								itemValue="#{obj}" />
+							<p:column width="80" headerText="#{etiquetas['curso']}">
+								<h:outputText value="#{c.ofertaCapacitacion.curso.cursNombre}" />
+							</p:column>
+							<p:column width="120" headerText="#{etiquetas['horario']}">
+								<p:outputLabel value="#{c.ocurHorario}" />
+							</p:column>
+							<p:column width="80" headerText="#{etiquetas['fechaInicio']}">
+								<h:outputLabel value="#{c.ocurFechaInicio}" id="finicio">
+									<f:convertDateTime for="finicio" pattern="yyyy-MM-dd" />
+								</h:outputLabel>
+							</p:column>
+							<p:column width="80" headerText="#{etiquetas['fechaFin']}">
+								<h:outputLabel value="#{c.ocurFechaFin}" id="ffin">
+									<f:convertDateTime for="ffin" pattern="yyyy-MM-dd" />
+								</h:outputLabel>
+							</p:column>
+							<p:ajax process="@this" event="change" />
+						</p:selectOneMenu><p:outputLabel value="#{etiquetas['curso']}: " />
+						</span>
+						</div>
+							
+				</div>
+				</p:scrollPanel>
+				<hr/>
+				<h:panelGrid columns="2" style="margin: 0 auto; text-align: center;">
+					<p:commandButton value="#{botones['aceptar']}" process="@this nombrecurso" partialSubmit="true"
+							update=":form:tablamatriculas nombrecurso growl" icon="#{botones['icono.select']}" tabindex="2"
+							actionListener="#{backingPagos.buscarMatriculadosCurso()}" />
+						<p:commandButton value="#{botones['cancelar']}" process="@this" icon="#{botones['icono.cancelar']}" oncomplete="PF('dlgCursos').hide();" tabindex="3"/>
+				</h:panelGrid>
+			</p:dialog>
+
+			<!-- 
+			
+			
+			 -->
+			
+			<p:dialog widgetVar="dlgRegistroPago" draggable="false" modal="true"
+				appendTo="@(body)" width="400px;" closable="false" resizable="true"
+				header="#{titulos['registrarPago']}">
+				<p:scrollPanel mode="native"
+					style="max-height:300px; max-width:550px;">
+					<p:outputPanel id="panelRegPagos">
+						<div class="ui-fluid p-formgrid p-grid">							
+							
+							<div class="p-field p-col-12 p-md-3">
+								<p:outputLabel value="#{etiquetas['fecha']}:" />
+							</div>
+							<div class="p-field p-col-12 p-md-8">
+								<p:outputLabel value="#{backingPagos.beanPagos.fechaRegistro}"
+									id="fechaRegistro">
+									<f:convertDateTime pattern="yyyy-MM-dd" for="fechaRegistro" />
+								</p:outputLabel>
+							</div>
+
+							<div class="p-field p-col-12 p-md-3">
+								<p:outputLabel value="#{etiquetas['cliente']}:" />
+								
+							</div>
+							<div class="p-field p-col-12 p-md-9">
+								<p:outputLabel style="color:red;"
+									value="#{backingPagos.beanPagos.matricula.estudiante.persona.persApellidos} #{backingPagos.beanPagos.matricula.estudiante.persona.persNombres}">
+
+								</p:outputLabel>
+							</div>
+						
+							<div class="p-field p-col-12 p-md-3">
+								<p:outputLabel value="#{etiquetas['curso']}:" />
+							</div>
+							<div class="p-field p-col-12 p-md-9">
+								<p:outputLabel style="color:red;"
+									value="#{backingPagos.beanPagos.matricula.ofertaCursos.ofertaCapacitacion.curso.cursNombre}">
+
+								</p:outputLabel>
+							</div>
+
+							<div class="p-field p-col-12 p-md-12">
+								<span class="ui-float-label ui-input-icon-right" style="margin-top: 2em">
+								<p:inputText id="facNumero"
+									value="#{backingPagos.beanPagos.pago.pagoNumeroFactura}" required="true" requiredMessage="#{mensajes['campoRequerido']}" />
+								<p:outputLabel value="#{etiquetas['facturaNro']}:" />
+								
+								</span>
+								<p:message for="facNumero" id="msgNumeroFactura" />
+							</div>
+
+							<div class="p-field p-col-12 p-md-3">
+								<p:outputLabel value="#{etiquetas['servicio']}:" />
+							</div>
+							<div class="p-field p-col-12 p-md-9">
+								<p:selectOneMenu id="idservicio"
+									converter="selectOneMenuConverter"
+									value="#{backingPagos.beanPagos.servicioSeleccionado}"
+									filterMatchMode="contains" filter="true"
+									panelStyle="width:300px;" style="width:300px;">
+									<f:selectItems
+										value="#{backingPagos.beanPagos.listaServiciosPago}"
+										var="servicio" itemLabel="#{servicio.cataDescripcion}"
+										itemValue="#{servicio}" />
+								</p:selectOneMenu>
+							</div>
+							<div class="p-field p-col-12 p-md-12">
+								<p:message for="idservicio" id="msgservicio" />
+							</div>
+
+							<div class="p-field p-col-12 p-md-3">
+								<p:outputLabel value="#{etiquetas['formaPago']}:" />
+							</div>
+							<div class="p-field p-col-12 p-md-9">
+								<p:selectOneRadio value="#{backingPagos.beanPagos.formaPago}"
+									id="formapago">
+									<f:selectItem itemLabel="Efectivo" itemValue="FORMP01" />
+									<f:selectItem itemLabel="Transferencia" itemValue="FORMP02" />
+									<f:selectItem itemLabel="Tarjeta crédito" itemValue="FORMP03" />
+									<p:ajax event="change" process="@this" />
+								</p:selectOneRadio>
+							</div>
+						
+							<div class="p-field p-col-12 p-md-12">
+								<span class="ui-float-label ui-input-icon-right" style="margin-top: 2em"><p:inputNumber id="valorFactura"
+									value="#{backingPagos.beanPagos.detallePagos.depaValor}"
+									required="true" requiredMessage="#{mensajes['campoRequerido']}" /><p:outputLabel value="#{etiquetas['valor']}*:" />
+								</span>
+								<p:message for="valorFactura" id="msgvalorFactura" />
+							</div>
+							
+							
+							<div class="p-field p-col-12 p-md-12">
+								<span class="ui-float-label ui-input-icon-right" style="margin-top: 2em"><p:inputTextarea id="observaFactura" maxlength="200"
+									value="#{backingPagos.beanPagos.detallePagos.depaObservacion}"
+									required="true" requiredMessage="#{mensajes['campoRequerido']}">
+
+								</p:inputTextarea><p:outputLabel value="#{etiquetas['observacion']}:" />
+								</span>
+								<p:message for="observaFactura" id="msgobservaFactura" />
+							</div>
+
+							<div class="p-field p-col-12 p-md-12">
+								<p:commandButton value="#{botones['agregaServicio']}"
+									icon="#{botones['icono.agregar']}"
+									process="@this valorFactura observaFactura facNumero idservicio tablaDetalle formapago"
+									actionListener="#{backingPagos.agregarServicio()}"
+									partialSubmit="true"
+									update="panelRegPagos growl msgobservaFactura msgvalorFactura msgservicio msgNumeroFactura" />
+							</div>
+							
+							<div class="p-field p-col-12 p-md-12">
+								<p:dataTable id="tablaDetalle" var="detalle"
+									value="#{backingPagos.beanPagos.listaDetallePagos}">
+									<p:column headerText="#{etiquetas['servicio']}">
+										<p:outputLabel value="#{detalle.catalogo.cataDescripcion}" />
+									</p:column>
+									<p:column headerText="#{etiquetas['formaPago']}">
+										<p:outputLabel
+											value="#{detalle.depaFormaPago.equals('FORMP01')?'EFECTIVO':detalle.depaFormaPago.equals('FORMP02')?'TRANSFERENCIA':'TARJETA'}" />
+									</p:column>
+									<p:column headerText="#{etiquetas['valor']}">
+										<p:outputLabel value="#{detalle.depaValor}" />
+									</p:column>
+									<p:column>
+										<p:commandButton icon="#{botones['icono.borrar']}"
+											process="@this tablaDetalle"
+											action="#{backingPagos.quitarServicio()}"
+											update="tablaDetalle" partialSubmit="true">
+											<f:setPropertyActionListener value="#{detalle}"
+												target="#{backingPagos.beanPagos.detallePagosEliminar}" />
+										</p:commandButton>
+									</p:column>
+								</p:dataTable>
+							</div>
+							<div class="p-field p-col-12 p-md-1"></div>
+							<div class="p-field p-col-12 p-md-5">
+								<p:commandButton disabled="#{backingPagos.beanPagos.cursosFinalizados}"
+									process="@this formapago "
+									partialSubmit="true" update="growl "
+									actionListener="#{backingPagos.mostrarDialogoGrabar()}"
+									value="#{botones['registraPago']}"
+									icon="#{botones['icono.select']}">
+								</p:commandButton>
+							</div>
+							<div class="p-field p-col-12 p-md-1"></div>
+							<div class="p-field p-col-12 p-md-5">
+								<p:commandButton
+									process="@this"
+									partialSubmit="true" 
+									actionListener="#{backingPagos.cerrarDialogoGrabar()}"
+									value="#{botones['cancelar']}"
+									icon="#{botones['icono.cancelar']}">
+								</p:commandButton>
+							</div>
+							
+						</div>
+					</p:outputPanel>
+				</p:scrollPanel>
+			</p:dialog>
+			
+			<!-- 
+			
+			 -->
+			
+			<p:breadCrumb>
+				<p:menuitem value="Categorias" url="#" />
+				<p:menuitem value="Contabilidad" url="#" />
+				<p:menuitem value="Registra Pagos" url="#"/>
+			</p:breadCrumb>
+			<br/>
+			<p:splitButton value="#{etiquetas['accionesRealizar']}">
+	            <p:menuitem value="#{botones['selCurso']}" action="#{backingPagos.mostrarSeleccionCurso()}" process="@this" icon="pi pi-check" resetValues="true" update="idcurso"/>
+	        </p:splitButton>
+			<br/>				
+				<br />			
+				<br/>
+				<p:outputLabel value="#{etiquetas['curso']}: #{backingPagos.beanPagos.nombreCurso}" id="nombrecurso" style="color:green; font-size:bodl;"/>
+				
+				<p:outputPanel id="panelpagos">
+				<p:dataTable id="tablamatriculas" rowStyleClass="#{mat.matrEstado.equals('INSMAT03')?'abandonado':null}" reflow="true" paginator="true" rows="10"
+					value="#{backingPagos.beanPagos.listaCursosMatriculados}" var="mat">
+					<f:facet name="header">
+						<p:outputLabel value="#{titulos['listaestudiantes']}"/>
+					</f:facet>
+					<p:column headerText="#{etiquetas['estudiante']}" filterBy="#{mat.estudiante.persona.persApellidos}" filterMatchMode="contains">
+						<h:outputText value="" styleClass="#{mat.matrEstado.equals('INSMAT03')?'ui-icon fa fa-times-circle':''}" escape="false" title="#{tooltip['retirado']}"/>
+						<p:outputLabel
+							value="#{mat.estudiante.persona.persApellidos} #{mat.estudiante.persona.persNombres}" />
+							
+					</p:column>
+					<p:column headerText="#{etiquetas['totalPagado']}" style="width:100px;">						
+						<p:badge value="#{mat.totalPagadoCurso}" styleClass="mr-2"></p:badge>
+					</p:column>
+					<p:column headerText="#{etiquetas['valor']}" style="width:80px;">
+						<p:outputLabel value="#{mat.ofertaCursos.ocurValor}" style="color:green"/>
+					</p:column>
+					<p:column style="width:70px;" headerText="#{etiquetas['acciones']}">
+						
+						<p:commandLink process="@this" disabled="#{mat.matrEstado.equals('INSMAT03')?true:false}"							
+							partialSubmit="true" update=":form:panelRegPagos" title="#{etiquetas['registroPago']}"
+							action="#{backingPagos.mostrarDialogoRegPago()}" >
+							<f:setPropertyActionListener value="#{mat}" target="#{backingPagos.beanPagos.matricula}"></f:setPropertyActionListener>
+							<i class="pi pi-wallet" style="font-size: 1em; color: green;"></i>							
+						</p:commandLink>
+						&nbsp;
+						
+						<p:commandLink  process="@this" title="#{tooltip['verPagos']}" 
+							partialSubmit="true" update=":form:tablapagos :form:nombreEstudiante" 
+							action="#{backingPagos.mostrarDialogoResumenPago()}" >
+							<f:setPropertyActionListener value="#{mat}" target="#{backingPagos.beanPagos.matricula}"></f:setPropertyActionListener>
+							<i class="pi pi-chart-bar" style="font-size: 1em; color: green;"></i>
+						</p:commandLink>	
+					</p:column>					
+				</p:dataTable>
+				</p:outputPanel>
+			
+		</h:form>
+	</ui:define>
+</ui:composition>
+
+</html>

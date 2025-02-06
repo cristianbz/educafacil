@@ -1,0 +1,239 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
+	
+	<ui:define name="contenido">
+		<f:event listener="#{backingLogin.validarSesion()}"
+		type="preRenderView" />
+	<h:form id="form" prependId="false">
+		<p:growl id="growl" life="3000" showDetail="true" />
+		
+		<p:dialog widgetVar="dlgGrafica" showEffect="fade" closable="true"
+			hideEffect="fade" width="100%" height="500px;" modal="true"
+			appendTo="@(body)">
+			
+		</p:dialog>	
+		
+		<p:dialog widgetVar="dlgCampania" showEffect="fade" closable="false" header="#{titulos['datosCampania']}"
+			hideEffect="fade"   height="300px;" modal="true"
+			appendTo="@(body)">
+			<p:scrollPanel mode="native"
+				style="max-height:350px; max-width:400px;">
+			<p:outputPanel id="infocampania" >			
+				<div class="ui-fluid p-formgrid p-grid">
+					
+					<div class="p-field p-col-12 p-md-12" >
+						<span class="ui-float-label ui-input-icon-right" style="margin-top: 2em">
+							<p:inputTextarea  id="iddescribecampania" value="#{backingAdminCampanias.beanAdminCampanias.campaniaSeleccionada.campDescripcion}"
+								required="true" requiredMessage="#{mensajes['campoRequerido']}">						
+							</p:inputTextarea>
+							<p:outputLabel for="@previous" value="#{etiquetas['campania']}" />
+						</span>
+						<p:message for="iddescribecampania"/>
+					</div>
+					<div class="p-field p-col-12 p-md-12">
+						<span class="ui-float-label ui-input-icon-left" >
+							<p:inputText id="ididentificador" value="#{backingAdminCampanias.beanAdminCampanias.campaniaSeleccionada.campIdentificador}"
+								required="true" requiredMessage="#{mensajes['campoRequerido']}" maxlength="30"/>
+							<p:outputLabel for="@previous" value="#{etiquetas['identCampania']}" />  
+						</span>		
+						<p:message for="ididentificador"/>
+					</div>
+
+					<div class="p-field p-col-12 p-md-12">
+						<span class="ui-float-label ui-input-icon-left" >
+							<p:selectOneMenu id="idcurso" 	
+								filterMatchMode="contains" filter="true" panelStyle="width:300px;" style="width:300px;"														
+								value="#{backingAdminCampanias.beanAdminCampanias.cursoSeleccionado}">
+							<f:selectItems 
+								value="#{backingAdminCampanias.beanAdminCampanias.listaCursos}"
+								var="cur" itemLabel="#{cur.cursNombre}" itemValue="#{cur.cursId}"
+								required="true" requiredMessage="#{mensajes['campoRequerido']}" />
+							<p:ajax process="@this"  partialSubmit="true"
+								 event="change" />
+							</p:selectOneMenu>
+							<p:outputLabel for="@previous" value="#{etiquetas['curso']}" />
+						</span>
+						<p:message for="idcurso"/>
+					</div>
+					
+					<div class="p-field p-col-12 p-md-12">
+						<span class="ui-float-label ui-input-icon-left" >
+							<p:datePicker value="#{backingAdminCampanias.beanAdminCampanias.campaniaSeleccionada.campFechaDesde}" id="idfechadesde" 
+								required="true" requiredMessage="#{mensajes['campoRequerido']}"
+								pattern="yyyy-MM-dd">						
+							</p:datePicker>
+							<p:outputLabel for="@previous" value="#{etiquetas['fechaInicio']}" />
+						</span>
+						<p:message for="idfechadesde"/>
+					</div>
+					
+					<div class="p-field p-col-12 p-md-12">
+						<span class="ui-float-label ui-input-icon-left" >
+							<p:datePicker value="#{backingAdminCampanias.beanAdminCampanias.campaniaSeleccionada.campFechaHasta}" id="idfechahasta" 
+								required="true" requiredMessage="#{mensajes['campoRequerido']}"
+								pattern="yyyy-MM-dd">						
+							</p:datePicker>
+							<p:outputLabel value="#{etiquetas['fechaFin']}" for="@previous"/>
+						</span>
+						<p:message for="idfechahasta"/>
+					</div>
+
+					<div class="p-field p-col-12 p-md-12">
+						<span class="ui-float-label ui-input-icon-left" >
+							<p:selectOneMenu value="#{backingAdminCampanias.beanAdminCampanias.codigoTipo}" id="idtipo" required="true" requiredMessage="#{mensajes['campoRequerido']}"> 
+								<f:selectItem noSelectionOption="true" itemLabel="" itemValue="#{null}"/>
+								<f:selectItem itemLabel="INFOGRAFIA" itemValue="CAMP01"/>
+								<f:selectItem itemLabel="VIDEO" itemValue="CAMP02"/>
+								<p:ajax event="change" process="@this"/>
+							</p:selectOneMenu>
+							<p:outputLabel value="#{etiquetas['tipo']}" for="@previous"/>
+						</span>
+						<p:message for="idtipo"/>
+					</div>
+
+
+					<div class="p-field p-col-12 p-md-12">
+						<span class="ui-float-label ui-input-icon-left" >
+							<p:inputNumber value="#{backingAdminCampanias.beanAdminCampanias.campaniaSeleccionada.campCosto}" decimalPlaces="0" id="idvalor" required="true" requiredMessage="#{mensajes['campoRequerido']}"/>
+							<p:outputLabel value="#{etiquetas['valor']}" for="@previous"/>
+						</span>
+						<p:message for="idvalor"/>
+					</div>
+
+					<div class="p-field p-col-12 p-md-6">
+						<p:outputLabel value="#{etiquetas['estado']}"/>
+					</div>
+					<div class="p-field p-col-12 p-md-6">
+						<p:toggleSwitch value="#{backingAdminCampanias.beanAdminCampanias.campaniaSeleccionada.campEstado}">
+							<p:ajax process="@this" event="change"/>
+						</p:toggleSwitch>
+					</div>
+
+					<div class="p-field p-col-12 p-md-6">
+						<p:commandButton value="#{botones['grabar']}" icon="#{botones['icono.grabar']}" 
+							actionListener="#{backingAdminCampanias.grabar()}" partialSubmit="true"
+							process="@this infocampania" update="panelCampania growl infocampania"/>
+					</div>
+					<div class="p-field p-col-12 p-md-6">
+						<p:commandButton value="#{botones['cancelar']}" icon="#{botones['icono.cancelar']}" process="@this" oncomplete="PF('dlgCampania').hide()"/>
+					</div>
+				</div>	
+			</p:outputPanel>
+			</p:scrollPanel>
+		</p:dialog>
+
+		<p:dialog widgetVar="dlggrabar" modal="true"
+			header="#{titulos['grabar']}">
+			<h:panelGrid columns="2">
+			</h:panelGrid>
+		</p:dialog>
+
+		<p:dialog widgetVar="dlgEnProc" draggable="false" modal="true"
+			resizable="false" closable="false" responsive="true"
+			style="font-size: 10px;">
+			<h:graphicImage value="/resources/img/cargando.gif" width="200"
+				height="200" />
+		</p:dialog>
+			<p:breadCrumb>
+				<p:menuitem value="Categorias" url="#" />
+				<p:menuitem value="Marketing" url="#" />
+				<p:menuitem value="Campañas publicidad" url="#"/>
+			</p:breadCrumb>
+			<br/>
+			<p:splitButton value="#{etiquetas['accionesRealizar']}">
+	            <p:menuitem value="#{botones['nuevaCampania']}"
+						process="@this " update="infocampania "
+						action="#{backingAdminCampanias.nuevaCampania()}"						
+						icon="#{botones['icono.nuevo']}" partialSubmit="true"
+						 />	                        
+	        </p:splitButton>	
+			<br/>
+			<br />
+			<div class="ui-fluid p-formgrid p-grid">
+				<div class="p-field p-col-12 p-md-6">
+					<p:outputPanel id="panelCampania">
+				<p:dataTable widgetVar="tblcampanias" reflow="true"
+					paginator="true" rows="3" styleClass="panelNoBorder"
+					value="#{backingAdminCampanias.beanAdminCampanias.listaCampanias}" var="c">
+					<p:column headerText="#{etiquetas['campania']}" filterMatchMode="contains" filterBy="#{c.campDescripcion}" style="width:300px;">
+						#{c.campDescripcion}
+						<br/>
+						<h:panelGrid columns="2">
+							<p:outputLabel value="#{etiquetas['fechaInicio']}"/>
+							<p:outputLabel id="idtblfinicio" value="#{c.campFechaDesde}">
+								<f:convertDateTime for="idtblfinicio" pattern="yyyy-MM-dd"/>
+							</p:outputLabel>
+							
+							<p:outputLabel value="#{etiquetas['fechaFin']}"/>													
+							<p:outputLabel id="idtblffin" value="#{c.campFechaHasta}">
+								<f:convertDateTime for="idtblffin" pattern="yyyy-MM-dd"/>
+							</p:outputLabel>
+							
+							<p:outputLabel value="#{etiquetas['tipo']}"/>
+							<p:outputLabel value="#{c.campTipoContenido.equals('CAMP01')?'INFOGRABIA':'VIDEO'}"/>
+							
+							<p:outputLabel value="#{etiquetas['valor']}"/>
+							<p:outputLabel value="#{c.campCosto}"/>
+						</h:panelGrid>
+					</p:column>
+					
+					<p:column headerText="#{etiquetas['estado']}" filterMatchMode="contains" filterBy="#{c.campEstado}" style="width:120px;">
+						<f:facet name="filter">
+							<p:selectOneMenu onchange="PF('tblcampanias').filter()" style="width:140px;">
+								<f:selectItem itemLabel="Todos" itemValue="#{null}" noSelectionOption="true"/>
+								<f:selectItem itemLabel="ACTIVAS" itemValue="true" />
+								<f:selectItem itemLabel="INACTIVAS" itemValue="false" />								
+							</p:selectOneMenu>
+						</f:facet>
+						<p:outputLabel value="#{c.campEstado == true?'ACTIVA':'INACTIVA'}"/>
+					</p:column>
+
+					<p:column style="width:50px;">
+						
+						<p:commandLink process="@this idcurso" icon="#{botones['icono.seleccion']}" 
+							update="infocampania idcurso growl" title="#{tooltip['editar']}"
+							action="#{backingAdminCampanias.mostrarDialogoCampania()}" partialSubmit="true">
+							<f:setPropertyActionListener value="#{c}" target="#{backingAdminCampanias.beanAdminCampanias.campaniaSeleccionada}"></f:setPropertyActionListener>
+							<i class="pi pi-chevron-circle-down" style="font-size: 1em; color: green;"></i>
+						</p:commandLink>
+						
+						<p:commandLink process="@this " partialSubmit="true" action="#{backingAdminCampanias.resumenCampania()}" 
+							title="#{tooltip['verRendimiento']}"
+							icon="#{botones['icono.estadistica']}" update="grafica">
+							<f:setPropertyActionListener value="#{c}" target="#{backingAdminCampanias.beanAdminCampanias.campaniaSeleccionada}"></f:setPropertyActionListener>
+							<i class="pi pi-chart-bar" style="font-size: 1em; color: green;"></i>
+						</p:commandLink>
+					</p:column>
+					<f:facet name="footer" >
+			            <span class="p-text-bold" style="text-align:right">Total inversión campañas: #{backingAdminCampanias.beanAdminCampanias.listaCampanias.stream().map(c->c.campCosto).sum()}</span>
+			        </f:facet>
+				</p:dataTable>	
+			</p:outputPanel>
+							
+				</div>
+				<div class="p-field p-col-12 p-md-6">
+					<br/>
+					<br/>
+					<br/>
+					<center>
+					<p:outputLabel value="GRAFICA DEL RENDIMIENTO DE LA CAMPAÑA"/>
+					</center>
+					<p:barChart model="#{backingAdminCampanias.beanAdminCampanias.modelGrafico}" id="grafica"
+					style="width: 100%; height: 500px;" />
+				
+				</div>
+				
+			</div>
+
+	</h:form>
+	</ui:define>
+
+</ui:composition>
+
+</html>

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:ui="jakarta.faces.facelets"
+      	xmlns:f="jakarta.faces.core"
+      	xmlns:h="jakarta.faces.html"
+		xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<h:outputStylesheet name="primeicons/primeicons.css"
+		library="primefaces" />
+	<link
+		href="#{facesContext.externalContext.requestContextPath}/resources/css/bootstrap.min.css"
+		rel="stylesheet" type="text/css" />
+	<link
+		href="#{facesContext.externalContext.requestContextPath}/resources/css/estilos.css"
+		rel="stylesheet" type="text/css" />
+
+	<script
+		src="#{facesContext.externalContext.requestContextPath}/resources/js/bootstrap.min.js"></script>
+	<script type="text/javascript"
+		src="#{request.contextPath}/js/calendario/calendar_es.js"></script>
+	<script type="text/javascript"
+		src="#{facesContext.externalContext.requestContextPath}/resources/js/atras.js"></script>
+	<script type="text/javascript"
+		src="#{request.contextPath}/resources/js/pdfmake.min.js"></script>
+	<script type="text/javascript"
+		src="#{request.contextPath}/resources/js/vfs_fonts.js"></script>	
+	<h:outputStylesheet library="webjars"
+		name="primeflex/2.0.0/primeflex.min.css" />
+	<h:outputStylesheet library="webjars"
+		name="font-awesome/5.12.0/css/all.min-jsf.css" />
+	<h:outputStylesheet library="webjars"
+		name="font-awesome/5.12.0/css/v4-shims.min-jsf.css" />
+	<style type="text/css">
+.inscrito {
+	background-color: #40e577 !important;
+	background-image: none !important;
+	color: #ffffff !important;
+}
+
+.abandonado {
+	background-color: #f28b65 !important;
+	background-image: none !important;
+	color: #ffffff !important;
+}
+
+.candidato {
+	background-color: #11ddcc !important;
+	background-image: none !important;
+	color: #ffffff !important;
+}
+
+.otraocasion {
+	background-color: #FFAB68 !important;
+	background-image: none !important;
+	color: #ffffff !important;
+}
+.colorDesertado{
+	background-color:#fc3755 !important;	
+}
+.colorMatriculado{
+	background-color:#24d80d !important;	
+}
+.colorCulminado{
+	background-color:#116FBF !important;	
+}
+
+</style>
+	<meta name="viewport"
+		content="width=device-width,initial-scale=1,shrink-to-fit=no" />
+</h:head>
+<body>
+	<p:dialog widgetVar="dlgCerrar" appendTo="@parent"
+		header="#{titulos['salirSistema']}" modal="true" width="200px;"
+		closable="false">
+		<h:panelGrid columns="2">
+			<p:commandButton value="#{botones['aceptar']}"
+				icon="#{botones['icono.select']}" process="@this"
+				partialSubmit="true" action="#{backingLogin.cerrarSesion()}"
+				oncomplete="PF('dlgCerrar').hide();" />
+			<p:commandButton value="#{botones['cancelar']}"
+				icon="#{botones['icono.cancelar']}" process="@this"
+				partialSubmit="true" oncomplete="PF('dlgCerrar').hide();" />
+		</h:panelGrid>
+	</p:dialog>
+	<div class="row grow w-100">
+		<div class="col-12 bg-primary py-3">
+			<h:form>
+				<center>
+					<p:menubar model="#{backingLogin.menumodel}" >
+						<f:facet name="options">
+							<i class="pi pi-user" style="font-size: 1rem; color: green"></i>
+							
+							<p:outputLabel
+								value=" #{backingLogin.beanLogin.usuario.persona.persApellidos} #{backingLogin.beanLogin.usuario.persona.persNombres}" />	
+							<h:outputLink
+								value="#{backingFacebookLogin.authenticateWithFacebook()}"
+								target="_blank">
+								<i class="pi pi-facebook" style="font-size: 1em; color: green;"></i>
+							</h:outputLink>		
+							                
+			                <p:commandButton oncomplete="PF('dlgCerrar').show();"
+								title="#{tooltip['salirSistema']}"
+								icon="#{botones['icono.cancelar']}" process="@this"
+								value="Cerrar sesión" />
+						</f:facet>
+					</p:menubar>
+
+				</center>
+			</h:form>
+		</div>
+		<div class="main col-12 bg-light h-100 py-3">
+			<ui:insert name="contenido">
+					Contenido por defecto para que no quede en blanco...    
+				</ui:insert>
+		</div>
+	</div>
+
+</body>
+</html>

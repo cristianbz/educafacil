@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
+	
+	<ui:define name="contenido">
+			<f:event listener="#{backingLogin.validarSesion()}"
+		type="preRenderView" />
+	<h:form id="formFinCursos" prependId="false">
+		<p:dialog widgetVar="dlgEnProc" header="Por favor espere.."
+			draggable="false" modal="true" resizable="false" closable="false"
+			responsive="true" style="font-size: 10px;">
+			<h:graphicImage value="/resources/img/cargando.gif" width="250"
+				height="250" />
+		</p:dialog>
+		
+		<p:dialog widgetVar="dlgFinCursoAlumno" showEffect="fade"
+			hideEffect="fade"  modal="true" header="#{titulos['finalizarMatricula']}"
+			appendTo="@(body)">
+			<p:scrollPanel mode="native"
+				style="max-height:450px; max-width:270px;">
+				<div class="ui-fluid p-formgrid p-grid">
+				<div class="p-field p-col-12 p-md-12">
+					<p:outputLabel value="Motivo de Desercion" />
+				</div>
+				<div class="p-field p-col-12 p-md-12">
+					<p:inputTextarea id="detalleAbandono" value="#{backingFinalizarCurso.beanFinalizarCurso.matriculaSeleccionada.matrMotivoAbandono}" 
+						tabindex="5" maxlength="50" required="true" requiredMessage="#{mensajes['campoRequerido']}" />
+				</div>
+				<div class="p-field p-col-12 p-md-12">
+					<p:message for="detalleAbandono" id="msgDetalle"/>
+				</div>
+				<div class="p-field p-col-12 p-md-6">
+					<p:commandButton process="@this detalleAbandono" update="growl msgDetalle panelAlumnos" value="#{botones['grabar']}" icon="#{botones['icono.grabar']}" 
+						actionListener="#{backingFinalizarCurso.grabarFinalizarCursoAlumno()}" partialSubmit="true"/>
+				</div>
+				<div class="p-field p-col-12 p-md-6">
+					<p:commandButton value="#{botones['cancelar']}" process="@this" icon="#{botones['icono.cancelar']}" oncomplete="PF('dlgFinCursoAlumno').hide();"/>
+				</div>
+				</div>
+			</p:scrollPanel>
+		</p:dialog>	
+		
+		<p:dialog widgetVar="dlgFinalCurso" showEffect="fade" closable="false" resizable="true"
+			hideEffect="fade"  modal="true" header="#{titulos['estudiantesCurso']}"
+			appendTo="@(body)">
+			<p:scrollPanel mode="native"
+				style="max-height:450px; max-width:1200px;">
+			<p:outputPanel id="panelAlumnos">				
+					<p:dataTable id="tblmatriculados" 
+						value="#{beanFinalizarCurso.listaMatriculadosCurso}"
+						paginator="true" rows="3" reflow="true"
+						emptyMessage="#{mensajes['noRegistros']}" var="alumno">
+						<p:column headerText="#{etiquetas['estudiante']}" filterBy="#{alumno.estudiante.persona.persApellidos}" filterMatchMode="contains">
+							#{alumno.estudiante.persona.persApellidos} #{alumno.estudiante.persona.persNombres}
+						</p:column>
+						<p:column headerText="#{etiquetas['estado']}" style="width:200px;">
+							<p:selectOneMenu value="#{alumno.matrEstado}">
+							    <f:selectItem itemLabel="Culminado" itemValue="INSMAT05" />
+							    <f:selectItem itemLabel="Desertado" itemValue="INSMAT03" />
+							</p:selectOneMenu>
+						</p:column>					
+						<p:column style="width:45px;">
+							<p:commandLink  process="@this tblmatriculados" 
+								title="Finalizar matricula alumno" update="growl"
+								action="#{backingFinalizarCurso.mostrarDialogoFinalizarAlumnoCurso()}" partialSubmit="true">
+								<f:setPropertyActionListener value="#{alumno}" target="#{beanFinalizarCurso.matriculaSeleccionada}"></f:setPropertyActionListener>
+								<i class="pi pi-chevron-circle-down" style="font-size: 1em; color: green;"></i>	
+							</p:commandLink>
+						</p:column>
+					</p:dataTable>
+					<br />
+					<br />
+					<h:panelGrid columns="2">
+						<p:commandButton value="#{botones['finalizarCurso']}"
+							process="@this tblmatriculados" update="growl"
+							icon="#{botones['icono.finalizar']}" partialSubmit="true"
+							actionListener="#{backingFinalizarCurso.mostrarDialogoGrabar()}" />
+						<p:commandButton value="#{botones['cancelar']}" process="@this"
+							icon="#{botones['icono.cancelar']}"
+							actionListener="#{backingFinalizarCurso.cancelarFinalizacion()}"
+							update="panelAlumnos" />
+					</h:panelGrid>
+			</p:outputPanel>
+			</p:scrollPanel>
+		</p:dialog>
+		
+		<p:growl id="growl" life="3000" showDetail="true" />
+		<p:dialog widgetVar="dlgFinalizar" showEffect="fade" hideEffect="fade"
+			modal="true" appendTo="@(body)" header="#{titulos['actualizar']}"
+			width="250" closable="true" resizable="false">
+			<h:panelGrid columns="2">
+				<p:commandButton value="#{botones['grabar']}"
+					actionListener="#{backingFinalizarCurso.procesaFinalizacionCurso()}"
+					oncomplete="PF('dlgFinalizar').hide();" partialSubmit="true"
+					process="@this panelAlumnos" icon="#{botones['icono.grabar']}"
+					update=" panelOfertaCursos panelAlumnos" />
+				<p:commandButton icon="#{botones['icono.cancelar']}"
+					value="#{botones['cancelar']}"
+					oncomplete="PF('dlgFinalizar').hide();" process="@this" />
+			</h:panelGrid>
+		</p:dialog>
+		<p:outputPanel id="panelOfertaCursos">
+			<br />
+			<p:breadCrumb>
+				<p:menuitem value="Categorias" url="#" />
+				<p:menuitem value="Administración" url="#" />
+				<p:menuitem value="Finalizar curso" url="#" />
+			</p:breadCrumb>
+
+				<p:dataTable sortBy="#{oferta.ofertaCapacitacion.area.areaNombre}" reflow="true"
+					emptyMessage="#{mensajes['noRegistros']}"
+					value="#{backingFinalizarCurso.beanFinalizarCurso.listaCursosAbiertos}"
+					paginator="true" rows="10" var="oferta" id="tablaOferta">
+					<p:column headerText="#{etiquetas['curso']}"
+						filterBy="#{oferta.ofertaCapacitacion.curso.cursNombre}"
+						filterMatchMode="contains">
+						#{oferta.ofertaCapacitacion.curso.cursNombre}
+					</p:column>
+					<p:column headerText="#{etiquetas['tipoCapacitacion']}" style="width:200px;">
+						<p:outputLabel
+							value="#{oferta.ocurTipo.equals('TCAPA01')?'Curso':oferta.ocurTipo.equals('TCAPA02')?'Taller':'Seminario'}" />
+					</p:column>
+					<p:column headerText="#{etiquetas['instructor']}" style="width:250px;">
+						<p:outputLabel
+							value="#{oferta.instructor.persona.persApellidos} #{oferta.instructor.persona.persNombres}" />
+					</p:column>
+					<p:column headerText="#{etiquetas['fechaInicioFin']}" style="width:250px;">
+						<p:outputLabel value="#{oferta.ocurFechaInicio}" id="fechaInicio">
+							<f:convertDateTime pattern="yyyy-MM-dd" for="fechaInicio" />
+						</p:outputLabel>
+						
+						<p:outputLabel value="#{oferta.ocurFechaFin}" id="fechaFin">
+							<f:convertDateTime pattern="yyyy-MM-dd" for="fechaFin" />
+						</p:outputLabel>
+					</p:column>
+					<p:column style="width:50px;" >
+						<p:commandLink process="@this panelAlumnos" title="#{tooltip['estudiantes']}"
+							 update="panelAlumnos"
+							onstart="PF('dlgEnProc').show();"
+							oncomplete="PF('dlgEnProc').hide();" ajax="true"
+							action="#{backingFinalizarCurso.cargarAlumnosCurso()}">
+							<f:setPropertyActionListener value="#{oferta}"
+								target="#{backingFinalizarCurso.beanFinalizarCurso.ofertaCursosSeleccionado}" />
+							<i class="pi pi-users" style="font-size: 1em; color: green;"></i>		
+						</p:commandLink>
+					</p:column>
+				</p:dataTable>
+
+		</p:outputPanel>
+		
+	</h:form>
+	</ui:define>
+
+</ui:composition>
+
+</html>
