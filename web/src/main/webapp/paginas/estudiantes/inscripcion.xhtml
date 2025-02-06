@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:comp="http://java.sun.com/jsf/composite/componentes/matricula" xmlns:val="http://java.sun.com/jsf/composite/componentes"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
+	
+	<ui:define name="contenido">
+					<f:event listener="#{backingLogin.validarSesion()}" type="preRenderView" />
+			<h:form id="form">
+				<p:dialog widgetVar="dlgInscribir" showEffect="fade" 
+				hideEffect="fade" modal="true" appendTo="@(body)" 
+				header="#{titulos['grabarInscripcion']}" width="250"
+				closable="true" resizable="false">
+					<h:panelGrid columns="2" id="panelBotones">
+						<p:commandButton value="#{botones['grabar']}" actionListener="#{backingInscripcion.grabarInscripcion()}" update="@form" id="btngrabar"
+							oncomplete="PF('dlgInscribir').hide();" process="@this" icon="#{botones['icono.grabar']}"/>
+						<p:commandButton icon="#{botones['icono.cancelar']}" value="#{botones['cancelar']}" oncomplete="PF('dlgInscribir').hide();" process="@this"/>
+					</h:panelGrid>					
+				</p:dialog>
+				<p:blockUI block="panelBotones" trigger="btngrabar" />
+				<p:fieldset legend="#{titulos['clientePotencial']}" style="margin-bottom:20px">	
+					<center>
+						<p:commandButton value="#{botones['nuevaInscripcion']}" process="@this" update="@form matricula" icon="#{botones['icono.nuevo']}" partialSubmit="true"
+							immediate="true" resetValues="true" actionListener="#{backingInscripcion.nuevaInscripcion}"/>	
+					</center>
+					<comp:componentematricula id="matricula" componenteBackingMatriculaInscripcion="#{backingInscripcion.componenteBackingMatriculaInscripcion}"/>
+				</p:fieldset>
+				<center>
+				<h:panelGrid columns="2">					
+					<p:commandButton value="#{botones['inscribir']}"  process="@this :form:matricula:growl :form:matricula:tabs"  
+						update=":form:matricula:tabs :form:matricula:growl " partialSubmit="true"
+						actionListener="#{backingInscripcion.mostrarDialogoGrabar()}" icon="#{botones['icono.inscribir']}"/>							
+				</h:panelGrid>
+				</center>
+			</h:form>
+	</ui:define>
+
+</ui:composition>
+
+</html>

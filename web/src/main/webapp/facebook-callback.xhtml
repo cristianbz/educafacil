@@ -1,0 +1,16 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+	xmlns:a4j="http://primefaces.org/ui">
+<h:head>
+    <title>Callback de Facebook</title>
+</h:head>
+<h:body>
+    <h:form>
+    	<p:poll id="poll" widgetVar="poll" interval="1" listener="#{backingFacebookLogin.redireccionar()}" autoStart="false" />
+    	<p:commandButton action="#{backingFacebookLogin.handleFacebookCallback()}" process="@this"/>
+    	<h:outputLink value="#{backingFacebookLogin.handleFacebookCallback()}">
+            <h:outputText value="Redireccionar"/>
+        </h:outputLink>
+    </h:form>
+</h:body>
+</html>

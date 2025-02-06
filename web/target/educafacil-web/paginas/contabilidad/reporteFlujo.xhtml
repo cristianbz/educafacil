@@ -1,0 +1,128 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:comp="http://java.sun.com/jsf/composite/componentes" 
+	xmlns:val="http://java.sun.com/jsf/composite/componentes"
+      xmlns:p="http://primefaces.org/ui">
+
+	<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+	<ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">		
+		<ui:define name="contenido">
+		<script>
+		   function exportChartInPDF() {
+		      var docDefinition = {
+		         content: [
+		        	 'Gráfica de Egresos',
+					   {
+					      image: $(PF('graficaE').exportAsImage()).attr('src'),
+					      width: 350
+					   },    
+					   'Gráfica de Ingresos',
+					   {
+					      image: $(PF('graficaI').exportAsImage()).attr('src'),
+					      width: 350
+					   },  
+			   'Gráfica Ingresos/Egresos',
+			   {
+			      image: $(PF('graficopastel').exportAsImage()).attr('src'),
+			      width: 200			      
+			   }		
+			 ]
+		      }
+		      //pdfMake.createPdf(docDefinition).open();
+		      pdfMake.createPdf(docDefinition).download('graficasIngresosEgresos.pdf');
+		   }
+		</script>
+			<f:event listener="#{backingLogin.validarSesion()}" type="preRenderView" />
+			<h:form>							
+				<p:growl id="growl" life="3000" showDetail="true" />
+				<p:dialog widgetVar="dlgEnProc" draggable="false" modal="true"
+					resizable="false" closable="false" responsive="true"
+					style="font-size: 10px;">
+					<h:graphicImage value="/resources/img/cargando.gif" width="300"
+						height="200" />
+				</p:dialog>
+				<p:dialog widgetVar="dlgReporteFechas" modal="true" closable="true" header="#{titulos['buscaEgresosIngresos']}">
+					<p:outputPanel id="fechas">
+						<p:scrollPanel mode="native" style="max-height:350px; max-width:450px;">
+						<div class="ui-fluid p-formgrid p-grid">
+							<div class="p-field p-col-12 p-md-12" >
+							<span class="ui-float-label ui-input-icon-right" style="margin-top: 2em">
+							<p:datePicker locale="es_ES" pattern="yyyy-MM-dd" monthNavigator="true" 
+								required="true" requiredMessage="#{mensajes['campoRequerido']}"
+								yearNavigator="true" id="fechaUno" value="#{backingReporteria.beanReporteria.fechaInicial}" >
+								
+							</p:datePicker><p:outputLabel value="#{etiquetas['fechaInicio']}:"/>
+							</span>
+							<p:message for="fechaUno"/>
+							</div>
+							<div class="p-field p-col-12 p-md-12" >
+							<span class="ui-float-label ui-input-icon-right" style="margin-top: 2em">
+							<p:datePicker locale="es_ES" pattern="yyyy-MM-dd"  monthNavigator="true" yearNavigator="true" 
+								required="true" requiredMessage="#{mensajes['campoRequerido']}"
+								id="fechaDos" value="#{backingReporteria.beanReporteria.fechaFinal}" >
+							</p:datePicker><p:outputLabel value="#{etiquetas['fechaFin']}:"/>
+							</span>
+							<p:message for="fechaDos"/>
+							</div>
+							<div class="p-field p-col-12 p-md-6" >
+							<p:commandButton process="@this fechas" value="#{botones['aceptar']}" partialSubmit="true" icon="#{botones['icono.select']}"
+								onstart="PF('dlgEnProc').show()" oncomplete="PF('dlgEnProc').hide()"
+								update="graficas growl fechas" actionListener="#{backingReporteria.buscaReporteFlujoFechas()}"/>
+							</div>
+							<div class="p-field p-col-12 p-md-6" >
+							<p:commandButton icon="#{botones['icono.cancelar']}" value="#{botones['cancelar']}" process="@this" oncomplete="PF('dlgReporteFechas').hide()"/>			
+							</div>
+						</div>
+						</p:scrollPanel>
+					</p:outputPanel>
+				</p:dialog>
+			<p:breadCrumb>
+				<p:menuitem value="Categorias" url="#" />
+				<p:menuitem value="Contabilidad" url="#" />
+				<p:menuitem value="Reporte ingresos/egresos" url="#"/>
+			</p:breadCrumb>	
+			<br/>
+			<p:splitButton value="#{etiquetas['accionesRealizar']}">
+	            <p:menuitem value="#{botones['estadisticas']}" action="#{backingReporteria.dialogoReporteFechas}" update="fechas"
+							process="@this"  icon="pi pi-chart-line"/>
+	            <p:menuitem onclick="exportChartInPDF()" value="#{botones['descargarGraficas']}"  icon="pi pi-cloud-download" />	            
+	        </p:splitButton>			
+				
+
+					
+				<p:outputPanel id="graficas">
+					<center>
+					<p:outputLabel value="#{titulos['resumenIngresoEgreso']} #{beanReporteria.fechasReporte}"/>
+					</center>
+					<div class="ui-fluid p-formgrid p-grid">
+						<div class="p-field p-col-12 p-md-6">
+							<p:barChart model="#{backingReporteria.beanReporteria.modelGraficoE}" id="graficaE" widgetVar="graficaE"
+						style="width: 100%; height: 500px;" />	
+						</div>
+						<div class="p-field p-col-12 p-md-6">
+							<p:barChart model="#{backingReporteria.beanReporteria.modelGraficoI}" id="graficaI" widgetVar="graficaI"
+						style="width: 100%; height: 500px;" />
+						</div>
+						<div class="p-field p-col-12 p-md-6">
+							<p:outputLabel value="#{etiquetas['ingresosEgresos']} "/>
+							<p:pieChart model="#{backingReporteria.beanReporteria.modelPieFechas}"  style="width: 20%; height: 20%;" widgetVar="graficopastel"/>
+						</div>
+						<div class="p-field p-col-12 p-md-6">
+						</div>
+						<div class="p-field p-col-12 p-md-12">
+							
+						</div>
+					</div>
+					
+				</p:outputPanel>	
+				
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</html>			

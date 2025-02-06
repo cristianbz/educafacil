@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:composite="http://java.sun.com/jsf/composite">
+
+<composite:interface>
+	<composite:attribute name="componenteBuscaEstudiante"
+		required="true" />
+	</composite:interface>
+	<composite:implementation>
+		<p:growl id="growl" life="3000" showDetail="true" />
+		<p:dialog widgetVar="dlgClientes" modal="true" header="#{titulos['buscaEstudiante']}">
+			<p:scrollPanel mode="native" style="max-height:350px; max-width:450px;" id="panelBusqueda">
+				<div class="ui-fluid p-formgrid p-grid">
+				<div class="p-field p-col-12 p-md-12" >
+				<span class="ui-float-label ui-input-icon-right" style="margin-top: 2em">
+				<p:inputText
+					value="#{cc.attrs.componenteBuscaEstudiante.beanBuscaEstudiante.cedula}"
+					id="cedula">
+					<p:ajax event="focus" process="@this apellidos" update="apellidos"
+						listener="#{cc.attrs.componenteBuscaEstudiante.vaciarApellidos()}" />
+				</p:inputText><p:outputLabel value="#{etiquetas['cedularuc']}:" />
+				</span>
+				</div>
+				<div class="p-field p-col-12 p-md-12" >
+				<span class="ui-float-label ui-input-icon-right" ><p:inputText
+					value="#{cc.attrs.componenteBuscaEstudiante.beanBuscaEstudiante.apellidos}"
+					id="apellidos">
+					<p:ajax event="focus" process="@this cedula" update="cedula"
+						listener="#{cc.attrs.componenteBuscaEstudiante.vaciarCedula()}" />
+				</p:inputText><p:outputLabel value="#{etiquetas['apellidos']}:" />
+				</span>
+				</div>
+				<div class="p-field p-col-12 p-md-6" >
+				<p:commandButton value="#{botones['buscar']}"
+					icon="#{botones['icono.buscar']}"
+					actionListener="#{cc.attrs.componenteBuscaEstudiante.buscarPorCedulaOApellido()}"
+					process="@this cedula apellidos clientes"
+					update="clientes growl"
+					oncomplete="PF('dlgEnProc').hide();"
+					onstart="PF('dlgEnProc').show();" />
+				</div>
+				</div>
+			</p:scrollPanel>
+			<p:outputLabel for="clientes" value="#{titulos['seleccionePersona']}" />
+			<p:selectOneListbox id="clientes" scrollHeight="150"
+				value="#{cc.attrs.componenteBuscaEstudiante.beanBuscaEstudiante.codigoCliente}">
+				<f:selectItems
+					value="#{cc.attrs.componenteBuscaEstudiante.beanBuscaEstudiante.listaEstudiante}"
+					var="cliente" itemValue="#{cliente.estuId}"
+					itemLabel="#{cliente.persona.persApellidos} #{cliente.persona.persNombres}" />
+			</p:selectOneListbox>
+			<p:separator />
+			<h:panelGrid columns="2">
+				<p:commandButton process="@this clientes" update="@form growl"				
+				icon="#{botones['icono.seleccion']}" partialSubmit="true"
+				value="#{botones['seleccionar']}"
+				actionListener="#{cc.attrs.componenteBuscaEstudiante.seleccionarEstudiante()}" />
+			<p:commandButton value="#{botones['cancelar']}" process="@this clientes panelBusqueda" 
+				update="clientes panelBusqueda" icon="#{botones['icono.cancelar']}"
+				actionListener="#{cc.attrs.componenteBuscaEstudiante.cancelaBusqueda()}"/>
+			</h:panelGrid>
+				
+			
+		</p:dialog>
+		<i class="pi pi-search" style="font-size: 2em; color: green;"></i>
+		<p:commandLink process="@this" value="#{botones['seleccionEstudiante']}" 
+		 actionListener="#{cc.attrs.componenteBuscaEstudiante.mostrarDialogo}" update="panelBusqueda clientes @form growl" partialSubmit="true"/>
+	</composite:implementation>
+</html>

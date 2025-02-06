@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+<ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
+	<ui:define name="contenido">
+		<f:event listener="#{backingLogin.validarSesion()}" type="preRenderView" />
+		<h:form  id="formproveedor" prependId="false">
+			<p:growl id="growl" life="3000" showDetail="true"/>
+		    <p:fieldset legend="#{titulos['listaProveedores']}" style="margin-bottom:20px">
+			<p:dataTable id="tablaproveedor" value="#{backingProveedor.beanProveedor.listaProveedores}" var="proveedor">
+				<p:column headerText="#{etiquetas['ruc']}">
+					#{proveedor.provRuc}
+				</p:column>
+				<p:column headerText="#{etiquetas['razonSocial']}">
+					#{proveedor.provNombre}
+				</p:column>
+				<p:column headerText="#{etiquetas['direccion']}">
+					#{proveedor.provDireccion}
+				</p:column>
+				<p:column headerText="#{etiquetas['telefono']}">
+					#{proveedor.provTelefono}
+				</p:column>
+				<p:column headerText="#{etiquetas['correo']}">
+					#{proveedor.provCorreo}
+				</p:column>
+				<p:column>
+					<p:commandButton value="#{botones['editar']}" process="@this panelNuevo" 
+						icon="#{botones['icono.notas']}"
+						action="#{backingProveedor.editarProveedor()}" update="panelNuevo">
+						<f:setPropertyActionListener value="#{proveedor}" target="#{backingProveedor.beanProveedor.proveedor}"></f:setPropertyActionListener>
+					</p:commandButton>
+				</p:column>
+			</p:dataTable>
+			</p:fieldset>
+			<h:panelGrid columns="2">
+				<p:commandButton value="#{botones['nuevo']}" process="@this panelNuevo" 
+					actionListener="#{backingProveedor.nuevoProveedor()}" icon="#{botones['icono.nuevo']}"
+					update="panelNuevo"/>
+			</h:panelGrid>
+			<br/>
+			<p:outputPanel id="panelNuevo">
+			    <p:fieldset legend="#{titulos['datosProveedor']}" style="margin-bottom:20px" rendered="#{backingProveedor.mostrarPanelNuevo}">
+					<p:tabView rendered="#{backingProveedor.mostrarPanelNuevo}">
+						<p:tab title="#{etiquetas['proveedor']}">
+							<h:panelGrid columns="4">
+								<h:graphicImage value="/imagenes/utilitarios/asterisco.gif"
+												width="5" height="5" />
+								<p:outputLabel value="#{etiquetas['ruc']}"/>
+								<p:inputText value="#{backingProveedor.beanProveedor.proveedor.provRuc}"
+									required="true" id="ruc" requiredMessage="#{mensajes['campoRequerido']}"/>
+								<p:message for="ruc"/>	
+								
+								<h:graphicImage value="/imagenes/utilitarios/asterisco.gif"
+												width="5" height="5" />
+								<p:outputLabel value="#{etiquetas['razonSocial']}"/> 
+								<p:inputTextarea rows="5" value="#{backingProveedor.beanProveedor.proveedor.provNombre}"
+									required="true" id="nombre" requiredMessage="#{mensajes['campoRequerido']}" maxlength="50"/>
+								<p:message for="nombre"/>	
+								
+								<h:graphicImage value="/imagenes/utilitarios/asterisco.gif"
+												width="5" height="5" />
+								<p:outputLabel value="#{etiquetas['direccion']}"/>
+								<p:inputTextarea rows="5" value="#{backingProveedor.beanProveedor.proveedor.provDireccion}"
+									required="true" id="direccion" requiredMessage="#{mensajes['campoRequerido']}" maxlength="50"/>
+								<p:message for="direccion"/>	
+								
+								<h:graphicImage value="/imagenes/utilitarios/asterisco.gif"
+												width="5" height="5" />
+								<p:outputLabel value="#{etiquetas['telefono']}"/>
+								<p:inputText value="#{backingProveedor.beanProveedor.proveedor.provTelefono}"
+									required="true" id="telefono" requiredMessage="#{mensajes['campoRequerido']}"/>
+								<p:message for="telefono"/>	
+								
+								<h:graphicImage value="/imagenes/utilitarios/asterisco.gif"
+												width="5" height="5" />
+								<p:outputLabel value="#{etiquetas['correo']}"/>
+								<p:inputText value="#{backingProveedor.beanProveedor.proveedor.provCorreo}"
+									validatorMessage="#{mensajes['correoInvalido']}"
+									required="true" id="correo" requiredMessage="#{mensajes['campoRequerido']}">
+									<p:ajax event="blur" process="@this" update="msgCorreo"/>
+												<f:validateRegex pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$" />
+								</p:inputText>	
+								<p:message for="correo" id="msgCorreo"/>	
+							</h:panelGrid>
+						</p:tab>
+						<p:tab title="#{etiquetas['documentacion']}">
+							<h:panelGrid columns="4">
+								<h:graphicImage value="/imagenes/utilitarios/asterisco.gif"
+												width="5" height="5" />
+								<p:outputLabel value="#{etiquetas['autorizacionSri']}"/>
+								<p:inputText value="#{backingProveedor.beanProveedor.documentacionProveedor.docpCodigoAutorizacion}"
+									required="true" id="autorizacion" requiredMessage="#{mensajes['campoRequerido']}"/>
+								<p:message for="autorizacion"/>
+								
+								<h:inputHidden  />
+								<p:outputLabel value="#{etiquetas['fechasAutorizacion']}"/>
+								<h:inputHidden  />
+								<h:inputHidden />
+								
+								<h:graphicImage value="/imagenes/utilitarios/asterisco.gif"
+												width="5" height="5" />
+								<p:outputLabel value="#{etiquetas['fechaInicio']}"/>
+								<p:calendar value="#{backingProveedor.beanProveedor.documentacionProveedor.docpFechaAutorizacionDesde}"
+									required="true" id="fechaDesde" requiredMessage="#{mensajes['campoRequerido']}"/>
+								<p:message for="fechaDesde"/>	
+								
+								<h:graphicImage value="/imagenes/utilitarios/asterisco.gif"
+												width="5" height="5" />
+								<p:outputLabel value="#{etiquetas['fechaInicio']}"/>
+								<p:calendar value="#{backingProveedor.beanProveedor.documentacionProveedor.docpFechaAutorizacionHasta}"
+									required="true" id="fechaHasta" requiredMessage="#{mensajes['campoRequerido']}"/>
+								<p:message for="fechaHasta"/>
+								
+								<h:graphicImage value="/imagenes/utilitarios/asterisco.gif"
+												width="5" height="5" />
+								<p:outputLabel value="#{etiquetas['retencionIva']}"/>
+								<p:inputText value="#{backingProveedor.beanProveedor.documentacionProveedor.docpRetencionIva}"
+									required="true" id="retencionIva" requiredMessage="#{mensajes['campoRequerido']}"/>
+								<p:message for="retencionIva"/>
+								
+								<h:graphicImage value="/imagenes/utilitarios/asterisco.gif"
+												width="5" height="5" />
+								<p:outputLabel value="#{etiquetas['retencionFuente']}"/>
+								<p:inputText value="#{backingProveedor.beanProveedor.documentacionProveedor.docpRetencionFuente}"
+									required="true" id="retencionFuente" requiredMessage="#{mensajes['campoRequerido']}"/>
+								<p:message for="retencionFuente"/>	
+							</h:panelGrid>
+						</p:tab>
+					</p:tabView>
+					<br/>
+					<h:panelGrid columns="2">
+						<p:commandButton value="#{botones['grabar']}" actionListener="#{backingProveedor.mostrarDialogoGrabarProveedor()}"
+							icon="#{botones['icono.grabar']}"
+							process="@this panelNuevo" update="panelNuevo"/>
+						<p:commandButton value="#{botones['cancelar']}" process="@this panelNuevo" 
+							icon="#{botones['icono.cancelar']}"
+							update="panelNuevo"/>	
+					</h:panelGrid>
+				</p:fieldset>
+			</p:outputPanel>
+		<p:dialog widgetVar="dlgGrabaProveedor" showEffect="fade" 
+				hideEffect="fade" modal="true" appendTo="@(body)" 
+				header="#{titulos['actualizar']}" id="idgrabaoferta">
+				<h:panelGrid columns="2">
+					<p:commandButton value="#{botones['grabar']}" 						
+						icon="#{botones['icono.grabar']}" update="panelNuevo tablaproveedor "					
+					actionListener="#{backingProveedor.grabarProveedor()}" process="@this tablaproveedor" oncomplete="PF('dlgGrabaProveedor').hide();"/>
+					<p:commandButton value="#{botones['cancelar']}" oncomplete="PF('dlgGrabaProveedor').hide();" icon="#{botones['icono.cancelar']}"/>
+				</h:panelGrid>
+		</p:dialog>
+		</h:form>
+	</ui:define>
+</ui:composition>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:h="http://java.sun.com/jsf/html">
+
+<h:head>
+	<h:outputStylesheet name="primeicons/primeicons.css" library="primefaces" />
+	<link
+		href="#{facesContext.externalContext.requestContextPath}/resources/css/bootstrap.min.css"
+		rel="stylesheet" type="text/css" />
+		<link
+		href="#{facesContext.externalContext.requestContextPath}/resources/css/estilos.css"
+		rel="stylesheet" type="text/css" />	
+	
+	<script
+		src="#{facesContext.externalContext.requestContextPath}/resources/js/bootstrap.min.js"></script>
+		<script type="text/javascript"
+		src="#{request.contextPath}/js/calendario/calendar_es.js"></script>
+		<script type="text/javascript" src="../resources/js/atras.js"></script>	
+		
+	<h:outputStylesheet library="webjars"
+		name="primeflex/2.0.0/primeflex.min.css" />
+	<h:outputStylesheet library="webjars"
+		name="font-awesome/5.12.0/css/all.min-jsf.css" />
+	<h:outputStylesheet library="webjars"
+		name="font-awesome/5.12.0/css/v4-shims.min-jsf.css" />	
+	
+<meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no" />	
+</h:head>
+<body>
+	
+			<div class="ui-fluid p-formgrid p-grid">
+				<div class="p-field p-col-12 p-md-3">
+						
+				</div>
+				<div class="p-field p-col-12 p-md-6">
+				<ui:insert name="contenido">
+					Contenido por defecto para que no quede en blanco...    
+				</ui:insert>
+				</div>
+				<div class="p-field p-col-12 p-md-3">
+						
+				</div>
+					
+		</div>
+	
+	
+</body>
+</html>

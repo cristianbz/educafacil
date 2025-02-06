@@ -1,0 +1,575 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
+	
+	<ui:define name="contenido">
+					<f:event listener="#{backingLogin.validarSesion()}" type="preRenderView" />
+			<h:form prependId="false">
+		<p:growl id="growl" life="3000" showDetail="true" />
+		<p:dialog widgetVar="dlgCerrar" appendTo="@parent"
+			header="#{titulos['grabar']}" modal="true" width="200px;"
+			closable="false">
+			<h:panelGrid columns="2">
+				<p:commandButton value="Procesar"
+					process="@this panelPersona panelfin"
+					actionListener="#{backingMatriculaOnline.matricular()}"
+					partialSubmit="true" update="panelPersona panelfin growl"
+					icon="#{botones['icono.select']}"
+					oncomplete="PF('dlgCerrar').hide();" />
+				<p:commandButton value="#{botones['cancelar']}"
+					icon="#{botones['icono.cancelar']}" process="@this"
+					partialSubmit="true" oncomplete="PF('dlgCerrar').hide();" />
+			</h:panelGrid>
+		</p:dialog>
+		<p:dialog widgetVar="dlgEnProc" draggable="false" modal="true"
+			resizable="false" closable="false" responsive="true"
+			style="font-size: 10px;">
+			<h:graphicImage value="/resources/img/cargando.gif" width="200"
+				height="200" />
+		</p:dialog>
+		<div class="container">
+			<center>
+				<p:graphicImage name="mileniumtechlogo.png" library="img"
+					width="25%" />
+			</center>
+			<p:outputPanel id="panelPersona">
+				<p:panel
+					rendered="#{backingMatriculaOnline.beanMatricula.mostrarDatosPersona}">
+					<center>
+						<h2>FORMULARIO DE MATRICULA EN LINEA</h2>
+					</center>
+					<center>
+						<h5>Por favor ingrese toda la información solicitada para
+							poder registrar su matrícula, escriba sus datos de forma correcta ya que se utilizarán para generar su factura, certficado,etc.</h5>
+					</center>
+
+					<div class="ui-fluid p-formgrid p-grid">
+						<div class="p-field p-col-12 p-md-5">
+							<h4 style="margin-top: 0; color: blue;">DATOS PERSONALES</h4>
+							<p:separator />
+						</div>
+						<div class="p-field p-col-12 p-md-7"></div>
+
+						<div class="p-field p-col-12 p-md-2">
+							<p:outputLabel value="#{etiquetas['cedularuc']}:*"
+								style="color:blue" />
+						</div>
+						<div class="p-field p-col-12 p-md-10"></div>
+
+						<div class="p-field p-col-12 p-md-6">
+							<p:inputText required="true" tabindex="1"
+								requiredMessage="#{mensajes['campoRequerido']}" id="idCedula"
+								maxlength="15"
+								onkeypress="if( (event.which &lt; 48 || event.which &gt; 57) ) return false;"
+								value="#{backingMatriculaOnline.beanMatricula.persona.persDocumentoIdentidad}">
+								<p:ajax event="blur"
+									listener="#{backingMatriculaOnline.buscaPersonaPorCedula}"
+									partialSubmit="true" process="@this" update="panelPersona "
+									onstart="PF('dlgEnProc').show();"
+									oncomplete="PF('dlgEnProc').hide();" />
+							</p:inputText>
+						</div>
+						<div class="p-field p-col-12 p-md-3">
+							<p:message for="idCedula" />
+						</div>
+						<div class="p-field p-col-12 p-md-3"></div>
+
+						<div class="p-field p-col-12 p-md-2">
+							<p:outputLabel value="#{etiquetas['apellidos']}:*"
+								style="color:blue" />
+						</div>
+						<div class="p-field p-col-12 p-md-10"></div>
+
+						<div class="p-field p-col-12 p-md-6">
+							<p:inputText maxlength="30" id="idApellidos" required="true"
+								requiredMessage="#{mensajes['campoRequerido']}" tabindex="2"
+								value="#{backingMatriculaOnline.beanMatricula.persona.persApellidos}">
+
+							</p:inputText>
+						</div>
+						<div class="p-field p-col-12 p-md-3">
+							<p:message for="idApellidos" />
+						</div>
+						<div class="p-field p-col-12 p-md-3"></div>
+
+						<div class="p-field p-col-12 p-md-2">
+							<p:outputLabel value="#{etiquetas['nombres']}:*"
+								style="color:blue" />
+						</div>
+						<div class="p-field p-col-12 p-md-10"></div>
+
+						<div class="p-field p-col-12 p-md-6">
+							<p:inputText maxlength="30" id="idNombres" required="true"
+								requiredMessage="#{mensajes['campoRequerido']}" tabindex="3"
+								value="#{backingMatriculaOnline.beanMatricula.persona.persNombres}">
+								<p:ajax event="blur" process="@this" />
+							</p:inputText>
+						</div>
+						<div class="p-field p-col-12 p-md-3">
+							<p:message for="idNombres" />
+						</div>
+						<div class="p-field p-col-12 p-md-3"></div>
+						
+
+						<div class="p-field p-col-12 p-md-2">
+							<p:outputLabel value="#{etiquetas['telefonoMobil']}:*"
+								style="color:blue" />
+						</div>
+						<div class="p-field p-col-12 p-md-10"></div>
+
+						<div class="p-field p-col-12 p-md-6">
+							<p:inputText id="idTelefonoMobil" tabindex="4"
+								onkeypress="if( (event.which &lt; 48 || event.which &gt; 57) ) return false;"
+								required="true" requiredMessage="#{mensajes['campoRequerido']}"
+								value="#{backingMatriculaOnline.beanMatricula.persona.persTelefonoMobil}" />
+
+						</div>
+						<div class="p-field p-col-12 p-md-3">
+							<p:message for="idTelefonoMobil" />
+						</div>
+						<div class="p-field p-col-12 p-md-3"></div>
+
+						<div class="p-field p-col-12 p-md-2">
+							<p:outputLabel value="#{etiquetas['telefonoCasa']}:"
+								style="color:blue" />
+						</div>
+						<div class="p-field p-col-12 p-md-10"></div>
+
+						<div class="p-field p-col-12 p-md-6">
+							<p:inputText tabindex="5"
+								onkeypress="if( (event.which &lt; 48 || event.which &gt; 57) ) return false;"
+								value="#{backingMatriculaOnline.beanMatricula.persona.persTelefonoCasa}" />
+
+						</div>
+						<div class="p-field p-col-12 p-md-6"></div>
+						
+						<div class="p-field p-col-12 p-md-2">
+							<p:outputLabel value="#{etiquetas['correo']}:*"
+								style="color:blue" />
+						</div>
+						<div class="p-field p-col-12 p-md-10"></div>
+
+						<div class="p-field p-col-12 p-md-6"> 
+							<p:inputText maxlength="60" id="idCorreo" required="true"
+								requiredMessage="#{mensajes['campoRequerido']}"
+								counter="displaycorreo" tabindex="6"
+								counterTemplate="{0} caracteres restantes"
+								validatorMessage="#{mensajes['correoInvalido']}"
+								value="#{backingMatriculaOnline.beanMatricula.persona.persCorreoElectronico}">
+								<p:ajax event="blur" process="@this" />
+								<f:validateRegex
+									pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$" />
+							</p:inputText>
+							<h:outputText id="displaycorreo" />
+						</div>
+						<div class="p-field p-col-12 p-md-3">
+							<p:message for="idCorreo" />
+						</div>
+						<div class="p-field p-col-12 p-md-3"></div>
+
+						<div class="p-field p-col-12 p-md-2">
+							<p:outputLabel value="#{etiquetas['telefonoTrabajo']}:"
+								style="color:blue" />
+						</div>
+						<div class="p-field p-col-12 p-md-10"></div>
+
+						<div class="p-field p-col-12 p-md-6">
+							<p:inputText tabindex="7"
+								onkeypress="if( (event.which &lt; 48 || event.which &gt; 57) ) return false;"
+								value="#{backingMatriculaOnline.beanMatricula.estudiante.estuTelefonoTrabajo}" />
+						</div>
+						<div class="p-field p-col-12 p-md-6"></div>
+
+						<div class="p-field p-col-12 p-md-2">
+							<p:outputLabel value="#{etiquetas['fechaNacimiento']}:*"
+								style="color:blue" />
+						</div>
+						<div class="p-field p-col-12 p-md-10"></div>
+
+						<div class="p-field p-col-12 p-md-6">
+							<p:calendar id="fechaNacimiento" pattern="yyyy-MM-dd" locale="es"
+								navigator="true" required="true" tabindex="8"
+								requiredMessage="#{mensajes['campoRequerido']}"
+								validatorMessage="#{mensajes['campoRequerido']}"
+								value="#{backingMatriculaOnline.beanMatricula.persona.persFechaNacimiento}">
+
+							</p:calendar>
+						</div>
+						<div class="p-field p-col-12 p-md-3">
+							<p:message for="fechaNacimiento" />
+						</div>
+						<div class="p-field p-col-12 p-md-3"></div>
+
+						<div class="p-field p-col-12 p-md-2">
+							<p:outputLabel value="#{etiquetas['domicilio']}:*"
+								style="color:blue" />
+						</div>
+						<div class="p-field p-col-12 p-md-10"></div>
+
+						<div class="p-field p-col-12 p-md-6">
+							<p:inputTextarea id="idDomicilio" required="true"
+								counter="displaydomicilio" tabindex="9"
+								counterTemplate="{0} caracteres restantes"
+								requiredMessage="#{mensajes['campoRequerido']}" maxlength="50"
+								value="#{backingMatriculaOnline.beanMatricula.persona.persDomicilio}">
+								<p:ajax event="blur" process="@this" />
+							</p:inputTextarea>
+							<h:outputText id="displaydomicilio" />
+						</div>
+						<div class="p-field p-col-12 p-md-3">
+							<p:message for="idDomicilio" />
+						</div>
+						<div class="p-field p-col-12 p-md-3"></div>
+
+						<div class="p-field p-col-12 p-md-2">
+							<p:outputLabel value="#{etiquetas['direccionTrabajo']}:*"
+								style="color:blue" />
+						</div>
+						<div class="p-field p-col-12 p-md-10"></div>
+
+						<div class="p-field p-col-12 p-md-6">
+							<p:inputTextarea id="idTrabajo" required="true"
+								counter="displaytrabajo" tabindex="10"
+								counterTemplate="{0} caracteres restantes"
+								requiredMessage="#{mensajes['campoRequerido']}" maxlength="50"
+								value="#{backingMatriculaOnline.beanMatricula.estudiante.estuDireccionTrabajo}">
+								<p:ajax event="blur" process="@this" />
+							</p:inputTextarea>
+							<h:outputText id="displaytrabajo" />
+						</div>
+						<div class="p-field p-col-12 p-md-6">
+							<p:message for="idTrabajo" />
+						</div>
+						
+						<div class="p-field p-col-12 p-md-2">							
+								<p:outputLabel value="#{etiquetas['estadoCivil']}:*" style="color:blue"/>								
+						</div>
+						<div class="p-field p-col-12 p-md-9">							
+							<p:outputPanel id="idestadocivil">
+							<p:selectOneRadio  value="#{backingMatriculaOnline.beanMatricula.persona.persEstadoCivil}" 																
+								layout="responsive" columns="3"  required="true" tabindex="11"
+								requiredMessage="#{mensajes['campoRequerido']}"
+								unselectable="false">
+								<f:selectItems var="estado"
+									value="#{backingMatriculaOnline.beanMatricula.enumEstadoCivil}"
+									itemValue="#{estado.codigo}" itemLabel="#{estado.label}" />
+					        </p:selectOneRadio>
+					        </p:outputPanel>
+						</div>
+						<div class="p-field p-col-12 p-md-1">
+							<p:message for="idestadocivil" />
+						</div>
+						
+						<div class="p-field p-col-12 p-md-2">							
+								<p:outputLabel  value="#{etiquetas['cargasFamiliares']}:*" style="color:blue"/>							
+						</div>
+						<div class="p-field p-col-12 p-md-10">							
+							 	<p:toggleSwitch  value="#{backingMatriculaOnline.beanMatricula.persona.persCargasFamiliares}" onIcon="pi pi-check" offIcon="pi pi-times" tabindex="12"> 							 		
+							 		<p:ajax process="@this"  partialSubmit="true" event="change"  />
+							 	</p:toggleSwitch>								
+						</div>
+						
+						<div class="p-field p-col-12 p-md-2">
+							
+								<p:outputLabel  value="#{etiquetas['trabajaEnArea']}?:*" style="color:blue"/>
+							
+						</div>
+						<div class="p-field p-col-12 p-md-10">							
+							 	<p:toggleSwitch  value="#{backingMatriculaOnline.beanMatricula.matricula.matrTrabajaEnArea}" onIcon="pi pi-check" offIcon="pi pi-times" tabindex="13"> 							 		
+							 		<p:ajax process="@this"  partialSubmit="true" event="change"  />
+							 	</p:toggleSwitch>								
+						</div>
+
+						<div class="p-field p-col-12 p-md-2">							
+								<p:outputLabel value="#{etiquetas['deseoCurso']}:*" style="color:blue"/>								
+						</div>
+						<div class="p-field p-col-12 p-md-9">							
+							<p:outputPanel id="iddeseocurso">
+							<p:selectOneRadio  value="#{backingMatriculaOnline.beanMatricula.matricula.matrParaQueCurso}" 																
+								layout="responsive" columns="3"  required="true" tabindex="14"
+								requiredMessage="#{mensajes['campoRequerido']}"
+								unselectable="false">
+								<f:selectItems var="estado"
+									value="#{backingMatriculaOnline.beanMatricula.enumParaQueCurso}"
+									itemValue="#{estado.codigo}" itemLabel="#{estado.label}" />
+					        </p:selectOneRadio>
+					        </p:outputPanel>
+						</div>
+						<div class="p-field p-col-12 p-md-1">
+							<p:message for="iddeseocurso" />
+						</div>
+
+						<div class="p-field p-col-12 p-md-2">
+							<p:outputLabel value="#{etiquetas['cargoDesempenia']}:*"
+								style="color:blue" />
+						</div>
+						<div class="p-field p-col-12 p-md-10"></div>
+
+						<div class="p-field p-col-12 p-md-6">
+							<p:selectOneMenu tabindex="15"
+								value="#{backingMatriculaOnline.beanMatricula.codigoCargo}"
+								id="idCargo" required="true"
+								requiredMessage="#{mensajes['campoRequerido']}">
+								<f:selectItem itemLabel="#{etiquetas['seleccionar']}"
+									itemValue="#{null}" noSelectionOption="true" />
+								<f:selectItems var="cargo"
+									value="#{backingMatriculaOnline.beanMatricula.enumCargoTrabajo}"
+									itemValue="#{cargo.codigo}" itemLabel="#{cargo.label}" />
+								<p:ajax event="change" process="@this" />
+							</p:selectOneMenu>
+						</div>
+						<div class="p-field p-col-12 p-md-3">
+							<p:message for="idCargo" />
+						</div>
+						<div class="p-field p-col-12 p-md-3"></div>
+
+						<div class="p-field p-col-12 p-md-2">
+							<p:outputLabel value="#{etiquetas['nivelEstudio']}:*"
+								style="color:blue" />
+						</div>
+						<div class="p-field p-col-12 p-md-10"></div>
+
+						<div class="p-field p-col-12 p-md-6">
+							<p:selectOneMenu tabindex="16"
+								value="#{backingMatriculaOnline.beanMatricula.codigoNivelEstudio}"
+								id="idNivel" required="true"
+								requiredMessage="#{mensajes['campoRequerido']}">
+								<f:selectItem itemLabel="#{etiquetas['seleccionar']}"
+									itemValue="#{null}" noSelectionOption="true" />
+								<f:selectItems var="nivel"
+									value="#{backingMatriculaOnline.beanMatricula.enumNivelEstudio}"
+									itemValue="#{nivel.codigo}" itemLabel="#{nivel.label}" />
+								<p:ajax event="change" process="@this" />
+							</p:selectOneMenu>
+						</div>
+						<div class="p-field p-col-12 p-md-6">
+							<p:message for="idNivel" />
+						</div>
+						
+						<div class="p-field p-col-12 p-md-2">
+							<p:outputLabel value="#{etiquetas['ingresoMensual']}:*"
+								style="color:blue" />
+						</div>
+						<div class="p-field p-col-12 p-md-10"></div>
+
+						<div class="p-field p-col-12 p-md-6">
+							<p:selectOneMenu tabindex="17"
+								value="#{backingMatriculaOnline.beanMatricula.codigoIngresosMensuales}"
+								id="idIngresos" required="true"
+								requiredMessage="#{mensajes['campoRequerido']}">
+								<f:selectItem itemLabel="#{etiquetas['seleccionar']}"
+									itemValue="#{null}" noSelectionOption="true" />
+								<f:selectItems var="ingresos"
+									value="#{backingMatriculaOnline.beanMatricula.enumIngresos}"
+									itemValue="#{ingresos.codigo}" itemLabel="#{ingresos.label}" />
+								<p:ajax event="change" process="@this" /> 
+							</p:selectOneMenu>
+						</div>
+						<div class="p-field p-col-12 p-md-6">
+							<p:message for="idIngresos" />
+						</div>
+
+						<div class="p-field p-col-12 p-md-2">
+							<p:outputLabel value="#{etiquetas['provinciaDom']}:*" style="color:blue" />
+						</div>
+						<div class="p-field p-col-12 p-md-10"></div>
+						
+						<div class="p-field p-col-12 p-md-6">
+							<p:selectOneMenu tabindex="18" filter="true" filterMatchMode="contains"
+								value="#{backingMatriculaOnline.beanMatricula.provincia}"
+								id="idProvincia" required="true" converter="selectOneMenuConverter"
+								requiredMessage="#{mensajes['campoRequerido']}">
+								<f:selectItem itemLabel="#{etiquetas['seleccionar']}"
+									itemValue="#{null}" noSelectionOption="true" />
+								<f:selectItems var="prov"
+									value="#{backingMatriculaOnline.beanMatricula.listaProvincias}"
+									itemValue="#{prov}" itemLabel="#{prov.cataDescripcion}" />
+								<p:ajax event="change" process="@this" listener="#{backingMatriculaOnline.cargaCantones()}" update="idCiudad" partialSubmit="true"/>
+							</p:selectOneMenu>
+						</div>
+						<div class="p-field p-col-12 p-md-3">
+							<p:message for="idProvincia" />
+						</div>
+						<div class="p-field p-col-12 p-md-3"></div>
+						
+						<div class="p-field p-col-12 p-md-2">
+							<p:outputLabel value="#{etiquetas['ciudadDom']}:*" style="color:blue" />
+						</div>
+						<div class="p-field p-col-12 p-md-10"></div>
+						
+						<div class="p-field p-col-12 p-md-6">
+							<p:selectOneMenu tabindex="19" filter="true" filterMatchMode="contains"
+								value="#{backingMatriculaOnline.beanMatricula.codigoCiudad}"
+								id="idCiudad" required="true"
+								requiredMessage="#{mensajes['campoRequerido']}">
+								<f:selectItem itemLabel="#{etiquetas['seleccionar']}"
+									itemValue="#{null}" noSelectionOption="true" />
+								<f:selectItems var="can"
+									value="#{backingMatriculaOnline.beanMatricula.listaCantones}"
+									itemValue="#{can.cataId}" itemLabel="#{can.cataDescripcion}" />
+								<p:ajax event="change" process="@this" />
+							</p:selectOneMenu>
+						</div>
+						<div class="p-field p-col-12 p-md-3">
+							<p:message for="idProvincia" />
+						</div>
+						<div class="p-field p-col-12 p-md-3"></div>
+						
+						
+						<div class="p-field p-col-12 p-md-2">
+							<p:outputLabel value="#{etiquetas['sectorDom']}:*" style="color:blue" />
+						</div>
+						<div class="p-field p-col-12 p-md-10"></div>
+						
+						<div class="p-field p-col-12 p-md-6">
+							<p:selectOneMenu tabindex="20"
+								value="#{backingMatriculaOnline.beanMatricula.codigoSector}"
+								id="idSector" required="true"
+								requiredMessage="#{mensajes['campoRequerido']}">
+								<f:selectItem itemLabel="#{etiquetas['seleccionar']}"
+									itemValue="#{null}" noSelectionOption="true" />
+								<f:selectItems var="sector"
+									value="#{backingMatriculaOnline.beanMatricula.enumUbicacionDomicilio}"
+									itemValue="#{sector.codigo}" itemLabel="#{sector.label}" />
+								<p:ajax event="change" process="@this" />
+							</p:selectOneMenu>
+						</div>
+						<div class="p-field p-col-12 p-md-3">
+							<p:message for="idSector" />
+						</div>
+						<div class="p-field p-col-12 p-md-3"></div>
+						
+						<!--  
+						<div class="p-field p-col-12 p-md-12">
+							<leaf:map center="-0.2679526,-78.5505624" zoom="12"
+								width="500px" 
+								height="400px"  />
+						</div>
+						-->
+						
+						<div class="p-field p-col-12 p-md-5">
+							<h4 style="margin-top: 0; color: blue;">DATOS CURSO</h4>
+							<p:separator />
+						</div>
+						<div class="p-field p-col-12 p-md-7"></div>
+
+						<div class="p-field p-col-12 p-md-2">
+							<p:outputLabel value="#{etiquetas['curso']}:*" style="color:blue" />
+						</div>
+						<div class="p-field p-col-12 p-md-10"></div>
+
+						<div class="p-field p-col-12 p-md-6">
+							<p:selectOneMenu id="idcurso" tabindex="21" filter="true" filterMatchMode="contains"
+								requiredMessage="#{mensajes['campoRequerido']}" required="true"
+								value="#{backingMatriculaOnline.beanMatricula.cursoSeleccionado}"
+								converter="selectOneMenuConverter" panelStyle="width:380px" style="width:300px;"
+								effect="fade" var="c">
+								<f:selectItem itemLabel="#{mensajes['seleccionElemento']}"
+									itemValue="#{null}" noSelectionOption="true" />
+								<f:selectItems
+									value="#{backingMatriculaOnline.beanMatricula.listaOfertaCursos}"
+									var="obj"
+									itemLabel="#{obj.ofertaCapacitacion.curso.cursNombre} - #{obj.ocurFechaInicio}"
+									itemValue="#{obj}" />
+								<p:column width="80" headerText="#{etiquetas['curso']}">
+									<h:outputText value="#{c.ofertaCapacitacion.curso.cursNombre}" />
+								</p:column>								
+								<p:column width="120" headerText="#{etiquetas['horario']}">
+									<p:outputLabel value="#{c.ocurHorario}"/>
+								</p:column>
+								<p:column width="80" headerText="#{etiquetas['fechaInicio']}">
+									<h:outputLabel value="#{c.ocurFechaInicio}" id="finicio">
+										<f:convertDateTime for="finicio" pattern="yyyy-MM-dd" />
+									</h:outputLabel>
+								</p:column>
+								<p:column width="80" headerText="#{etiquetas['fechaFin']}">
+									<h:outputLabel value="#{c.ocurFechaFin}" id="ffin">
+										<f:convertDateTime for="ffin" pattern="yyyy-MM-dd" />
+									</h:outputLabel>
+								</p:column>
+								<p:ajax process="@this" event="change" listener="#{backingMatriculaOnline.validaMatricula}" update="btnMatricula growl"/>
+							</p:selectOneMenu>
+						</div>
+						<div class="p-field p-col-12 p-md-6">
+							<p:message for="idcurso" />
+						</div>
+
+						<div class="p-field p-col-12 p-md-2">
+							<p:outputLabel value="#{etiquetas['medioInformacion']}:*"
+								style="color:blue" />
+						</div>
+						<div class="p-field p-col-12 p-md-10"></div>
+
+						<div class="p-field p-col-12 p-md-6">
+							<p:selectOneMenu tabindex="22"
+								value="#{backingMatriculaOnline.beanMatricula.codigoMedioInformacion}"
+								id="idmedio" required="true"
+								requiredMessage="#{mensajes['campoRequerido']}">
+								<f:selectItem itemLabel="#{etiquetas['seleccionar']}"
+									itemValue="#{null}" noSelectionOption="true" />
+
+								<f:selectItems var="medio"
+									value="#{backingMatriculaOnline.beanMatricula.enumMedioInformacion}"
+									itemValue="#{medio.codigo}" itemLabel="#{medio.label}" />
+								<p:ajax process="@this" event="change" />
+							</p:selectOneMenu>
+						</div>
+						<div class="p-field p-col-12 p-md-6">
+							<p:message for="idmedio" />
+						</div>
+						
+						<div class="p-field p-col-12 p-md-2">
+							<p:outputLabel value="#{etiquetas['otroCurso']}:"
+								style="color:blue" />
+						</div>
+						<div class="p-field p-col-12 p-md-10"></div>
+
+						<div class="p-field p-col-12 p-md-6">
+							<p:inputTextarea id="idOtroCurso" 
+								counter="displayotro" tabindex="23"
+								counterTemplate="{0} caracteres restantes"
+								maxlength="300"
+								value="#{backingMatriculaOnline.beanMatricula.matricula.matrObservacion}">
+								<p:ajax event="blur" process="@this" />
+							</p:inputTextarea>
+							<h:outputText id="displayotro" />
+						</div>
+						<div class="p-field p-col-12 p-md-3">
+							<p:message for="idCedula" />
+						</div>
+						<div class="p-field p-col-12 p-md-3"></div>
+
+						<div class="p-field p-col-12 p-md-9">
+							<p:commandButton value="Procesar" process="@this panelPersona " id="btnMatricula"
+								disabled="#{backingMatriculaOnline.beanMatricula.deshabilitaMatricula}" tabindex="24"
+								actionListener="#{backingMatriculaOnline.matricular()}"
+								partialSubmit="true" update="panelPersona panelfin growl"
+								icon="#{botones['icono.select']}" />
+						</div>
+						<div class="p-field p-col-12 p-md-5"></div>
+					</div>
+				</p:panel>
+			</p:outputPanel>
+
+			<center>
+				<p:outputPanel id="panelfin">
+					<p:panel
+						rendered="#{not backingMatriculaOnline.beanMatricula.mostrarDatosPersona}">
+						<h3>Gracias por realizar su matricula.</h3>
+
+						<br />
+
+
+					</p:panel>
+				</p:outputPanel>
+			</center>
+		</div>
+	</h:form>
+</ui:define>
+</ui:composition>
+</html>

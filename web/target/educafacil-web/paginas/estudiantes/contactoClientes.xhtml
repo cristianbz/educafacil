@@ -1,0 +1,369 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
+	
+	<ui:define name="contenido">
+		<f:event listener="#{backingLogin.validarSesion()}"
+			type="preRenderView" />
+		<h:form id="formContacto" prependId="false">
+			<p:growl id="growl" life="3000" showDetail="true" />
+			<p:outputPanel id="panelClientesPotenciales">
+				<p:fieldset legend="#{titulos['seguimientoClientes']}"
+					style="margin-bottom:20px"
+					rendered="#{backingContactoRegistroDatos.beanContactoRegistroDatos.mostrarClientes}">
+					<p:dataTable
+						value="#{backingContactoRegistroDatos.beanContactoRegistroDatos.litaOportunidades}"
+						
+						rendered="#{backingContactoRegistroDatos.beanContactoRegistroDatos.mostrarClientes}"
+						selection="#{backingContactoRegistroDatos.beanContactoRegistroDatos.oportunidadSeleccionado}"
+						rows="10" paginator="true" id="tablaregistros"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+						rowKey="#{oportunidad.matrId}" var="oportunidad">
+
+
+						<p:column headerText="#{etiquetas['nombres']}"
+							filterMatchMode="contains"
+							filterBy="#{oportunidad.estudiante.persona.persApellidos} #{oportunidad.estudiante.persona.persNombres}">
+							<p:outputLabel
+								value="#{oportunidad.estudiante.persona.persApellidos} #{oportunidad.estudiante.persona.persNombres}" />
+						</p:column>
+						<p:column headerText="#{etiquetas['curso']}"
+							filterMatchMode="contains"
+							filterBy="#{oportunidad.ofertaCursos.ofertaCapacitacion.curso.cursNombre}">
+							<p:outputLabel
+								value="#{oportunidad.ofertaCursos.ofertaCapacitacion.curso.cursNombre}" />
+						</p:column>
+						<p:column headerText="#{etiquetas['fechaInscripcion']}"
+							sortBy="#{oportunidad.matrFechaInscripcion}">
+							<p:outputLabel value="#{oportunidad.matrFechaInscripcion}"
+								id="fechaInscripcion">
+								<f:convertDateTime for="fechaInscripcion" pattern="yyyy-MM-dd" />
+							</p:outputLabel>
+						</p:column>
+						<p:column headerText="#{etiquetas['observacion']}">
+							<p:outputLabel value="#{oportunidad.matrObservacion}" />
+						</p:column>
+
+						<p:column>
+							<p:commandButton icon="#{botones['icono.ruedas']}"
+								process="@this panelClientesPotenciales actividades"
+								action="#{backingContactoRegistroDatos.mostrarListaTareas()}"
+								update="actividades panelClientesPotenciales">
+								<f:setPropertyActionListener value="#{oportunidad}"
+									target="#{backingContactoRegistroDatos.beanContactoRegistroDatos.oportunidadSeleccionado}" />
+							</p:commandButton>
+						</p:column>
+					</p:dataTable>
+				</p:fieldset>
+			</p:outputPanel>
+
+			<p:panel id="actividades">
+
+				<p:fieldset legend="#{titulos['registroActividad']}"
+					rendered="#{backingContactoRegistroDatos.beanContactoRegistroDatos.actividades}">
+					<h:panelGrid columns="3">
+						<p:panelGrid id="panelDatos" styleClass="panelNoBorder top-aligned-columns" style="position: relative;top: -1em;"
+							rendered="#{backingContactoRegistroDatos.beanContactoRegistroDatos.actividades}">
+							<p:row>
+								<p:column>
+									<h:outputLabel value="#{etiquetas['clientePotencial']}:"
+										style="color:red;" />
+								</p:column>
+								<p:column>
+									<p:outputLabel
+										value="#{backingContactoRegistroDatos.beanContactoRegistroDatos.oportunidadSeleccionado.estudiante.persona.persApellidos} #{backingContactoRegistroDatos.beanContactoRegistroDatos.oportunidadSeleccionado.estudiante.persona.persNombres}" />
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<h:outputLabel value="#{etiquetas['curso']}:" style="color:red;" />
+								</p:column>
+								<p:column>
+									<p:outputLabel
+										value="#{backingContactoRegistroDatos.beanContactoRegistroDatos.oportunidadSeleccionado.ofertaCursos.ofertaCapacitacion.curso.cursNombre}" />
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<h:outputLabel value="#{etiquetas['telefono']}:"
+										style="color:red;" />
+								</p:column>
+								<p:column>
+									<p:outputLabel
+										value="#{backingContactoRegistroDatos.beanContactoRegistroDatos.oportunidadSeleccionado.estudiante.persona.persTelefonoMobil}" />
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<h:outputLabel value="#{etiquetas['correo']}:"
+										style="color:red;" />
+								</p:column>
+								<p:column>
+									<p:outputLabel
+										value="#{backingContactoRegistroDatos.beanContactoRegistroDatos.oportunidadSeleccionado.estudiante.persona.persCorreoElectronico}" />
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<p:outputLabel value="#{etiquetas['mensajeRecibido']}:"
+										style="color:red;" />
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column colspan="2">
+									<p:outputLabel
+										value="#{backingContactoRegistroDatos.beanContactoRegistroDatos.oportunidadSeleccionado.matrObservacion}" />
+								</p:column>
+							</p:row>
+
+
+						</p:panelGrid>
+						<h:panelGrid>
+
+						</h:panelGrid>
+						<p:panelGrid id="panelTareas" styleClass="panelNoBorder">
+							<p:row>
+								<p:column>
+									<h:graphicImage value="/imagenes/utilitarios/asterisco.gif"
+										width="5" height="5" />
+								</p:column>
+								<p:column>
+									<p:outputLabel value="#{etiquetas['tarea']}" />
+								</p:column>
+								<p:column>
+									<p:selectOneMenu
+										value="#{backingContactoRegistroDatos.beanContactoRegistroDatos.codigoTarea}"
+										required="true"
+										requiredMessage="#{mensajes['campoRequerido']}">
+										<f:selectItem itemLabel="#{etiquetas['seleccionar']}"
+											itemValue="#{null}" noSelectionOption="true" />
+										<f:selectItems var="actividad"
+											value="#{backingContactoRegistroDatos.beanContactoRegistroDatos.listaTipoSeguimiento}"
+											itemLabel="#{actividad.cataDescripcion}"
+											itemValue="#{actividad.cataCodigoIndice}" />
+										<p:ajax event="change" process="@this" />
+									</p:selectOneMenu>
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<h:graphicImage value="/imagenes/utilitarios/asterisco.gif"
+										width="5" height="5" />
+								</p:column>
+								<p:column>
+									<p:outputLabel value="#{etiquetas['actividad']}" />
+								</p:column>
+								<p:column>
+									<p:inputText required="true"
+										requiredMessage="#{mensajes['campoRequerido']}"
+										value="#{backingContactoRegistroDatos.beanContactoRegistroDatos.seguimiento.segmTarea}" />
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+
+								</p:column>
+								<p:column>
+									<p:outputLabel value="#{etiquetas['notas']}" />
+								</p:column>
+								<p:column>
+									<p:inputTextarea
+										value="#{backingContactoRegistroDatos.beanContactoRegistroDatos.seguimiento.segmNotasTarea}"
+										cols="40" rows="5" />
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<h:graphicImage value="/imagenes/utilitarios/asterisco.gif"
+										width="5" height="5" />
+								</p:column>
+								<p:column>
+									<p:outputLabel value="#{etiquetas['fechaEjecucion']}" />
+								</p:column>
+								<p:column>
+									<p:calendar required="true" locale="es" pattern="yyyy-MM-dd"
+										requiredMessage="#{mensajes['campoRequerido']}"
+										value="#{backingContactoRegistroDatos.beanContactoRegistroDatos.seguimiento.segmFechaEjecucionTarea}" />
+								</p:column>
+
+							</p:row>
+							<p:row>
+								<p:column>
+									<h:graphicImage value="/imagenes/utilitarios/asterisco.gif"
+										width="5" height="5" />
+								</p:column>
+								<p:column>
+									<p:outputLabel value="#{etiquetas['hora']}" />
+								</p:column>
+								<p:column>
+									<p:datePicker id="timeonly"
+										value="#{backingContactoRegistroDatos.beanContactoRegistroDatos.seguimiento.segmHoraTarea}"
+										timeOnly="true" pattern="HH:mm" />
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<h:graphicImage value="/imagenes/utilitarios/asterisco.gif"
+										width="5" height="5" />
+								</p:column>
+								<p:column>
+									<p:outputLabel value="#{etiquetas['asignado']}" />
+								</p:column>
+								<p:column>
+									<p:selectOneMenu
+										value="#{backingContactoRegistroDatos.beanContactoRegistroDatos.codigoUsuario}"
+										required="true"
+										requiredMessage="#{mensajes['campoRequerido']}">
+										<f:selectItem itemLabel="#{etiquetas['seleccionar']}"
+											itemValue="#{null}" noSelectionOption="true" />
+										<f:selectItems var="vendedor"
+											value="#{backingContactoRegistroDatos.beanContactoRegistroDatos.listaVendedores}"
+											itemLabel="#{vendedor.persona.persApellidos} #{vendedor.persona.persNombres}"
+											itemValue="#{vendedor.usuaId}" />
+										<p:ajax event="change" process="@this" />
+									</p:selectOneMenu>
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+								</p:column>
+								<p:column>
+									<p:commandButton value="#{botones['grabar']}" icon="#{botones['icono.grabar']}"
+										actionListener="#{backingContactoRegistroDatos.mostrarDialogoGrabar()}"
+										process="@this panelTareas" update="panelTareas growl" />
+								</p:column>
+								<p:column>
+									<p:commandButton value="#{botones['cancelar']}" icon="#{botones['icono.cancelar']}" 
+									process="@this " update="actividades panelClientesPotenciales" actionListener="#{backingContactoRegistroDatos.cancelarIngresoSeguimiento()}"/>
+								</p:column>
+							</p:row>
+						</p:panelGrid>
+					</h:panelGrid>
+					<p:carousel id="seguimientoscliente"
+						value="#{backingContactoRegistroDatos.beanContactoRegistroDatos.listadoSeguimiento}"
+						rendered="#{backingContactoRegistroDatos.beanContactoRegistroDatos.actividades}"
+						headerText="#{titulos['actividadesSeguimiento']}" var="seguimiento"
+						itemStyle="text-align:left" responsive="true">
+						<p:panelGrid  style="width:100%;margin:10px 0px" id="panelSeg"
+							
+							styleClass="ui-panelgrid-blank">
+							<f:facet name="header">
+								<i style="color:green;" class="#{seguimiento.segmTipoTarea.equals('TSEGM01')?'fa fa-fw fa-envelope-o':seguimiento.segmTipoTarea.equals('TSEGM02')?'fa fa-fw fa-phone':seguimiento.segmTipoTarea.equals('TSEGM03')?'fa fa-fw fa-whatsapp':'fa fa-fw fa-street-view'}"></i>
+							</f:facet>							
+							<p:row>
+								<p:column>
+									<h:outputText value="#{seguimiento.segmTarea}" />	
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column >
+									<h:outputText value="#{etiquetas['notas']}:" style="color:red;"/>	
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column >
+									<h:inputTextarea value="#{seguimiento.segmNotasTarea}" cols="40" rows="2" disabled="true" />	
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<h:outputText value="#{etiquetas['fechaEjecucion']}:" style="color:red;"/>
+								</p:column>
+							</p:row>
+							<p:row>	
+								<p:column>
+									<h:outputText value="#{seguimiento.segmFechaEjecucionTarea}" id="fechaEjecucion">
+										<f:convertDateTime for="fechaEjecucion" pattern="yyyy-MM-dd"/>
+									</h:outputText>	
+									<p:outputLabel value=" - - "/>
+									<h:outputText value="#{seguimiento.segmHoraTarea}" id="horaEjecucion">
+										<f:convertDateTime for="horaEjecucion" pattern="HH:mm"/>
+									</h:outputText>	
+								</p:column>
+							</p:row>							
+							<p:row>
+								<p:column >
+									<h:outputText value="#{etiquetas['respuesta']}:" style="color:red;"/>	
+								</p:column>
+							</p:row>							
+							<p:row>
+								<p:column >
+									<h:inputTextarea value="#{seguimiento.segmMensajeRespuestaTarea}" cols="40" rows="2"/>	
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<h:outputText value="#{etiquetas['culminado']}:" style="color:red;"/>	
+								</p:column>
+							</p:row>
+							<p:row>	
+								<p:column>
+									<p:toggleSwitch value="#{seguimiento.segmCulminado}" />	
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<p:commandButton icon="#{botones['icono.seleccion']}" value="#{botones['actualizar']}" process="@this panelSeg" action="#{backingContactoRegistroDatos.actualizarSeguimientoClientePotencial()}" update="growl">
+		        						<f:setPropertyActionListener value="#{seguimiento}" target="#{backingContactoRegistroDatos.beanContactoRegistroDatos.seguimiento}"/>
+		        					</p:commandButton>		
+								</p:column>
+							</p:row>        					
+						</p:panelGrid>
+
+					</p:carousel>
+				</p:fieldset>
+			</p:panel>
+
+			<p:dialog widgetVar="dlggrabar" modal="true"
+				header="#{titulos['grabar']}">
+				<h:panelGrid columns="2">
+					<p:commandButton value="#{botones['grabar']}"
+						icon="#{botones['icono.grabar']}" process="@this panelTareas seguimientoscliente"
+						oncomplete="PF('dlggrabar').hide();"
+						actionListener="#{backingContactoRegistroDatos.asignarTarea()}"
+						update="panelTareas growl seguimientoscliente" />
+					<p:commandButton value="#{botones['cancelar']}"
+						icon="#{botones['icono.cancelar']}" process="@this"
+						oncomplete="PF('dlggrabar').hide();" />
+				</h:panelGrid>
+			</p:dialog>
+
+			<p:dialog widgetVar="dlgActividades">
+				<h:panelGrid columns="2">
+					<p:outputLabel value="#{etiquetas['actividad']}" />
+					<p:selectOneMenu
+						value="#{backingContactoRegistroDatos.beanContactoRegistroDatos.codigoTarea}"
+						required="true" requiredMessage="#{mensajes['campoRequerido']}">
+						<f:selectItem itemLabel="#{etiquetas['seleccionar']}"
+							itemValue="#{null}" noSelectionOption="true" />
+						<f:selectItems var="actividad"
+							value="#{backingContactoRegistroDatos.beanContactoRegistroDatos.listaTipoSeguimiento}"
+							itemLabel="#{actividad.cataDescripcion}"
+							itemValue="#{actividad.cataCodigoIndice}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="#{etiquetas['usuario']}" />
+					<p:selectOneMenu
+						value="#{backingContactoRegistroDatos.beanContactoRegistroDatos.codigoUsuario}"
+						required="true" requiredMessage="#{mensajes['campoRequerido']}">
+						<f:selectItem itemLabel="#{etiquetas['seleccionar']}"
+							itemValue="#{null}" noSelectionOption="true" />
+						<f:selectItems var="vendedor"
+							value="#{backingContactoRegistroDatos.beanContactoRegistroDatos.listaVendedores}"
+							itemLabel="#{vendedor.persona.persApellidos} #{vendedor.persona.persApellidos}"
+							itemValue="#{vendedor.usuaId}" />
+					</p:selectOneMenu>
+				</h:panelGrid>
+			</p:dialog>
+		</h:form>
+		
+	</ui:define>
+
+</ui:composition>
+
+</html>
