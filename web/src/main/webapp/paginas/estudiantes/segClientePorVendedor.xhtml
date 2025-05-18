@@ -1,0 +1,833 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:ui="jakarta.faces.facelets"
+      	xmlns:f="jakarta.faces.core"
+      	xmlns:h="jakarta.faces.html"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
+
+	<ui:define name="contenido">
+		<f:event listener="#{backingLogin.validarSesion()}"
+			type="preRenderView" />
+		<h:form id="form" prependId="false">
+
+			<p:growl id="growl" life="3000" showDetail="true" />
+			<p:hotkey bind="esc" handler="PF('dlgNuevoSeguimiento').hide();"></p:hotkey>
+			<!-- Envio de mensajes whastapp -->
+
+			<p:dialog widgetVar="dlgLlamar" modal="true" width="100%"
+				height="200px;" header="#{titulos['pendientesLlamar']}">
+				<p:outputPanel id="pnlLlamar">
+					<p:dataTable id="tblllamar"
+						value="#{backingSeguimientoClientes.beanSeguimiento.listaLlamarAhora}"
+						rowKey="#{sc.segcId}" paginator="true" rows="6"
+						selectionMode="single"
+						selection="#{backingSeguimientoClientes.beanSeguimiento.seguimientoSeleccionado}"
+						var="sc">
+						<p:ajax event="rowSelect"
+							listener="#{backingSeguimientoClientes.onRowSelect}"
+							update="pnlseguimiento growl" partialSubmit="true"
+							process="@this" />
+						<p:ajax event="rowUnselect"
+							listener="#{backingSeguimientoClientes.onRowUnselect}"
+							partialSubmit="true" process="@this" />
+						<p:column headerText="#{etiquetas['clientePotencial']}"
+							style="width:200px;">
+					#{sc.segcCliente}
+				</p:column>
+						<p:column headerText="#{etiquetas['curso']}">
+					#{sc.curso.cursNombre}
+				</p:column>
+						<p:column headerText="#{etiquetas['telefono']}"
+							style="width:100px;">
+					#{sc.segcTelefono}
+				</p:column>
+						<p:column headerText="#{etiquetas['ultimoSeg']}">
+					#{sc.segcUltimoSeguimiento}
+				</p:column>
+						<p:column headerText="#{etiquetas['estado']}" style="width:150px;">
+							<p:outputLabel
+								value="#{sc.segcEstado.equals('CONTAC01')?'EN SEGUIMIENTO':sc.segcEstado.equals('CONTAC02')?'ABANDONADO':sc.segcEstado.equals('CONTAC03')?'MATRICULADO':sc.segcEstado.equals('CONTAC04')?'CANDIDATO':'PROXIMAOCASION'}" />
+						</p:column>
+						<p:column headerText="#{etiquetas['proximaLlamada']}"
+							style="width:100px;">
+							<p:outputLabel value="#{sc.segcProximaLlamada}" id="proximacall"
+								style="color:red;"
+								rendered="#{sc.segcProximaLlamada!=null?true:false}">
+								<f:convertDateTime for="proximacall" pattern="yyyy-MM-dd" />
+							</p:outputLabel>
+						</p:column>
+
+					</p:dataTable>
+				</p:outputPanel>
+			</p:dialog>
+			<p:dialog widgetVar="dlgEnProc" draggable="false" modal="true"
+				resizable="false" closable="false" responsive="true"
+				style="font-size: 10px;">
+				<h:graphicImage value="/resources/img/cargando.gif" width="200"
+					height="200" />
+			</p:dialog>
+			<p:dialog widgetVar="dlgExcel" modal="true" closable="true"
+				resizable="false">
+				<p:fileUpload mode="advanced" multiple="false" sizeLimit="102400"
+					allowTypes="/(\.|\/)(xls|xlsx)$/"
+					invalidSizeMessage="Máximo tamaño permitido 100 KB"
+					invalidFileMessage="solo xls es permitido"
+					update="growl tblsegexcel" process="@this"
+					listener="#{backingSeguimientoClientes.handleFileUpload}" />
+				<p:dataTable id="tblsegexcel"
+					value="#{backingSeguimientoClientes.beanSeguimiento.listadoSeguimientoExcel}"
+					var="excel" scrollable="true" scrollHeight="200px;">
+					<p:column>
+             		#{excel.segcId}
+             	</p:column>
+					<p:column>
+             		#{excel.segcCliente}
+             	</p:column>
+					<p:column>
+             		#{excel.segcUltimoSeguimiento}
+             	</p:column>
+					<p:column>
+             		#{excel.segcEstado}
+             	</p:column>
+				</p:dataTable>
+				<br />
+				<p:commandButton process="@this" value="#{botones['procesar']}"
+					partialSubmit="true" update="growl"
+					onstart="PF('dlgEnProc').show();"
+					oncomplete="PF('dlgEnProc').hide();"
+					icon="#{botones['icono.ruedas']}"
+					actionListener="#{backingSeguimientoClientes.procesarSubidaExcel()}" />
+			</p:dialog>
+
+			<p:dialog widgetVar="dlgCargarInfo" modal="true" closable="false"
+				header="#{titulos['selInformacion']}">
+
+				<p:outputPanel id="campanias">
+					<p:scrollPanel mode="native"
+						style="max-height:450px; max-width:500px;">
+						<div class="ui-fluid p-formgrid p-grid">
+							<div class="p-field p-col-12 p-md-12">
+								<p:selectOneRadio
+									value="#{backingSeguimientoClientes.beanSeguimiento.tipoCargaInformacion}">
+									<f:selectItem itemLabel="Por campania" itemValue="2" />
+									<f:selectItem itemLabel="Por curso" itemValue="3" />
+									<f:selectItem itemLabel="Por fechas" itemValue="4" />
+									<p:ajax event="change" process="@this"
+										update="idcampanias idcursos finicio ffin" />
+								</p:selectOneRadio>
+							</div>
+							<div class="p-field p-col-12 p-md-12">
+								<span class="ui-float-label ui-input-icon-right"
+									style="margin-top: 2em"> <p:selectOneMenu
+										id="idcampanias" converter="selectOneMenuConverter"
+										filterMatchMode="contains" filter="true"
+										panelStyle="width:300px;" style="width:300px;"
+										disabled="#{backingSeguimientoClientes.beanSeguimiento.tipoCargaInformacion==3 || backingSeguimientoClientes.beanSeguimiento.tipoCargaInformacion==4}"
+										value="#{backingSeguimientoClientes.beanSeguimiento.campaniaSeleccionada}">
+										<f:selectItems
+											value="#{backingSeguimientoClientes.beanSeguimiento.listaCampaniasTodas}"
+											var="camp"
+											itemLabel="#{camp.campDescripcion} / #{camp.fechasCampania}"
+											itemValue="#{camp}" required="true"
+											requiredMessage="#{mensajes['campoRequerido']}" />
+										<p:ajax process="@this idcampanias " partialSubmit="true"
+											event="change" />
+									</p:selectOneMenu> <p:outputLabel value="#{etiquetas['campania']}" />
+								</span>
+								<p:message for="idcampanias" />
+							</div>
+							<div class="p-field p-col-12 p-md-12">
+								<span class="ui-float-label ui-input-icon-right"
+									> <p:selectOneMenu id="idcursos"
+										converter="selectOneMenuConverter" filterMatchMode="contains"
+										filter="true" panelStyle="width:300px;" style="width:300px;"
+										disabled="#{backingSeguimientoClientes.beanSeguimiento.tipoCargaInformacion==2 || backingSeguimientoClientes.beanSeguimiento.tipoCargaInformacion==4}"
+										value="#{backingSeguimientoClientes.beanSeguimiento.cursoSeleccionado}">
+										<f:selectItems
+											value="#{backingSeguimientoClientes.beanSeguimiento.listaCursos}"
+											var="cur" itemLabel="#{cur.cursNombre}" itemValue="#{cur}"
+											required="true"
+											requiredMessage="#{mensajes['campoRequerido']}" />
+										<p:ajax process="@this idcursos " partialSubmit="true"
+											event="change" />
+									</p:selectOneMenu>
+									<p:outputLabel value="#{etiquetas['curso']}" />
+								</span>
+								<p:message for="idcursos" />
+							</div>
+							<div class="p-field p-col-12 p-md-12">
+								<span class="ui-float-label ui-input-icon-right"
+									>
+								<p:datePicker pattern="yyyy-MM-dd" id="finicio"
+									value="#{backingSeguimientoClientes.beanSeguimiento.fechaInicio}"
+									locale="es_ES" required="true"
+									requiredMessage="#{mensajes['campoRequerido']}"
+									disabled="#{backingSeguimientoClientes.beanSeguimiento.tipoCargaInformacion==2 || backingSeguimientoClientes.beanSeguimiento.tipoCargaInformacion==3}">
+								</p:datePicker><p:outputLabel value="#{etiquetas['fechaInicio']}" />
+								</span>
+								</div>
+								<p:message for="finicio" />
+								<div class="p-field p-col-12 p-md-12">
+									<span class="ui-float-label ui-input-icon-right"
+									>
+									<p:datePicker pattern="yyyy-MM-dd" id="ffin"
+										value="#{backingSeguimientoClientes.beanSeguimiento.fechaFin}"
+										locale="es_ES" required="true"
+										requiredMessage="#{mensajes['campoRequerido']}"
+										disabled="#{backingSeguimientoClientes.beanSeguimiento.tipoCargaInformacion==2 || backingSeguimientoClientes.beanSeguimiento.tipoCargaInformacion==3}">
+									</p:datePicker><p:outputLabel value="#{etiquetas['fechaFin']}" />
+									</span>
+									<p:message for="ffin" />
+								</div>
+
+							</div>
+					</p:scrollPanel>
+				</p:outputPanel>
+				<h:panelGrid columns="2" style="margin: 0 auto; text-align: center;">
+					<p:commandButton value="#{botones['aceptar']}"
+						update="tblSeg growl campanias" process="@this campanias tblSeg"
+						icon="#{botones['icono.select']}"
+						oncomplete="PF('tblseguimiento').clearFilters(); PF('dlgEnProc').hide();"
+						onstart="PF('dlgEnProc').show();" partialSubmit="true"
+						actionListener="#{backingSeguimientoClientes.cargarInformacion()}" />
+					<p:commandButton value="#{botones['cancelar']}"
+						icon="#{botones['icono.cancelar']}" process="@this"
+						partialSubmit="true" oncomplete="PF('dlgCargarInfo').hide()" />
+				</h:panelGrid>
+				
+
+			</p:dialog>
+			<p:dialog widgetVar="dlgdatoscampania" modal="true" closable="true"
+				header="#{titulos['campania']}">
+				<h:panelGrid columns="2" id="datoscampania">
+					<p:outputLabel value="#{etiquetas['campania']}:" />
+					<p:outputLabel
+						value="#{backingSeguimientoClientes.beanSeguimiento.campaniaSeleccionada.campDescripcion}" />
+					<p:outputLabel value="#{etiquetas['fechaInicio']}:" />
+					<p:outputLabel id="fdesde"
+						value="#{backingSeguimientoClientes.beanSeguimiento.campaniaSeleccionada.campFechaDesde}">
+						<f:convertDateTime for="fdesde" pattern="yyyy-MM-dd" />
+					</p:outputLabel>
+					<p:outputLabel value="#{etiquetas['fechaFin']}:" />
+					<p:outputLabel id="fhasta"
+						value="#{backingSeguimientoClientes.beanSeguimiento.campaniaSeleccionada.campFechaHasta}">
+						<f:convertDateTime for="fhasta" pattern="yyyy-MM-dd" />
+					</p:outputLabel>
+					<p:outputLabel value="#{etiquetas['valor']}:" />
+					<p:outputLabel
+						value="#{backingSeguimientoClientes.beanSeguimiento.campaniaSeleccionada.campCosto}" />
+					<p:outputLabel value="#{etiquetas['contenido']}:" />
+					<p:outputLabel
+						value="#{backingSeguimientoClientes.beanSeguimiento.campaniaSeleccionada.campTipoContenido.equals('CAMP01')?'INFOGRAFIA':'VIDEO'}" />
+				</h:panelGrid>
+			</p:dialog>
+
+			<p:dialog widgetVar="dlgcampanias" modal="true" closable="false"
+				header="#{titulos['campania']}">
+				<p:outputPanel id="idlstcampanias">
+					<p:selectOneListbox id="idcampania"
+						converter="selectOneMenuConverter"
+						value="#{backingSeguimientoClientes.beanSeguimiento.campaniaSeleccionada}">
+						<f:selectItems
+							value="#{backingSeguimientoClientes.beanSeguimiento.listaCampanias}"
+							var="camp" itemLabel="#{camp.campDescripcion}"
+							itemValue="#{camp}" required="true"
+							requiredMessage="#{mensajes['campoRequerido']}" />
+						<p:ajax process="@this idcampania valorcampania"
+							update="valorcampania" partialSubmit="true" event="click"
+							listener="#{backingSeguimientoClientes.cerrarDialogoCampania()}" />
+					</p:selectOneListbox>
+					<p:message for="idcampania" />
+				</p:outputPanel>
+
+			</p:dialog>
+
+
+			<p:dialog widgetVar="dlgmotivos" modal="true" closable="false"
+				header="#{titulos['motivosNoInteres']}">
+				<h:panelGrid columns="1" id="motivos">
+					<p:selectManyCheckbox id="idnoInteres" layout="grid" columns="3"
+						styleClass="grid-checkbox"
+						value="#{backingSeguimientoClientes.beanSeguimiento.motivosNoInteresSeleccionados}"
+						label="motivos" style="width: 15rem">
+						<f:selectItems
+							value="#{backingSeguimientoClientes.beanSeguimiento.motivosNoInteres}"
+							required="true" requiredMessage="#{mensajes['campoRequerido']}" />
+						<p:ajax process="@this" event="change" update="motivos" />
+					</p:selectManyCheckbox>
+					<p:message for="idnoInteres" />
+				</h:panelGrid>
+				<center>
+					<p:commandButton partialSubmit="true" process="@this"
+						icon="#{botones['icono.grabar']}" value="#{botones['agregar']}"
+						actionListener="#{backingSeguimientoClientes.registrarMotivosNoInteres()}" />
+				</center>
+			</p:dialog>
+
+			<p:dialog widgetVar="dlggrabar" modal="true" appendTo="@(body)"
+				header="#{titulos['grabar']}">
+				<p:outputPanel id="pnlGrabarSC">
+					<p:selectBooleanCheckbox
+						value="#{backingSeguimientoClientes.beanSeguimiento.seguirIngresandoClientes}"
+						rendered="#{backingSeguimientoClientes.beanSeguimiento.seguimientoInicial}"
+						itemLabel="#{etiquetas['continuarIngrClientes']}">
+						<p:ajax process="@this" />
+					</p:selectBooleanCheckbox>
+					<br />
+					<br />
+					<center>
+						<h:panelGrid columns="2">
+							<p:commandButton value="#{botones['grabar']}"
+								onstart="PF('dlgEnProc').show();"
+								oncomplete="PF('dlgEnProc').hide();"
+								icon="#{botones['icono.grabar']}"
+								process="@this  tblllamar panelSeguimiento" partialSubmit="true"
+								action="#{backingSeguimientoClientes.grabarSeguimiento()}"
+								update="growl   tblllamar pnlseguimiento">
+								<p:resetInput target="tblSeg" />
+
+							</p:commandButton>
+							<p:commandButton value="#{botones['cancelar']}"
+								icon="#{botones['icono.cancelar']}" process="@this"
+								oncomplete="PF('dlggrabar').hide();" />
+						</h:panelGrid>
+					</center>
+				</p:outputPanel>
+			</p:dialog>
+
+
+			<p:dialog widgetVar="dlgDetalleSeguimiento" showEffect="fade"
+				hideEffect="fade" width="40%" height="300px;" modal="true"
+				header="#{titulos['seguimientoRealizado']}" closable="true"
+				appendTo="@(body)">
+				<p:scrollPanel mode="native"
+					style="max-height:350px; max-width:1200px;">
+					<p:outputPanel id="detalleSeguimiento">
+						<p:chronoline
+							value="#{backingSeguimientoClientes.beanSeguimiento.trazabilidadObj}"
+							var="event">
+							        #{event.dsegObservacion} #{event.dsegEstado.equals('CONTAC01')?'[EN SEGUIMIENTO]':event.dsegEstado.equals('CONTAC02')?'[ABANDONADO]':event.dsegEstado.equals('CONTAC03')?'[MATRICULADO]':event.dsegEstado.equals('CONTAC04')?'[CANDIDATO]':'[PROXIMAOCASION]'}						
+							        <f:facet name="opposite">
+								<small class="text-secondary"> <p:outputLabel
+										value="#{event.dsegFecha}" id="fseg">
+										<f:convertDateTime for="fseg" pattern="yyyy-MM-dd" />
+									</p:outputLabel>
+								</small>
+							</f:facet>
+						</p:chronoline>
+						<br />
+					</p:outputPanel>
+				</p:scrollPanel>
+			</p:dialog>
+
+
+			<p:dialog widgetVar="dlgNuevoSeguimiento" showEffect="fade"
+				hideEffect="fade" height="300px;" modal="true" resizable="false"
+				header="#{titulos['seguimientoClientes']}" closable="false"
+				appendTo="@(body)">
+				<p:scrollPanel mode="native"
+					style="max-height:450px; max-width:600px;">
+					<p:outputPanel id="pnlseguimiento">
+						<a name="iniciodlgseg"></a>
+						<div class="ui-fluid p-formgrid p-grid">
+							<div class="p-field p-col-12 p-md-3">
+								<p:outputLabel value="#{etiquetas['ultimoSeg']}:"
+									style="color: green;" 
+									rendered="#{backingSeguimientoClientes.beanSeguimiento.seguimientoClientes.segcId>0?true:false}" />
+							</div>
+							<div class="p-field p-col-12 p-md-9">
+								<p:outputLabel 
+									value="#{backingSeguimientoClientes.beanSeguimiento.seguimientoClientes.segcUltimoSeguimiento}"
+									rendered="#{backingSeguimientoClientes.beanSeguimiento.seguimientoClientes.segcId>0?true:false}" />
+							</div>
+							<div class="p-field p-col-12 p-md-11">
+								
+								<span class="ui-float-label ui-input-icon-right">
+								<p:inputTextarea id="idcliente"
+									value="#{backingSeguimientoClientes.beanSeguimiento.seguimientoClientes.segcCliente}"
+									required="true" requiredMessage="#{mensajes['campoRequerido']}" /><p:outputLabel value="#{etiquetas['clientePotencial']}:*" />
+								</span>
+								<p:message for="idcliente" id="msgCliente"/>
+								</div>
+							<div class="p-field p-col-12 p-md-1">
+								<p:commandButton
+									process="@this idcliente idTelefonoMobil idCorreo"
+									partialSubmit="true" icon="#{botones['icono.select']}"
+									title="Actualizar nombre"
+									actionListener="#{backingSeguimientoClientes.actualizarCliente()}"
+									update="growl pnlseguimiento" />
+							</div>
+							<div class="p-field p-col-12 p-md-12">
+								
+								<span class="ui-float-label ui-input-icon-right" style="margin-top: 2em">
+								<p:inputText maxlength="16" id="idTelefonoMobil" required="true"
+									requiredMessage="#{mensajes['campoRequerido']}"
+									value="#{backingSeguimientoClientes.beanSeguimiento.seguimientoClientes.segcTelefono}">
+									<p:ajax event="blur" process="@this btngrabar "
+										partialSubmit="true"
+										listener="#{backingSeguimientoClientes.validaNumeroTelefono()}"
+										update="btngrabar" />
+								</p:inputText><p:outputLabel value="#{etiquetas['telefono']}:*" />
+								</span>
+								<p:message for="idTelefonoMobil" />
+							</div>
+
+							<div class="p-field p-col-12 p-md-12">
+								
+								<span class="ui-float-label ui-input-icon-right" style="margin-top: 2em">
+								<p:inputText maxlength="60" id="idCorreo"
+									validatorMessage="#{mensajes['correoInvalido']}"
+									required="true" requiredMessage="#{mensajes['campoRequerido']}"
+									value="#{backingSeguimientoClientes.beanSeguimiento.seguimientoClientes.segcCorreo}">
+									<p:ajax event="blur" process="@this" />
+									<f:validateRegex
+										pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$" />
+								</p:inputText><p:outputLabel value="#{etiquetas['correo']}:*" />
+								</span>
+								<p:message for="idCorreo" />
+							</div>
+							<div class="p-field p-col-12 p-md-12">
+								
+								<span class="ui-float-label ui-input-icon-right" style="margin-top: 2em">
+								<p:selectOneMenu id="idCurso"
+									disabled="#{not backingSeguimientoClientes.beanSeguimiento.seguimientoInicial}"
+									value="#{backingSeguimientoClientes.beanSeguimiento.codigoCurso}"
+									filter="true" filterMatchMode="contains" style="width:300px;"
+									required="true" requiredMessage="#{mensajes['campoRequerido']}">
+									<f:selectItem itemLabel=" "
+										itemValue="#{null}" noSelectionOption="true" />
+									<f:selectItems
+										value="#{backingSeguimientoClientes.beanSeguimiento.listaCursos}"
+										var="curso" itemLabel="#{curso.cursNombre}"
+										itemValue="#{curso.cursId}" />
+									<p:ajax event="change"
+										process="@this btngrabar idTelefonoMobil"
+										update=" valorcampania btngrabar"
+										listener="#{backingSeguimientoClientes.localizaCampaniaCurso()}"
+										partialSubmit="true" />
+								</p:selectOneMenu> <p:outputLabel value="#{etiquetas['curso']}:*" />
+								</span>
+								<p:message for="idCurso" />
+							</div>
+							
+							<div class="p-field p-col-12 p-md-2">
+								<p:outputLabel value="#{etiquetas['campaniaPromocional']}"
+									style="color: #f49c04 !important;" />
+							</div>
+							<div class="p-field p-col-12 p-md-6">
+								<h:panelGrid id="valorcampania">
+									<p:outputLabel
+										value="#{backingSeguimientoClientes.beanSeguimiento.campaniaSeleccionada.campDescripcion}"
+										style="color: #f49c04 !important;" />
+									<p:outputLabel
+										value="#{backingSeguimientoClientes.beanSeguimiento.campaniaSeleccionada.campFechaDesde}"
+										id="fechadesde" style="color: #f49c04 !important;">
+										<f:convertDateTime for="fechadesde" pattern="yyyy-MM-dd"
+											locale="es" />
+									</p:outputLabel>
+									<p:outputLabel
+										value="#{backingSeguimientoClientes.beanSeguimiento.campaniaSeleccionada.campFechaHasta}"
+										id="fechahasta" style="color: #f49c04 !important;">
+										<f:convertDateTime for="fechahasta" pattern="yyyy-MM-dd"
+											locale="es" />
+									</p:outputLabel>
+								</h:panelGrid>
+
+							</div>
+
+							<p:separator />
+							<div class="p-field p-col-12 p-md-12">
+								<p:outputLabel value="#{titulos['infoSeguimiento']}"
+									style="font-weight:bold;" />
+							</div>
+							<div class="p-field p-col-12 p-md-12">
+								<p:outputLabel value="#{etiquetas['medioContacto']}:*" />
+							</div>
+							<div class="p-field p-col-12 p-md-12">
+								<p:selectOneRadio id="idcontacto"
+									value="#{backingSeguimientoClientes.beanSeguimiento.codigoMedioContacto}"
+									layout="responsive" columns="3" required="true"
+									requiredMessage="#{mensajes['campoRequerido']}"
+									unselectable="false">
+									<f:selectItems var="estado"
+										value="#{backingSeguimientoClientes.beanSeguimiento.enumMedioContacto}"
+										itemValue="#{estado.codigo}" itemLabel="#{estado.label}" />
+									<p:ajax process="@this respondiollamada " partialSubmit="true"
+										event="change"
+										listener="#{backingSeguimientoClientes.habilitaContestoLlamada()}"
+										update="iddeseocurso lbliddeseocurso respondiollamada valorrespondiollamada idubicacionllamadas ubicacionllamada idtrabajaenarea trabajaArea" />
+								</p:selectOneRadio>
+							</div>
+							<div class="p-field p-col-12 p-md-12">
+								<p:message for="idcontacto" />
+							</div>
+
+							<div class="p-field p-col-12 p-md-12">
+								<p:outputPanel id="respondiollamada">
+									<p:outputLabel value="#{etiquetas['respondioLlamada']}:*"
+										rendered="#{backingSeguimientoClientes.beanSeguimiento.medioContactoLlamada}" />
+								</p:outputPanel>
+							</div>
+							<div class="p-field p-col-12 p-md-12">
+								<p:outputPanel id="valorrespondiollamada">
+									<p:toggleSwitch
+										value="#{backingSeguimientoClientes.beanSeguimiento.detalleSeguimiento.dsegContestoLlamada}"
+										onIcon="pi pi-check" offIcon="pi pi-times"
+										rendered="#{backingSeguimientoClientes.beanSeguimiento.medioContactoLlamada}">
+										<p:ajax process="@this"
+											update="iddeseocurso lbliddeseocurso idubicacionllamadas ubicacionllamada idtrabajaenarea trabajaArea"
+											partialSubmit="true" event="change"
+											listener="#{backingSeguimientoClientes.habilitaMedioMotivoSol()}" />
+									</p:toggleSwitch>
+								</p:outputPanel>
+							</div>
+
+							<div class="p-field p-col-12 p-md-12">
+
+								<p:outputLabel value="#{etiquetas['medioInformacion']}:*" />
+
+							</div>
+							<div class="p-field p-col-12 p-md-12">
+								<p:selectOneRadio id="idmedio"
+									value="#{backingSeguimientoClientes.beanSeguimiento.codigoMedioInformacion}"
+									disabled="#{backingSeguimientoClientes.beanSeguimiento.seguimientoClientes.segcId!=null?true:false}"
+									layout="responsive" columns="4" required="true"
+									requiredMessage="#{mensajes['campoRequerido']}"
+									unselectable="false">
+									<f:selectItems var="estado"
+										value="#{backingSeguimientoClientes.beanSeguimiento.enumMedioInformacion}"
+										itemValue="#{estado.codigo}" itemLabel="#{estado.label}" />
+								</p:selectOneRadio>
+								<p:message for="idmedio" />
+							</div>
+							
+
+							<div class="p-field p-col-12 p-md-12">
+								<p:outputPanel id="lbliddeseocurso">
+									<p:outputLabel value="#{etiquetas['deseoCurso']}:*"
+										rendered="#{backingSeguimientoClientes.beanSeguimiento.detalleSeguimiento.dsegContestoLlamada or backingSeguimientoClientes.beanSeguimiento.medioContactoVisita}" />
+								</p:outputPanel>
+							</div>
+							<div class="p-field p-col-12 p-md-12">
+								<p:outputPanel id="iddeseocurso">
+									<p:selectOneRadio
+										value="#{backingSeguimientoClientes.beanSeguimiento.codigoDeseoCurso}"
+										rendered="#{backingSeguimientoClientes.beanSeguimiento.detalleSeguimiento.dsegContestoLlamada or backingSeguimientoClientes.beanSeguimiento.medioContactoVisita}"
+										layout="responsive" columns="4" required="true"
+										requiredMessage="#{mensajes['campoRequerido']}"
+										unselectable="false">
+										<f:selectItems var="estado"
+											value="#{backingSeguimientoClientes.beanSeguimiento.enumParaQueCurso}"
+											itemValue="#{estado.codigo}" itemLabel="#{estado.label}" />
+									</p:selectOneRadio>
+									<p:message for="iddeseocurso" />
+								</p:outputPanel>
+							</div>
+							
+
+							<div class="p-field p-col-12 p-md-12">
+								<p:outputPanel id="ubicacionllamada">
+									<p:outputLabel value="#{etiquetas['desdeDondeLlama']}:*"
+										rendered="#{backingSeguimientoClientes.beanSeguimiento.detalleSeguimiento.dsegContestoLlamada or backingSeguimientoClientes.beanSeguimiento.medioContactoVisita}" />
+								</p:outputPanel>
+							</div>
+							<div class="p-field p-col-12 p-md-12">
+								<p:outputPanel id="idubicacionllamadas">
+									<p:selectOneRadio
+										value="#{backingSeguimientoClientes.beanSeguimiento.codigoUbicacionLlamada}"
+										rendered="#{backingSeguimientoClientes.beanSeguimiento.detalleSeguimiento.dsegContestoLlamada or backingSeguimientoClientes.beanSeguimiento.medioContactoVisita}"
+										layout="responsive" columns="4" required="true"
+										requiredMessage="#{mensajes['campoRequerido']}"
+										unselectable="false">
+										<f:selectItems var="ubica"
+											value="#{backingSeguimientoClientes.beanSeguimiento.enumUbicacionLlamada}"
+											itemValue="#{ubica.codigo}" itemLabel="#{ubica.label}" />
+									</p:selectOneRadio>
+									<p:message for="idubicacionllamadas" />
+								</p:outputPanel>
+							</div>
+							
+
+							<div class="p-field p-col-12 p-md-2">
+								<p:outputPanel id="trabajaArea">
+									<p:outputLabel value="#{etiquetas['trabajaEnArea']}:*"
+										rendered="#{backingSeguimientoClientes.beanSeguimiento.detalleSeguimiento.dsegContestoLlamada or backingSeguimientoClientes.beanSeguimiento.medioContactoVisita}" />
+								</p:outputPanel>
+							</div>
+							<div class="p-field p-col-12 p-md-10">
+								<p:outputPanel id="idtrabajaenarea">
+									<p:toggleSwitch
+										value="#{backingSeguimientoClientes.beanSeguimiento.seguimientoClientes.segcTrabajaEnArea}"
+										rendered="#{backingSeguimientoClientes.beanSeguimiento.detalleSeguimiento.dsegContestoLlamada or backingSeguimientoClientes.beanSeguimiento.medioContactoVisita}"
+										onIcon="pi pi-check" offIcon="pi pi-times">
+										<p:ajax process="@this" partialSubmit="true" event="change" />
+									</p:toggleSwitch>
+								</p:outputPanel>
+							</div>
+
+							<div class="p-field p-col-12 p-md-6">
+								
+								<span class="ui-float-label ui-input-icon-right" style="margin-top: 2em">
+								<p:selectOneMenu
+									value="#{backingSeguimientoClientes.beanSeguimiento.codigoEstadoContacto}"
+									id="idcontactodetalle" required="true"
+									requiredMessage="#{mensajes['campoRequerido']}">
+									<f:selectItem itemLabel=" "
+										itemValue="#{null}" noSelectionOption="true" />
+
+									<f:selectItems var="estado"
+										value="#{backingSeguimientoClientes.beanSeguimiento.enumEstadosContacto}"
+										itemValue="#{estado.codigo}" itemLabel="#{estado.label}" />
+									<p:ajax process="@this motivos" event="change" update="motivos"
+										listener="#{backingSeguimientoClientes.mostrarDialogoMotivos()}"
+										partialSubmit="true" />
+								</p:selectOneMenu><p:outputLabel value="#{etiquetas['estado']}:*" />
+								</span>
+								<p:message for="idcontactodetalle" />
+							</div>
+							<div class="p-field p-col-12 p-md-6"></div>
+							<div class="p-field p-col-12 p-md-12">
+								
+								<span class="ui-float-label ui-input-icon-right" style="margin-top: 2em">
+								<p:inputTextarea required="true" id="idobservacion"
+									counter="contadorobs"
+									counterTemplate="{0} caracteres restantes."
+									requiredMessage="#{mensajes['campoRequerido']}" maxlength="300"
+									value="#{backingSeguimientoClientes.beanSeguimiento.detalleSeguimiento.dsegObservacion}">
+								</p:inputTextarea><p:outputLabel value="#{etiquetas['datosSeguimiento']}:*" />
+								</span>
+								<p:message for="idobservacion" />
+								<p:outputLabel id="contadorobs" />
+								
+							</div>
+
+							<div class="p-field p-col-12 p-md-6">
+								
+								<span class="ui-float-label ui-input-icon-right" style="margin-top: 2em">
+								<p:datePicker pattern="yyyy-MM-dd" locale="es_ES"
+									value="#{backingSeguimientoClientes.beanSeguimiento.proximaLlamada}"
+									id="idproximallamada" /><p:outputLabel value="#{etiquetas['proximaLlamada']}:" />
+								</span>
+							</div>
+							<div class="p-field p-col-12 p-md-6"></div>
+
+							<div class="p-field p-col-12 p-md-11"></div>
+							<div class="p-field p-col-12 p-md-1">
+								<p:commandButton process="@this pnlseguimiento"
+									actionListener="#{backingSeguimientoClientes.agregarDetalle()}"
+									icon="#{botones['icono.agregar']}" partialSubmit="true"
+									update="pnlseguimiento growl" />
+							</div>
+
+
+							<div class="p-field p-col-12 p-md-12">
+								<p:dataTable reflow="true"
+									value="#{backingSeguimientoClientes.beanSeguimiento.listaDetalle}"
+									id="tabladetalle" rows="4" paginator="true" var="det">
+									<p:column headerText="#{etiquetas['datosSeguimiento']}">
+									#{det.dsegObservacion}	
+								</p:column>
+									<p:column headerText="#{etiquetas['medioContacto']}">
+										<p:outputLabel
+											value="#{det.dsegMedioContacto.equals('MEC01')?'CORREO ELECTRONICO':det.dsegMedioContacto.equals('MEC02')?'LLAMADA TELEFONICA':det.dsegMedioContacto.equals('MEC03')?'WHATSAPP':det.dsegMedioContacto.equals('MEC04')?'VISITA IN SITU':'OTRO'}" />
+									</p:column>
+									<p:column headerText="#{etiquetas['fechaIngreso']}"
+										style="width:100px;">
+										<p:outputLabel value="#{det.dsegFecha}" id="fechaIngreso">
+											<f:convertDateTime for="fechaIngreso" pattern="yyyy-MM-dd"
+												locale="es_ES" />
+										</p:outputLabel>
+									</p:column>
+									<p:column headerText="#{etiquetas['estado']}"
+										style="width:120px;">
+										<p:outputLabel
+											value="#{det.dsegEstado.equals('CONTAC01')?'EN SEGUIMIENTO':det.dsegEstado.equals('CONTAC02')?'ABANDONADO':det.dsegEstado.equals('CONTAC03')?'MATRICULADO':det.dsegEstado.equals('CONTAC04')?'CANDIDATO':'PROXIMA OCASION'}" />
+									</p:column>
+									<p:column style="width:10px;">
+										<p:commandLink title="#{tooltip['eliminar']}" process="@this"
+											action="#{backingSeguimientoClientes.removerDetalle()}"
+											partialSubmit="true" update="tabladetalle growl">
+											<f:setPropertyActionListener value="#{det}"
+												target="#{backingSeguimientoClientes.beanSeguimiento.detalleSeguimiento}"></f:setPropertyActionListener>
+											<i class="pi pi-trash" style="font-size: 1em; color: green;"></i>
+										</p:commandLink>
+									</p:column>
+
+								</p:dataTable>
+							</div>
+
+
+
+
+
+							<div class="p-field p-col-12 p-md-3"></div>
+							<div class="p-field p-col-12 p-md-3">
+								<p:commandButton process="@this " id="btngrabar"
+									partialSubmit="true" update="pnlseguimiento growl pnlGrabarSC"
+									disabled="#{backingSeguimientoClientes.beanSeguimiento.nohabilitaGrabar}"
+									actionListener="#{backingSeguimientoClientes.mostrarDialogoGrabar()}"
+									value="#{botones['grabar']}" icon="#{botones['icono.grabar']}" />
+							</div>
+							<div class="p-field p-col-12 p-md-3">
+								<p:commandButton process="@this panelSeguimiento"
+									value="#{botones['cancelar']}" resetValues="true"
+									immediate="true" update="panelSeguimiento"
+									actionListener="#{backingSeguimientoClientes.cancelarIngresoSeguimiento()}"
+									icon="#{botones['icono.cancelar']}" />
+							</div>
+							<div class="p-field p-col-12 p-md-3"></div>
+						</div>
+					</p:outputPanel>
+				</p:scrollPanel>
+			</p:dialog>
+			<p:breadCrumb>
+				<p:menuitem value="Categorias" url="#" />
+				<p:menuitem value="Marketing" url="#" />
+				<p:menuitem value="Ventas" />
+			</p:breadCrumb>
+			<br />
+			<p:splitButton value="#{etiquetas['accionesRealizar']}">
+				<p:menuitem update="campanias tblllamar"
+					value="#{botones['cargarregistrodatos']}"
+					onclick="PF('tblseguimiento').clearFilters()" process="@this "
+					partialSubmit="true" icon="pi pi-cloud-upload"
+					actionListener="#{backingSeguimientoClientes.mostrarDialogoCargaInfo()}">
+					<p:resetInput target="tblSeg" />
+				</p:menuitem>
+				<p:menuitem value="#{botones['nuevoSeguimiento']}"
+					process="@this panelSeguimiento" icon="pi pi-file-o"
+					onclick="PF('tblseguimiento').clearFilters()"
+					actionListener="#{backingSeguimientoClientes.nuevoSeguimiento()}"
+					partialSubmit="true" update="pnlseguimiento panelSeguimiento " />
+				<p:menuitem value="#{botones['actSeguimiento']}" process="@this "
+					icon="pi pi-refresh"
+					actionListener="#{backingSeguimientoClientes.mostrarDlgSeguimiento()}"
+					update="tblsegexcel" partialSubmit="true" />
+
+			</p:splitButton>
+			<br />
+			<br />
+
+			<p:outputPanel id="panelSeguimiento">
+				<p:dataTable rows="10" paginator="true"
+					filteredValue="#{backingSeguimientoClientes.beanSeguimiento.listadoSeguimientoSeleccionado}"
+					selectionMode="single"
+					selection="#{backingSeguimientoClientes.beanSeguimiento.seguimientoSeleccionado}"
+					rowKey="#{seg.segcId}"
+					value="#{backingSeguimientoClientes.beanSeguimiento.listadoSeguimiento}"
+					widgetVar="tblseguimiento" id="tblSeg" reflow="true"
+					rowStyleClass="#{seg.segcEstado.equals('CONTAC02')?'abandonado':seg.segcEstado.equals('CONTAC03')?'inscrito':seg.segcEstado.equals('CONTAC04')?'candidato':seg.segcEstado.equals('CONTAC05')?'otraocasion':null}"
+					paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+					var="seg">
+					<f:facet name="{Exporters}">
+						<div style="float: right; padding-top: 5px;">
+							<h:commandLink immediate="true">
+								<h:graphicImage library="img" name="excel.png" />
+								<p:dataExporter type="xls" target="tblSeg"
+									fileName="interesados" />
+							</h:commandLink>
+
+						</div>
+					</f:facet>
+					<p:ajax event="rowSelect"
+						listener="#{backingSeguimientoClientes.onRowSelect}"
+						update="pnlseguimiento growl" partialSubmit="true" process="@this" />
+					<p:ajax event="rowUnselect"
+						listener="#{backingSeguimientoClientes.onRowUnselect}"
+						partialSubmit="true" process="@this" />
+					<p:column headerText="#{etiquetas['id']}" width="35px;">
+						<p:outputLabel value="#{seg.segcId}" />
+					</p:column>
+					<p:column headerText="#{etiquetas['campania']}"
+						filterBy="#{seg.campania.campDescripcion}" style="width:200px;">
+						<p:outputLabel value="#{seg.campania.campDescripcion}" />
+						<p:commandButton icon="#{botones['icono.info']}"
+							style="width:15px; height:20px;"
+							action="#{backingSeguimientoClientes.mostrarDialogoDatosCampania()}"
+							update="datoscampania"
+							rendered="#{seg.campania==null?false:true}" process="@this">
+							<f:setPropertyActionListener value="#{seg.campania}"
+								target="#{backingSeguimientoClientes.beanSeguimiento.campaniaSeleccionada}"></f:setPropertyActionListener>
+						</p:commandButton>
+					</p:column>
+					<p:column headerText="#{etiquetas['clientePotencial']}"
+						filterBy="#{seg.segcCliente}" style="width:200px;">
+						<p:outputLabel value="#{seg.segcCliente}" />
+
+					</p:column>
+					<p:column headerText="#{etiquetas['curso']}"
+						filterBy="#{seg.curso.cursNombre}" style="width:200px;">
+						<p:outputLabel value="#{seg.curso.cursNombre}" />
+					</p:column>
+					<p:column headerText="#{etiquetas['estado']}"
+						filterMatchMode="exact" filterBy="#{seg.segcEstado}"
+						style="width:150px;">
+						<f:facet name="filter">
+							<p:selectOneMenu onchange="PF('tblseguimiento').filter()">
+								<f:selectItem itemLabel="Todos" itemValue="#{null}"
+									noSelectionOption="true" />
+								<f:selectItem itemLabel="EN SEGUIMIENTO" itemValue="CONTAC01" />
+								<f:selectItem itemLabel="ABANDONADO" itemValue="CONTAC02" />
+								<f:selectItem itemLabel="MATRICULADO" itemValue="CONTAC03" />
+								<f:selectItem itemLabel="CANDIDATO" itemValue="CONTAC04" />
+								<f:selectItem itemLabel="PROXIMAOCASION" itemValue="CONTAC05" />
+							</p:selectOneMenu>
+						</f:facet>
+						<p:outputLabel
+							value="#{seg.segcEstado.equals('CONTAC01')?'EN SEGUIMIENTO':seg.segcEstado.equals('CONTAC02')?'ABANDONADO':seg.segcEstado.equals('CONTAC03')?'MATRICULADO':seg.segcEstado.equals('CONTAC04')?'CANDIDATO':'PROXIMAOCASION'}" />
+					</p:column>
+					<p:column headerText="#{etiquetas['fechaUltimoSeg']}"
+						sortBy="#{seg.segcFechaSeguimiento}" style="width:120px;">
+						<p:outputLabel value="#{seg.segcFechaSeguimiento}" id="fechaseg">
+							<f:convertDateTime for="fechaseg" pattern="yyyy-MM-dd"
+								locale="es_EC" />
+						</p:outputLabel>
+					</p:column>
+					<p:column headerText="#{etiquetas['telefono']}"
+						style="width:120px;" filterBy="#{seg.segcTelefono}">
+						<p:outputLabel value="#{seg.segcTelefono}" />
+					</p:column>
+					<p:column headerText="#{etiquetas['ultimoSeg']}" width="200px;">
+						<p:outputLabel value="#{seg.segcUltimoSeguimiento}" />
+						<h:inputHidden />
+						<p:outputLabel value="#{etiquetas['proximaLlamada']}:"
+							style="color:red;"
+							rendered="#{seg.segcProximaLlamada!=null?true:false}" />
+						<p:outputLabel value="#{seg.segcProximaLlamada}" id="proximacall"
+							style="color:red;"
+							rendered="#{seg.segcProximaLlamada!=null?true:false}">
+							<f:convertDateTime for="proximacall" pattern="yyyy-MM-dd" />
+						</p:outputLabel>
+					</p:column>
+
+					<p:column style="width:70px;">
+
+						<p:commandLink process="@this" title="#{tooltip['seguimiento']}"
+							action="#{backingSeguimientoClientes.cargaDetalleSeguimiento()}"
+							update="detalleSeguimiento">
+							<f:setPropertyActionListener value="#{seg}"
+								target="#{backingSeguimientoClientes.beanSeguimiento.seguimientoClientes}"></f:setPropertyActionListener>
+							<i class="pi pi-share-alt" style="font-size: 1em; color: green;"></i>
+						</p:commandLink>
+
+						<p:commandLink title="#{tooltip['realizaSeguimiento']}"
+							process="@this" partialSubmit="true"
+							action="#{backingSeguimientoClientes.agregarNuevoSeguimiento()}"
+							update="pnlseguimiento growl">
+							<f:setPropertyActionListener value="#{seg}"
+								target="#{backingSeguimientoClientes.beanSeguimiento.seguimientoClientes}"></f:setPropertyActionListener>
+							<i class="pi pi-chevron-circle-down"
+								style="font-size: 1em; color: green;"></i>
+						</p:commandLink>
+					</p:column>
+				</p:dataTable>
+
+			</p:outputPanel>
+
+		</h:form>
+	</ui:define>
+</ui:composition>
+
+</html>

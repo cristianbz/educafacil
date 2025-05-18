@@ -53,6 +53,9 @@ public class BeanListadoEstudiantes implements Serializable{
 	@Getter
 	@Setter
 	private OfertaCursos ofertaSeleccionada;
+	@Getter
+	@Setter
+	private int anioBusqueda;
 	
 	@PostConstruct
 	public void iniciar() {

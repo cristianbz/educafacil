@@ -16,6 +16,8 @@ import ec.mileniumtech.educafacil.modelo.persistencia.entity.Campania;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Curso;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleSeguimiento;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.SeguimientoClientes;
+import ec.mileniumtech.educafacil.utilitarios.dto.registrodatos.FormFacebookAdsRecord;
+import ec.mileniumtech.educafacil.utilitarios.dto.registrodatos.PreguntasFormFacesbookRecord;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumEstadosContactoCliente;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumMedioContacto;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumMedioInformacion;
@@ -38,6 +40,14 @@ public class BeanSeguimientoClientes implements Serializable {
 	
 	@Getter
 	@Setter
+	private FormFacebookAdsRecord leadsFormulario;
+	
+	@Getter
+	@Setter
+	private PreguntasFormFacesbookRecord preguntasFormulario;
+	
+	@Getter
+	@Setter
 	private UploadedFile archivoExcel;
 	
 	@Getter
@@ -55,6 +65,10 @@ public class BeanSeguimientoClientes implements Serializable {
 	@Getter
 	@Setter
 	private List<SeguimientoClientes> listadoSeguimientoExcel;
+	
+	@Getter
+	@Setter
+	private List<FormFacebookAdsRecord> listadoLeadsForm;
 	
 	@Getter
 	@Setter
@@ -107,6 +121,10 @@ public class BeanSeguimientoClientes implements Serializable {
 	
 	@Getter
 	@Setter
+	private Integer numeroPreguntas;
+	
+	@Getter
+	@Setter
 	private String codigoUbicacionLlamada;
 	
 	@Getter
@@ -132,6 +150,10 @@ public class BeanSeguimientoClientes implements Serializable {
 	@Getter
 	@Setter
 	private boolean motivoNoMatricula;
+	
+	@Getter
+	@Setter
+	private boolean habilitaCargaFormFaces;
 	
 	@Getter
 	@Setter
