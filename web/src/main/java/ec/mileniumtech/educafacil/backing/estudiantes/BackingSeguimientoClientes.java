@@ -10,6 +10,9 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -17,6 +20,8 @@ import java.util.List;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
@@ -41,10 +46,13 @@ import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleSeguimiento;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.SeguimientoClientes;
 import ec.mileniumtech.educafacil.utilitario.Cadenas;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
+import ec.mileniumtech.educafacil.utilitarios.dto.registrodatos.FormFacebookAdsRecord;
+import ec.mileniumtech.educafacil.utilitarios.dto.registrodatos.PreguntasFormFacesbookRecord;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumEstadosContactoCliente;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumMedioContacto;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumMedioInformacion;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumUbicacionDomicilio;
+import ec.mileniumtech.educafacil.utilitarios.fechas.FechaFormato;
 import jakarta.ejb.EJB;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.ExternalContext;
@@ -224,7 +232,7 @@ public class BackingSeguimientoClientes implements Serializable{
 				}
 				Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.agregar"));
 				cargarSeguimientoCampania();
-				vaciarCodigos();
+				vaciarCodigos();				
 				Mensaje.ocultarDialogo("dlggrabar");
 				
 				if(!getBeanSeguimiento().isSeguirIngresandoClientes())
@@ -469,19 +477,12 @@ public class BackingSeguimientoClientes implements Serializable{
 		Mensaje.verDialogo("dlgExcel");
 	}
 	public void mostrarDlgFormulario() {
-		ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
-		beanSeguimiento.setCampaniaSeleccionada(null);
-		getBeanSeguimiento().setActivaUploadFormulario(false);
-		getBeanSeguimiento().setListadoSeguimientoExcel(new ArrayList<SeguimientoClientes>());
-		Mensaje.verDialogo("dlgFormulario");
-		
-		String token = (String) externalContext.getSessionMap().get("token");
-		
-		
-//		APIContext apiContext = new APIContext(token,"369449922366551", "caf3581c9f3bf11d978278054fb5c7ec");
-		
-		
-		
+		getBeanSeguimiento().setHabilitaCargaFormFaces(true);
+		Mensaje.verDialogo("dlgActualizaDesdeExcel");
+		Mensaje.actualizarComponente("pnlActualizaDesdeExcel");
+	}
+	public void habilitaCargaFormFacebook() {
+		getBeanSeguimiento().setHabilitaCargaFormFaces(false);
 	}
 	
 	public void activaUploadFormulario() {
@@ -530,6 +531,9 @@ public class BackingSeguimientoClientes implements Serializable{
     }
 	
 	public void handleFileUploadFormulario(FileUploadEvent event) {
+		String pregunta1="";
+		String pregunta2="";
+		String pregunta3="";
 		UploadedFile originalImageFile;
 		beanSeguimiento.setArchivoExcel(null);
         beanSeguimiento.setArchivoExcel(event.getFile());
@@ -543,41 +547,121 @@ public class BackingSeguimientoClientes implements Serializable{
             	Row fila;
             	Cell celda;
             	beanSeguimiento.setListadoSeguimientoExcel(new ArrayList<>());
-            	
-            	for(int f=1;f<=numerofilas;f++) {
-            		String nombre="";
-            		SeguimientoClientes seguimiento= new SeguimientoClientes();
-            		fila = sheet.getRow(f);
-            		celda = fila.getCell(0);
-            		nombre=celda.getStringCellValue();
-            		ByteBuffer buffer = StandardCharsets.ISO_8859_1.encode(nombre); 
-
-            		String utf8EncodedString = StandardCharsets.ISO_8859_1.decode(buffer).toString();
-            		
-            		seguimiento.setSegcCliente(utf8EncodedString);
-            		
-            		celda = fila.getCell(1);            		
-            		seguimiento.setSegcCorreo(celda.getStringCellValue());
-            		celda = fila.getCell(2);            		
-            		seguimiento.setSegcTelefono(Cadenas.eliminaNotacionCientifica(celda.getNumericCellValue()));
-            		if(beanSeguimiento.isCamposAdicionales()) {
-	            		celda = fila.getCell(3); 
-	            		String ubicacion="";
-	            		switch (celda.getStringCellValue()) {
-	            			case "Norte" : ubicacion = EnumUbicacionDomicilio.NORTE.getCodigo();
-	            						 break;
-	            			case "Sur" : ubicacion = EnumUbicacionDomicilio.SUR.getCodigo();
-   						 				break;
-	            			case "Centro" : ubicacion = EnumUbicacionDomicilio.CENTRO.getCodigo();
-   						 				break;
-	            			case "Valles" : ubicacion = EnumUbicacionDomicilio.PERIFERIA.getCodigo();
-   						 				break;			
-   						 	default: 
-   						 				ubicacion = EnumUbicacionDomicilio.FUERACIUDAD.getCodigo();
-	            		}
-	            		seguimiento.setSegcUbicacionLlamada(ubicacion);
+            	beanSeguimiento.setListadoLeadsForm(new ArrayList<FormFacebookAdsRecord>());
+            	fila= sheet.getRow(0);
+            	if(getBeanSeguimiento().getNumeroPreguntas()>0) {
+            		if(getBeanSeguimiento().getNumeroPreguntas()==1) {
+            			celda = fila.getCell(1);
+                    	pregunta1=celda.getStringCellValue();
+            		} else if(getBeanSeguimiento().getNumeroPreguntas()==2) {
+            			celda = fila.getCell(1);
+                    	pregunta1=celda.getStringCellValue();
+                    	celda = fila.getCell(2);
+                    	pregunta2=celda.getStringCellValue();
+            		} else if(getBeanSeguimiento().getNumeroPreguntas()==3) {
+            			celda = fila.getCell(1);
+                    	pregunta1=celda.getStringCellValue();
+                    	celda = fila.getCell(2);
+                    	pregunta2=celda.getStringCellValue();
+                    	celda = fila.getCell(3);
+                    	pregunta3=celda.getStringCellValue();
             		}
-            		beanSeguimiento.getListadoSeguimientoExcel().add(seguimiento);
+            	}
+            	getBeanSeguimiento().setPreguntasFormulario(new PreguntasFormFacesbookRecord(pregunta1, pregunta2, pregunta3));
+            	
+            	for(int f=1;f<=numerofilas;f++) {            		
+            		String nombre="";
+            		String respuesta1="";
+            		String respuesta2="";
+            		String respuesta3="";
+            		String correo="";
+            		String telefono="";
+            		String observacion="";
+            		String estado="";
+            		JsonObject pregResp1;
+            		JsonObject pregResp2;
+            		JsonObject pregResp3;
+            		fila = sheet.getRow(f);
+            		if(getBeanSeguimiento().getNumeroPreguntas()>0) {
+                		if(getBeanSeguimiento().getNumeroPreguntas()==1) {
+                			celda = fila.getCell(1);
+                			if(celda!=null) {
+                				ByteBuffer buffer;
+                				respuesta1=celda.getStringCellValue();                				
+                				buffer = StandardCharsets.ISO_8859_1.encode(respuesta1); 
+                        		String utf8EncodedString = StandardCharsets.ISO_8859_1.decode(buffer).toString();                    		
+                        		respuesta1=utf8EncodedString;
+                        		
+                			}else
+                				respuesta1="";
+                    		
+                			pregResp1 = Json.createObjectBuilder()
+                		            .add(pregunta1, respuesta1)                		            
+                		            .build();
+                			                			                			
+                			getBeanSeguimiento().setLeadsFormulario(new FormFacebookAdsRecord(pregResp1.toString(), devuelveValores(fila.getCell(4)), devuelveValores(fila.getCell(3)), devuelveValores(fila.getCell(2)), devuelveValores(fila.getCell(5)), devuelveValores(fila.getCell(6)),devuelveFechaProcesada(fila.getCell(0))));
+                		} else if(getBeanSeguimiento().getNumeroPreguntas()==2) {
+                			celda = fila.getCell(1);
+                			if(celda!=null) {
+                				respuesta1=celda.getStringCellValue();
+                				ByteBuffer buffer = StandardCharsets.ISO_8859_1.encode(respuesta1); 
+                        		String utf8EncodedString = StandardCharsets.ISO_8859_1.decode(buffer).toString();                    		
+                        		respuesta1=utf8EncodedString;
+                			}else
+                				respuesta1="";
+                    		
+                    		celda = fila.getCell(2);
+                    		if(celda!=null) {
+                    			respuesta2=celda.getStringCellValue();
+                    			ByteBuffer buffer2 = StandardCharsets.ISO_8859_1.encode(respuesta2); 
+                        		String utf8EncodedString2 = StandardCharsets.ISO_8859_1.decode(buffer2).toString();                    		
+                        		respuesta2=utf8EncodedString2;
+                    		}else
+                    			respuesta2="";
+                    		
+                    		pregResp2 = Json.createObjectBuilder()
+                		            .add(pregunta1, respuesta1)
+                		            .add(pregunta2, respuesta2)
+                		            .build();
+                    		getBeanSeguimiento().setLeadsFormulario(new FormFacebookAdsRecord(pregResp2.toString(), devuelveValores(fila.getCell(5)), devuelveValores(fila.getCell(4)), devuelveValores(fila.getCell(3)), devuelveValores(fila.getCell(6)), devuelveValores(fila.getCell(7)),devuelveFechaProcesada(fila.getCell(0))));
+                		} else if(getBeanSeguimiento().getNumeroPreguntas()==3) {
+                			celda = fila.getCell(1);
+                			if(celda!=null) {
+                				respuesta1=celda.getStringCellValue();
+                				ByteBuffer buffer = StandardCharsets.ISO_8859_1.encode(respuesta1); 
+                        		String utf8EncodedString = StandardCharsets.ISO_8859_1.decode(buffer).toString();                    		
+                        		respuesta1=utf8EncodedString;
+                			}else
+                				respuesta1="";
+                    		
+                    		celda = fila.getCell(2);
+                    		if(celda!=null) {
+                    			respuesta2=celda.getStringCellValue();
+                    			ByteBuffer buffer2 = StandardCharsets.ISO_8859_1.encode(respuesta2); 
+                        		String utf8EncodedString2 = StandardCharsets.ISO_8859_1.decode(buffer2).toString();                    		
+                        		respuesta2=utf8EncodedString2;
+                    		}else
+                    			respuesta2="";
+                    		
+                    		celda = fila.getCell(3);
+                    		if(celda!=null) {
+                    			respuesta3=celda.getStringCellValue();
+                    			ByteBuffer buffer3 = StandardCharsets.ISO_8859_1.encode(respuesta3); 
+                        		String utf8EncodedString3 = StandardCharsets.ISO_8859_1.decode(buffer3).toString();                    		
+                        		respuesta3=utf8EncodedString3;
+                    		}else
+                    			respuesta3="";
+                    		pregResp3 = Json.createObjectBuilder()
+                		            .add(pregunta1, respuesta1)
+                		            .add(pregunta2, respuesta2)
+                		            .add(pregunta3, respuesta3)
+                		            .build();
+                    		getBeanSeguimiento().setLeadsFormulario(new FormFacebookAdsRecord(pregResp3.toString(), devuelveValores(fila.getCell(6)), devuelveValores(fila.getCell(5)), devuelveValores(fila.getCell(4)), devuelveValores(fila.getCell(7)), devuelveValores(fila.getCell(8)),devuelveFechaProcesada(fila.getCell(0))));
+                		}
+                		
+                	}
+            		
+            		beanSeguimiento.getListadoLeadsForm().add(getBeanSeguimiento().getLeadsFormulario());
             		
             	}            	
             	Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.archivoCargado"));
@@ -586,6 +670,31 @@ public class BackingSeguimientoClientes implements Serializable{
         	e.printStackTrace();
         }
     }
+	
+	
+	public String devuelveValores(Cell celda) {
+		String resultado="";
+		if(celda!=null) {
+			ByteBuffer buffer;
+			String respuesta=celda.getStringCellValue();                				
+			buffer = StandardCharsets.ISO_8859_1.encode(respuesta); 
+    		resultado = StandardCharsets.ISO_8859_1.decode(buffer).toString();                    		    		
+		}
+		return resultado;
+	}
+	
+	public LocalDate devuelveFechaProcesada(Cell celda) {
+		String fecha = celda.getStringCellValue().substring(0, 10);
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate fecha1=null;
+        try {
+            fecha1 = LocalDate.parse(fecha, formato);
+            
+        } catch (DateTimeParseException e) {
+            System.err.println("Error al parsear la fecha: " + e.getMessage());
+        }
+        return fecha1;
+	}
 	
 	public void procesarSubidaFormulario() {
 		try {
@@ -664,6 +773,60 @@ public class BackingSeguimientoClientes implements Serializable{
 			}
 			
 			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void procesarFormularioFacebook() {
+		try {
+			for (FormFacebookAdsRecord formulario: getBeanSeguimiento().getListadoLeadsForm()) {				
+					SeguimientoClientes seguimiento = new SeguimientoClientes();
+					DetalleSeguimiento detalle = new DetalleSeguimiento();
+					List<DetalleSeguimiento> listaTemp=new ArrayList<>();
+					String estado="";
+					
+					switch(formulario.estado()) {
+						case "EN SEGUIMIENTO":
+							estado = EnumEstadosContactoCliente.ENSEGUIMIENTO.getCodigo();
+							break;
+						case "ABANDONADO":
+							estado = EnumEstadosContactoCliente.ABANDONADO.getCodigo();
+							break;
+						case "CANDIDATO":
+							estado = EnumEstadosContactoCliente.CANDIDATO.getCodigo();
+							break;
+						case "PROXIMAOCASION":
+							estado = EnumEstadosContactoCliente.PROXIMAOCASION.getCodigo();
+							break;
+						case "MATRICULADO":
+							estado = EnumEstadosContactoCliente.MATRICULADO.getCodigo();
+							break;
+					}
+
+					seguimiento.setCampania(getBeanSeguimiento().getCampaniaSeleccionada());
+					seguimiento.setCurso(getBeanSeguimiento().getCampaniaSeleccionada().getCurso());
+					seguimiento.setSegcFechaSolicitud(FechaFormato.cambiarStringaDate(formulario.fecharegistro().toString(),"yyyy-MM-dd"));
+					seguimiento.setSegcId(null);
+					seguimiento.setSegcEstado(estado);
+					seguimiento.setSegcUltimoSeguimiento(formulario.observacion());
+					seguimiento.setSegcFechaSeguimiento(FechaFormato.cambiarStringaDate(formulario.fecharegistro().toString(),"yyyy-MM-dd"));
+					seguimiento.setSegcMedioInformacion(EnumMedioInformacion.FACEBOOK.getCodigo());
+					seguimiento.setSegcPregResp(formulario.preg_resp());
+					seguimiento.setSegcCliente(formulario.nombre());
+					seguimiento.setSegcCorreo(formulario.correo());
+					seguimiento.setSegcTelefono(formulario.telefono());
+					detalle.setDsegId(null);
+					detalle.setSeguimientoClientes(seguimiento);
+					detalle.setDsegEstado(estado);
+					detalle.setDsegFecha(FechaFormato.cambiarStringaDate(formulario.fecharegistro().toString(),"yyyy-MM-dd"));
+					detalle.setDsegObservacion(formulario.observacion());
+					detalle.setDsegMedioContacto(EnumMedioContacto.WHATSAPP.getCodigo());		
+					listaTemp.add(detalle);					
+					getSeguimientoClientesServicioImpl().agregarSeguimiento(seguimiento, listaTemp);
+				}
+			Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.agregar"));
+			Mensaje.ocultarDialogo("dlgActualizaDesdeExcel");
 		}catch(Exception e) {
 			e.printStackTrace();
 		}

@@ -203,4 +203,17 @@ public class OfertaCursosDaoImpl extends GenericoDaoImpl<OfertaCursos, Long>{
 			throw new DaoException(e);
 		}
 	}
+	public List<OfertaCursos> listaOfertaCursosPorCursoAnio(int codigoCurso,int anio) throws DaoException{
+		try {
+			Query query=getEntityManager().createNamedQuery(OfertaCursos.OFERTA_CURSOS_POR_CURSO_ANIO);
+			query.setParameter("cursoId", codigoCurso);
+			query.setParameter("anioBusqueda", anio);
+			return query.getResultList();
+		}catch(NoResultException e) {
+			return null;
+		}catch(Exception e) {
+			throw new DaoException(e);
+		}
+	}
+
 }

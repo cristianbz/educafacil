@@ -160,6 +160,7 @@ public class BackingListadoEstudiantes implements Serializable {
 		getBeanListadoEstudiantes().setListaMatriculas(new ArrayList<>());
 		getBeanListadoEstudiantes().setCodigoEstadoMatricula(null);
 		getBeanListadoEstudiantes().setCodigoCurso(null);
+		getBeanListadoEstudiantes().setAnioBusqueda(0);
 		getBeanListadoEstudiantes().setCursoSeleccionado(new Curso());
 		getBeanListadoEstudiantes().setListaOfertaCursos(new ArrayList<>());
 	}
@@ -411,7 +412,7 @@ public class BackingListadoEstudiantes implements Serializable {
 	public void cargarOfertaCursos() {
 		try {
 			getBeanListadoEstudiantes().setListaOfertaCursos(new ArrayList<>());
-			getBeanListadoEstudiantes().setListaOfertaCursos(getOfertaCursosServicio().listaOfertaCursosPorCurso(getBeanListadoEstudiantes().getCursoSeleccionado().getCursId()));
+			getBeanListadoEstudiantes().setListaOfertaCursos(getOfertaCursosServicio().listaOfertaCursosPorCursoAnio(getBeanListadoEstudiantes().getCursoSeleccionado().getCursId(),getBeanListadoEstudiantes().getAnioBusqueda()));
 			
 		}catch(Exception e) {
 			e.printStackTrace();

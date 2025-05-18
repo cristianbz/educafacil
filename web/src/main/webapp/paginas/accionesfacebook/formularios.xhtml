@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:ui="jakarta.faces.facelets"
+      	xmlns:f="jakarta.faces.core"
+      	xmlns:h="jakarta.faces.html"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
+
+	<ui:define name="contenido">
+		
+		<f:event listener="#{backingLogin.validarSesion()}"
+			type="preRenderView" />
+		<h:form id="form" prependId="false">
+
+			<p:growl id="growl" life="3000" showDetail="true" />
+			<p:hotkey bind="esc" handler="PF('dlgNuevoSeguimiento').hide();"></p:hotkey>
+			<!-- Envio de mensajes whastapp -->
+			
+			<p:dialog widgetVar="dlgEnProc" draggable="false" modal="true"
+				resizable="false" closable="false" responsive="true"
+				style="font-size: 10px;">
+				<h:graphicImage value="/resources/img/cargando.gif" width="200"
+					height="200" />
+			</p:dialog>
+			<p:breadCrumb>
+				<p:menuitem value="Categorias" url="#" />
+				<p:menuitem value="Marketing" url="#" />
+				<p:menuitem value="Seguimiento clientes" />
+			</p:breadCrumb>
+			<br />
+			<p:splitButton value="#{etiquetas['accionesRealizar']}">
+				<p:menuitem update="campanias tblllamar"
+					value="#{botones['cargarregistrodatos']}"
+					onclick="PF('tblseguimiento').clearFilters()" process="@this "
+					partialSubmit="true" icon="pi pi-cloud-upload"
+					actionListener="#{backingSeguimientoClientes.mostrarDialogoCargaInfo()}">
+					<p:resetInput target="tblSeg" />
+				</p:menuitem>
+				<p:menuitem value="#{botones['nuevoSeguimiento']}"
+					process="@this panelSeguimiento" icon="pi pi-file-o"
+					onclick="PF('tblseguimiento').clearFilters()"
+					actionListener="#{backingSeguimientoClientes.nuevoSeguimiento()}"
+					partialSubmit="true" update="pnlseguimiento panelSeguimiento " />
+				<p:menuitem value="#{botones['actSeguimiento']}" process="@this "
+					icon="pi pi-refresh"
+					actionListener="#{backingSeguimientoClientes.mostrarDlgSeguimiento()}"
+					update="tblsegexcel" partialSubmit="true" />
+				<p:menuitem value="#{botones['descargarFormulario']}"
+					icon="pi pi-facebook"
+					update="idcampaniaFormulario archivoFormulario" process="@this "
+					actionListener="#{backingSeguimientoClientes.mostrarDlgFormulario()}"
+					partialSubmit="true" />
+			</p:splitButton>
+			<br />
+			<br />
+
+			<p:outputPanel id="panelFormularios">
+
+
+			</p:outputPanel>
+
+		</h:form>
+	</ui:define>
+</ui:composition>
+
+</html>

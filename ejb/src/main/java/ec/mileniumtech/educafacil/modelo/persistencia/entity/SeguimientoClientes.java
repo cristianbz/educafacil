@@ -106,6 +106,9 @@ public class SeguimientoClientes implements Serializable {
 	@Column(name="segc_trabaja_en_area")
 	private boolean segcTrabajaEnArea;
 	
+	@Column(name="segc_preg_resp")
+	private String segcPregResp;
+	
 	@ManyToOne
 	@JoinColumn(name="curs_id",updatable = true, insertable = true)
 	private Curso curso;

@@ -36,26 +36,36 @@
 									value="#{backingListadoEstudiantes.beanListadoEstudiantes.listaCursos}"
 									var="curso" itemLabel="#{curso.cursNombre}"
 									itemValue="#{curso}" />
-									<p:ajax process="@this idCurso"  partialSubmit="true" update="ofertacurso" onstart="PF('dlgEnProc').show();" oncomplete="PF('dlgEnProc').hide();"
-								 event="change" listener="#{backingListadoEstudiantes.cargarOfertaCursos()}"/>
+									
 							</p:selectOneMenu>
 							<p:outputLabel value="#{etiquetas['curso']}:" for="@previous"/>
 							</span>	
 							<p:message for="idCurso"/>	
 							</div>						
-							
 							<div class="p-field p-col-12 p-md-12" >
 								<span class="ui-float-label " style="margin-top: 2em">							
-									<p:selectOneListbox  id="ofertacurso" value="#{backingListadoEstudiantes.beanListadoEstudiantes.ofertaSeleccionada}" scrollHeight="250"
+									<p:inputNumber required="true" id="anio" decimalPlaces="0" requiredMessage="#{mensajes['campoRequerido']}" 
+										value="#{backingListadoEstudiantes.beanListadoEstudiantes.anioBusqueda}">
+										<p:ajax process="@this idCurso"  partialSubmit="true" update="ofertacurso" onstart="PF('dlgEnProc').show();" oncomplete="PF('dlgEnProc').hide();"
+								 			event="change" listener="#{backingListadoEstudiantes.cargarOfertaCursos()}"/>
+									</p:inputNumber>	
+									<p:outputLabel value="#{etiquetas['anio']}" for="anio"/>
+								</span>
+								<p:message for="anio"/>	
+							</div>
+							<div class="p-field p-col-12 p-md-12" >
+								<span class="ui-float-label " style="margin-top: 2em">							
+									<p:selectOneListbox  id="ofertacurso" value="#{backingListadoEstudiantes.beanListadoEstudiantes.ofertaSeleccionada}" scrollHeight="150"
 										required="true"  requiredMessage="#{mensajes['campoRequerido']}" style="width:250px;"
 										converter="selectOneMenuConverter">
 										<f:selectItems value="#{backingListadoEstudiantes.beanListadoEstudiantes.listaOfertaCursos}" 
-											var="oferta" itemLabel="#{backingListadoEstudiantes.formatDate(oferta.ocurFechaInicio,'yyyy-MM-dd')} / #{backingReporteMatriculas.formatDate(oferta.ocurFechaFin,'yyyy-MM-dd')}" itemValue="#{oferta}"/>										
+											var="oferta" itemLabel="#{backingListadoEstudiantes.formatDate(oferta.ocurFechaInicio,'yyyy-MM-dd')} / #{backingListadoEstudiantes.formatDate(oferta.ocurFechaFin,'yyyy-MM-dd')}" itemValue="#{oferta}"/>										
 									</p:selectOneListbox>
 									<p:outputLabel value="#{etiquetas['inicioFin']}" for="ofertacurso"/>
 								</span>
 								<p:message for="ofertacurso"/>	
-							</div>		
+							</div>
+									
 							
 							<div class="p-field p-col-12 p-md-6" >								
 								<p:commandButton icon="#{botones['icono.buscar']}" value="#{botones['buscar']}" partialSubmit="true"

@@ -33,7 +33,8 @@ import lombok.Setter;
 	@NamedQuery(name = OfertaCursos.OFERTA_CURSOS_DISPONIBLES_ACTIVOS,query = "SELECT OC FROM OfertaCursos OC WHERE OC.ocurEstado='OCUR01' AND OC.ocurPorDefecto=false"),
 	@NamedQuery(name = OfertaCursos.OFERTA_CURSOS_ACTIVOS_CERRADOS,query = "SELECT OC FROM OfertaCursos OC WHERE OC.ocurEstado IN ('OCUR01','OCUR02') AND OC.ocurPorDefecto=false ORDER BY OC.ofertaCapacitacion.curso.cursNombre"),
 	@NamedQuery(name = OfertaCursos.OFERTA_CURSOS_POR_DEFECTO,query = "SELECT OC FROM OfertaCursos OC WHERE OC.ocurPorDefecto=true"),
-	@NamedQuery(name = OfertaCursos.OFERTA_CURSOS_POR_CURSO,query = "SELECT OC FROM OfertaCursos OC WHERE OC.ofertaCapacitacion.curso.cursId=:cursoId AND OC.ocurPorDefecto=false")
+	@NamedQuery(name = OfertaCursos.OFERTA_CURSOS_POR_CURSO,query = "SELECT OC FROM OfertaCursos OC WHERE OC.ofertaCapacitacion.curso.cursId=:cursoId AND OC.ocurPorDefecto=false"),
+	@NamedQuery(name = OfertaCursos.OFERTA_CURSOS_POR_CURSO_ANIO,query = "SELECT OC FROM OfertaCursos OC WHERE OC.ofertaCapacitacion.curso.cursId=:cursoId AND OC.ocurPorDefecto=false AND OC.ocurEstado IN ('OCUR01','OCUR02') AND YEAR (OC.ocurFechaInicio)=:anioBusqueda")
 })
 public class OfertaCursos implements Serializable {
 
@@ -44,6 +45,8 @@ public class OfertaCursos implements Serializable {
 	public static final String OFERTA_CURSOS_ACTIVOS_CERRADOS="ofertaCursosActivosCerrados";
 	public static final String OFERTA_CURSOS_POR_DEFECTO="ofertaCursosPorDefecto";
 	public static final String OFERTA_CURSOS_POR_CURSO="ofertaCursosPorCurso";
+	public static final String OFERTA_CURSOS_POR_CURSO_ANIO="ofertaCursosPorCursoAnio";
+	
 	
 	@Id
 	@SequenceGenerator(name="ofertacursosSeq", sequenceName="ofertacursos_seq", allocationSize = 1)

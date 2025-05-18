@@ -280,7 +280,7 @@ public class MatriculaDaoImpl extends GenericoDaoImpl<Matricula, Long>{
 		}catch(Exception e) {
 			throw new DaoException(e);
 		}
-	}
+	}	
 	@SuppressWarnings("unchecked")
 	public List<Matricula> listaMatriculasEstudianteActivas(int codigoEstudiante) throws DaoException{
 		try {

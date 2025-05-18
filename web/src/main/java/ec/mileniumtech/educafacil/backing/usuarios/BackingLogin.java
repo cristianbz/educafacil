@@ -166,11 +166,23 @@ public class BackingLogin implements Serializable{
 	public void cerrarSesion()
 	{
 		ec = FacesContext.getCurrentInstance().getExternalContext();
-	    ec.invalidateSession();
-	    try {
-			ec.redirect(ec.getRequestContextPath() + "/login.cap");
-		} catch (IOException e) {
-			e.printStackTrace();
+//	    ec.invalidateSession();
+//	    try {
+//			ec.redirect(ec.getRequestContextPath() + "/login.cap");
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+	    
+		try {
+			if (!(sesion!=null && (boolean) sesion.getAttribute("logeado"))) {
+//				ec=FacesContext.getCurrentInstance().getExternalContext();
+				ec.redirect(ec.getRequestContextPath() + "/finsesion.cap");
+			}else {
+				ec.invalidateSession();
+				ec.redirect(ec.getRequestContextPath() + "/login.cap");
+			}
+		}catch(IOException e) {
+			log.error(new StringBuilder().append(this.getClass().getName() + "." + "validarSesion" + ": ").append(e.getMessage()));
 		}
 	}
 	public void volverIniciarSesion() {
@@ -224,7 +236,7 @@ public class BackingLogin implements Serializable{
 		try {
 			if (!(sesion!=null && (boolean) sesion.getAttribute("logeado"))) {
 				ec=FacesContext.getCurrentInstance().getExternalContext();
-				ec.redirect(ec.getRequestContextPath() + "/paginas/login.cap");
+				ec.redirect(ec.getRequestContextPath() + "/finsesion.cap");
 			}
 		}catch(IOException e) {
 			log.error(new StringBuilder().append(this.getClass().getName() + "." + "validarSesion" + ": ").append(e.getMessage()));
