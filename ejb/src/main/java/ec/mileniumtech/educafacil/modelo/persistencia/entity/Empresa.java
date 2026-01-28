@@ -56,6 +56,15 @@ public class Empresa implements Serializable {
 	@Column(name="empr_estado")
 	private boolean emprEstado;
 	
+	@Column(name="empr_logo", columnDefinition = "BYTEA")
+	private byte[] emprLogo;
+	
+	@Column(name="empr_certificado", columnDefinition = "BYTEA")
+	private byte[] emprCertificado;
+	
 	@OneToMany(mappedBy="empresa", fetch=FetchType.LAZY)
 	private List<Matricula> matriculas;
+	
+	@OneToMany(mappedBy="empresa", fetch=FetchType.LAZY)
+	private List<Puntoemision> puntoemsiones;
 }

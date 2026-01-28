@@ -3,13 +3,21 @@
  */
 package ec.mileniumtech.educafacil.backing.contabilidad;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.io.Serializable;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+
 import org.apache.log4j.Logger;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.backing.estudiantes.ComponenteBuscaEstudiante;
@@ -30,10 +38,17 @@ import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumTipoCatalogo;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
 import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import lombok.Getter;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.util.JRLoader;
 
 /**
 *@author christian  Jul 13, 2024
@@ -45,7 +60,9 @@ public class BackingPagos implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 	private static final Logger log = Logger.getLogger(BackingPagos.class);
-
+	private JasperReport jasperReport;
+	@Getter
+	private StreamedContent fileDownload;
 	@Inject
 	@Getter
 	private ComponenteBuscaEstudiante componenteBuscaEstudiante;
@@ -94,6 +111,8 @@ public class BackingPagos implements Serializable{
 			getBeanPagos().setListaServiciosPago(new ArrayList<>());
 			getBeanPagos().setListaServiciosPago(getCatalogoServicio().catalogosPorTipo(EnumTipoCatalogo.TIPOPAGO.getNemotecnico()));
 			getBeanPagos().setListaCursos(getOfertaServicios().listaOfertaCursosActivos());
+			InputStream reportStream = getClass().getResourceAsStream("/reports/pagosAlumnosCurso.jasper");
+            jasperReport = (JasperReport) JRLoader.loadObject(reportStream);
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -227,5 +246,25 @@ public class BackingPagos implements Serializable{
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void generarReporte() {
+		Map<String, Object> params = new HashMap<>();
+        params.put("parametroCurso", getBeanPagos().getNombreCurso());
+        JRBeanCollectionDataSource datasource = new JRBeanCollectionDataSource(getBeanPagos().getListaCursosMatriculados());
+        try {
+            // Llena directamente con reporte compilado (sin compile)
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params, datasource);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            JasperExportManager.exportReportToPdfStream(jasperPrint, baos);
+            
+            DefaultStreamedContent.Builder builder = DefaultStreamedContent.builder()
+                    .stream(() -> new ByteArrayInputStream(baos.toByteArray()))
+                    .contentType("application/pdf")
+                    .name("reportePagos.pdf");
+                fileDownload = builder.build();
+        } catch (Exception e) {
+           e.printStackTrace();
+        }
 	}
 }

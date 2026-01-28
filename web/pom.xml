@@ -211,7 +211,11 @@
 	    <artifactId>jakarta.json-api</artifactId>
 	    <version>2.1.3</version> 
    </dependency>
-
+    <dependency>
+        <groupId>net.sf.jasperreports</groupId>
+        <artifactId>jasperreports</artifactId>
+        <version>6.20.6</version>
+    </dependency>
 <dependency>
         <groupId>javax.xml.bind</groupId>
         <artifactId>jaxb-api</artifactId>
@@ -227,6 +231,11 @@
     <groupId>com.facebook.business.sdk</groupId>
     <artifactId>facebook-java-business-sdk</artifactId> 
     <version>[8.0.3,)</version>
+</dependency>
+<dependency>
+  <groupId>org.eclipse.microprofile.openapi</groupId>
+  <artifactId>microprofile-openapi-api</artifactId>
+  <version>3.1</version> <!-- Puedes elegir otra versión si tu servidor la requiere -->
 </dependency>
     </dependencies>
 

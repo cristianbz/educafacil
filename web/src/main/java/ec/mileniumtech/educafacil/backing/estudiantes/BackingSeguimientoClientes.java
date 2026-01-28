@@ -477,7 +477,10 @@ public class BackingSeguimientoClientes implements Serializable{
 		Mensaje.verDialogo("dlgExcel");
 	}
 	public void mostrarDlgFormulario() {
+		getBeanSeguimiento().setCampaniaSeleccionada(null);
 		getBeanSeguimiento().setHabilitaCargaFormFaces(true);
+		getBeanSeguimiento().setNumeroPreguntas(null);
+		getBeanSeguimiento().setListadoLeadsForm(new ArrayList<FormFacebookAdsRecord>());
 		Mensaje.verDialogo("dlgActualizaDesdeExcel");
 		Mensaje.actualizarComponente("pnlActualizaDesdeExcel");
 	}
@@ -658,7 +661,27 @@ public class BackingSeguimientoClientes implements Serializable{
                 		            .build();
                     		getBeanSeguimiento().setLeadsFormulario(new FormFacebookAdsRecord(pregResp3.toString(), devuelveValores(fila.getCell(6)), devuelveValores(fila.getCell(5)), devuelveValores(fila.getCell(4)), devuelveValores(fila.getCell(7)), devuelveValores(fila.getCell(8)),devuelveFechaProcesada(fila.getCell(0))));
                 		}
+//                		}else if(getBeanSeguimiento().getNumeroPreguntas()==0) {                			
+//                    			celda = fila.getCell(1);
+//                    			if(celda!=null) {
+//                    				ByteBuffer buffer;
+//                    				respuesta1=celda.getStringCellValue();                				
+//                    				buffer = StandardCharsets.ISO_8859_1.encode(respuesta1); 
+//                            		String utf8EncodedString = StandardCharsets.ISO_8859_1.decode(buffer).toString();                    		
+//                            		respuesta1=utf8EncodedString;
+//                            		
+//                    			}else
+//                    				respuesta1="";
+//                        		
+//                    			pregResp1 = Json.createObjectBuilder()
+//                    		            .add(pregunta1, respuesta1)                		            
+//                    		            .build();
+                    			                			                			
+//                    			getBeanSeguimiento().setLeadsFormulario(new FormFacebookAdsRecord("", devuelveValores(fila.getCell(3)), devuelveValores(fila.getCell(2)), devuelveValores(fila.getCell(1)), devuelveValores(fila.getCell(4)), devuelveValores(fila.getCell(5)),devuelveFechaProcesada(fila.getCell(0))));
+//                		}
                 		
+                	}else if(getBeanSeguimiento().getNumeroPreguntas()==0) {
+                		getBeanSeguimiento().setLeadsFormulario(new FormFacebookAdsRecord("", devuelveValores(fila.getCell(3)), devuelveValores(fila.getCell(2)), devuelveValores(fila.getCell(1)), devuelveValores(fila.getCell(4)), devuelveValores(fila.getCell(5)),devuelveFechaProcesada(fila.getCell(0))));
                 	}
             		
             		beanSeguimiento.getListadoLeadsForm().add(getBeanSeguimiento().getLeadsFormulario());
@@ -674,11 +697,16 @@ public class BackingSeguimientoClientes implements Serializable{
 	
 	public String devuelveValores(Cell celda) {
 		String resultado="";
-		if(celda!=null) {
-			ByteBuffer buffer;
-			String respuesta=celda.getStringCellValue();                				
-			buffer = StandardCharsets.ISO_8859_1.encode(respuesta); 
-    		resultado = StandardCharsets.ISO_8859_1.decode(buffer).toString();                    		    		
+		try {			
+			if(celda!=null) {
+				ByteBuffer buffer;
+				String respuesta=celda.getStringCellValue();                				
+				buffer = StandardCharsets.ISO_8859_1.encode(respuesta); 
+	    		resultado = StandardCharsets.ISO_8859_1.decode(buffer).toString();                    		    		
+			}
+			
+		}catch(Exception e) {
+			e.printStackTrace();
 		}
 		return resultado;
 	}

@@ -42,7 +42,7 @@
 			</p:dialog>
 			
 			<p:dialog widgetVar="dlgActualizaDesdeExcel" modal="true" width="50%"
-				height="200px;" header="#{titulos['pendientesLlamar']}">
+				height="200px;" header="#{titulos['clientesPotenciales']}">
 				<p:outputPanel id="pnlActualizaDesdeExcel">
 					
 					<div class="p-field p-col-12 p-md-12">
@@ -68,6 +68,7 @@
 		                 <p:selectOneRadio id="nroPreguntas" 
 		                 	required="true" requiredMessage="#{mensajes['campoRequerido']}"
 		                 	value="#{backingSeguimientoClientes.beanSeguimiento.numeroPreguntas}" layout="lineDirection">
+				            <f:selectItem itemLabel="Cero" itemValue="0"/>
 				            <f:selectItem itemLabel="Uno" itemValue="1"/>
 				            <f:selectItem itemLabel="Dos" itemValue="2"/>
 				            <f:selectItem itemLabel="Tres" itemValue="3"/>

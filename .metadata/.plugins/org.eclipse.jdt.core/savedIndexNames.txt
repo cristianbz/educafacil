@@ -7,6 +7,7 @@ INDEX VERSION 1.134+C:\Users\christian\eclipse-workspace\educafacil\.metadata\.p
 1154743258.index
 2448495097.index
 1214699072.index
+3220096111.index
 2584277542.index
 1662355895.index
 2260968886.index
@@ -46,6 +47,7 @@ INDEX VERSION 1.134+C:\Users\christian\eclipse-workspace\educafacil\.metadata\.p
 1153546864.index
 2385578293.index
 3285873744.index
+3263253061.index
 3140590590.index
 255259976.index
 1345310310.index
@@ -72,6 +74,7 @@ INDEX VERSION 1.134+C:\Users\christian\eclipse-workspace\educafacil\.metadata\.p
 321402437.index
 2789750531.index
 2406804007.index
+101398196.index
 1865797976.index
 1247322786.index
 1390196267.index
@@ -87,6 +90,7 @@ INDEX VERSION 1.134+C:\Users\christian\eclipse-workspace\educafacil\.metadata\.p
 1235684039.index
 2037011715.index
 2072094410.index
+3337647237.index
 1648251172.index
 1078567998.index
 3531863196.index
@@ -94,6 +98,7 @@ INDEX VERSION 1.134+C:\Users\christian\eclipse-workspace\educafacil\.metadata\.p
 810673730.index
 902188530.index
 350108457.index
+3520477933.index
 3511548653.index
 1219549305.index
 3696360331.index
@@ -127,6 +132,7 @@ INDEX VERSION 1.134+C:\Users\christian\eclipse-workspace\educafacil\.metadata\.p
 1140681919.index
 4262445642.index
 2462511062.index
+141135068.index
 205265435.index
 1554830196.index
 1931543280.index
@@ -150,9 +156,10 @@ INDEX VERSION 1.134+C:\Users\christian\eclipse-workspace\educafacil\.metadata\.p
 1978677406.index
 1630219509.index
 2167653565.index
-3603947454.index
+3393292377.index
 2631818448.index
 1485654964.index
+3603947454.index
 2447503109.index
 3697794765.index
 2341643290.index
@@ -173,6 +180,7 @@ INDEX VERSION 1.134+C:\Users\christian\eclipse-workspace\educafacil\.metadata\.p
 2882793821.index
 857961104.index
 464895663.index
+1827706239.index
 4194652338.index
 2358646745.index
 192843027.index
@@ -242,3 +250,4 @@ INDEX VERSION 1.134+C:\Users\christian\eclipse-workspace\educafacil\.metadata\.p
 436523431.index
 1224664569.index
 4000751988.index
+1400581946.index

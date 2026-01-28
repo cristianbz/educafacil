@@ -158,8 +158,11 @@ public class PersonaDaoImpl extends GenericoDaoImpl<Persona, Long>{
 			Query query = getEntityManager().createNamedQuery(Persona.BUSCAR_POR_CEDULA_CORREO);
 			query.setParameter("cedula", cedula);
 			query.setParameter("correo", correo);
-			
-			persona= (Persona) query.getSingleResult();			
+			if(persona.getEstudiantes()!=null) {
+				Hibernate.initialize(persona.getEstudiantes().get(0));
+				persona= (Persona) query.getSingleResult();
+			}
+						
 			return persona;
 		}catch(NoResultException e) {
 			return null;

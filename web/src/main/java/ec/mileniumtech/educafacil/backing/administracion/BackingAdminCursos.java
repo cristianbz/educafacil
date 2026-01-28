@@ -271,6 +271,7 @@ public class BackingAdminCursos implements Serializable{
 	 * Nueva oferta de curso
 	 */
 	public void nuevoOfertaCurso() {
+		getBeanAdminCursos().setAnularCurso(false);
 		getBeanAdminCursos().setNuevaOfertaCurso(true);
 		getBeanAdminCursos().setOfertaCursos(new OfertaCursos());
 		getBeanAdminCursos().setCodigoArea(0);

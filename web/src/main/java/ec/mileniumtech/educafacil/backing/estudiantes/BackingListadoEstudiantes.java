@@ -19,14 +19,16 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.stream.Collectors;
-
 
 import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
-
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
@@ -78,6 +80,12 @@ import jakarta.inject.Named;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.util.JRLoader;
 
 /**
  * @author [ Christian Baez ] cbaez Jan 29, 2020
@@ -89,7 +97,10 @@ public class BackingListadoEstudiantes implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private static final Logger log = Logger.getLogger(BackingListadoEstudiantes.class);
-	
+	private JasperReport jasperReport;
+
+	@Getter
+	private StreamedContent fileDownload;
 	@EJB
 	@Getter
 	private MatriculaDaoImpl matriculaServicioImpl;
@@ -123,6 +134,8 @@ public class BackingListadoEstudiantes implements Serializable {
 		getBeanListadoEstudiantes().setOfertaSeleccionada(new OfertaCursos());
 		getBeanListadoEstudiantes().getOfertaSeleccionada().setOcurFechaFin(new Date());
 		getBeanListadoEstudiantes().getOfertaSeleccionada().setOcurFechaInicio(new Date());
+		InputStream reportStream = getClass().getResourceAsStream("/reports/reporteMatriculadosCurso.jasper");
+        jasperReport = (JasperReport) JRLoader.loadObject(reportStream);
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -147,6 +160,7 @@ public class BackingListadoEstudiantes implements Serializable {
 				Mensaje.actualizarComponente("growl");
 			}
 			Mensaje.ocultarDialogo("dlgBuscar");	
+			
 		}catch(DaoException e) {
 			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.cargarMatriculas"));			
 			log.error(new StringBuilder().append(this.getClass().getName() + "." + "buscarMatriculas" + ": ").append(e.getMessage()));			
@@ -405,6 +419,7 @@ public class BackingListadoEstudiantes implements Serializable {
 		GeneracionPdf.generarCertificado(getBeanListadoEstudiantes().getMatriculaSeleccionada(), getBeanLogin(), getMensajesBacking());
 	}
 	public void mostrarDialogoBuscar() {
+		
 		nuevaBusqueda();
 		Mensaje.verDialogo("dlgBuscar");
 	}
@@ -450,4 +465,24 @@ public class BackingListadoEstudiantes implements Serializable {
 			e.printStackTrace();
 		}
 	}
+	public void generarReporte() {
+		Map<String, Object> params = new HashMap<>();
+        params.put("parametroCurso", getBeanListadoEstudiantes().getCursoSeleccionado().getCursNombre().concat(" / ").concat(formatDate(getBeanListadoEstudiantes().getOfertaSeleccionada().getOcurFechaInicio(), "yyyy-MM-dd").concat(" al ").concat(formatDate(getBeanListadoEstudiantes().getOfertaSeleccionada().getOcurFechaFin(), "yyyy-MM-dd").concat(" ").concat(getBeanListadoEstudiantes().getOfertaSeleccionada().getOcurHorario()))));
+        JRBeanCollectionDataSource datasource = new JRBeanCollectionDataSource(getBeanListadoEstudiantes().getListaMatriculas());
+        try {
+            // Llena directamente con reporte compilado (sin compile)
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params, datasource);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            JasperExportManager.exportReportToPdfStream(jasperPrint, baos);
+            
+            DefaultStreamedContent.Builder builder = DefaultStreamedContent.builder()
+                    .stream(() -> new ByteArrayInputStream(baos.toByteArray()))
+                    .contentType("application/pdf")
+                    .name("reporteMatriculadosCurso.pdf");
+                fileDownload = builder.build();
+        } catch (Exception e) {
+           e.printStackTrace();
+        }
+	}
+
 }
