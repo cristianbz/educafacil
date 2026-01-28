@@ -1,8 +1,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="jakarta.faces.facelets"
+      	xmlns:f="jakarta.faces.core"
+      	xmlns:h="jakarta.faces.html"
 	xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
@@ -21,7 +21,7 @@
 	            <p:dialog widgetVar="dlgBuscar" appendTo="@(body)" resizable="false" modal="true" closable="false"  height="100px;" header="#{titulos['opcionesBusqueda']}">
 	            	<p:scrollPanel mode="native"
 						style="max-height:350px; max-width:300px;">
-	            	<p:outputPanel id="panelBuscar" >
+	            	<p:outputPanel id="panelBuscar">
 	            		<div class="ui-fluid p-formgrid p-grid">
 	            			<div class="p-field p-col-12 p-md-12" >
 								<span class="ui-float-label ui-input-icon-right" style="margin-top: 2em">
@@ -186,8 +186,14 @@
 								
 								<i class="pi pi-download" style="font-size: 1em; color: green;"></i>
 							</p:commandLink>
+
 						</h:panelGrid>
-					
+					<p:commandButton value="Reporte PDF"  immediate="true"
+                         action="#{backingListadoEstudiantes.generarReporte()}" 
+                         ajax="false"
+                         icon="pi pi-file-pdf" >        
+        		<p:fileDownload value="#{backingListadoEstudiantes.fileDownload}" />
+        		</p:commandButton>
 				
 					<p:spacer height="20px;"/>
 					<p:dataTable value="#{backingListadoEstudiantes.beanListadoEstudiantes.listaMatriculas}" id="listaMatriculas" reflow="true"
