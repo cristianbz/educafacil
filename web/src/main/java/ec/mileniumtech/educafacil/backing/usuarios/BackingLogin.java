@@ -20,8 +20,10 @@ import ec.mileniumtech.educafacil.bean.usuarios.BeanLogin;
 import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
 import ec.mileniumtech.educafacil.dao.impl.ConfiguracionesDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.UsuarioDaoImpl;
+import ec.mileniumtech.educafacil.dao.impl.UsuarioRolDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.ObjetosMenuDto;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Usuario;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.UsuarioRol;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitarios.encriptacion.Encriptar;
 import io.jsonwebtoken.Jwts;
@@ -62,6 +64,10 @@ public class BackingLogin implements Serializable{
 	@EJB
 	@Getter	
 	private UsuarioDaoImpl usuarioServicioImpl;
+	
+	@EJB
+	@Getter	
+	private UsuarioRolDaoImpl usuarioRolDaoImpl;
 	
 	@EJB
 	@Getter	
@@ -109,6 +115,13 @@ public class BackingLogin implements Serializable{
 					listaMenuUsuario=new ArrayList<>();
 					listaMenuUsuario=getUsuarioServicioImpl().buscarAccesosUsuario(getBeanLogin().getUsuario().getUsuaUsuario());
 					if(listaMenuUsuario!=null && !listaMenuUsuario.isEmpty()) {
+						List<UsuarioRol> listaRoles=new ArrayList<>();
+						listaRoles=getUsuarioRolDaoImpl().listaUsuarioRolPorUsuario(getBeanLogin().getUsuario().getUsuaId());
+						if(!listaRoles.isEmpty() && listaRoles!=null) {
+							for (UsuarioRol usuarioRol : listaRoles) {
+								sesion.setAttribute("rol", usuarioRol.getRol().getRolId());
+							}
+						}
 						String perfil=null;
 						boolean flagPrimero=true;
 						DefaultSubMenu submenu = new DefaultSubMenu();
@@ -242,7 +255,5 @@ public class BackingLogin implements Serializable{
 			log.error(new StringBuilder().append(this.getClass().getName() + "." + "validarSesion" + ": ").append(e.getMessage()));
 		}
 	}
-	public void pruebaClick() {
-		System.out.println("Probadno evento");
-	}
+
 }

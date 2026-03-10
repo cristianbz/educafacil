@@ -119,23 +119,37 @@
 					</p:outputPanel>
 				</p:scrollPanel>
 			</p:dialog>
-
-			<p:breadCrumb>
-				<p:menuitem value="Categorias" url="#" />
-				<p:menuitem value="Administración" url="#" />
-				<p:menuitem value="Cursos" url="#" />
+			<p:breadCrumb styleClass="mb-3">
+				<p:menuitem value="Categorias" icon="pi pi-home" outcome="/paginas/index?faces-redirect=true" />
+				<p:menuitem value="Administración" />
+				<p:menuitem value="Cursos" />
 			</p:breadCrumb>
-			<br />
-			<p:splitButton value="#{etiquetas['accionesRealizar']}">
-				<p:menuitem value="#{botones['nuevocurso']}" partialSubmit="true" resetValues="true"
-					icon="pi pi-file" actionListener="#{backingCreacionCursos.nuevaOferta()}"
+			<div class="page-header">
+				<div class="page-title">
+					<h2>Administración cursos</h2>
+					<small>Gestión y control de cursos</small>
+				</div>
+				<div class="page-actions">
+
+					<!-- Acción primaria -->
+					<p:commandButton value="#{botones['nuevocurso']}" partialSubmit="true" resetValues="true"
+					icon="pi pi-file" styleClass="ui-button-success" 
+					actionListener="#{backingCreacionCursos.nuevaOferta()}"
 					process="@this " update="idasignaoferta" />
-				<p:menuitem value="#{botones['crearCurso']}" partialSubmit="true" resetValues="true"
+
+					<!-- Acciones secundarias -->
+					<p:menuButton value="Más acciones" icon="pi pi-ellipsis-v">
+
+						<p:menuitem value="#{botones['crearCurso']}" partialSubmit="true" resetValues="true"
 					icon="pi pi-file" actionListener="#{backingCreacionCursos.mostrarDialogoNuevoCurso()}"
-					process="@this " update="idasignaoferta" />
-			</p:splitButton>
-			<br />
-			<br />
+					process="@this " update="idasignaoferta"/>
+						
+					</p:menuButton>
+
+				</div>
+
+			</div>
+			
 			<p:panel>
 				<br />
 

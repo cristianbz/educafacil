@@ -374,21 +374,30 @@
 			
 		<p:outputPanel id="panelOfertaCursos">
 			<br />
-				<p:breadCrumb>
-					<p:menuitem value="Categorias" url="#" />
-					<p:menuitem value="Administración" url="#" />
-					<p:menuitem value="Oferta cursos" url="#" />
+				<p:breadCrumb styleClass="mb-3">
+				<p:menuitem value="Categorias" icon="pi pi-home" outcome="/paginas/index?faces-redirect=true" />
+					<p:menuitem value="Administración" />
+					<p:menuitem value="Oferta cursos" />
 				</p:breadCrumb>
-				<br/>
-				
-			<p:splitButton value="#{etiquetas['accionesRealizar']}">
-	            <p:menuitem value="#{botones['nuevaOferta']}"
+				<div class="page-header">
+				<div class="page-title">
+					<h2>Administración oferta de cursos</h2>
+					<small>Gestión y control para oferta de cursos</small>
+				</div>
+				<div class="page-actions">
+
+					<!-- Acción primaria -->
+					<p:commandButton value="#{botones['nuevaOferta']}"
+						styleClass="ui-button-success"
 						process="@this " update="panelNuevo"
 						icon="#{botones['icono.nuevo']}" partialSubmit="true"
 						actionListener="#{backingAdminCursos.nuevoOfertaCurso()}" />
-	        </p:splitButton>	
-			<br/>
-				<br />
+
+					
+				</div>
+
+			</div>
+				
 				<p:dataTable sortBy="#{oferta.ofertaCapacitacion.area.areaNombre}"
 					value="#{backingAdminCursos.beanAdminCursos.listaOfertaCursos}"
 					paginator="true" rows="10" var="oferta" id="tablaOferta">

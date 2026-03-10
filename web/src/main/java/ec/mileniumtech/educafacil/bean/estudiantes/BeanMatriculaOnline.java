@@ -7,6 +7,7 @@ package ec.mileniumtech.educafacil.bean.estudiantes;
 import java.io.Serializable;
 import java.util.List;
 
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.Campania;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Catalogo;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Estudiante;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Matricula;
@@ -37,6 +38,9 @@ public class BeanMatriculaOnline implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 	
+	@Getter
+	@Setter
+	private Campania campania;
 	@Getter
 	@Setter
 	private Persona persona;

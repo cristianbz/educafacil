@@ -21,33 +21,48 @@
 					height="200" />
 			</p:dialog>
 
-			<p:breadCrumb>
-				<p:menuitem value="#{rutas['categorias']}" url="#" />
-				<p:menuitem value="#{rutas['calidadCap']}" url="#" />
-				<p:menuitem value="#{rutas['confPreguntas']}" url="#" />
+			<p:breadCrumb styleClass="mb-3">
+				<p:menuitem value="Categorias" icon="pi pi-home" outcome="/paginas/index?faces-redirect=true" />
+				<p:menuitem value="#{rutas['calidadCap']}" />
+				<p:menuitem value="#{rutas['confPreguntas']}" />
 			</p:breadCrumb>
-			<br/>
-			
-			<p:splitButton value="#{etiquetas['accionesRealizar']}">
-				<p:menuitem value="#{botones['nuevoObjeto']}" partialSubmit="true"
+			<div class="page-header">
+				<div class="page-title">
+					<h2>Administración de preguntas</h2>
+					<small>Gestión y control de preguntas para evaluaciones</small>
+				</div>
+				<div class="page-actions">
+
+					<!-- Acción primaria -->
+					<p:commandButton 
+					 styleClass="ui-button-success" 
+					value="#{botones['nuevoObjeto']}" partialSubmit="true"
 					icon="pi pi-file" resetValues="true"
 					actionListener="#{backingConfPreguntas.nuevoObjeto()}"
 					process="@this " update="growl datosObjetoEvaluacion" />
-				<p:menuitem value="#{botones['nuevoTipo']}" partialSubmit="true"
-					icon="pi pi-file" resetValues="true"
-					actionListener="#{backingConfPreguntas.nuevoTipoEncuesta()}"
-					process="@this " update="growl datosTipoEncuesta" />
-				<p:menuitem value="#{botones['nuevaCategoria']}"
-					partialSubmit="true" icon="pi pi-file" resetValues="true"
-					actionListener="#{backingConfPreguntas.nuevaCategoria()}"
-					process="@this " update="growl datosCategoriaRespuesta" />
-				<p:menuitem value="#{botones['nuevaPregunta']}"
-					partialSubmit="true" icon="pi pi-file" resetValues="true"
-					actionListener="#{backingConfPreguntas.nuevaPregunta()}"
-					process="@this " update="growl nuevaPreguntaDialog" />
+
+					<!-- Acciones secundarias -->
+					<p:menuButton value="Más acciones" icon="pi pi-ellipsis-v">
+
+						<p:menuitem value="#{botones['nuevoTipo']}" partialSubmit="true"
+							icon="pi pi-file" resetValues="true"
+							actionListener="#{backingConfPreguntas.nuevoTipoEncuesta()}"
+							process="@this " update="growl datosTipoEncuesta" />
+						<p:menuitem value="#{botones['nuevaCategoria']}"
+							partialSubmit="true" icon="pi pi-file" resetValues="true"
+							actionListener="#{backingConfPreguntas.nuevaCategoria()}"
+							process="@this " update="growl datosCategoriaRespuesta" />
+						<p:menuitem value="#{botones['nuevaPregunta']}"
+							partialSubmit="true" icon="pi pi-file" resetValues="true"
+							actionListener="#{backingConfPreguntas.nuevaPregunta()}"
+							process="@this " update="growl nuevaPreguntaDialog" />
+
+					</p:menuButton>
+
+				</div>
+
+			</div>
 			
-			</p:splitButton>
-			<br/>
 			<!-- Diálogo Nuevo Objeto Evaluacion -->
 			<p:dialog header="#{titulos['nuevoObjetoEvaluacion']}"
 				id="nuevoObjetoDialog" widgetVar="dlgObjeto" modal="true"

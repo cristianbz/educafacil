@@ -301,33 +301,44 @@
 					</p:outputPanel>
 				</p:scrollPanel>
 			</p:dialog>
-			
-			<!-- 
-			
-			 -->
-			
-			<p:breadCrumb>
-				<p:menuitem value="Categorias" url="#" />
-				<p:menuitem value="Contabilidad" url="#" />
-				<p:menuitem value="Registra Pagos" url="#"/>
+			<p:breadCrumb styleClass="mb-3">
+				<p:menuitem value="Categorias" icon="pi pi-home" outcome="/paginas/index?faces-redirect=true" />
+				<p:menuitem value="Contabilidad" />
+				<p:menuitem value="Registra Pagos" />
 			</p:breadCrumb>
+			<div class="page-header">
+				<div class="page-title">
+					<h2>Administración de pagos</h2>
+					<small>Gestión y control de pagos de alumnos</small>
+				</div>
+				<div class="page-actions">
+
+					<!-- Acción primaria -->
+					<p:commandButton value="#{botones['selCurso']}" 
+					action="#{backingPagos.mostrarSeleccionCurso()}" 
+					styleClass="ui-button-success"
+					process="@this" icon="pi pi-check" resetValues="true" update="idcurso"/>
+					
+					<!-- Acciones secundarias -->
+					<p:menuButton value="Más acciones" icon="pi pi-ellipsis-v">
+
+						<p:menuitem value="Reporte PDF"  
+	                         action="#{backingPagos.generarReporte()}" 
+	                         ajax="false"
+	                         icon="pi pi-file-pdf" >        
+	        				<p:fileDownload value="#{backingPagos.fileDownload}" />
+	        			</p:menuitem>
+					</p:menuButton>
+
+				</div>
+
+			</div>
+
 			<br/>
-			<p:splitButton value="#{etiquetas['accionesRealizar']}">
-	            <p:menuitem value="#{botones['selCurso']}" action="#{backingPagos.mostrarSeleccionCurso()}" process="@this" icon="pi pi-check" resetValues="true" update="idcurso"/>
-	        </p:splitButton>
-			<br/>				
-				<br />			
-				<br/>
-				<p:outputLabel value="#{etiquetas['curso']}: #{backingPagos.beanPagos.nombreCurso}" id="nombrecurso" style="color:green; font-size:bodl;"/>
+			<p:outputLabel value="#{etiquetas['curso']}: #{backingPagos.beanPagos.nombreCurso}" id="nombrecurso" style="color:green; font-size:bodl;"/>
 				
 				<p:outputPanel id="panelpagos">
-				<p:commandButton value="Reporte PDF"  
-                         action="#{backingPagos.generarReporte()}" 
-                         ajax="false"
-                         icon="pi pi-file-pdf" >        
-        		<p:fileDownload value="#{backingPagos.fileDownload}" />
-        		</p:commandButton>
-				<p:dataTable id="tablamatriculas" rowStyleClass="#{mat.matrEstado.equals('INSMAT03')?'abandonado':null}" reflow="true" paginator="true" rows="10"
+					<p:dataTable id="tablamatriculas" rowStyleClass="#{mat.matrEstado.equals('INSMAT03')?'abandonado':null}" reflow="true" paginator="true" rows="10"
 					value="#{backingPagos.beanPagos.listaCursosMatriculados}" var="mat">
 					<f:facet name="header">
 						<p:outputLabel value="#{titulos['listaestudiantes']}"/>

@@ -57,7 +57,7 @@
 							<div class="p-field p-col-12 p-md-3">
 							<span class="ui-float-label ui-input-icon-right" 
 								style="margin-top: 2em"> <p:inputText id="idCedula" maxlength="15"
-									disabled="#{beanFichaEstudiante.estudiante == null ?true:false}"
+									disabled="#{beanFichaEstudiante.estudiante == null ?false:true}"
 									value="#{backingFichaEstudiante.beanFichaEstudiante.estudiante.persona.persDocumentoIdentidad}"
 									required="true" requiredMessage="#{mensajes['campoRequerido']}" />
 								<p:outputLabel value="#{etiquetas['cedularuc']}:*" />

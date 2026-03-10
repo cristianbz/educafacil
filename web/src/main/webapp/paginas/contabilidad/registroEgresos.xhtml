@@ -224,20 +224,38 @@
 				</h:panelGrid>
 				</center>
 			</p:dialog>
-			<p:breadCrumb>
-				<p:menuitem value="Categorias" url="#" />
-				<p:menuitem value="Contabilidad" url="#" />
-				<p:menuitem value="Registrar Egresos" url="#" />
+			<p:breadCrumb styleClass="mb-3">
+				<p:menuitem value="Categorias" icon="pi pi-home" outcome="/paginas/index?faces-redirect=true" />
+				<p:menuitem value="Contabilidad" />
+				<p:menuitem value="Registrar Egresos" />
 			</p:breadCrumb>			
-			<br />
+			<div class="page-header">
+				<div class="page-title">
+					<h2>Administración de egeresos</h2>
+					<small>Gestión y control de egresos</small>
+				</div>
+				<div class="page-actions">
 
-			 <p:splitButton value="#{etiquetas['accionesRealizar']}">
-	            <p:menuitem value="#{botones['nuevoRegistro']}" action="#{backingEgresos.nuevoRegistroEgreso()}" process="@this" update="registroEgresos" icon="pi pi-file"/>
-	            <p:menuitem value="#{botones['cargarregistrodatos']}" action="#{backingEgresos.dialogoBuscaEgresos}"  icon="pi pi-upload" process="@this" update="busqueda"/>
-	            
-	        </p:splitButton>
-			<br/>				
-			<br/>
+					<!-- Acción primaria -->
+					<p:commandButton value="#{botones['nuevoRegistro']}" 
+					action="#{backingEgresos.nuevoRegistroEgreso()}" 
+					styleClass="ui-button-success" 
+					process="@this" update="registroEgresos" icon="pi pi-file"/>
+					
+
+					<!-- Acciones secundarias -->
+					<p:menuButton value="Más acciones" icon="pi pi-ellipsis-v">
+
+						<p:menuitem value="#{botones['cargarregistrodatos']}" 
+						action="#{backingEgresos.dialogoBuscaEgresos}"  
+						icon="pi pi-upload" process="@this" update="busqueda"/>
+						
+					</p:menuButton>
+
+				</div>
+
+			</div>
+
 				<div class="ui-fluid p-formgrid p-grid">
 
 

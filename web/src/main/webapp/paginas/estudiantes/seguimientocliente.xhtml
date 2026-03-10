@@ -834,37 +834,51 @@
 					</p:outputPanel>
 				</p:scrollPanel>
 			</p:dialog>
-			<p:breadCrumb>
-				<p:menuitem value="Categorias" url="#" />
-				<p:menuitem value="Marketing" url="#" />
+			<p:breadCrumb styleClass="mb-3">
+				<p:menuitem value="Inicio" icon="pi pi-home" outcome="/paginas/index?faces-redirect=true" />
+				<p:menuitem value="Marketing"  />
 				<p:menuitem value="Seguimiento clientes" />
 			</p:breadCrumb>
-			<br />
-			<p:splitButton value="#{etiquetas['accionesRealizar']}">
-				<p:menuitem update="campanias tblllamar"
-					value="#{botones['cargarregistrodatos']}"
-					onclick="PF('tblseguimiento').clearFilters()" process="@this "
-					partialSubmit="true" icon="pi pi-cloud-upload"
-					actionListener="#{backingSeguimientoClientes.mostrarDialogoCargaInfo()}">
-					<p:resetInput target="tblSeg" />
-				</p:menuitem>
-				<p:menuitem value="#{botones['nuevoSeguimiento']}"
-					process="@this panelSeguimiento" icon="pi pi-file-o"
-					onclick="PF('tblseguimiento').clearFilters()"
-					actionListener="#{backingSeguimientoClientes.nuevoSeguimiento()}"
-					partialSubmit="true" update="pnlseguimiento panelSeguimiento " />
-				<p:menuitem value="#{botones['actSeguimiento']}" process="@this "
-					icon="pi pi-refresh"
-					actionListener="#{backingSeguimientoClientes.mostrarDlgSeguimiento()}"
-					update="tblsegexcel" partialSubmit="true" />
-				<p:menuitem value="#{botones['descargarFormulario']}"
-					icon="pi pi-facebook"
-					update="idcampaniaFormulario archivoFormulario" process="@this "
-					actionListener="#{backingSeguimientoClientes.mostrarDlgFormulario()}"
-					partialSubmit="true" />
-			</p:splitButton>
-			<br />
-			<br />
+			<div class="page-header">
+
+				<div class="page-title">
+					<h2>Seguimiento de Clientes</h2>
+					<small>Gestión y control de interacciones comerciales</small>
+				</div>
+
+				<div class="page-actions">
+
+					<!-- Acción primaria -->
+					<p:commandButton value="Nuevo Seguimiento" icon="pi pi-plus"
+						styleClass="ui-button-success" process="@this panelSeguimiento"
+						update="pnlseguimiento panelSeguimiento"
+						actionListener="#{backingSeguimientoClientes.nuevoSeguimiento}" />
+
+					<!-- Acciones secundarias -->
+					<p:menuButton value="Más acciones" icon="pi pi-ellipsis-v">
+
+						<p:menuitem value="#{botones['cargarregistrodatos']}"
+							process="@this " partialSubmit="true" icon="pi pi-cloud-upload"
+							update="campanias tblllamar"
+							actionListener="#{backingSeguimientoClientes.mostrarDialogoCargaInfo}">
+							<p:resetInput target="tblSeg" />
+						</p:menuitem>
+
+						<p:menuitem value="#{botones['actSeguimiento']}" process="@this "
+							icon="pi pi-refresh"
+							actionListener="#{backingSeguimientoClientes.mostrarDlgSeguimiento}"
+							update="tblsegexcel" />
+
+						<p:menuitem value="#{botones['descargarFormulario']}"
+							icon="pi pi-facebook" process="@this " partialSubmit="true"
+							actionListener="#{backingSeguimientoClientes.mostrarDlgFormulario}"
+							update="idcampaniaFormulario archivoFormulario" />
+
+					</p:menuButton>
+
+				</div>
+
+			</div>
 
 			<p:outputPanel id="panelSeguimiento">
 				<p:dataTable rows="10" paginator="true"

@@ -39,10 +39,26 @@
 					<div class="p-field p-col-12 p-md-12">
 						<span class="ui-float-label ui-input-icon-left" >
 							<p:inputText id="ididentificador" value="#{backingAdminCampanias.beanAdminCampanias.campaniaSeleccionada.campIdentificador}"
-								required="true" requiredMessage="#{mensajes['campoRequerido']}" maxlength="30"/>
+								required="true" requiredMessage="#{mensajes['campoRequerido']}" />
 							<p:outputLabel for="@previous" value="#{etiquetas['identCampania']}" />  
 						</span>		
 						<p:message for="ididentificador"/>
+					</div>
+					<div class="p-field p-col-12 p-md-12">
+						<span class="ui-float-label ui-input-icon-left" >
+							<p:inputTextarea  id="copywrite" value="#{backingAdminCampanias.beanAdminCampanias.campaniaSeleccionada.campCopywrite}"
+								required="true" requiredMessage="#{mensajes['campoRequerido']}" />
+							<p:outputLabel for="@previous" value="#{etiquetas['copywrite']}" />  
+						</span>		
+						<p:message for="copywrite"/>
+					</div>
+					<div class="p-field p-col-12 p-md-12">
+						<span class="ui-float-label ui-input-icon-left" >
+							<p:inputTextarea id="segmentacion" value="#{backingAdminCampanias.beanAdminCampanias.campaniaSeleccionada.campSegmentacion}"
+								required="true" requiredMessage="#{mensajes['campoRequerido']}" />
+							<p:outputLabel for="@previous" value="#{etiquetas['segmentacion']}" />  
+						</span>		
+						<p:message for="segmentacion"/>
 					</div>
 
 					<div class="p-field p-col-12 p-md-12">
@@ -140,21 +156,29 @@
 			<h:graphicImage value="/resources/img/cargando.gif" width="200"
 				height="200" />
 		</p:dialog>
-			<p:breadCrumb>
-				<p:menuitem value="Categorias" url="#" />
-				<p:menuitem value="Marketing" url="#" />
-				<p:menuitem value="Campañas publicidad" url="#"/>
+			<p:breadCrumb styleClass="mb-3">
+				<p:menuitem value="Inicio" icon="pi pi-home" outcome="/paginas/index?faces-redirect=true" />
+				<p:menuitem value="Marketing" />
+				<p:menuitem value="Campañas publicidad" />
 			</p:breadCrumb>
-			<br/>
-			<p:splitButton value="#{etiquetas['accionesRealizar']}">
-	            <p:menuitem value="#{botones['nuevaCampania']}"
+			<div class="page-header">
+
+				<div class="page-title">
+					<h2>Administración Campañas</h2>
+					<small>Gestión y control de campañas publicitarias</small>
+				</div>
+
+				<div class="page-actions">
+
+					<!-- Acción primaria -->
+					<p:commandButton value="#{botones['nuevaCampania']}" styleClass="ui-button-success"
 						process="@this " update="infocampania "
 						action="#{backingAdminCampanias.nuevaCampania()}"						
 						icon="#{botones['icono.nuevo']}" partialSubmit="true"
 						 />	                        
-	        </p:splitButton>	
-			<br/>
-			<br />
+			</div>
+			</div>
+			
 			<div class="ui-fluid p-formgrid p-grid">
 				<div class="p-field p-col-12 p-md-6">
 					<p:outputPanel id="panelCampania">

@@ -74,11 +74,20 @@ public class Campania  implements Serializable{
 	@Column(name="camp_estado")
 	private boolean campEstado;
 	
+	@Column(name="camp_copywrite")
+	private String campCopywrite;
+	
+	@Column(name="camp_segmentacion")
+	private String campSegmentacion;
+	
 	@Transient
 	private String fechasCampania;
 	
 	@OneToMany(mappedBy="campania", fetch=FetchType.LAZY)
 	private List<SeguimientoClientes> seguimientoClientes;
+	
+	@OneToMany(mappedBy="campania", fetch=FetchType.LAZY)
+	private List<Matricula> matriculas;
 	
 	@ManyToOne
 	@JoinColumn(name="curs_id",updatable = true, insertable = true)

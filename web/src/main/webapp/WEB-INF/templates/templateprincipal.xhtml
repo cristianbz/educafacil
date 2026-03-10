@@ -65,57 +65,132 @@
 .colorCulminado{
 	background-color:#116FBF !important;	
 }
+/*-------------------*/
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
 
+/* TOPBAR */
+.topbar {
+    height: 60px;
+    background: #0d6efd;
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    justify-content: space-between;
+}
+
+.toggle-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+/* SIDEBAR */
+.sidebar {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 250px;
+    height: calc(100% - 60px);
+    background: #1f2d3d;
+    padding: 15px;
+    transition: all 0.3s ease;
+    overflow-y: auto;
+}
+
+/* Colapsado */
+.sidebar.collapsed {
+    width: 70px;
+}
+
+/* CONTENT */
+.content {
+    margin-left: 250px;
+    padding: 20px;
+    margin-top: 60px;
+    transition: all 0.3s ease;
+}
+
+/* Cuando colapsa */
+.content.expanded {
+    margin-left: 70px;
+}
+
+.logout-container {
+    margin-top: 20px;
+}
 </style>
 	<meta name="viewport"
 		content="width=device-width,initial-scale=1,shrink-to-fit=no" />
+		
 </h:head>
-<body>
-	<p:dialog widgetVar="dlgCerrar" appendTo="@parent"
-		header="#{titulos['salirSistema']}" modal="true" width="200px;"
-		closable="false">
-		<h:panelGrid columns="2">
-			<p:commandButton value="#{botones['aceptar']}"
-				icon="#{botones['icono.select']}" process="@this"
-				partialSubmit="true" action="#{backingLogin.cerrarSesion()}"
-				oncomplete="PF('dlgCerrar').hide();" />
-			<p:commandButton value="#{botones['cancelar']}"
-				icon="#{botones['icono.cancelar']}" process="@this"
-				partialSubmit="true" oncomplete="PF('dlgCerrar').hide();" />
-		</h:panelGrid>
-	</p:dialog>
-	<div class="row grow w-100">
-		<div class="col-12 bg-primary py-3">
-			<h:form>
-				<center>
-					<p:menubar model="#{backingLogin.menumodel}" >
-						<f:facet name="options">
-							<i class="pi pi-user" style="font-size: 1rem; color: green"></i>
-							
-							<p:outputLabel
-								value=" #{backingLogin.beanLogin.usuario.persona.persApellidos} #{backingLogin.beanLogin.usuario.persona.persNombres}" />	
-							<h:outputLink
-								value="#{backingFacebookLogin.authenticateWithFacebook()}"
-								target="_blank">
-								<i class="pi pi-facebook" style="font-size: 1em; color: green;"></i>
-							</h:outputLink>		
-							                
-			                <p:commandButton oncomplete="PF('dlgCerrar').show();"
-								title="#{tooltip['salirSistema']}"
-								icon="#{botones['icono.cancelar']}" process="@this"
-								value="Cerrar sesión" />
-						</f:facet>
-					</p:menubar>
+<script>
+    function toggleSidebar() {
+        var sidebar = document.getElementById("sidebar");
+        var content = document.getElementById("content");
 
-				</center>
-			</h:form>
-		</div>
-		<div class="main col-12 bg-light h-100 py-3">
-			<ui:insert name="contenido">
-					Contenido por defecto para que no quede en blanco...    
-				</ui:insert>
-		</div>
-	</div>
+        sidebar.classList.toggle("collapsed");
+        content.classList.toggle("expanded");
+    }
+</script>
+<body>
+	<h:form id="logoutForm">
+		<p:dialog widgetVar="dlgCerrar" appendTo="@parent"
+			header="#{titulos['salirSistema']}" modal="true" width="200px;"
+			closable="false">
+			<h:panelGrid columns="2">
+				<p:commandButton value="#{botones['aceptar']}"
+					icon="#{botones['icono.select']}" process="@this"
+					partialSubmit="true" action="#{backingLogin.cerrarSesion()}"
+					oncomplete="PF('dlgCerrar').hide();" />
+				<p:commandButton value="#{botones['cancelar']}"
+					icon="#{botones['icono.cancelar']}" process="@this"
+					partialSubmit="true" oncomplete="PF('dlgCerrar').hide();" />
+			</h:panelGrid>
+		</p:dialog>
+    </h:form>
+        <!-- 🔵 TOP BAR -->
+        <div class="topbar">
+            <button type="button" class="toggle-btn" onclick="toggleSidebar()">
+                <i class="pi pi-bars"></i>
+            </button>
+
+            <div class="user-info">
+                <i class="pi pi-user"></i>
+                #{backingLogin.beanLogin.usuario.persona.persApellidos}
+                #{backingLogin.beanLogin.usuario.persona.persNombres}
+            </div>
+        </div>
+
+        <!-- 🔵 SIDEBAR -->
+        <div id="sidebar" class="sidebar">
+            <p:panelMenu model="#{backingLogin.menumodel}" style="width:100%" />
+
+            <div class="logout-container">
+            	<h:form>
+	                <p:commandButton 
+	                    value="Cerrar sesión"
+	                    icon="pi pi-sign-out"
+	                    styleClass="ui-button-danger w-100"
+	                    oncomplete="PF('dlgCerrar').show();"
+	                    process="@this"/>
+               </h:form>     
+            </div>
+        </div>
+
+        <!-- 🟢 CONTENT -->
+        <div id="content" class="content">
+            <ui:insert name="contenido">
+                Contenido por defecto...
+            </ui:insert>
+        </div>
+
+
 
 </body>
 </html>
