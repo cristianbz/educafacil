@@ -104,13 +104,14 @@
 					oncomplete="PF('dlgFinalizar').hide();" process="@this" />
 			</h:panelGrid>
 		</p:dialog>
-		<p:outputPanel id="panelOfertaCursos">
-			<br />
-			<p:breadCrumb>
-				<p:menuitem value="Categorias" url="#" />
-				<p:menuitem value="Administración" url="#" />
-				<p:menuitem value="Finalizar curso" url="#" />
-			</p:breadCrumb>
+				<p:outputPanel id="panelOfertaCursos">
+					<p:breadCrumb styleClass="mb-3">
+					<p:menuitem value="Categorias" icon="pi pi-home" outcome="/paginas/index?faces-redirect=true" />
+					<p:menuitem value="Administración" />
+					<p:menuitem value="Finalizar cursos" />
+				</p:breadCrumb>
+					
+			
 
 				<p:dataTable sortBy="#{oferta.ofertaCapacitacion.area.areaNombre}" reflow="true"
 					emptyMessage="#{mensajes['noRegistros']}"

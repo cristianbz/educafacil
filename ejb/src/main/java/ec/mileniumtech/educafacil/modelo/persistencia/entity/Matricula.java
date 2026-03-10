@@ -107,9 +107,9 @@ public class Matricula implements Serializable {
 	@OneToMany(mappedBy="matricula", fetch=FetchType.LAZY)
 	private List<Pagos> pagos;
 	
-//	@ManyToOne(optional = false)
-//	@JoinColumn(name="mein_id")
-//	private MedioInformacion medioInformacion;
+	@ManyToOne
+	@JoinColumn(name="camp_id",updatable = true, insertable = true)
+	private Campania campania;
 	
 	@ManyToOne
 	@JoinColumn(name="ocur_id",updatable = true, insertable = true)

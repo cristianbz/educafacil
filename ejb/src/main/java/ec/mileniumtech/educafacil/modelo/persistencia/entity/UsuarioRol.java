@@ -25,7 +25,8 @@ import lombok.Setter;
 
 @Table(name="usuario_rol")
 @NamedQueries({
-	@NamedQuery(name = UsuarioRol.CARGAR_Usuario_Rol, query = "SELECT UR FROM UsuarioRol UR ORDER BY UR.urolId ASC")
+	@NamedQuery(name = UsuarioRol.CARGAR_Usuario_Rol, query = "SELECT UR FROM UsuarioRol UR ORDER BY UR.urolId ASC"),
+	@NamedQuery(name = UsuarioRol.CARGAR_Usuario_Rol_Por_IDUsuario, query = "SELECT UR FROM UsuarioRol UR WHERE UR.usuario.usuaId=:idUsuario ORDER BY UR.urolId ASC")
 	
 })
 
@@ -33,6 +34,7 @@ public class UsuarioRol implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 	public static final String CARGAR_Usuario_Rol="cargarUsuarioRol";
+	public static final String CARGAR_Usuario_Rol_Por_IDUsuario="cargarUsuarioRolPorIdUsuario";
 	
 	@Id
 	@SequenceGenerator(name="usuarioRolSeq", sequenceName="usuario_rol_seq", allocationSize = 1)

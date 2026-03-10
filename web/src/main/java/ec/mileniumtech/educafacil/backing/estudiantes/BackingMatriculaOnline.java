@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import jakarta.annotation.PostConstruct;
@@ -21,6 +22,7 @@ import ec.mileniumtech.educafacil.bean.estudiantes.BeanMatriculaOnline;
 import ec.mileniumtech.educafacil.bean.usuarios.BeanLogin;
 import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
 import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
+import ec.mileniumtech.educafacil.dao.impl.CampaniaDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.CatalogoDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.ConfiguracionesDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.CursoDaoImpl;
@@ -30,6 +32,7 @@ import ec.mileniumtech.educafacil.dao.impl.OfertaCursosDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.PersonaDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.UsuarioDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.UsuarioRolDaoImpl;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.Campania;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Catalogo;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Empresa;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Estudiante;
@@ -68,6 +71,10 @@ public class BackingMatriculaOnline implements Serializable {
 	@EJB
 	@Getter	
 	private ConfiguracionesDaoImpl configuracionesServicioImpl;
+	
+	@EJB
+	@Getter	
+	private CampaniaDaoImpl campaniaServicioImpl;
 	
 	@EJB
 	@Getter	
@@ -222,6 +229,7 @@ public class BackingMatriculaOnline implements Serializable {
 			getBeanMatricula().getMatricula().setMatrEstado(EnumEstadosMatricula.MATRICULADO.getCodigo());
 			getBeanMatricula().getMatricula().setOfertaCursos(getBeanMatricula().getCursoSeleccionado());
 			getBeanMatricula().getMatricula().setMatrMedioInformacion(getBeanMatricula().getCodigoMedioInformacion());
+			getBeanMatricula().getMatricula().setCampania(getBeanMatricula().getCampania());
 			String cedula = getBeanMatricula().getPersona().getPersDocumentoIdentidad();
 			usuarioE.setUsuaUsuario(cedula);
 			password=getBeanMatricula().getPersona().getPersTelefonoMobil();
@@ -299,11 +307,22 @@ public class BackingMatriculaOnline implements Serializable {
 	public void validaMatricula() {
 		try {			
 			if(getBeanMatricula().getEstudiante()!= null) {
+				List<Campania> listaCampanias=new ArrayList();
+
 				int oferta = getBeanMatricula().getCursoSeleccionado().getOcurId();
 				Matricula matricula = getMatriculaServicio().existeMatricula(oferta, getBeanMatricula().getEstudiante().getEstuId() );
-				if(matricula == null)
+				if(matricula == null) {
 					getBeanMatricula().setDeshabilitaMatricula(false);
-				else {
+					listaCampanias=getCampaniaServicioImpl().listaCampanias();
+					for (Campania campania : listaCampanias) {
+						if(campania.getCampId()>0) {
+							if(campania.getCurso().getCursId()== getBeanMatricula().getCursoSeleccionado().getOfertaCapacitacion().getCurso().getCursId()) {
+								getBeanMatricula().setCampania(campania);
+								break;
+							}
+						}
+					}
+				}else {
 					Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.matriculaExiste"));
 					getBeanMatricula().setDeshabilitaMatricula(true);
 				}

@@ -6,7 +6,6 @@
     <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.utilitarios.dto.registrodatos.FormFacebookAdsRecord"/>
     <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.utilitarios.fechas.FechaFormato"/>
     <fullyQualifiedTypeName name="jakarta.enterprise.context.ApplicationScoped"/>
-    <fullyQualifiedTypeName name="java.util.ArrayList"/>
     <fullyQualifiedTypeName name="jakarta.ejb.Stateless"/>
     <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.dao.impl.PersonaDaoImpl"/>
     <fullyQualifiedTypeName name="jakarta.inject.Inject"/>
@@ -16,4 +15,8 @@
     <fullyQualifiedTypeName name="org.primefaces.model.DefaultStreamedContent"/>
     <fullyQualifiedTypeName name="lombok.Getter"/>
     <fullyQualifiedTypeName name="lombok.Setter"/>
+    <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.modelo.persistencia.entity.Campania"/>
+    <fullyQualifiedTypeName name="java.util.ArrayList"/>
+    <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.modelo.persistencia.entity.UsuarioRol"/>
+    <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.dao.impl.UsuarioRolDaoImpl"/>
 </qualifiedTypeNameHistroy>

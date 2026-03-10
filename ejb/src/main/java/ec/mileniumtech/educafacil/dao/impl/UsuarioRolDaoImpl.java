@@ -43,6 +43,18 @@ public class UsuarioRolDaoImpl extends GenericoDaoImpl<UsuarioRol, Long>{
 		}
 	}
 	
+	public List<UsuarioRol> listaUsuarioRolPorUsuario(int idUsuario)throws DaoException{
+		try {
+			Query query=getEntityManager().createNamedQuery(UsuarioRol.CARGAR_Usuario_Rol_Por_IDUsuario);
+			query.setParameter("idUsuario", idUsuario);
+			return query.getResultList();
+		}catch(NoResultException e) {
+			return null;
+		}catch(Exception e) {
+			throw new DaoException(e);
+		}
+	}
+	
 	public UsuarioRol agregarUsuarioRol(UsuarioRol usuarioRol)throws DaoException,EntidadDuplicadaException {
 		try{
 			if(usuarioRol.getUrolId()==null) 

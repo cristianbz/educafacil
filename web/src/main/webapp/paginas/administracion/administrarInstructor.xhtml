@@ -217,19 +217,28 @@
 			</p:outputPanel>
 			</p:scrollPanel>
 		</p:dialog>
-			<p:breadCrumb>
-				<p:menuitem value="Categorias" url="#" />
-				<p:menuitem value="Administración" url="#" />
-				<p:menuitem value="Instructores" url="#" />
+		
+			<p:breadCrumb styleClass="mb-3">
+				<p:menuitem value="Categorias" icon="pi pi-home" outcome="/paginas/index?faces-redirect=true" />
+				<p:menuitem value="Administración" />
+				<p:menuitem value="Instructores" />
 			</p:breadCrumb>
-			<br />
-			
-			<p:splitButton value="#{etiquetas['accionesRealizar']}">
-	            <p:menuitem value="#{botones['nuevoInstructor']}"
+			<div class="page-header">
+			<div class="page-title">
+					<h2>Administración de instructores</h2>
+					<small>Gestión y control de personal instructor</small>
+				</div>
+
+				<div class="page-actions">
+
+					<!-- Acción primaria -->
+					<p:commandButton value="#{botones['nuevoInstructor']}"
 						process="@this panelInstructor" 
 						actionListener="#{backingAdminInstructor.nuevoInstructor()}"
-						update="iddatosInstructor panelInstructor" />                        
-	        </p:splitButton>	
+						icon="pi pi-file" styleClass="ui-button-success" 
+						update="iddatosInstructor panelInstructor" />					
+				</div>
+			</div>
 
 			<p:outputPanel id="listaInstructores">
 				<br />
