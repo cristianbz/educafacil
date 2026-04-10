@@ -10,18 +10,17 @@ import org.hibernate.Hibernate;
 
 import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
 import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
+import ec.mileniumtech.educafacil.dao.util.JpaDaoSupport;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.EvaluacionCurso;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Matricula;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.OfertaCursos;
 import jakarta.ejb.EJB;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
-import jakarta.validation.ConstraintViolationException;
 import lombok.Getter;
 
 /**
@@ -72,13 +71,7 @@ public class OfertaCursosDaoImpl extends GenericoDaoImpl<OfertaCursos, Long>{
 		try {
 			getEntityManager().persist(ofertaCursos);
 		}catch(PersistenceException e){
-				 Throwable t = e.getCause();
-				    while ((t != null) && !(t instanceof ConstraintViolationException)) {
-				        t = t.getCause();
-				    }
-				    if (t instanceof ConstraintViolationException) {
-				    	throw new EntidadDuplicadaException(e);
-				    }
+			JpaDaoSupport.throwIfConstraintViolationDuplicate(e);
 				throw new DaoException(e);
 			} 	catch (Exception e) {
 				throw new DaoException(e);
@@ -95,13 +88,7 @@ public class OfertaCursosDaoImpl extends GenericoDaoImpl<OfertaCursos, Long>{
 		try {
 			return getEntityManager().merge(ofertaCursos);
 		}catch(PersistenceException e){
-				 Throwable t = e.getCause();
-				    while ((t != null) && !(t instanceof ConstraintViolationException)) {
-				        t = t.getCause();
-				    }
-				    if (t instanceof ConstraintViolationException) {
-				    	throw new EntidadDuplicadaException(e);
-				    }
+			JpaDaoSupport.throwIfConstraintViolationDuplicate(e);
 				throw new DaoException(e);
 		} 	catch (Exception e) {
 				throw new DaoException(e);
@@ -163,13 +150,7 @@ public class OfertaCursosDaoImpl extends GenericoDaoImpl<OfertaCursos, Long>{
 			matriculas.stream().forEach(m -> getEntityManager().merge(m));
 
 		}catch(PersistenceException e){
-			 Throwable t = e.getCause();
-			    while ((t != null) && !(t instanceof ConstraintViolationException)) {
-			        t = t.getCause();
-			    }
-			    if (t instanceof ConstraintViolationException) {
-			    	throw new EntidadDuplicadaException(e);
-			    }
+			JpaDaoSupport.throwIfConstraintViolationDuplicate(e);
 			throw new DaoException(e);
 		} 	catch (Exception e) {
 			throw new DaoException(e);

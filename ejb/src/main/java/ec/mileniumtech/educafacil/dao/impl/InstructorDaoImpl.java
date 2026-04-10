@@ -7,6 +7,7 @@ import java.util.List;
 
 import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
 import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
+import ec.mileniumtech.educafacil.dao.util.JpaDaoSupport;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Instructor;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Persona;
 import jakarta.ejb.LocalBean;
@@ -69,13 +70,7 @@ public class InstructorDaoImpl extends GenericoDaoImpl<Instructor, Long>{
 				getEntityManager().merge(instructor);
 			
 		}catch(PersistenceException e){
-			 Throwable t = e.getCause();
-			    while ((t != null) && !(t instanceof ConstraintViolationException)) {
-			        t = t.getCause();
-			    }
-			    if (t instanceof ConstraintViolationException) {
-			    	throw new EntidadDuplicadaException(e);
-			    }
+			JpaDaoSupport.throwIfConstraintViolationDuplicate(e);
 			throw new DaoException(e);
 		} 	catch (Exception e) {
 			throw new DaoException(e);

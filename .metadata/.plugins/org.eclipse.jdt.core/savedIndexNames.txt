@@ -66,7 +66,6 @@ INDEX VERSION 1.134+C:\Users\christian\eclipse-workspace\educafacil\.metadata\.p
 3419185041.index
 1288513694.index
 3051785032.index
-3750328155.index
 637912403.index
 1078479468.index
 536297588.index
@@ -79,7 +78,6 @@ INDEX VERSION 1.134+C:\Users\christian\eclipse-workspace\educafacil\.metadata\.p
 1247322786.index
 1390196267.index
 513908573.index
-641880300.index
 2568813008.index
 2470159148.index
 1702867833.index
@@ -87,7 +85,6 @@ INDEX VERSION 1.134+C:\Users\christian\eclipse-workspace\educafacil\.metadata\.p
 3637420889.index
 1437327198.index
 919422222.index
-1235684039.index
 2037011715.index
 2072094410.index
 3337647237.index
@@ -125,9 +122,9 @@ INDEX VERSION 1.134+C:\Users\christian\eclipse-workspace\educafacil\.metadata\.p
 2022924976.index
 1248464268.index
 1243057733.index
-1152709927.index
 3483212549.index
 707265949.index
+4110997575.index
 624303377.index
 1140681919.index
 4262445642.index
@@ -141,7 +138,6 @@ INDEX VERSION 1.134+C:\Users\christian\eclipse-workspace\educafacil\.metadata\.p
 142981857.index
 180749955.index
 4054217379.index
-1862484290.index
 3564846525.index
 3419129218.index
 839880664.index
@@ -169,7 +165,6 @@ INDEX VERSION 1.134+C:\Users\christian\eclipse-workspace\educafacil\.metadata\.p
 2832427813.index
 4003399812.index
 1865174230.index
-2292697944.index
 3719353250.index
 850951447.index
 3136436431.index
@@ -212,7 +207,6 @@ INDEX VERSION 1.134+C:\Users\christian\eclipse-workspace\educafacil\.metadata\.p
 2445604277.index
 2396827159.index
 2332512100.index
-3712192003.index
 895887569.index
 3982595159.index
 3090444840.index
@@ -235,6 +229,7 @@ INDEX VERSION 1.134+C:\Users\christian\eclipse-workspace\educafacil\.metadata\.p
 3753292230.index
 760638372.index
 1296418783.index
+2274581340.index
 460099047.index
 2997713799.index
 4090711349.index
@@ -243,11 +238,10 @@ INDEX VERSION 1.134+C:\Users\christian\eclipse-workspace\educafacil\.metadata\.p
 1397958785.index
 3650670406.index
 1665701996.index
-1890182190.index
 1896822505.index
 3105505314.index
-750259328.index
 436523431.index
+750259328.index
 1224664569.index
 4000751988.index
 1400581946.index

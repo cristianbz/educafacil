@@ -12,6 +12,7 @@ import org.hibernate.Hibernate;
 
 import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
 import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
+import ec.mileniumtech.educafacil.dao.util.JpaDaoSupport;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.DtoMatriculasCurso;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetallePagos;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Estudiante;
@@ -23,12 +24,10 @@ import ec.mileniumtech.educafacil.modelo.persistencia.entity.UsuarioRol;
 import jakarta.ejb.EJB;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
-import jakarta.validation.ConstraintViolationException;
 import lombok.Getter;
 
 /**
@@ -86,13 +85,7 @@ public class MatriculaDaoImpl extends GenericoDaoImpl<Matricula, Long>{
 			else
 				getEntityManager().merge(matricula);
 		}catch(PersistenceException e){
-			 Throwable t = e.getCause();
-			    while ((t != null) && !(t instanceof ConstraintViolationException)) {
-			        t = t.getCause();
-			    }
-			    if (t instanceof ConstraintViolationException) {
-			    	throw new EntidadDuplicadaException(e);
-			    }
+			JpaDaoSupport.throwIfConstraintViolationDuplicate(e);
 			throw new DaoException(e);
 		} 	catch (Exception e) {
 			throw new DaoException(e);
@@ -248,10 +241,7 @@ public class MatriculaDaoImpl extends GenericoDaoImpl<Matricula, Long>{
 			Query query=getEntityManager().createNamedQuery(Matricula.BUSCAR_MATRICULA_ESTUDIANTE_CURSO);
 			query.setParameter("codigoOferta", oferta);
 			query.setParameter("codigoEstudiante", estudiante);					
-			return (Matricula) query.getSingleResult();
-			
-		}catch(NoResultException e) {
-			return null;
+			return JpaDaoSupport.singleResultOrNull(query);
 		}catch(Exception e) {
 			throw new DaoException(e);
 		}
