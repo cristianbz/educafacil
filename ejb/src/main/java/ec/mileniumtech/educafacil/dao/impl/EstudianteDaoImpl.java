@@ -7,16 +7,15 @@ import java.util.List;
 
 import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
 import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
+import ec.mileniumtech.educafacil.dao.util.JpaDaoSupport;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Estudiante;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Persona;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
-import jakarta.validation.ConstraintViolationException;
 
 /**
 *@author christian  Jun 15, 2024
@@ -59,10 +58,8 @@ public class EstudianteDaoImpl extends GenericoDaoImpl<Estudiante, Long>{
 	public Estudiante estudiantesPorCedula(String cedula) throws DaoException{
 		try {
 			Query query=getEntityManager().createNamedQuery(Estudiante.BUSCA_POR_CEDULA);
-			query.setParameter("cedula", cedula);
-			return (Estudiante) query.getSingleResult();
-		}catch(NoResultException e) {
-			return null;
+			query.setParameter("cedula", cedula);			
+			return JpaDaoSupport.singleResultOrNull(query);
 		}catch(Exception e) {
 			throw new DaoException(e);
 		}
@@ -80,13 +77,7 @@ public class EstudianteDaoImpl extends GenericoDaoImpl<Estudiante, Long>{
 			getEntityManager().merge(persona);
 			
 		}catch(PersistenceException e){
-			 Throwable t = e.getCause();
-			    while ((t != null) && !(t instanceof ConstraintViolationException)) {
-			        t = t.getCause();
-			    }
-			    if (t instanceof ConstraintViolationException) {
-			    	throw new EntidadDuplicadaException(e);
-			    }
+			JpaDaoSupport.throwIfConstraintViolationDuplicate(e);
 			throw new DaoException(e);
 		} 	catch (Exception e) {
 			throw new DaoException(e);

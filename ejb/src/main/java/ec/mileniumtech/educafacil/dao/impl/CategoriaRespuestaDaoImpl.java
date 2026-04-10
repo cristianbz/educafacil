@@ -10,16 +10,15 @@ import org.hibernate.Hibernate;
 
 import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
 import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
+import ec.mileniumtech.educafacil.dao.util.JpaDaoSupport;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.CategoriaRespuesta;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Respuestas;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
-import jakarta.validation.ConstraintViolationException;
 
 /**
 *@author christian  Jun 15, 2024
@@ -64,13 +63,7 @@ public class CategoriaRespuestaDaoImpl extends GenericoDaoImpl<CategoriaRespuest
 				getEntityManager().merge(categoriaRespuesta);
 			return categoriaRespuesta;
 		}catch(PersistenceException e){
-			 Throwable t = e.getCause();
-			    while ((t != null) && !(t instanceof ConstraintViolationException)) {
-			        t = t.getCause();
-			    }
-			    if (t instanceof ConstraintViolationException) {
-			    	throw new EntidadDuplicadaException(e);
-			    }
+			JpaDaoSupport.throwIfConstraintViolationDuplicate(e);
 			throw new DaoException(e);
 		} 	catch (Exception e) {
 			throw new DaoException(e);
