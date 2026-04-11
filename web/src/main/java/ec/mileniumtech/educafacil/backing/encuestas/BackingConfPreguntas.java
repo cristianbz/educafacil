@@ -7,14 +7,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
 import org.apache.log4j.Logger;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.encuestas.BeanConfPreguntas;
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
-import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
 import ec.mileniumtech.educafacil.dao.impl.CategoriaRespuestaDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.ObjetoEvaluacionDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.PreguntaDaoImpl;
@@ -90,7 +86,7 @@ public class BackingConfPreguntas  implements Serializable{
 
 	@PostConstruct
 	public void init () {
-		try {
+
 			getBeanConfPreguntas().setListaObjetoEvaluacion(new ArrayList<>());
 			getBeanConfPreguntas().setListaTipoEncuesta(new ArrayList<>());
 			getBeanConfPreguntas().setListaCategoriaRespuesta(new ArrayList<>());
@@ -104,10 +100,6 @@ public class BackingConfPreguntas  implements Serializable{
 			getBeanConfPreguntas().setCategoriaRespuestaSeleccionada(new CategoriaRespuesta());
 
 
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
-
 	}
 
 
@@ -120,19 +112,16 @@ public class BackingConfPreguntas  implements Serializable{
 
 	}
 	public void editarObjeto() {
-		try {
+	
 			getBeanConfPreguntas().setObjetoEvaluacion(new ObjetoEvaluacion());
 			getBeanConfPreguntas().getObjetoEvaluacion().setObjeId(getBeanConfPreguntas().getObjetoEvaluacionEditar().getObjeId());
 			getBeanConfPreguntas().getObjetoEvaluacion().setObjeNombre(getBeanConfPreguntas().getObjetoEvaluacionEditar().getObjeNombre());
 			getBeanConfPreguntas().getObjetoEvaluacion().setObjeEstado(getBeanConfPreguntas().getObjetoEvaluacionEditar().getObjeEstado());
 			Mensaje.verDialogo("dlgObjeto");
-		}catch(Exception e){
-			e.printStackTrace();
-		}
+	
 	}
 	public void guardarObjeto() {
-		try {
-			
+
 			existe=false;
 		
 
@@ -156,12 +145,7 @@ public class BackingConfPreguntas  implements Serializable{
 					Mensaje.ocultarDialogo("dlgObjeto");
 					getBeanConfPreguntas().setTabActivo(0);
 			}
-			
 
-
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
 
 	}
 
@@ -177,7 +161,6 @@ public class BackingConfPreguntas  implements Serializable{
 
 	}
 	public void guardarTipo() {
-		try {
 
 			existe=false;
 			ObjetoEvaluacion objEv = new ObjetoEvaluacion();
@@ -209,24 +192,19 @@ public class BackingConfPreguntas  implements Serializable{
 				getBeanConfPreguntas().setTabActivo(1);
 			}
 
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
 
 	}
 
 
 	public void editarTipo() {
-		try {
+
 			getBeanConfPreguntas().setObjetoEvaluacionSeleccionado(getBeanConfPreguntas().getTipoEncuestaEditar().getObjetoEvaluacion().getObjeId());
 			getBeanConfPreguntas().setTipoEncuesta(new TipoEncuesta());
 			getBeanConfPreguntas().getTipoEncuesta().setTipeId(getBeanConfPreguntas().getTipoEncuestaEditar().getTipeId());
 			getBeanConfPreguntas().getTipoEncuesta().setTipeDescripcion(getBeanConfPreguntas().getTipoEncuestaEditar().getTipeDescripcion());
 			getBeanConfPreguntas().getTipoEncuesta().setTipeEstado(getBeanConfPreguntas().getTipoEncuestaEditar().getTipeEstado());
 			Mensaje.verDialogo("dlgTipoEncuesta");
-		}catch(Exception e){
-			e.printStackTrace();
-		}
+
 	}
 	public void nuevaCategoria() {
 		getBeanConfPreguntas().setCategoriaRespuesta(new CategoriaRespuesta());
@@ -242,7 +220,7 @@ public class BackingConfPreguntas  implements Serializable{
 	}
 
 	public void grabarRespuestas() {
-		try {
+	
 			existe=false;			
 			if(getBeanConfPreguntas().getListaRespuestas().size()==0) 
 				Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.informacion"));
@@ -272,14 +250,11 @@ public class BackingConfPreguntas  implements Serializable{
 					Mensaje.ocultarDialogo("dlgCategoria");
 				}
 			}
-		}catch(Exception e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.generico"));	
-			e.printStackTrace();
-		}		
+		
 	}
 
 	public void editarCategoriaRespuesta() {
-		try {
+
 			getBeanConfPreguntas().setListaRespuestas(new ArrayList<>());
 			getBeanConfPreguntas().setCategoriaRespuesta(new CategoriaRespuesta());
 			getBeanConfPreguntas().getCategoriaRespuesta().setCatrId(getBeanConfPreguntas().getCategoriaRespuestaEditar().getCatrId());
@@ -291,9 +266,7 @@ public class BackingConfPreguntas  implements Serializable{
 					getBeanConfPreguntas().getListaRespuestas().add(res);
 			}
 			Mensaje.verDialogo("dlgCategoria");
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+
 	}
 
 	public void agregarPreguntas() {
@@ -302,17 +275,15 @@ public class BackingConfPreguntas  implements Serializable{
 	}
 
 	public void nuevaPregunta() {
-		try {
+	
 			getBeanConfPreguntas().setPregunta(new Pregunta());
 			getBeanConfPreguntas().setListaCategoriaRespuesta(getCategoriaRespuestaServicioImpl().listaDeCategorias());
 			Mensaje.verDialogo("dlgPregunta");
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+
 	}
 
 	public void grabarPregunta() {
-		try {
+
 			getBeanConfPreguntas().getPregunta().setCategoriaRespuesta(getBeanConfPreguntas().getCategoriaRespuestaSeleccionada());
 			getBeanConfPreguntas().getPregunta().setPregEstado(true);
 			getPreguntaServicioImpl().agregarActualizarPregunta(getBeanConfPreguntas().getPregunta());
@@ -320,35 +291,25 @@ public class BackingConfPreguntas  implements Serializable{
 			Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.agregar"));
 			Mensaje.ocultarDialogo("dlgPregunta");
 			getBeanConfPreguntas().setTabActivo(3);
-		}catch(DaoException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.grabarPregunta"));
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "grabarPregunta" + ": ").append(e.getMessage()));
-		} catch (EntidadDuplicadaException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
 	}
 
 	public void editarPregunta() {
-		try {
+
 			getBeanConfPreguntas().setCategoriaRespuestaSeleccionada(getBeanConfPreguntas().getPregunta().getCategoriaRespuesta());			
 			getBeanConfPreguntas().setListaRespuestas(getRespuestasServicioImpl().listaRespuestasPorCategoria(getBeanConfPreguntas().getCategoriaRespuestaSeleccionada().getCatrId()));
 			Mensaje.verDialogo("dlgPregunta");
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+
 	} 
 	public void cargarRespuestasCategoria() {
-		try {
+
 			getBeanConfPreguntas().setListaRespuestas(new ArrayList<>());
 			getBeanConfPreguntas().setListaRespuestas(getRespuestasServicioImpl().listaRespuestasPorCategoria(getBeanConfPreguntas().getCategoriaRespuestaSeleccionada().getCatrId()));
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+
 	}
 
 	public void nuevoTipoEncuestaPregunta() {
-		try {
+	
 			getBeanConfPreguntas().setListaTipoEncuesta(new ArrayList<>());
 			getBeanConfPreguntas().setListaTipoEncuesta(getTipoEncuestaServicioImpl().listaDeTiposDeEncuestas());
 			getBeanConfPreguntas().setListaPreguntasTE(new ArrayList<>());
@@ -356,24 +317,18 @@ public class BackingConfPreguntas  implements Serializable{
 			getBeanConfPreguntas().setListaPreguntasSelec(new ArrayList<>());
 			Mensaje.verDialogo("dlgPreguntaAsociadas");
 
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	public void cargaPreguntasPorCategorias() {
-		try {
-
+	
 			getBeanConfPreguntas().setListaPreguntasTE(new ArrayList<>());
 			getBeanConfPreguntas().setListaPreguntasTE(getPreguntaServicioImpl().listaPreguntasPorCategoria(getBeanConfPreguntas().getCategoriaRespuestaSeleccionada().getCatrId()));
 			if(getBeanConfPreguntas().getListaPreguntasTE().size()==0)
 				Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("error.noHayDatos"));
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
+
 	}
 	public void guardarTipoEncuestaPregunta(){
-		try {
+
 			String preguntacont="";
 			List<TipoEncuestaPregunta> listatemp= new ArrayList<>();
 			listatemp= getTipoEncuestaPreguntaServicioImpl().listaPorTipoDeEncuestas(getBeanConfPreguntas().getTipoEncuesta().getTipeId());
@@ -405,27 +360,21 @@ public class BackingConfPreguntas  implements Serializable{
 			}else {
 				Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.elementoDuplicado").concat(" [").concat(preguntacont).concat("]"));
 			}
-		}catch(Exception e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.generico"));
-			e.printStackTrace();
-		}
+
 	}
 
 	public void eliminarTipoEncuestaPregunta() {
-		try {
+
 			getBeanConfPreguntas().getTipoEncuestaPreguntaSeleccionada().setTeprEstado(false);
 			getTipoEncuestaPreguntaServicioImpl().agregarActualizarTipoEncuestaPregunta(getBeanConfPreguntas().getTipoEncuestaPreguntaSeleccionada());
 			getBeanConfPreguntas().setListaTipoEncuesta(getTipoEncuestaServicioImpl().listaDeTiposDeEncuestas());
 			getBeanConfPreguntas().setTabActivo(1);
 			Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.eliminar"));
 
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+
 	}
 
 	public void eliminarRespuesta() {
-		try {
 
 			if(getBeanConfPreguntas().getRespuestaSeleccionada().getRespId()==null) 
 				getBeanConfPreguntas().getListaRespuestas().remove(getBeanConfPreguntas().getRespuestaSeleccionada());
@@ -440,9 +389,6 @@ public class BackingConfPreguntas  implements Serializable{
 			Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.eliminar"));	
 
 
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
 	}
 }
 

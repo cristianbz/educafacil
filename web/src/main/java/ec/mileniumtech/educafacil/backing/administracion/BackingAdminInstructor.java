@@ -10,8 +10,7 @@ import org.apache.log4j.Logger;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.administracion.BeanAdminInstructor;
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
-import ec.mileniumtech.educafacil.dao.excepciones.InstructorException;
+
 import ec.mileniumtech.educafacil.dao.impl.CapacitacionDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.FormacionDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.InstructorDaoImpl;
@@ -66,14 +65,8 @@ public class BackingAdminInstructor implements Serializable{
 	 * Carga los instructores
 	 */
 	public void cargarInstructores() {
-		try {
-			getBeanAdminInstructor().setListaInstructores(new ArrayList<>());
-			getBeanAdminInstructor().setListaInstructores(getInstructorServicioImpl().listaInstructores());
-		} catch (DaoException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.cargarInstructor"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "grabarDatosPersonales" + ": ").append(e.getMessage()));			
-
-		}
+		getBeanAdminInstructor().setListaInstructores(new ArrayList<>());
+		getBeanAdminInstructor().setListaInstructores(getInstructorServicioImpl().listaInstructores());
 	}
 	
 	@PostConstruct
@@ -103,19 +96,11 @@ public class BackingAdminInstructor implements Serializable{
 	 * Graba los datos personales del instructor
 	 */
 	public void grabarDatosPersonales() {
-		try {			
-			getBeanAdminInstructor().getInstructor().setPersona(getBeanAdminInstructor().getPersona());
-			getInstructorServicioImpl().agregarActualizarInstructor(getBeanAdminInstructor().getInstructor());			
-			cargarInstructores();
-			Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.procesoexito"));
-			Mensaje.ocultarDialogo("dlgNuevoInstructor");
-		}catch(DaoException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.grabarInstructor"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "grabarDatosPersonales" + ": ").append(e.getMessage()));
-		}catch(Exception e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.grabarInstructor"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "grabarDatosPersonales" + ": ").append(e.getMessage()));
-		}
+		getBeanAdminInstructor().getInstructor().setPersona(getBeanAdminInstructor().getPersona());
+		getInstructorServicioImpl().agregarActualizarInstructor(getBeanAdminInstructor().getInstructor());			
+		cargarInstructores();
+		Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.procesoexito"));
+		Mensaje.ocultarDialogo("dlgNuevoInstructor");
 	}
 	public void mostrarInstructor() {
 		getBeanAdminInstructor().setCedula(getBeanAdminInstructor().getInstructor().getPersona().getPersDocumentoIdentidad());
@@ -123,14 +108,10 @@ public class BackingAdminInstructor implements Serializable{
 		Mensaje.verDialogo("dlgNuevoInstructor");
 	}
 	public void buscaPersonaCedula() {
-		try {
-			getBeanAdminInstructor().setPersona(getPersonaServicioImpl().buscarPersonaPorCedula(getBeanAdminInstructor().getCedula()));
-			if(getBeanAdminInstructor().getPersona()==null) {
-				getBeanAdminInstructor().setPersona(new Persona());
-				getBeanAdminInstructor().getPersona().setPersDocumentoIdentidad(getBeanAdminInstructor().getCedula());
-			}
-		}catch(Exception e) {
-			e.printStackTrace();
+		getBeanAdminInstructor().setPersona(getPersonaServicioImpl().buscarPersonaPorCedula(getBeanAdminInstructor().getCedula()));
+		if(getBeanAdminInstructor().getPersona()==null) {
+			getBeanAdminInstructor().setPersona(new Persona());
+			getBeanAdminInstructor().getPersona().setPersDocumentoIdentidad(getBeanAdminInstructor().getCedula());
 		}
 	}
 }

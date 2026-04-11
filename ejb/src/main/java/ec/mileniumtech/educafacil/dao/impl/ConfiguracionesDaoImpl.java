@@ -5,7 +5,8 @@ package ec.mileniumtech.educafacil.dao.impl;
 
 import java.util.List;
 
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
+
+import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Area;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Configuraciones;
 import jakarta.ejb.LocalBean;
@@ -35,14 +36,14 @@ public class ConfiguracionesDaoImpl extends GenericoDaoImpl<Configuraciones,Long
 	 * @throws DaoException
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Configuraciones> listaConfiguraciones()throws DaoException{
+	public List<Configuraciones> listaConfiguraciones(){
 		try {
 			Query query=getEntityManager().createNamedQuery(Configuraciones.LISTA_CONFIGURACIONES);
 			return query.getResultList();
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al listar configuraciones", "CONFIG-LIST-ERR", e);
 		}
 	}
 

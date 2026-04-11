@@ -8,8 +8,7 @@ import java.util.List;
 
 import org.hibernate.Hibernate;
 
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
-import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
+import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.dao.util.JpaDaoSupport;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.TipoEncuesta;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.TipoEncuestaPregunta;
@@ -35,7 +34,7 @@ public class TipoEncuestaDaoImpl extends GenericoDaoImpl<TipoEncuesta, Long>{
 		// TODO Auto-generated constructor stub
 	}
 	@SuppressWarnings("unchecked")
-	public List<TipoEncuesta> listaDeTiposDeEncuestas()throws DaoException{
+	public List<TipoEncuesta> listaDeTiposDeEncuestas(){
 		try {
 			Query query=getEntityManager().createNamedQuery(TipoEncuesta.CARGAR_TIPOS_ENCUESTAS);
 			for(Object objeto:query.getResultList()) {
@@ -53,10 +52,10 @@ public class TipoEncuestaDaoImpl extends GenericoDaoImpl<TipoEncuesta, Long>{
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al consultar lista tipo encuesta", "TENCU-LIST-ERR", e);
 		}
 	}
-	public List<TipoEncuesta> listaDeTiposDeEncuestasPorOe(int codigo)throws DaoException{
+	public List<TipoEncuesta> listaDeTiposDeEncuestasPorOe(int codigo){
 		try {
 			Query query=getEntityManager().createNamedQuery(TipoEncuesta.CARGAR_TIPOS_ENCUESTAS_POR_OE);
 			query.setParameter("codigo", codigo);
@@ -75,10 +74,10 @@ public class TipoEncuestaDaoImpl extends GenericoDaoImpl<TipoEncuesta, Long>{
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al consultar lista tipo encuesta por codigo objeto_evaluacion", "TENCU-LIST-ERR", e);
 		}
 	}
-	public TipoEncuesta actualizarTipoEncuesta(TipoEncuesta tipoEncuesta)throws DaoException,EntidadDuplicadaException {
+	public TipoEncuesta actualizarTipoEncuesta(TipoEncuesta tipoEncuesta) {
 		try{
 			if(tipoEncuesta.getTipeId()==null)
 				getEntityManager().persist(tipoEncuesta);
@@ -87,9 +86,9 @@ public class TipoEncuestaDaoImpl extends GenericoDaoImpl<TipoEncuesta, Long>{
 			return tipoEncuesta;
 		}catch(PersistenceException e){
 			JpaDaoSupport.throwIfConstraintViolationDuplicate(e);
-			throw new DaoException(e);
+			throw new SystemException("Error de persistencia en tipo encuesta", "TENCU-PERSIST-ERR", e);
 		} 	catch (Exception e) {
-			throw new DaoException(e);
-		}	
+			throw new SystemException("Error inesperado en tipo encuesta", "TENCU-UNEXPECTED-ERR", e);
+		}		
 	}
 }

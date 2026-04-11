@@ -10,8 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
-import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
+import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.dao.util.JpaDaoSupport;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.DtoFlujoDinero;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetallePagos;
@@ -37,7 +36,7 @@ public class PagosDaoImpl extends GenericoDaoImpl<Pagos, Long>{
 		super(em, entityClass);
 		// TODO Auto-generated constructor stub
 	}
-	public void agregarPago(Pagos pago)throws DaoException,EntidadDuplicadaException {
+	public void agregarPago(Pagos pago) {
 		try{
 			getEntityManager().persist(pago);
 			for (DetallePagos detalle : pago.getDetallePagos()) {
@@ -47,14 +46,14 @@ public class PagosDaoImpl extends GenericoDaoImpl<Pagos, Long>{
 
 		}catch(PersistenceException e){
 			JpaDaoSupport.throwIfConstraintViolationDuplicate(e);
-			throw new DaoException(e);
+			throw new SystemException("Error de persistencia en pagos", "PAGO-PERSIST-ERR", e);
 		} 	catch (Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error inesperado en pagos", "PAGO-UNEXPECTED-ERR", e);
 		}	
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<DetallePagos> buscaPagosPorMatricula(int codigoMatricula) throws DaoException{
+	public List<DetallePagos> buscaPagosPorMatricula(int codigoMatricula){
 		try {
 			Query query=getEntityManager().createNamedQuery(Pagos.BUSCAR_DETALLEPAGOS);
 			query.setParameter("codigoMatricula", codigoMatricula);					
@@ -62,7 +61,7 @@ public class PagosDaoImpl extends GenericoDaoImpl<Pagos, Long>{
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al cargar  lista detalle pagos por matricula", "DETPAGO-LIST-ERR", e);
 		}
 	}
 	/**
@@ -73,7 +72,7 @@ public class PagosDaoImpl extends GenericoDaoImpl<Pagos, Long>{
 	 * @throws DaoException
 	 */
 	public List<DtoFlujoDinero> buscaIngresosReporteria(Date fechaInicial, Date fechaFinal)
-			throws DaoException {
+			{
 		try {
 			DateFormat formatoFecha = new SimpleDateFormat ("yyyy-MM-dd");
 			SimpleDateFormat dt1 = new SimpleDateFormat("yyyy-MM-dd",new Locale("es","ES"));
@@ -105,7 +104,7 @@ public class PagosDaoImpl extends GenericoDaoImpl<Pagos, Long>{
 				return null;
 			}
 		} catch (Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al cargar  lista flujo dinero por fecha inicio y fin", "PAGOS-LIST-ERR", e);
 		}
 	}
 }

@@ -5,8 +5,7 @@ package ec.mileniumtech.educafacil.dao.impl;
 
 import java.util.List;
 
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
-import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
+import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.dao.util.JpaDaoSupport;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Seguimiento;
 import jakarta.ejb.LocalBean;
@@ -36,7 +35,7 @@ public class SeguimientoDaoImpl extends GenericoDaoImpl<Seguimiento, Long>{
 	 * @throws DaoException
 	 * @throws EntidadDuplicadaException
 	 */
-	public void agregarActualizarSeguimiento(Seguimiento seguimiento) throws DaoException,EntidadDuplicadaException{
+	public void agregarActualizarSeguimiento(Seguimiento seguimiento) {
 		try{			
 			if (seguimiento.getSegmId()==0) {
 				getEntityManager().persist(seguimiento);
@@ -45,10 +44,10 @@ public class SeguimientoDaoImpl extends GenericoDaoImpl<Seguimiento, Long>{
 			}
 		}catch(PersistenceException e){
 			JpaDaoSupport.throwIfConstraintViolationDuplicate(e);
-			throw new DaoException(e);
+			throw new SystemException("Error de persistencia en seguimiento", "SEGUI-PERSIST-ERR", e);
 		} 	catch (Exception e) {
-			throw new DaoException(e);
-		}
+			throw new SystemException("Error inesperado en seguimiento", "SEGUI-UNEXPECTED-ERR", e);
+		}	
 	}
 	/**
 	 * Retorna el seguimiento a un estudiante
@@ -57,7 +56,7 @@ public class SeguimientoDaoImpl extends GenericoDaoImpl<Seguimiento, Long>{
 	 * @throws DaoException
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Seguimiento> listaSeguimientoMatricula(int matricula) throws DaoException{
+	public List<Seguimiento> listaSeguimientoMatricula(int matricula) {
 		try {
 			Query query=getEntityManager().createNamedQuery(Seguimiento.BUSCAR_POR_MATRICULA);
 			query.setParameter("matricula", matricula);
@@ -65,7 +64,7 @@ public class SeguimientoDaoImpl extends GenericoDaoImpl<Seguimiento, Long>{
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al consultar lista seguimiento", "SEGUI-LIST-ERR", e);
 		}
 	}
 }

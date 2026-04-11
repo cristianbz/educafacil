@@ -11,17 +11,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-
 import org.apache.log4j.Logger;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.estudiantes.BeanMatriculaOnline;
 import ec.mileniumtech.educafacil.bean.usuarios.BeanLogin;
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
-import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
 import ec.mileniumtech.educafacil.dao.impl.CampaniaDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.CatalogoDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.ConfiguracionesDaoImpl;
@@ -47,10 +41,13 @@ import ec.mileniumtech.educafacil.utilitarios.correo.Correo;
 import ec.mileniumtech.educafacil.utilitarios.encriptacion.Encriptar;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumEstadosMatricula;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumRol;
+import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -133,21 +130,17 @@ public class BackingMatriculaOnline implements Serializable {
 	}
 	
 	public void cargaProvincias() {
-		try {
+		
 			getBeanMatricula().setListaProvincias(new ArrayList<>());
 			getBeanMatricula().setListaProvincias(getCatalogoServicioImpl().catalogosPorTipo("TPROV"));
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+
 	}
 	public void cargaCantones() {
-		try {
+		
 			getBeanMatricula().setListaCantones(new ArrayList<>());
 			getBeanMatricula().setListaCantones(getCatalogoServicioImpl().catalogosPorPadre(getBeanMatricula().getProvincia()));
 
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+
 	}
 	/**
 	 * Busca una persona por su cedula
@@ -155,20 +148,17 @@ public class BackingMatriculaOnline implements Serializable {
 	 */
 	public void buscaPersonaPorCedula() {
 		Persona persona=null;
-		try {			
+				
 			persona=getPersonaServicioImpl().buscarPersonaPorCedula(getBeanMatricula().getPersona().getPersDocumentoIdentidad());
 			datosMatriculaAlBuscarPersona(persona);
-		}catch(DaoException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.buscaCedula"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "buscaPersonaPorCedula " + ": ").append(e.getMessage()));
-		} 	
+	
 	}
 	/**
      * Obtiene los datos de matricula de la persona
      * @param persona
      */
     public void datosMatriculaAlBuscarPersona(Persona persona) {
-    	try {
+    	
 	    	if(persona!=null) {
 	    		persona=getPersonaServicioImpl().buscarPersonaPorId(persona.getPersId());
 		    	getBeanMatricula().setPersona(persona);
@@ -189,27 +179,20 @@ public class BackingMatriculaOnline implements Serializable {
 		    	}
 
 	    	}
-    	} catch (DaoException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.buscaApellidos"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "datosMatriculaAlBuscarPersona " + ": ").append(e.getMessage()));
-		}	
+	
     }
 	/**
 	 * Carga la oferta de cursos activos
 	 */
 	public void cargarOfertaCursosActivos() {
-		try {
-			
+
 			getBeanMatricula().setListaOfertaCursos(new ArrayList<>());
 			getBeanMatricula().setListaOfertaCursos(getOfertaServicios().listaOfertaCursosActivos());
 			getBeanMatricula().setListaOfertaCursos(getBeanMatricula().getListaOfertaCursos().stream().sorted((a1,a2) -> a1.getOfertaCapacitacion().getCurso().getCursNombre().compareTo(a2.getOfertaCapacitacion().getCurso().getCursNombre())).collect(Collectors.toList()));
-		} catch (DaoException e) { 
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.cargarcursos"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "cargarOfertaCursosActivos" + ": ").append(e.getMessage()));
-		}
+
 	}
 	public void matricular() {
-		try {
+		
 			Empresa empresa = new Empresa();
 			Usuario usuarioE = new Usuario();
 			Rol rol = new Rol();
@@ -248,20 +231,15 @@ public class BackingMatriculaOnline implements Serializable {
 			getBeanMatricula().setMostrarDatosPersona(false);
 			enviarCorreo();
 			Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.grabar"));
-		}catch(DaoException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.grabar"));
-			e.printStackTrace();
-		}catch(EntidadDuplicadaException e) {
-			e.printStackTrace();
-		}
+
 	}
 	
 	public void redireciona() {
 		try {
 			FacesContext.getCurrentInstance().getExternalContext().redirect("https://www.capacitaciontecnica.ec/sitect/blog/");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error("Error al redireccionar", e);
+			throw new RuntimeException(e);
 		}
 	     
 	}
@@ -270,13 +248,7 @@ public class BackingMatriculaOnline implements Serializable {
 	}
 	
 	public void enviarCorreo() {
-		try {
-//			Configuraciones conf = new Configuraciones();
-//			conf.setConfClaveCorreo("Info2108@");
-//			conf.setConfServidorSmtp("mail.capacitaciontecnica.ec");
-//			conf.setConfUsuarioCorreo("info@capacitaciontecnica.ec");
-//			conf.setConfClaveCorreo("Info2108@");
-//			conf.setConfEnviadoMailDesde("info@capacitaciontecnica.ec");
+
 			getBeanLogin().setConfiguraciones(getConfiguracionesServicioImpl().listaConfiguraciones().get(0));
 //			getBeanLogin().setConfiguraciones(conf);
 			StringBuilder contenido=new StringBuilder();
@@ -300,12 +272,10 @@ public class BackingMatriculaOnline implements Serializable {
 			contenido.append("</td></tr></table>");
 			Correo correo=new Correo("Registro de inscripción/matrícula en uno de nuestros cursos", contenido.toString(), true, getBeanMatricula().getPersona().getPersCorreoElectronico(), null,beanLogin.getConfiguraciones().getConfServidorSmtp(),beanLogin.getConfiguraciones().getConfUsuarioCorreo(),beanLogin.getConfiguraciones().getConfClaveCorreo(),beanLogin.getConfiguraciones().getConfEnviadoMailDesde());
 			correo.start();
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+
 	}
 	public void validaMatricula() {
-		try {			
+			
 			if(getBeanMatricula().getEstudiante()!= null) {
 				List<Campania> listaCampanias=new ArrayList();
 
@@ -327,8 +297,6 @@ public class BackingMatriculaOnline implements Serializable {
 					getBeanMatricula().setDeshabilitaMatricula(true);
 				}
 			}
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+
 	}
 }

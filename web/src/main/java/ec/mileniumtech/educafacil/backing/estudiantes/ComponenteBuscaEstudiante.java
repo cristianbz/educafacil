@@ -17,7 +17,7 @@ import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.contabilidad.BeanPagos;
 import ec.mileniumtech.educafacil.bean.estudiantes.BeanBuscaEstudiante;
 import ec.mileniumtech.educafacil.bean.estudiantes.BeanFichaEstudiante;
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
+
 import ec.mileniumtech.educafacil.dao.impl.EstudianteDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.MatriculaDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.PagosDaoImpl;
@@ -87,7 +87,7 @@ public class ComponenteBuscaEstudiante implements Serializable{
 	}
 	
 	public void buscarPorApellido() {
-		try {
+
 			getBeanBuscaEstudiante().setListaEstudiante(getEstudianteServicioImpl().estudiantesPorApellido(getBeanBuscaEstudiante().getApellidos()));
 			if(getBeanBuscaEstudiante().getListaEstudiante().size()>0) {
 				getBeanBuscaEstudiante().setMatriculaSeleccionada(null);
@@ -96,14 +96,11 @@ public class ComponenteBuscaEstudiante implements Serializable{
 				Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.noHayDatos"));
 				Mensaje.actualizarComponente("growl");
 			}
-		}catch(DaoException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.buscaApellidos"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "buscarPorApellido " + ": ").append(e.getMessage()));
-		}
+
 	}
 	
 	public void buscarPorCedula() {
-		try {
+
 			getBeanBuscaEstudiante().setEstudiante(getEstudianteServicioImpl().estudiantesPorCedula(getBeanBuscaEstudiante().getCedula()));
 			if(getBeanBuscaEstudiante().getEstudiante()==null) {
 				Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.noHayDatos"));
@@ -121,23 +118,15 @@ public class ComponenteBuscaEstudiante implements Serializable{
 					getBeanPagos().setEstudiante(getBeanBuscaEstudiante().getEstudiante());
 				}
 			}
-		}catch(DaoException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.buscaCedula"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "buscarPorCedula " + ": ").append(e.getMessage()));
 
-		}
 	}
 	
 	public void cargaMatriculas() {
-		try {
+	
 			getBeanFichaEstudiante().setListaMatricula(new ArrayList<>());
 			getBeanFichaEstudiante().setListaMatricula(getMatriculaServicioImpl().listaMatriculasEstudiante(getBeanFichaEstudiante().getCodigoCliente()));
 			
-		}catch(DaoException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.cargarMatriculas"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "cargaMatriculas " + ": ").append(e.getMessage()));
 
-		}
 	}
 	public void seleccionarEstudiante() {
 		
@@ -156,7 +145,7 @@ public class ComponenteBuscaEstudiante implements Serializable{
 							getBeanFichaEstudiante().setCodigoNivelEstudio(getBeanFichaEstudiante().getEstudiante().getEstuNivelEstudio());
 							cargaMatriculas();
 						}else if(getBeanBuscaEstudiante().getTipoBusqueda() == 2) {
-							try {
+							
 								getBeanPagos().setEstudiante(estudiante);
 								getBeanPagos().setListaCursosMatriculados(new ArrayList<>());
 								getBeanPagos().setListaCursosMatriculados(getMatriculaServicioImpl().listaMatriculasEstudianteActivas(estudiante.getEstuId()));
@@ -170,10 +159,6 @@ public class ComponenteBuscaEstudiante implements Serializable{
 									break;
 								}
 								
-							}catch(DaoException e) {
-								Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.cargarMatriculas"));			
-								log.error(new StringBuilder().append(this.getClass().getName() + "." + "seleccionarEstudiante " + ": ").append(e.getMessage()));
-							}
 						}
 					}
 //				});

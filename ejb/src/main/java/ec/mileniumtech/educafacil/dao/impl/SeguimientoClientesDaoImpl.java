@@ -9,8 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
-import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
+import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.dao.util.JpaDaoSupport;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.DtoMatriculasCurso;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleSeguimiento;
@@ -43,7 +42,7 @@ public class SeguimientoClientesDaoImpl extends GenericoDaoImpl<SeguimientoClien
 	 * @throws DaoException
 	 * @throws EntidadDuplicadaException
 	 */
-	public void agregarSeguimiento(SeguimientoClientes seguimiento, List<DetalleSeguimiento> detalle)throws DaoException,EntidadDuplicadaException {
+	public void agregarSeguimiento(SeguimientoClientes seguimiento, List<DetalleSeguimiento> detalle) {
 		try{
 			if(seguimiento.getSegcId() == null) {
 				getEntityManager().persist(seguimiento);
@@ -63,37 +62,37 @@ public class SeguimientoClientesDaoImpl extends GenericoDaoImpl<SeguimientoClien
 			
 		}catch(PersistenceException e){
 			JpaDaoSupport.throwIfConstraintViolationDuplicate(e);
-			throw new DaoException(e);
+			throw new SystemException("Error de persistencia en seguimiento cliente", "SEGCLI-PERSIST-ERR", e);
 		} 	catch (Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error inesperado en seguimiento cliente", "SEGCLI-UNEXPECTED-ERR", e);
 		}	
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<SeguimientoClientes> listaSeguimiento() throws DaoException{
+	public List<SeguimientoClientes> listaSeguimiento() {
 		try {
 			Query query=getEntityManager().createNamedQuery(SeguimientoClientes.LISTA_SEGUIMIENTO);
 			return query.getResultList();
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al buscar lista seguimiento cliente", "SEGCLI-LIST-ERR", e);
 		}
 	}	
 	
 //	LISTA_SEGUIMIENTO_ESTADO
-	public List<SeguimientoClientes> listaSeguimientoVendedorAsignado() throws DaoException{
+	public List<SeguimientoClientes> listaSeguimientoVendedorAsignado() {
 		try {
 			Query query=getEntityManager().createNamedQuery(SeguimientoClientes.LISTA_SEGUIMIENTO_VENDEDOR_ASIGNADO);
 			return query.getResultList();
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al buscar lista vendedor asignado", "SEGCLI-LIST-ERR", e);
 		}
 	}	
 	@SuppressWarnings("unchecked")
-	public List<SeguimientoClientes> listaSeguimientoCampania(Integer campania) throws DaoException{
+	public List<SeguimientoClientes> listaSeguimientoCampania(Integer campania) {
 		try {
 			Query query=getEntityManager().createNamedQuery(SeguimientoClientes.LISTA_SEGUIMIENTO_CAMPANIA);
 			query.setParameter("campania", campania);
@@ -101,7 +100,7 @@ public class SeguimientoClientesDaoImpl extends GenericoDaoImpl<SeguimientoClien
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al buscar lista seguimiento campania por campania", "SEGCLI-LIST-ERR", e);
 		}
 	}
 	/**
@@ -110,7 +109,7 @@ public class SeguimientoClientesDaoImpl extends GenericoDaoImpl<SeguimientoClien
 	 * @return
 	 * @throws DaoException
 	 */
-	public List<SeguimientoClientes> listaSeguimientoCampaniaVendedor(Integer campaniaS) throws DaoException{
+	public List<SeguimientoClientes> listaSeguimientoCampaniaVendedor(Integer campaniaS) {
 		try {
 			Query query=getEntityManager().createNamedQuery(SeguimientoClientes.LISTA_SEGUIMIENTO_VENDEDOR);
 			query.setParameter("campaniaS", campaniaS);
@@ -118,7 +117,7 @@ public class SeguimientoClientesDaoImpl extends GenericoDaoImpl<SeguimientoClien
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al buscar lista seguimiento cliente por campania", "SEGCLI-LIST-ERR", e);
 		}
 	}
 	/**
@@ -127,7 +126,7 @@ public class SeguimientoClientesDaoImpl extends GenericoDaoImpl<SeguimientoClien
 	 * @return
 	 * @throws DaoException
 	 */
-	public BigInteger alcanceCampania(int campania)throws DaoException {
+	public BigInteger alcanceCampania(int campania) {
 		try {
 			BigInteger alcance = null;
 			String queryString;
@@ -138,11 +137,11 @@ public class SeguimientoClientesDaoImpl extends GenericoDaoImpl<SeguimientoClien
 			return alcance;
 			
 		} catch (Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al buscar alcance campania", "SEGCLI-SINGLE-ERR", e);
 		}
 	}
 	
-	public BigInteger prospectosCampania(int campania, String estado)throws DaoException {
+	public BigInteger prospectosCampania(int campania, String estado) {
 		try {
 			BigInteger alcance = null;
 			String queryString;
@@ -152,10 +151,10 @@ public class SeguimientoClientesDaoImpl extends GenericoDaoImpl<SeguimientoClien
 			alcance = new BigInteger(obj.toString());
 			return alcance;
 		} catch (Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al buscar prospecto campania por campania y estado", "SEGCLI-SINGLE-ERR", e);
 		}
 	}
-	public List<SeguimientoClientes> listaSeguimientoCampaniaCurso(Integer curso) throws DaoException{
+	public List<SeguimientoClientes> listaSeguimientoCampaniaCurso(Integer curso) {
 		try {
 			Query query=getEntityManager().createNamedQuery(SeguimientoClientes.LISTA_SEGUIMIENTO_CURSO);
 			query.setParameter("curso", curso);
@@ -163,10 +162,10 @@ public class SeguimientoClientesDaoImpl extends GenericoDaoImpl<SeguimientoClien
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al buscar lista seguimiento campania por curso", "SEGCLI-LIST-ERR", e);
 		}
 	}
-	public List<SeguimientoClientes> listaSeguimientoCampaniaFechas(Date inicio, Date fin) throws DaoException{
+	public List<SeguimientoClientes> listaSeguimientoCampaniaFechas(Date inicio, Date fin) {
 		try {
 			Query query=getEntityManager().createNamedQuery(SeguimientoClientes.LISTA_SEGUIMIENTO_FECHAS);
 			query.setParameter("fechaInicio", inicio);
@@ -175,11 +174,11 @@ public class SeguimientoClientesDaoImpl extends GenericoDaoImpl<SeguimientoClien
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al buscar lista seguimiento campania por fecha inicio y fecha fin", "SEGCLI-LIST-ERR", e);
 		}
 	}
 	
-	public void actualizarSeguimiento(SeguimientoClientes seguimiento) throws DaoException,EntidadDuplicadaException{
+	public void actualizarSeguimiento(SeguimientoClientes seguimiento){
 		try{
 			if(seguimiento.getSegcId() != null) 			
 				getEntityManager().merge(seguimiento);				
@@ -187,10 +186,10 @@ public class SeguimientoClientesDaoImpl extends GenericoDaoImpl<SeguimientoClien
 			
 		}catch(PersistenceException e){
 			JpaDaoSupport.throwIfConstraintViolationDuplicate(e);
-			throw new DaoException(e);
+			throw new SystemException("Error de persistencia en seguimiento cliente", "SEGCLI-PERSIST-ERR", e);
 		} 	catch (Exception e) {
-			throw new DaoException(e);
-		}
+			throw new SystemException("Error inesperado en seguimiento cliente", "SEGCLI-UNEXPECTED-ERR", e);
+		}	
 	}
 	/**
 	 * Busca informacion del seguimiento cliente por el id
@@ -198,7 +197,7 @@ public class SeguimientoClientesDaoImpl extends GenericoDaoImpl<SeguimientoClien
 	 * @return
 	 * @throws DaoException
 	 */
-	public SeguimientoClientes seguimiento(int id)throws DaoException{
+	public SeguimientoClientes seguimiento(int id){
 		try {			
 			Query query=getEntityManager().createNamedQuery(SeguimientoClientes.BUSCA_SEGUIMIENTO);
 			query.setParameter("id", id);								
@@ -206,11 +205,11 @@ public class SeguimientoClientesDaoImpl extends GenericoDaoImpl<SeguimientoClien
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al buscar seguimiento cliente por codigo", "SEGCLI-SINGLE-ERR", e);
 		}
 	}
 	
-	public SeguimientoClientes validaNumero(String telefono, int curso, int campania) throws DaoException{
+	public SeguimientoClientes validaNumero(String telefono, int curso, int campania) {
 		try {			
 			Query query=getEntityManager().createNamedQuery(SeguimientoClientes.VALIDA_NUMERO);
 			query.setParameter("telefono", telefono);
@@ -220,7 +219,7 @@ public class SeguimientoClientesDaoImpl extends GenericoDaoImpl<SeguimientoClien
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al buscar seguimiento cliente por telefono curso y campania", "SEGCLI-SINGLE-ERR", e);
 		}
 	}
 	/**
@@ -228,7 +227,7 @@ public class SeguimientoClientesDaoImpl extends GenericoDaoImpl<SeguimientoClien
 	 * @return
 	 * @throws DaoException
 	 */
-	public List<SeguimientoClientes> listaPendientesLlamada() throws DaoException{
+	public List<SeguimientoClientes> listaPendientesLlamada() {
 		try {
 			Query query=getEntityManager().createNamedQuery(SeguimientoClientes.PENDIENTE_LLAMADAS);
 			query.setParameter("proximallamada", new Date());			
@@ -236,7 +235,7 @@ public class SeguimientoClientesDaoImpl extends GenericoDaoImpl<SeguimientoClien
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al buscar seguimiento lista pendientes llamadas", "SEGCLI-LIST-ERR", e);
 		}
 	}
 	/**
@@ -246,7 +245,7 @@ public class SeguimientoClientesDaoImpl extends GenericoDaoImpl<SeguimientoClien
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
-	public BigDecimal totalDatosCRM(String estado) throws DaoException{
+	public BigDecimal totalDatosCRM(String estado) {
 		List<Object[]> resultado= null;
 		BigDecimal valor= new BigDecimal(0);		
 		String sql ="SELECT COUNT(segc_id) FROM cap.seguimientoclientes WHERE segc_estado = '" + estado +"'";
@@ -263,7 +262,7 @@ public class SeguimientoClientesDaoImpl extends GenericoDaoImpl<SeguimientoClien
 	}
 	
 	@SuppressWarnings("unchecked")
-	public BigDecimal totalDatosCRMVendedor(String estado, Integer vendedor, Integer campania) throws DaoException{
+	public BigDecimal totalDatosCRMVendedor(String estado, Integer vendedor, Integer campania) {
 		List<Object[]> resultado= null;
 		BigDecimal valor= new BigDecimal(0);		
 		String sql ="SELECT COUNT(segc_id) FROM cap.seguimientoclientes WHERE segc_estado = '" + estado +"'"
@@ -285,7 +284,7 @@ public class SeguimientoClientesDaoImpl extends GenericoDaoImpl<SeguimientoClien
 	 * @throws DaoException
 	 */
 	@SuppressWarnings("unchecked")
-	public List<DtoMatriculasCurso> listaInteresadosCursoCRM() throws DaoException{
+	public List<DtoMatriculasCurso> listaInteresadosCursoCRM() {
 		List<Object[]> resultado= null;
 		List<DtoMatriculasCurso> listaResultado = new ArrayList<DtoMatriculasCurso>();
 		String sql ="SELECT COUNT(segc_id) as cantidad,cu.curs_nombre  FROM cap.seguimientoclientes sc, cap.curso cu " +
@@ -307,7 +306,7 @@ public class SeguimientoClientesDaoImpl extends GenericoDaoImpl<SeguimientoClien
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<DtoMatriculasCurso> listaEstadosContactoCursoCRM(String estado) throws DaoException{
+	public List<DtoMatriculasCurso> listaEstadosContactoCursoCRM(String estado) {
 		List<Object[]> resultado= null;
 		List<DtoMatriculasCurso> listaResultado = new ArrayList<DtoMatriculasCurso>();
 		String sql ="SELECT COUNT(segc_id) as cantidad,cu.curs_nombre  FROM cap.seguimientoclientes sc, cap.curso cu "+

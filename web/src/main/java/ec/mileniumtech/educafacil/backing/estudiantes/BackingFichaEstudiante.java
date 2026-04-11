@@ -7,16 +7,11 @@ package ec.mileniumtech.educafacil.backing.estudiantes;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-
 import org.apache.log4j.Logger;
-
-
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.estudiantes.BeanFichaEstudiante;
 import ec.mileniumtech.educafacil.bean.usuarios.BeanLogin;
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
-import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
 import ec.mileniumtech.educafacil.dao.impl.EstudianteDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.MatriculaDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Estudiante;
@@ -85,7 +80,7 @@ public class BackingFichaEstudiante implements Serializable {
 		sesion=(HttpSession)ec.getSession(true);
 		int rol = Integer.parseInt(sesion.getAttribute("rol").toString());
 		
-		try {
+
 			if (rol== EnumRol.ESTUDIANTE.getCodigo()) {
 				getBeanFichaEstudiante().setEstudiante(getEstudianteServicioImpl().estudiantesPorCedula(getBeanLogin().getUsuario().getUsuaUsuario()));
 				getBeanFichaEstudiante().setEstudiante(getBeanFichaEstudiante().getEstudiante());
@@ -96,9 +91,7 @@ public class BackingFichaEstudiante implements Serializable {
 				Mensaje.actualizarComponente("panelEstudiante");
 				
 			}
-		}catch(DaoException e) {
-			e.printStackTrace();
-		}
+
 	}
 	public void nuevaBusqueda() {
 		getBeanFichaEstudiante().setApellidos("");
@@ -113,7 +106,7 @@ public class BackingFichaEstudiante implements Serializable {
 	 * Busca estudiante por cedula
 	 */
 	public void buscarPorCedula() {
-		try {
+
 			getBeanFichaEstudiante().setEstudiante(getEstudianteServicioImpl().estudiantesPorCedula(getBeanFichaEstudiante().getCedula()));
 			if(getBeanFichaEstudiante().getEstudiante()==null) {
 				Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.noHayDatos"));
@@ -125,17 +118,13 @@ public class BackingFichaEstudiante implements Serializable {
 				cargaMatriculas();
 				Mensaje.ocultarDialogo("dlgClientes");
 			}
-		}catch(DaoException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.buscaCedula"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "buscarPorCedula " + ": ").append(e.getMessage()));
 
-		}
 	}
 	/**
 	 * Busca estudiante por apellidos
 	 */
 	public void buscarPorApellido() {
-		try {
+
 			getBeanFichaEstudiante().setListaEstudiante(getEstudianteServicioImpl().estudiantesPorApellido(getBeanFichaEstudiante().getApellidos()));
 			if(getBeanFichaEstudiante().getListaEstudiante().size()>0) {
 				getBeanFichaEstudiante().setMatriculaSeleccionada(null);
@@ -144,11 +133,7 @@ public class BackingFichaEstudiante implements Serializable {
 				Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.noHayDatos"));
 				Mensaje.actualizarComponente("growl");
 			}
-		}catch(DaoException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.buscaApellidos"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "buscarPorApellido " + ": ").append(e.getMessage()));
 
-		}
 	}
 	/**
 	 * Busca por cedula o apellidos
@@ -194,14 +179,10 @@ public class BackingFichaEstudiante implements Serializable {
 	 * Carga las matriculas del estudiante
 	 */
 	public void cargaMatriculas() {
-		try {
+
 			getBeanFichaEstudiante().setListaMatricula(new ArrayList<>());
 			getBeanFichaEstudiante().setListaMatricula(getMatriculaServicioImpl().listaMatriculasEstudiante(getBeanFichaEstudiante().getCodigoCliente()));
-		}catch(DaoException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.cargarMatriculas"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "cargaMatriculas " + ": ").append(e.getMessage()));
 
-		}
 	}
 	/**
 	 * Genera el certificado digital
@@ -221,15 +202,12 @@ public class BackingFichaEstudiante implements Serializable {
 	 * Actualiza el estudiante
 	 */
 	public void actualizarEstudiante() {
-		try {
+	
 			getBeanFichaEstudiante().getEstudiante().setEstuNivelEstudio(getBeanFichaEstudiante().getCodigoNivelEstudio());
 			getBeanFichaEstudiante().getEstudiante().setEstuCargoOcupa(getBeanFichaEstudiante().getCodigoCargo());
 			getEstudianteServicioImpl().actualizaEstudiante(getBeanFichaEstudiante().getEstudiante());
 			Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.procesoexito"));
-		} catch (DaoException | EntidadDuplicadaException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.actualizar"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "actualizarEstudiante " + ": ").append(e.getMessage()));
-		}
+	
 	}
 	public void nuevaBusquedaCliente() {
 		getBeanFichaEstudiante().setListaEstudiante(new ArrayList<Estudiante>());

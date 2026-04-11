@@ -3,8 +3,8 @@
  */
 package ec.mileniumtech.educafacil.dao.impl;
 
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
-import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
+
+import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.dao.util.JpaDaoSupport;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DocumentacionProveedor;
 import jakarta.ejb.LocalBean;
@@ -34,7 +34,7 @@ public class DocumentacionProveedorDaoImpl extends GenericoDaoImpl<Documentacion
 	 * @throws DaoException
 	 * @throws EntidadDuplicadaException
 	 */
-	public void agregarActualizarDocumentacionProveedor(DocumentacionProveedor documentacionProveedor)throws DaoException, EntidadDuplicadaException{
+	public void agregarActualizarDocumentacionProveedor(DocumentacionProveedor documentacionProveedor){
 		try{
 			if (documentacionProveedor.getDocpId()==0)
 				getEntityManager().persist(documentacionProveedor);
@@ -42,9 +42,9 @@ public class DocumentacionProveedorDaoImpl extends GenericoDaoImpl<Documentacion
 				getEntityManager().merge(documentacionProveedor);
 		}catch(PersistenceException e){
 			JpaDaoSupport.throwIfConstraintViolationDuplicate(e);
-			throw new DaoException(e);
+			throw new SystemException("Error de persistencia en documentación de proveedor", "DOCP-PERSIST-ERR", e);
 		} 	catch (Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error inesperado en documentación de proveedor", "DOCP-UNEXPECTED-ERR", e);
 		}
 	}
 	/**
@@ -53,7 +53,7 @@ public class DocumentacionProveedorDaoImpl extends GenericoDaoImpl<Documentacion
 	 * @return
 	 * @throws DaoException
 	 */
-	public DocumentacionProveedor buscarDocumentacionPorProveedor(int codigoProveedor)throws DaoException{
+	public DocumentacionProveedor buscarDocumentacionPorProveedor(int codigoProveedor){
 		try {
 			Query query=getEntityManager().createNamedQuery(DocumentacionProveedor.DOCUMENTACION_POR_PROVEEDOR);
 			query.setParameter("codigoProveedor", codigoProveedor);
@@ -61,7 +61,7 @@ public class DocumentacionProveedorDaoImpl extends GenericoDaoImpl<Documentacion
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al buscar documentación por proveedor", "DOCP-FIND-ERR", e);
 		}
 	}
 }

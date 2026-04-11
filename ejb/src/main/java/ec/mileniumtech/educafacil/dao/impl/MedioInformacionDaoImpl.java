@@ -5,11 +5,11 @@ package ec.mileniumtech.educafacil.dao.impl;
 
 import java.util.List;
 
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
+
+import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.MedioInformacion;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.Query;
@@ -34,14 +34,14 @@ public class MedioInformacionDaoImpl extends GenericoDaoImpl<MedioInformacionDao
 	 * @throws DaoException
 	 */
 	@SuppressWarnings("unchecked")
-	public List<MedioInformacion> listaMediosInformacion() throws DaoException{
+	public List<MedioInformacion> listaMediosInformacion(){
 		try {
 			Query query=getEntityManager().createNamedQuery(MedioInformacion.LISTADO_MEDIOS_INFORMACION);
 			return query.getResultList();
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al cargar lista  mediosInformacion", "MEDINFO-LIST-ERR", e);
 		}
 	}
 }

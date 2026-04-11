@@ -5,11 +5,10 @@ package ec.mileniumtech.educafacil.dao.impl;
 
 import java.util.List;
 
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
+import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Curso;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.Query;
@@ -34,26 +33,26 @@ public class CursoDaoImpl extends GenericoDaoImpl<Curso, Long>{
 	 * @throws DaoException
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Curso> listaCursos()throws DaoException{
+	public List<Curso> listaCursos(){
 		try {
 			Query query=getEntityManager().createNamedQuery(Curso.CARGAR_CURSOS);
 			return query.getResultList();
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al listar cursos", "CURSOS-LIST-ERR", e);
 		}
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<Curso> listaOfertaCursosActivos()throws DaoException{
+	public List<Curso> listaOfertaCursosActivos(){
 		try {
 			Query query=getEntityManager().createNamedQuery(Curso.OFERTA_CURSOS_ACTIVOS);
 			return query.getResultList();
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al listar oferta cursos activos", "OFCURAC-LIST-ERR", e);
 		}
 	}
 }

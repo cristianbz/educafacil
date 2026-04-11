@@ -17,7 +17,7 @@ import org.primefaces.model.menu.MenuModel;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.usuarios.BeanLogin;
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
+
 import ec.mileniumtech.educafacil.dao.impl.ConfiguracionesDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.UsuarioDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.UsuarioRolDaoImpl;
@@ -93,7 +93,7 @@ public class BackingLogin implements Serializable{
 		String respuesta=null;
 		listaMenuUsuario= new ArrayList<>();
 		this.menumodel=new DefaultMenuModel();
-		try {			
+		
 			if(getBeanLogin().getUsuario()!=null) {
 //				System.out.println(Encriptar.encriptarSHA512("alex2022"));
 				if(getBeanLogin().getUsuario().getUsuaClave().equals(Encriptar.encriptarSHA512(getBeanLogin().getClave()))) {
@@ -166,10 +166,7 @@ public class BackingLogin implements Serializable{
 			}else {
 				Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.usuario"));
 			}
-		} catch (DaoException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.usuario"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "validarUsuario" + ": ").append(e.getMessage()));
-		}
+
 		return respuesta;
 		
 	}
@@ -195,14 +192,16 @@ public class BackingLogin implements Serializable{
 				ec.redirect(ec.getRequestContextPath() + "/login.cap");
 			}
 		}catch(IOException e) {
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "validarSesion" + ": ").append(e.getMessage()));
+			log.error("Error al cerrar sesion", e);
+			throw new RuntimeException(e);
 		}
 	}
 	public void volverIniciarSesion() {
 		try {
 			redirect("/capacitaciones-web/login.xhtml?faces-redirect=true&redirected=true");
 		}catch(Exception e) {
-			e.printStackTrace();
+			log.error("Error al redireccionar", e);
+			throw new RuntimeException(e);
 		}
 	}
 	public void redirect(final String url)throws IOException{
@@ -218,7 +217,7 @@ public class BackingLogin implements Serializable{
 	 * Valida el documento de identidad
 	 */
 	public void validarDocumentoIdentidadUsuario() {
-		try {
+
 			getBeanLogin().setUsuario(new Usuario());
 			getBeanLogin().setUsuario(getUsuarioServicioImpl().consultarUsuarioPorDocumento(getBeanLogin().getDocumentoIdentidad()));
 			if(getBeanLogin().getUsuario()!=null) {
@@ -227,10 +226,7 @@ public class BackingLogin implements Serializable{
 			}else {
 				Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.usuario"));
 			}
-		} catch (DaoException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.usuario"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "validarDatosUsuario" + ": ").append(e.getMessage()));
-		}
+
 	}
 	/**
 	 * Regresa a pantalla login
@@ -252,7 +248,8 @@ public class BackingLogin implements Serializable{
 				ec.redirect(ec.getRequestContextPath() + "/finsesion.cap");
 			}
 		}catch(IOException e) {
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "validarSesion" + ": ").append(e.getMessage()));
+			log.error("Error al validar sesion", e);
+			throw new RuntimeException(e);
 		}
 	}
 

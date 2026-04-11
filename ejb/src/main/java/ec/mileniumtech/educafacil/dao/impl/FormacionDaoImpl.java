@@ -5,18 +5,16 @@ package ec.mileniumtech.educafacil.dao.impl;
 
 import java.util.List;
 
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
-import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
+
+import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.dao.util.JpaDaoSupport;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Formacion;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
-import jakarta.validation.ConstraintViolationException;
 
 /**
 *@author christian  Jun 15, 2024
@@ -38,7 +36,7 @@ public class FormacionDaoImpl extends GenericoDaoImpl<Formacion, Long>{
 	 * @throws DaoException
 	 * @throws EntidadDuplicadaException
 	 */
-	public void agregaActualizaFormacion(Formacion formacion) throws DaoException, EntidadDuplicadaException{
+	public void agregaActualizaFormacion(Formacion formacion){
 		try{
 			if (formacion.getFormId()==0)
 				getEntityManager().persist(formacion);
@@ -47,10 +45,10 @@ public class FormacionDaoImpl extends GenericoDaoImpl<Formacion, Long>{
 			
 		}catch(PersistenceException e){
 			JpaDaoSupport.throwIfConstraintViolationDuplicate(e);
-			throw new DaoException(e);
+			throw new SystemException("Error de persistencia en formacion", "FORMACION-PERSIST-ERR", e);
 		} 	catch (Exception e) {
-			throw new DaoException(e);
-		}	
+			throw new SystemException("Error inesperado en formacion", "FORMACION-UNEXPECTED-ERR", e);
+		}
 	}
 	/**
 	 * Devuelve la lista de formaciones del instructor
@@ -59,7 +57,7 @@ public class FormacionDaoImpl extends GenericoDaoImpl<Formacion, Long>{
 	 * @throws DaoException
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Formacion> listaFormaciones(int codigoInstructor) throws DaoException{
+	public List<Formacion> listaFormaciones(int codigoInstructor){
 		try {
 			Query query=getEntityManager().createNamedQuery(Formacion.LISTADO_FORMACIONES);
 			query.setParameter("codigoInstructor", codigoInstructor);
@@ -67,7 +65,7 @@ public class FormacionDaoImpl extends GenericoDaoImpl<Formacion, Long>{
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al cargar  lista formaciones", "FORMACION-LIST-ERR", e);
 		}
 	}
 }

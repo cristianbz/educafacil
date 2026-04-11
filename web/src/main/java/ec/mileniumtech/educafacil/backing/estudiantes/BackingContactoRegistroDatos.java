@@ -9,14 +9,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.stream.Collectors;
 
-
-
 import org.apache.log4j.Logger;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.estudiantes.BeanContactoRegistroDatos;
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
-import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
 import ec.mileniumtech.educafacil.dao.impl.CatalogoDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.MatriculaDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.SeguimientoDaoImpl;
@@ -74,13 +70,10 @@ public class BackingContactoRegistroDatos implements Serializable {
 	 * Carga las oportunidades de ventas
 	 */
 	public void cargarOportunidades() {
-		try {
+
 			getBeanContactoRegistroDatos().setLitaOportunidades(new ArrayList<>());
 			getBeanContactoRegistroDatos().setLitaOportunidades(getMatriculaServicioImpl().listaOportunidades());
-		}catch(DaoException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.cargarOportunidades"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "cargarOportunidades " + ": ").append(e.getMessage()));
-		}
+
 	}
 	
 	
@@ -89,13 +82,10 @@ public class BackingContactoRegistroDatos implements Serializable {
 		cargarOportunidades();
 		getBeanContactoRegistroDatos().setMostrarClientes(true);
 		getBeanContactoRegistroDatos().setListaTipoSeguimiento(new ArrayList<>());
-		try {
+
 			getBeanContactoRegistroDatos().setListaVendedores(getUsuarioServicioImpl().consultarUsuariosPorIdRol(EnumRol.ADMINISTRADOR.getCodigo()));			
 			getBeanContactoRegistroDatos().setListaTipoSeguimiento(getCatalogoServicioImpl().catalogosPorTipo(EnumTipoCatalogo.TIPOSEGUIMIENTO.getNemotecnico()));
-		} catch (DaoException e) { 
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.catalogo"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "init " + ": ").append(e.getMessage()));
-		}
+
 	}
 
 	/**
@@ -123,7 +113,7 @@ public class BackingContactoRegistroDatos implements Serializable {
 	 * Graba una tarea de seguimiento a un cliente potencial
 	 */
 	public void asignarTarea() {
-		try {
+
 			getBeanContactoRegistroDatos().getSeguimiento().setSegmCulminado(false);
 			getBeanContactoRegistroDatos().getSeguimiento().setSegmFechaRegistro(new Date());
 			getBeanContactoRegistroDatos().getSeguimiento().setSegmTipoTarea(getBeanContactoRegistroDatos().getCodigoTarea());
@@ -133,41 +123,26 @@ public class BackingContactoRegistroDatos implements Serializable {
 			getBeanContactoRegistroDatos().setCodigoTarea("");
 			getBeanContactoRegistroDatos().setCodigoUsuario(0);
 			cargarActividadesClientePotencial();
-		}catch(DaoException e) { 
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.grabarseguimiento"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "asignarTarea " + ": ").append(e.getMessage()));
-		} catch (EntidadDuplicadaException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.entidadDuplicada"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "asignarTarea " + ": ").append(e.getMessage()));
-		}
+
 	}
 	/**
 	 * Carga las actividades del cliente potencial seleccionado
 	 */
 	public void cargarActividadesClientePotencial() {
-		try {
+
 			getBeanContactoRegistroDatos().setListadoSeguimiento(new ArrayList<>());
 			getBeanContactoRegistroDatos().setListadoSeguimiento(getSeguimientoServicioImpl().listaSeguimientoMatricula(getBeanContactoRegistroDatos().getOportunidadSeleccionado().getMatrId()));
 			getBeanContactoRegistroDatos().setListadoSeguimiento(getBeanContactoRegistroDatos().getListadoSeguimiento().stream().sorted((s1,s2)->s2.getSegmFechaEjecucionTarea().compareTo(s1.getSegmFechaEjecucionTarea())).collect(Collectors.toList()));
-		}catch(DaoException e) { 
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.cargaractividades"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "cargarActividadesClientePotencial " + ": ").append(e.getMessage()));
-		}
+
 	}
 	/**
 	 * Actualiza un seguimiento del cliente potencial
 	 */
 	public void actualizarSeguimientoClientePotencial() {
-		try {
+
 			getSeguimientoServicioImpl().agregarActualizarSeguimiento(getBeanContactoRegistroDatos().getSeguimiento());
 			Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.procesoexito"));	
-		}catch(DaoException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.actualizar"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "actualizarSeguimientoClientePotencial " + ": ").append(e.getMessage()));
-		}catch(EntidadDuplicadaException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.entidadDuplicada"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "actualizarSeguimientoClientePotencial " + ": ").append(e.getMessage()));
-		}
+
 	}
 	/**
 	 * Cancela el ingreso de nuevos seguimientos al cliente

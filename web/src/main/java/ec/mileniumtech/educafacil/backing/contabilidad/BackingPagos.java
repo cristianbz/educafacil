@@ -7,13 +7,11 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.Serializable;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 
 import org.apache.log4j.Logger;
 import org.primefaces.model.DefaultStreamedContent;
@@ -23,7 +21,6 @@ import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.backing.estudiantes.ComponenteBuscaEstudiante;
 import ec.mileniumtech.educafacil.bean.contabilidad.BeanPagos;
 import ec.mileniumtech.educafacil.bean.usuarios.BeanLogin;
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
 import ec.mileniumtech.educafacil.dao.impl.CatalogoDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.MatriculaDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.OfertaCursosDaoImpl;
@@ -38,7 +35,6 @@ import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumTipoCatalogo;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
 import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
@@ -145,7 +141,7 @@ public class BackingPagos implements Serializable{
 		}
 	}
 	public void grabarPago() {
-		try {
+	
 			double totalPagado= getBeanPagos().getMatricula().getTotalPagadoCurso(); 
 			getBeanPagos().getPago().setPagoFecha(new Date());			
 //			getBeanPagos().getPago().setMatricula(getBeanPagos().getListaCursosMatriculados().get(0));
@@ -161,10 +157,7 @@ public class BackingPagos implements Serializable{
 			Mensaje.ocultarDialogo("dlgRegistroPago");
 			getBeanPagos().setListaDetallePagos(new ArrayList<>());
 			getBeanPagos().setPago(new Pagos());
-		}catch(Exception e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.grabar"));
-			e.printStackTrace();
-		}
+		
 	}
 	public void mostrarDialogoGrabar() {
 		if(getBeanPagos().getListaDetallePagos().size()>0 && getBeanPagos().getMatricula().getEstudiante()!=null) {
@@ -181,19 +174,15 @@ public class BackingPagos implements Serializable{
 	 * Carga la oferta de cursos activos
 	 */
 	public void cargarOfertaCursosActivos() {
-		try {
-			
+	
 			getBeanPagos().setListaOfertaCursos(new ArrayList<>());
 			getBeanPagos().setListaOfertaCursos(getOfertaServicios().listaOfertaCursosActivos());
 			getBeanPagos().setListaOfertaCursos(getBeanPagos().getListaOfertaCursos().stream().sorted((a1,a2) -> a1.getOfertaCapacitacion().getCurso().getCursNombre().compareTo(a2.getOfertaCapacitacion().getCurso().getCursNombre())).collect(Collectors.toList()));
-		} catch (DaoException e) { 
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.cargarcursos"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "cargarOfertaCursosActivos" + ": ").append(e.getMessage()));
-		}
+
 	}
 	
 	public void buscarMatriculadosCurso() {
-		try {
+		
 			getBeanPagos().setListaCursosMatriculados(new ArrayList<Matricula>());
 			getBeanPagos().setListaCursosMatriculados(getMatriculaServicios().listaMatriculadosPorOfertaCurso(getBeanPagos().getCursoSeleccionado().getOcurId()));
 			if(getBeanPagos().getCursoSeleccionado().getOcurHorario()!=null) {
@@ -211,9 +200,7 @@ public class BackingPagos implements Serializable{
 					
 			}
 			
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+	
 	}
 	public void mostrarDialogoRegPago() {
 		Mensaje.verDialogo("dlgRegistroPago");
@@ -221,13 +208,11 @@ public class BackingPagos implements Serializable{
 	}
 	
 	public void mostrarDialogoResumenPago() {
-		try {
+	
 			getBeanPagos().setListaDetallePagosRealizados(new ArrayList<DetallePagos>());
 			getBeanPagos().setListaDetallePagosRealizados(getPagosServicio().buscaPagosPorMatricula(getBeanPagos().getMatricula().getMatrId()));
 			Mensaje.verDialogo("dlgresumenPagos");
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+
 	}
 	
 	public void cerrarDialogoGrabar() {
@@ -236,16 +221,14 @@ public class BackingPagos implements Serializable{
 	}
 	
 	public void cargarCursosActivosCerrados() {
-		try {
+		
 			if(getBeanPagos().isCursosFinalizados())
 				getBeanPagos().setListaOfertaCursos(getOfertaServicios().listaOfertaCursosActivosCerrados());
 			else {
 				getBeanPagos().setListaOfertaCursos(getOfertaServicios().listaOfertaCursosActivos());
 				getBeanPagos().setListaOfertaCursos(getBeanPagos().getListaOfertaCursos().stream().sorted((a1,a2) -> a1.getOfertaCapacitacion().getCurso().getCursNombre().compareTo(a2.getOfertaCapacitacion().getCurso().getCursNombre())).collect(Collectors.toList()));
 			}
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+	
 	}
 	
 	public void generarReporte() {
@@ -264,7 +247,8 @@ public class BackingPagos implements Serializable{
                     .name("reportePagos.pdf");
                 fileDownload = builder.build();
         } catch (Exception e) {
-           e.printStackTrace();
+        	log.error("Error al generar reporte de pagos", e);
+			throw new RuntimeException(e);
         }
 	}
 }
