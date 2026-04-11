@@ -5,8 +5,7 @@ package ec.mileniumtech.educafacil.dao.impl;
 
 import java.util.List;
 
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
-import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
+import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.dao.util.JpaDaoSupport;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleEvaluaCurso;
 import jakarta.ejb.LocalBean;
@@ -31,18 +30,18 @@ public class DetalleEvaluaCursoDaoImpl extends GenericoDaoImpl<DetalleEvaluaCurs
 		// TODO Auto-generated constructor stub
 	}
 	@SuppressWarnings("unchecked")
-	public List<DetalleEvaluaCurso> listaDeDetallesDeEvaluacionDeCursos()throws DaoException{
+	public List<DetalleEvaluaCurso> listaDeDetallesDeEvaluacionDeCursos(){
 		try {
 			Query query=getEntityManager().createNamedQuery(DetalleEvaluaCurso.CARGAR_DETALLE_EVALUACION);
 			return query.getResultList();
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al listar detalles de evaluación de cursos", "DEVC-LIST-ERR", e);
 		}
 	}
 	
-	public void guardarEncuesta(DetalleEvaluaCurso detalle) throws DaoException, EntidadDuplicadaException{
+	public void guardarEncuesta(DetalleEvaluaCurso detalle){
 		try{
 			if (detalle.getDevcId() == null)
 				getEntityManager().persist(detalle);
@@ -51,9 +50,9 @@ public class DetalleEvaluaCursoDaoImpl extends GenericoDaoImpl<DetalleEvaluaCurs
 			
 		}catch(PersistenceException e){
 			JpaDaoSupport.throwIfConstraintViolationDuplicate(e);
-			throw new DaoException(e);
+			throw new SystemException("Error de persistencia en encuesta de evaluación", "DEVC-PERSIST-ERR", e);
 		} 	catch (Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error inesperado en encuesta de evaluación", "DEVC-UNEXPECTED-ERR", e);
 		}	
 	}
 }

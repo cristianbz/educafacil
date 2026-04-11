@@ -8,12 +8,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-
 import org.apache.log4j.Logger;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
-import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
 import ec.mileniumtech.educafacil.dao.impl.EmpresaDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.OfertaCursosDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Empresa;
@@ -58,25 +55,19 @@ public class BackingMatricula implements Serializable{
 		setEsMatricula(true);
 		componenteBackingMatriculaInscripcion.setEsMatricula(esMatricula);
 		cargaEmpresas();
-		try {
+		
 			componenteBackingMatriculaInscripcion.getBeanInscripcionMatricula().setListaOfertaCursos(getOfertaCursosServicioImpl().listaOfertaCursosActivos());
 			componenteBackingMatriculaInscripcion.getBeanInscripcionMatricula().setListaOfertaCursos(componenteBackingMatriculaInscripcion.getBeanInscripcionMatricula().getListaOfertaCursos().stream().sorted((c1,c2)->c1.getOfertaCapacitacion().getCurso().getCursNombre().compareTo(c2.getOfertaCapacitacion().getCurso().getCursNombre())).collect(Collectors.toList()));
-		} catch (DaoException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.cargarOfertaCursos"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "init" + ": ").append(e.getMessage()));
-		}
+		
 	}
 	/**
 	 * Grabara la matricula
 	 */
 	public void grabarMatricula() {
-		try {
+		
 			getComponenteBackingMatriculaInscripcion().grabar();
 
-		}catch(Exception e) {			
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.grabarMatricula"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "grabarMatricula" + ": ").append(e.getMessage()));
-		}
+		
 	}
 	/**
 	 * Mostrar el dialogo grabar
@@ -96,30 +87,21 @@ public class BackingMatricula implements Serializable{
 	 * Agrega una empresa
 	 **/
 	public void agregarEmpresa() {
-		try {
+		
 			getComponenteBackingMatriculaInscripcion().getBeanInscripcionMatricula().getEmpresa().setEmprEstado(true);
 			getEmpresaServicioImpl().agregarEmpresa(getComponenteBackingMatriculaInscripcion().getBeanInscripcionMatricula().getEmpresa());
 			getComponenteBackingMatriculaInscripcion().setNuevaEmpresa(false);
 			cargaEmpresas();
-		} catch (DaoException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.grabarEmpresa"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "agregarEmpresa" + ": ").append(e.getMessage()));
-		} catch (EntidadDuplicadaException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.entidadDuplicada"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "agregarEmpresa" + ": ").append(e.getMessage()));
-		}
+		
 	}
 	/**
 	 * Lista de empresas existentes.
 	 */
 	public void cargaEmpresas() {
-		try {
+		
 			getComponenteBackingMatriculaInscripcion().getBeanInscripcionMatricula().setListaEmpresas(new ArrayList<>());
 			getComponenteBackingMatriculaInscripcion().getBeanInscripcionMatricula().setListaEmpresas(getEmpresaServicioImpl().listaEmpresas());
-		} catch (DaoException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.cargarEmpresas"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "cargaEmpresas" + ": ").append(e.getMessage()));
-		}
+		
 	}
 	/**
 	 * Selecciona una empresa y cierra el cuadro de dialogo

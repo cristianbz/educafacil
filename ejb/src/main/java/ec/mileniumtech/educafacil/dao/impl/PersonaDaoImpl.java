@@ -7,8 +7,7 @@ import java.util.List;
 
 import org.hibernate.Hibernate;
 
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
-import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
+import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.dao.util.JpaDaoSupport;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Persona;
 import jakarta.ejb.LocalBean;
@@ -38,7 +37,7 @@ public class PersonaDaoImpl extends GenericoDaoImpl<Persona, Long>{
 	 * @return
 	 * @throws DaoException
 	 */
-	public Persona buscarPersonaPorCedula(String cedula)throws DaoException{
+	public Persona buscarPersonaPorCedula(String cedula){
 		try {
 			Persona persona=new Persona();
 			Query query = getEntityManager().createNamedQuery(Persona.BUSCAR_POR_CEDULA);
@@ -51,7 +50,7 @@ public class PersonaDaoImpl extends GenericoDaoImpl<Persona, Long>{
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al buscar  persona por cedula", "PERSO-LIST-ERR", e);
 		}
 	}
 	/**
@@ -60,15 +59,15 @@ public class PersonaDaoImpl extends GenericoDaoImpl<Persona, Long>{
 	 * @throws DaoException
 	 * @throws EntidadDuplicadaException
 	 */
-	public void agregarPersona(Persona persona)throws DaoException,EntidadDuplicadaException {
+	public void agregarPersona(Persona persona) {
 		try{
 			getEntityManager().persist(persona);
 			
 		}catch(PersistenceException e){
 			JpaDaoSupport.throwIfConstraintViolationDuplicate(e);
-			throw new DaoException(e);
+			throw new SystemException("Error de persistencia en persona", "PREGU-PERSIST-ERR", e);
 		} 	catch (Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error inesperado en persona", "PREGU-UNEXPECTED-ERR", e);
 		}	
 	}
 	/**
@@ -78,7 +77,7 @@ public class PersonaDaoImpl extends GenericoDaoImpl<Persona, Long>{
 	 * @throws DaoException
 	 * @throws EntidadDuplicadaException
 	 */
-	public Persona actualizarPersona(Persona persona)throws DaoException,EntidadDuplicadaException {
+	public Persona actualizarPersona(Persona persona){
 		try{
 			if(persona.getPersId()==0)
 				getEntityManager().persist(persona);
@@ -87,9 +86,9 @@ public class PersonaDaoImpl extends GenericoDaoImpl<Persona, Long>{
 			return persona;
 		}catch(PersistenceException e){
 			JpaDaoSupport.throwIfConstraintViolationDuplicate(e);
-			throw new DaoException(e);
+			throw new SystemException("Error de persistencia en persona", "PREGU-PERSIST-ERR", e);
 		} 	catch (Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error inesperado en persona", "PREGU-UNEXPECTED-ERR", e);
 		}	
 	}
 	/***
@@ -99,7 +98,7 @@ public class PersonaDaoImpl extends GenericoDaoImpl<Persona, Long>{
 	 * @throws DaoException
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Persona> buscarPersonaPorApellidos(String apellidos)throws DaoException{
+	public List<Persona> buscarPersonaPorApellidos(String apellidos){
 		try {			
 			Query query = getEntityManager().createNamedQuery(Persona.BUSCAR_POR_APELLIDOS);
 			query.setParameter("apellidos", apellidos);
@@ -107,7 +106,7 @@ public class PersonaDaoImpl extends GenericoDaoImpl<Persona, Long>{
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al cargar  persona por apellido", "PERSO-LIST-ERR", e);
 		}
 	}
 	/**
@@ -116,7 +115,7 @@ public class PersonaDaoImpl extends GenericoDaoImpl<Persona, Long>{
 	 * @return
 	 * @throws DaoException
 	 */
-	public Persona buscarPersonaPorId(int codigo)throws DaoException{
+	public Persona buscarPersonaPorId(int codigo){
 		try {
 			Persona persona=new Persona();
 			Query query = getEntityManager().createNamedQuery(Persona.BUSCAR_POR_ID);
@@ -129,7 +128,7 @@ public class PersonaDaoImpl extends GenericoDaoImpl<Persona, Long>{
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al buscar persona por codigo", "PERSO-SINGLE-ERR", e);
 		}
 	}
 	/**
@@ -139,7 +138,7 @@ public class PersonaDaoImpl extends GenericoDaoImpl<Persona, Long>{
 	 * @return
 	 * @throws DaoException
 	 */
-	public Persona buscarPersonaPorCedulaCorreo(String cedula, String correo)throws DaoException{
+	public Persona buscarPersonaPorCedulaCorreo(String cedula, String correo){
 		try {
 			Persona persona=new Persona();
 			Query query = getEntityManager().createNamedQuery(Persona.BUSCAR_POR_CEDULA_CORREO);
@@ -154,7 +153,7 @@ public class PersonaDaoImpl extends GenericoDaoImpl<Persona, Long>{
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al buscar  persona por cedula y correo", "PERSO-SINGLE-ERR", e);
 		}
 	} 
 }

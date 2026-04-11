@@ -2,11 +2,10 @@ package ec.mileniumtech.educafacil.dao.impl;
 
 import java.util.List;
 
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
+import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Area;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.Query;
@@ -29,14 +28,14 @@ public class AreaDaoImpl extends GenericoDaoImpl<Area,Long>{
 	 * @throws DaoException
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Area> listaDeAreas()throws DaoException{
+	public List<Area> listaDeAreas(){
 		try {
 			Query query=getEntityManager().createNamedQuery(Area.LISTA_DE_AREAS);
 			return query.getResultList();
-		}catch(NoResultException e) {
+		} catch(NoResultException e) {
 			return null;
-		}catch(Exception e) {
-			throw new DaoException(e);
+		} catch(Exception e) {
+			throw new SystemException("Error al consultar lista de áreas", "AREA-LIST-ERR", e);
 		}
 	}
 }

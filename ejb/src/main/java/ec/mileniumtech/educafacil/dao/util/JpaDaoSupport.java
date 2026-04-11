@@ -3,7 +3,7 @@ package ec.mileniumtech.educafacil.dao.util;
 import java.util.Collections;
 import java.util.List;
 
-import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
+import ec.mileniumtech.educafacil.dao.excepciones.BusinessException;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
@@ -33,13 +33,13 @@ public final class JpaDaoSupport {
 		}
 	}
 
-	public static void throwIfConstraintViolationDuplicate(PersistenceException e) throws EntidadDuplicadaException {
+	public static void throwIfConstraintViolationDuplicate(PersistenceException e) {
 		Throwable t = e.getCause();
 		while ((t != null) && !(t instanceof ConstraintViolationException)) {
 			t = t.getCause();
 		}
 		if (t instanceof ConstraintViolationException) {
-			throw new EntidadDuplicadaException(e);
+			throw new BusinessException("El registro ya existe en el sistema.", "DUPLICATE-ENTITY", e);
 		}
 	}
 }

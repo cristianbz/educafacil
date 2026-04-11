@@ -5,8 +5,7 @@ package ec.mileniumtech.educafacil.dao.impl;
 
 import java.util.List;
 
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
-import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
+import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.dao.util.JpaDaoSupport;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.EvaluacionCurso;
 import jakarta.ejb.LocalBean;
@@ -33,7 +32,7 @@ public class EvaluacionCursoDaoImpl extends GenericoDaoImpl<EvaluacionCurso, Lon
 		// TODO Auto-generated constructor stub
 	}
 	@SuppressWarnings("unchecked")
-	public List<EvaluacionCurso> listaDeEvaluacionesDeCurso()throws DaoException{
+	public List<EvaluacionCurso> listaDeEvaluacionesDeCurso(){
 		try {
 			Query query=getEntityManager().createNamedQuery(EvaluacionCurso.CARGAR_EVALUACION_CURSO);
 			
@@ -41,7 +40,7 @@ public class EvaluacionCursoDaoImpl extends GenericoDaoImpl<EvaluacionCurso, Lon
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al cargar lista evaluacionesDeCurso", "EVACURSO-LIST-ERR", e);
 		}
 	}
 	/***
@@ -51,7 +50,7 @@ public class EvaluacionCursoDaoImpl extends GenericoDaoImpl<EvaluacionCurso, Lon
 	 * @return
 	 * @throws DaoException
 	 */
-	public List<EvaluacionCurso> listaDeEvaluacionesPorCurso(int codigo, int codigoobj)throws DaoException{
+	public List<EvaluacionCurso> listaDeEvaluacionesPorCurso(int codigo, int codigoobj){
 		try {
 			Query query=getEntityManager().createNamedQuery(EvaluacionCurso.CARGAR_ENCUESTAS_POR_CURSO_OBJETOEVALUACION);
 			query.setParameter("codigo", codigo);
@@ -60,7 +59,7 @@ public class EvaluacionCursoDaoImpl extends GenericoDaoImpl<EvaluacionCurso, Lon
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al cargar lista evaluacionesPorCurso", "EVACURSO-LIST-ERR", e);
 		}
 	}
 	/**
@@ -69,7 +68,7 @@ public class EvaluacionCursoDaoImpl extends GenericoDaoImpl<EvaluacionCurso, Lon
 	 * @return
 	 * @throws DaoException
 	 */
-	public List<EvaluacionCurso> listaDeEvaluacionesDeCursoActivas(int codigoC)throws DaoException{
+	public List<EvaluacionCurso> listaDeEvaluacionesDeCursoActivas(int codigoC){
 		try {
 			Query query=getEntityManager().createNamedQuery(EvaluacionCurso.CARGAR_ENCUESTAS_POR_CURSO_ACTIVO);
 			query.setParameter("codigoOferta", codigoC);
@@ -77,10 +76,10 @@ public class EvaluacionCursoDaoImpl extends GenericoDaoImpl<EvaluacionCurso, Lon
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al cargar lista evaluacionesDeCursoActivas", "EVACURSO-LIST-ERR", e);
 		}
 	}
-	public EvaluacionCurso agregarEvaluacionCurso(EvaluacionCurso evaluacionCurso)throws DaoException,EntidadDuplicadaException {
+	public EvaluacionCurso agregarEvaluacionCurso(EvaluacionCurso evaluacionCurso) {
 		try{
 			if(evaluacionCurso.getEvcuId()==null)
 				getEntityManager().persist(evaluacionCurso);
@@ -89,9 +88,9 @@ public class EvaluacionCursoDaoImpl extends GenericoDaoImpl<EvaluacionCurso, Lon
 			return evaluacionCurso;
 		}catch(PersistenceException e){
 			JpaDaoSupport.throwIfConstraintViolationDuplicate(e);
-			throw new DaoException(e);
+			throw new SystemException("Error de persistencia en evaluacionCurso", "EVACURSO-UPDATE-ERR", e);
 		} 	catch (Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error inesperado en evaluacionCurso", "EVACURSO-UNEXPECTED-ERR", e);
 		}	
 	}
 }

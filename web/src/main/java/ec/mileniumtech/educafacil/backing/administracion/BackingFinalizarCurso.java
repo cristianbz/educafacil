@@ -11,8 +11,6 @@ import org.apache.log4j.Logger;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.administracion.BeanFinalizarCurso;
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
-import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
 import ec.mileniumtech.educafacil.dao.impl.MatriculaDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.OfertaCursosDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.UsuarioDaoImpl;
@@ -73,28 +71,22 @@ public class BackingFinalizarCurso  implements Serializable{
 	 * Carga los cursos activos
 	 */
 	public void cargarCursosActivos() {
-		try {
+		
 			getBeanFinalizarCurso().setListaCursosAbiertos(new ArrayList<>());
 			getBeanFinalizarCurso().setListaCursosAbiertos(getOfertaCursosServicioImpl().listaOfertaCursosActivos());
 			getBeanFinalizarCurso().setListaCursosAbiertos(getBeanFinalizarCurso().getListaCursosAbiertos().stream().sorted((c1,c2) -> c1.getOfertaCapacitacion().getCurso().getCursNombre().compareTo(c2.getOfertaCapacitacion().getCurso().getCursNombre())).collect(Collectors.toList()));
-		}catch(DaoException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.cargarcursos"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "cargarCursosActivos" + ": ").append(e.getMessage()));
-		}
+		
 	}
 	/**
 	 * Carga los alumnos del curso seleccionado
 	 */
 	public void cargarAlumnosCurso() {
-		try {
+		
 			getBeanFinalizarCurso().setListaMatriculadosCurso(new ArrayList<>());
 			getBeanFinalizarCurso().setListaMatriculadosCurso(getMatriculaServicioImpl().listaMatriculadosOEnCursoPorOferta(getBeanFinalizarCurso().getOfertaCursosSeleccionado().getOcurId()));
 			getBeanFinalizarCurso().setListaMatriculadosCurso(getBeanFinalizarCurso().getListaMatriculadosCurso().stream().sorted((a1,a2) -> a1.getEstudiante().getPersona().getPersApellidos().compareTo(a2.getEstudiante().getPersona().getPersApellidos())).collect(Collectors.toList()));
 			Mensaje.verDialogo("dlgFinalCurso");
-		}catch(DaoException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.error.cargarAlumnos"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "cargarAlumnosCurso" + ": ").append(e.getMessage()));
-		}
+		
 	}
 	/**
 	 * Cancela la finalizacion del curso
@@ -108,7 +100,7 @@ public class BackingFinalizarCurso  implements Serializable{
 	 * Procesa la finalizacion de un curso
 	 */
 	public void procesaFinalizacionCurso() {
-		try {
+		
 			getBeanFinalizarCurso().getOfertaCursosSeleccionado().setOcurEstado(EnumEstadosOfertaCurso.FINALIZADO.getCodigo());
 
 			getOfertaCursosServicioImpl().finalizarCursoActivo(getBeanFinalizarCurso().getOfertaCursosSeleccionado(), getBeanFinalizarCurso().getListaMatriculadosCurso());
@@ -116,13 +108,7 @@ public class BackingFinalizarCurso  implements Serializable{
 			getBeanFinalizarCurso().setOfertaCursosSeleccionado(null);
 			cargarCursosActivos();
 			Mensaje.ocultarDialogo("dlgFinalCurso");
-		}catch(DaoException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.grabarOfertaCurso"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "procesaFinalizacionCurso" + ": ").append(e.getMessage()));			
-		}catch(EntidadDuplicadaException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.entidadDuplicada"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "procesaFinalizacionCurso" + ": ").append(e.getMessage()));			
-		}
+		
 	}
 	/**
 	 * Muestra el dialogo para finalizar el curso
@@ -156,7 +142,7 @@ public class BackingFinalizarCurso  implements Serializable{
 		
 	}
 	public void grabarFinalizarCursoAlumno() {
-		try {			
+				
 			Usuario usuario = new Usuario();
 			usuario=getUsuarioServicioImpl().consultarUsuarioPorDocumento(getBeanFinalizarCurso().getMatriculaSeleccionada().getEstudiante().getPersona().getPersDocumentoIdentidad());
 			
@@ -167,9 +153,6 @@ public class BackingFinalizarCurso  implements Serializable{
 				getMatriculaServicioImpl().actualizaMatricula(getBeanFinalizarCurso().getMatriculaSeleccionada());
 			cargarAlumnosCurso();
 			Mensaje.ocultarDialogo("dlgFinCursoAlumno");
-		}catch(DaoException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.grabar"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "grabarFinalizarCurso" + ": ").append(e.getMessage()));
-		}
+		
 	}
 }

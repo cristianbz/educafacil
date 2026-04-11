@@ -5,11 +5,10 @@ package ec.mileniumtech.educafacil.dao.impl;
 
 import java.util.List;
 
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
+import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Vendedor;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.Query;
@@ -29,14 +28,14 @@ public class VendedorDaoImpl extends GenericoDaoImpl<Vendedor,Long>{
 		// TODO Auto-generated constructor stub
 	}
 	@SuppressWarnings("unchecked")
-	public List<Vendedor> listaDeVendedores()throws DaoException{
+	public List<Vendedor> listaDeVendedores(){
 		try {
 			Query query=getEntityManager().createNamedQuery(Vendedor.BUSCAR_VENDEDOR);
 			return query.getResultList();
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al consultar lista de vendedor", "VEND-LIST-ERR", e);
 		}
 	}
 }

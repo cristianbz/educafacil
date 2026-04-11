@@ -6,8 +6,7 @@ package ec.mileniumtech.educafacil.dao.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
-import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
+import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.dao.util.JpaDaoSupport;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.DtoEncuestas;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.TipoEncuestaPregunta;
@@ -33,7 +32,7 @@ public class TipoEncuestaPreguntaDaoImpl extends GenericoDaoImpl<TipoEncuestaPre
 		// TODO Auto-generated constructor stub
 	}
 	@SuppressWarnings("unchecked")
-	public List<TipoEncuestaPregunta> listaDePreguntas(int codigoP)throws DaoException{
+	public List<TipoEncuestaPregunta> listaDePreguntas(int codigoP){
 		try {
 			Query query=getEntityManager().createNamedQuery(TipoEncuestaPregunta.CARGAR_PREGUNTA);
 			query.setParameter("codigo", codigoP);
@@ -41,19 +40,19 @@ public class TipoEncuestaPreguntaDaoImpl extends GenericoDaoImpl<TipoEncuestaPre
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al consultar lista tipo encuesta_pregunta", "TENPR-LIST-ERR", e);
 		}
 		
 }
 	@SuppressWarnings("unchecked")
-	public List<TipoEncuestaPregunta> listaDeTiposDeEncuestas()throws DaoException{
+	public List<TipoEncuestaPregunta> listaDeTiposDeEncuestas(){
 		try {
 			Query query=getEntityManager().createNamedQuery(TipoEncuestaPregunta.CARGAR_TIPO_ENCUESTA);
 			return query.getResultList();
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al consultar lista tipo encuesta_pregunta", "TENPR-LIST-ERR", e);
 		}
 	}
 /**
@@ -62,7 +61,7 @@ public class TipoEncuestaPreguntaDaoImpl extends GenericoDaoImpl<TipoEncuestaPre
  * @return
  * @throws DaoException
  */
-	public List<TipoEncuestaPregunta> listaDeEncuestas(int codigoT)throws DaoException{
+	public List<TipoEncuestaPregunta> listaDeEncuestas(int codigoT){
 		try {
 			Query query=getEntityManager().createNamedQuery(TipoEncuestaPregunta.CARGAR_ENCUESTAS);
 			query.setParameter("codigoTipo", codigoT);
@@ -70,11 +69,11 @@ public class TipoEncuestaPreguntaDaoImpl extends GenericoDaoImpl<TipoEncuestaPre
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al consultar lista tipo encuesta_pregunta por codigo encuesta", "TENPR-LIST-ERR", e);
 		}
 	}
 	
-	public List<TipoEncuestaPregunta> listaPorTipoDeEncuestas(int codigoTipo)throws DaoException{
+	public List<TipoEncuestaPregunta> listaPorTipoDeEncuestas(int codigoTipo){
 		try {
 			Query query=getEntityManager().createNamedQuery(TipoEncuestaPregunta.CARGAR_POR_TIPO_ENCUESTA);
 			query.setParameter("codigo", codigoTipo);
@@ -82,11 +81,11 @@ public class TipoEncuestaPreguntaDaoImpl extends GenericoDaoImpl<TipoEncuestaPre
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al consultar lista tipo encuesta_pregunta por tipo", "TENPR-LIST-ERR", e);
 		}
 	}
 	
-	public TipoEncuestaPregunta agregarActualizarTipoEncuestaPregunta(TipoEncuestaPregunta tipoEncuestaPregunta)throws DaoException,EntidadDuplicadaException {
+	public TipoEncuestaPregunta agregarActualizarTipoEncuestaPregunta(TipoEncuestaPregunta tipoEncuestaPregunta) {
 		try{
 			if(tipoEncuestaPregunta.getTeprId()==null)
 				getEntityManager().persist(tipoEncuestaPregunta);
@@ -95,10 +94,10 @@ public class TipoEncuestaPreguntaDaoImpl extends GenericoDaoImpl<TipoEncuestaPre
 			return tipoEncuestaPregunta;
 		}catch(PersistenceException e){
 			JpaDaoSupport.throwIfConstraintViolationDuplicate(e);
-			throw new DaoException(e);
+			throw new SystemException("Error de persistencia en tipo encuesta_pregunta", "TENPR-PERSIST-ERR", e);
 		} 	catch (Exception e) {
-			throw new DaoException(e);
-		}	
+			throw new SystemException("Error inesperado en tipo encuesta_pregunta", "TENPR-UNEXPECTED-ERR", e);
+		}		
 	}
 	
 	/**
@@ -106,11 +105,11 @@ public class TipoEncuestaPreguntaDaoImpl extends GenericoDaoImpl<TipoEncuestaPre
 	 * siguiendo el siguiente formato "preg_Descripcion, resp_Descipcion y (preg_ID - resp_Id)"
 	 * @param encuesta 
 	 * @return
-	 * @throws DaoException
+	 * @
 	 */
 	@SuppressWarnings("unchecked")
 	public List<DtoEncuestas> guardarRespuestasEncuestas(int encuesta)
-			throws DaoException {
+			 {
 		try {
 			
 			List <DtoEncuestas> listaRespuestasEncuestas= new ArrayList<DtoEncuestas>();
@@ -133,7 +132,7 @@ public class TipoEncuestaPreguntaDaoImpl extends GenericoDaoImpl<TipoEncuestaPre
 				return null;
 			}
 		} catch (Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al consultar lista tipo encuesta_pregunta por encuesta", "TENPR-LIST-ERR", e);
 		}
 	}
 }

@@ -5,8 +5,7 @@ package ec.mileniumtech.educafacil.dao.impl;
 
 import java.util.List;
 
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
-import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
+import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.dao.util.JpaDaoSupport;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Capacitacion;
 import jakarta.ejb.LocalBean;
@@ -23,20 +22,17 @@ import jakarta.persistence.Query;
 @LocalBean
 @Stateless
 public class CapacitacionDaoImpl extends GenericoDaoImpl<Capacitacion,Long>{
-	public CapacitacionDaoImpl() {
+public CapacitacionDaoImpl() {
 		
 	}
 	public CapacitacionDaoImpl(EntityManager em, Class<Capacitacion> entityClass) {
 		super(em, entityClass);
-		// TODO Auto-generated constructor stub
 	}
 	/**
 	 * Agrega una capacitacion
 	 * @param capacitacion
-	 * @throws DaoException
-	 * @throws EntidadDuplicadaException
 	 */
-	public void agregarActualizarCapacitacion(Capacitacion capacitacion) throws DaoException, EntidadDuplicadaException{
+	public void agregarActualizarCapacitacion(Capacitacion capacitacion) {
 		try{
 			if (capacitacion.getCapaId()==0)
 				getEntityManager().persist(capacitacion);
@@ -45,19 +41,18 @@ public class CapacitacionDaoImpl extends GenericoDaoImpl<Capacitacion,Long>{
 			
 		}catch(PersistenceException e){
 			JpaDaoSupport.throwIfConstraintViolationDuplicate(e);
-			throw new DaoException(e);
+			throw new SystemException("Error de persistencia en capacitación", "CAP-PERSIST-ERR", e);
 		} 	catch (Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error inesperado en capacitación", "CAP-UNEXPECTED-ERR", e);
 		}	
 	}
 	/**
 	 * Devuelve la lista de capacitaciones seguidas por el instructor
 	 * @param codigoInstructor
-	 * @return
-	 * @throws DaoException
+	 * @return List<Capacitacion>
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Capacitacion> listaCapacitaciones(int codigoInstructor) throws DaoException{
+	public List<Capacitacion> listaCapacitaciones(int codigoInstructor) {
 		try {
 			Query query=getEntityManager().createNamedQuery(Capacitacion.LISTADO_CAPACITACIONES);
 			query.setParameter("codigoInstructor", codigoInstructor);
@@ -65,7 +60,7 @@ public class CapacitacionDaoImpl extends GenericoDaoImpl<Capacitacion,Long>{
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al listar capacitaciones", "CAP-LIST-ERR", e);
 		}
 	}
 }

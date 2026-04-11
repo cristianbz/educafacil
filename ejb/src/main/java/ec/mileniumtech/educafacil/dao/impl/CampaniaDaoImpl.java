@@ -6,8 +6,7 @@ package ec.mileniumtech.educafacil.dao.impl;
 import java.math.BigDecimal;
 import java.util.List;
 
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
-import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
+import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.dao.util.JpaDaoSupport;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Campania;
 import jakarta.ejb.LocalBean;
@@ -38,25 +37,25 @@ public class CampaniaDaoImpl extends GenericoDaoImpl<Campania,Long>{
 	 * @throws DaoException
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Campania> listaCampanias() throws DaoException{
+	public List<Campania> listaCampanias(){
 		try {
 			Query query=getEntityManager().createNamedQuery(Campania.CAMPANIAS_ACTIVAS);			
 			return query.getResultList();
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al cargar lista campanias", "CAMP-LIST-ERR", e);
 		}
 	}
 	
-	public List<Campania> listaCampaniasporCurso() throws DaoException{
+	public List<Campania> listaCampaniasporCurso() {
 		try {
 			Query query=getEntityManager().createNamedQuery(Campania.CAMPANIA_CURSO_ACTIVAS);			
 			return query.getResultList();
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al cargar lista campaniasPorCurso", "CAMP-LIST-ERR", e);
 		}
 	}
 	
@@ -66,7 +65,7 @@ public class CampaniaDaoImpl extends GenericoDaoImpl<Campania,Long>{
 	 * @throws DaoException
 	 * @throws EntidadDuplicadaException
 	 */
-	public void agregarActualizarCampania(Campania campania) throws DaoException, EntidadDuplicadaException{
+	public void agregarActualizarCampania(Campania campania) {
 		try{
 			if (campania.getCampId() == null)
 				getEntityManager().persist(campania);
@@ -75,9 +74,9 @@ public class CampaniaDaoImpl extends GenericoDaoImpl<Campania,Long>{
 			
 		}catch(PersistenceException e){
 			JpaDaoSupport.throwIfConstraintViolationDuplicate(e);
-			throw new DaoException(e);
+			throw new SystemException("Error de persistencia en campania", "CAMP-UPDATE-ERR", e);
 		} 	catch (Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error inesperado en campania", "CAMP-UNEXPECTED-ERR", e);
 		}	
 	}
 	/**
@@ -86,18 +85,18 @@ public class CampaniaDaoImpl extends GenericoDaoImpl<Campania,Long>{
 	 * @throws DaoException
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Campania> listaTodasCampanias() throws DaoException{
+	public List<Campania> listaTodasCampanias() {
 		try {
 			Query query=getEntityManager().createNamedQuery(Campania.CAMPANIAS_TODAS);			
 			return query.getResultList();
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al cargar lista campanias", "CAMP-LIST-ERR", e);
 		}
 	}
 	
-	public Campania campaniaCurso(int curso) throws DaoException{
+	public Campania campaniaCurso(int curso) {
 		try {
 			Query query=getEntityManager().createNamedQuery(Campania.CAMPANIA_CURSO);	
 			query.setParameter("curso", curso);
@@ -106,12 +105,12 @@ public class CampaniaDaoImpl extends GenericoDaoImpl<Campania,Long>{
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al buscar campaniaCurso", "CAMP-FIND-ERR", e);
 		}
 	}
 	
 	@SuppressWarnings("unchecked")
-	public BigDecimal totalGastoCampanias() throws DaoException{
+	public BigDecimal totalGastoCampanias() {
 		List<Object[]> resultado= null;
 		BigDecimal valor= new BigDecimal(0);		
 		String sql ="SELECT SUM(camp_costo) FROM cap.campania;";

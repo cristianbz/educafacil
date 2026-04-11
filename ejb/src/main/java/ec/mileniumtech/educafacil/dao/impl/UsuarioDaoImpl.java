@@ -6,8 +6,8 @@ package ec.mileniumtech.educafacil.dao.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
-import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
+
+import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.dao.util.JpaDaoSupport;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.ObjetosMenuDto;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Persona;
@@ -39,17 +39,17 @@ public class UsuarioDaoImpl extends GenericoDaoImpl<Usuario, Long>{
 	 * @return
 	 * @throws DaoException
 	 */
-	public Usuario actualizaUsuario(Usuario usuario) throws DaoException{
+	public Usuario actualizaUsuario(Usuario usuario) {
 		Usuario user=null;
 		try {
 			user =  getEntityManager().merge(usuario);
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al actualizar usuario", "USUA-SINGL-ERR", e);
 		}
 		return user;
 	}
 	
-	public Usuario agregarUsuario(Usuario usuario)throws DaoException,EntidadDuplicadaException {
+	public Usuario agregarUsuario(Usuario usuario){
 	try{
 		if(usuario.getUsuaId()==null) 
 			getEntityManager().persist(usuario);
@@ -58,9 +58,9 @@ public class UsuarioDaoImpl extends GenericoDaoImpl<Usuario, Long>{
 		return usuario;
 	}catch(PersistenceException e){
 		JpaDaoSupport.throwIfConstraintViolationDuplicate(e);
-		throw new DaoException(e);
+		throw new SystemException("Error de persistencia en usuario", "USUA-PERSIST-ERR", e);
 	} 	catch (Exception e) {
-		throw new DaoException(e);
+		throw new SystemException("Error inesperado en usuario", "USUA-UNEXPECTED-ERR", e);
 	}	
 }
 	
@@ -70,7 +70,7 @@ public class UsuarioDaoImpl extends GenericoDaoImpl<Usuario, Long>{
 	 * @return
 	 * @throws DaoException
 	 */
-	public Usuario consultarUsuario(String usuario) throws DaoException{
+	public Usuario consultarUsuario(String usuario) {
 		try {
 			Query query = getEntityManager().createNamedQuery(Usuario.BUSCAR_USUARIO_POR_USUARIO);
 			query.setParameter("usuario", usuario);
@@ -78,7 +78,7 @@ public class UsuarioDaoImpl extends GenericoDaoImpl<Usuario, Long>{
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al consultar usuario por usuario", "USUA-FIND-ERR", e);
 		}
 	}
 	/**
@@ -89,7 +89,7 @@ public class UsuarioDaoImpl extends GenericoDaoImpl<Usuario, Long>{
 	 */
 	@SuppressWarnings("unchecked")
 	public List<ObjetosMenuDto> buscarAccesosUsuario(String correo)
-			throws DaoException {
+			 {
 		try {
 			
 			List <ObjetosMenuDto> listaAccesosUsuario = new ArrayList<ObjetosMenuDto>();
@@ -143,7 +143,7 @@ public class UsuarioDaoImpl extends GenericoDaoImpl<Usuario, Long>{
 				return null;
 			}
 		} catch (Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al consultar lista de acceso usuario", "USUA-LIST-ERR", e);
 		}
 	}
 	/**
@@ -152,7 +152,7 @@ public class UsuarioDaoImpl extends GenericoDaoImpl<Usuario, Long>{
 	 * @return
 	 * @throws DaoException
 	 */
-	public Usuario consultarUsuarioPorDocumento(String documento) throws DaoException{
+	public Usuario consultarUsuarioPorDocumento(String documento) {
 		try {
 			Query query = getEntityManager().createNamedQuery(Usuario.BUSCAR_USUARIO_POR_NRO_IDENTIFICACION);
 			query.setParameter("nrodocumento", documento);
@@ -160,7 +160,7 @@ public class UsuarioDaoImpl extends GenericoDaoImpl<Usuario, Long>{
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al buscar usuario por documento", "USUA-FIND-ERR", e);
 		}
 	}
 	/**
@@ -170,7 +170,7 @@ public class UsuarioDaoImpl extends GenericoDaoImpl<Usuario, Long>{
 	 * @throws DaoException
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Usuario> consultarUsuariosPorIdRol(int idRol)throws DaoException {
+	public List<Usuario> consultarUsuariosPorIdRol(int idRol) {
 		try {
 			String queryString;
 			queryString = " SELECT DISTINCT usuario.usua_id, persona.pers_nombres,persona.pers_apellidos " + 
@@ -198,7 +198,7 @@ public class UsuarioDaoImpl extends GenericoDaoImpl<Usuario, Long>{
 			}else
 				return null;
 		} catch (Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al consultar lista de usuario por rol", "USUA-LIST-ERR", e);
 		}
 	}
 }

@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
+
 import ec.mileniumtech.educafacil.dao.impl.OfertaCursosDaoImpl;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import jakarta.annotation.PostConstruct;
@@ -51,24 +51,14 @@ public class BackingInscripcion implements Serializable{
 	public void init() {
 		setEsInscripcion(true);
 		componenteBackingMatriculaInscripcion.setEsInscripcion(esInscripcion);
-		try {
-			componenteBackingMatriculaInscripcion.getBeanInscripcionMatricula().setListaOfertaCursos(getOfertaCursosServicioImpl().listaOfertaCursosPorDefecto());
-			componenteBackingMatriculaInscripcion.getBeanInscripcionMatricula().setListaOfertaCursos(componenteBackingMatriculaInscripcion.getBeanInscripcionMatricula().getListaOfertaCursos().stream().sorted((c1,c2)->c1.getOfertaCapacitacion().getCurso().getCursNombre().compareTo(c2.getOfertaCapacitacion().getCurso().getCursNombre())).collect(Collectors.toList()));
-		}catch (DaoException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.cargarOfertaCursos"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "init" + ": ").append(e.getMessage()));
-		}
+		componenteBackingMatriculaInscripcion.getBeanInscripcionMatricula().setListaOfertaCursos(getOfertaCursosServicioImpl().listaOfertaCursosPorDefecto());
+		componenteBackingMatriculaInscripcion.getBeanInscripcionMatricula().setListaOfertaCursos(componenteBackingMatriculaInscripcion.getBeanInscripcionMatricula().getListaOfertaCursos().stream().sorted((c1,c2)->c1.getOfertaCapacitacion().getCurso().getCursNombre().compareTo(c2.getOfertaCapacitacion().getCurso().getCursNombre())).collect(Collectors.toList()));
 	}
 	/**
 	 * Grabar datos de la persona
 	 */
 	public void grabarInscripcion() {
-		try {
-			getComponenteBackingMatriculaInscripcion().grabar();
-		}catch(Exception e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.grabarInscripcion"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "grabarInscripcion" + ": ").append(e.getMessage()));
-		}
+		getComponenteBackingMatriculaInscripcion().grabar();
 	}
 	/**
 	 * Muestra el dialogo para grabar una inscripcion

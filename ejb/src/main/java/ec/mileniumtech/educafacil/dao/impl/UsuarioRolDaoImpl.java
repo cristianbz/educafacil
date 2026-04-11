@@ -5,8 +5,8 @@ package ec.mileniumtech.educafacil.dao.impl;
 
 import java.util.List;
 
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
-import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
+
+import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.dao.util.JpaDaoSupport;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.UsuarioRol;
 import jakarta.ejb.LocalBean;
@@ -31,18 +31,18 @@ public class UsuarioRolDaoImpl extends GenericoDaoImpl<UsuarioRol, Long>{
 		// TODO Auto-generated constructor stub
 	}
 	@SuppressWarnings("unchecked")
-	public List<UsuarioRol> listaDeUsuarioRol()throws DaoException{
+	public List<UsuarioRol> listaDeUsuarioRol(){
 		try {
 			Query query=getEntityManager().createNamedQuery(UsuarioRol.CARGAR_Usuario_Rol);
 			return query.getResultList();
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al consultar lista de usuario rol", "UROL-LIST-ERR", e);
 		}
 	}
 	
-	public List<UsuarioRol> listaUsuarioRolPorUsuario(int idUsuario)throws DaoException{
+	public List<UsuarioRol> listaUsuarioRolPorUsuario(int idUsuario){
 		try {
 			Query query=getEntityManager().createNamedQuery(UsuarioRol.CARGAR_Usuario_Rol_Por_IDUsuario);
 			query.setParameter("idUsuario", idUsuario);
@@ -50,11 +50,11 @@ public class UsuarioRolDaoImpl extends GenericoDaoImpl<UsuarioRol, Long>{
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al consultar lista de usuario rol por usuario", "UROL-LIST-ERR", e);
 		}
 	}
 	
-	public UsuarioRol agregarUsuarioRol(UsuarioRol usuarioRol)throws DaoException,EntidadDuplicadaException {
+	public UsuarioRol agregarUsuarioRol(UsuarioRol usuarioRol) {
 		try{
 			if(usuarioRol.getUrolId()==null) 
 				getEntityManager().persist(usuarioRol);
@@ -63,9 +63,9 @@ public class UsuarioRolDaoImpl extends GenericoDaoImpl<UsuarioRol, Long>{
 			return usuarioRol;
 		}catch(PersistenceException e){
 			JpaDaoSupport.throwIfConstraintViolationDuplicate(e);
-			throw new DaoException(e);
+			throw new SystemException("Error de usuario rol", "UROL-PERSIST-ERR", e);
 		} 	catch (Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error inesperado en usuario rol", "UROL-UNEXPECTED-ERR", e);
 		}	
 	}
 }

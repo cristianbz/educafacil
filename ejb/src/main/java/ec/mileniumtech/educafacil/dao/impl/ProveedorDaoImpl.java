@@ -5,8 +5,7 @@ package ec.mileniumtech.educafacil.dao.impl;
 
 import java.util.List;
 
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
-import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
+import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.dao.util.JpaDaoSupport;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Proveedor;
 import jakarta.ejb.LocalBean;
@@ -36,7 +35,7 @@ public class ProveedorDaoImpl extends GenericoDaoImpl<Proveedor, Long>{
 	 * @throws DaoException
 	 * @throws EntidadDuplicadaException
 	 */
-	public void agregarActualizarProveedor(Proveedor proveedor) throws DaoException,EntidadDuplicadaException{
+	public void agregarActualizarProveedor(Proveedor proveedor) {
 		try{			
 			if (proveedor.getProvId()==null) {
 				getEntityManager().persist(proveedor);
@@ -45,10 +44,10 @@ public class ProveedorDaoImpl extends GenericoDaoImpl<Proveedor, Long>{
 			}
 		}catch(PersistenceException e){
 			JpaDaoSupport.throwIfConstraintViolationDuplicate(e);
-			throw new DaoException(e);
+			throw new SystemException("Error de persistencia en proveedor", "PROVE-PERSIST-ERR", e);
 		} 	catch (Exception e) {
-			throw new DaoException(e);
-		}
+			throw new SystemException("Error inesperado en proveedor", "PROVE-UNEXPECTED-ERR", e);
+		}	
 	}
 	/**
 	 * Devuelve la lista de proveedores
@@ -56,14 +55,14 @@ public class ProveedorDaoImpl extends GenericoDaoImpl<Proveedor, Long>{
 	 * @throws DaoException
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Proveedor> listaProveedores() throws DaoException{
+	public List<Proveedor> listaProveedores() {
 		try {
 			Query query=getEntityManager().createNamedQuery(Proveedor.LISTA_PROVEEDORES);
 			return query.getResultList();
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al buscar lista proveedor", "PROVE-LIST-ERR", e);
 		}
 	}
 	/**
@@ -72,13 +71,13 @@ public class ProveedorDaoImpl extends GenericoDaoImpl<Proveedor, Long>{
 	 * @return
 	 * @throws DaoException
 	 */
-	public Proveedor validaProveedor(String ruc) throws DaoException{
+	public Proveedor validaProveedor(String ruc) {
 		try {
 			Query query = getEntityManager().createNamedQuery(Proveedor.RUC_PROVEEDOR);
 			query.setParameter("ruc", ruc);
 			return JpaDaoSupport.singleResultOrNull(query);
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al buscar proveedor por ruc", "PROVE-SINGLE-ERR", e);
 		}
 	}
 }

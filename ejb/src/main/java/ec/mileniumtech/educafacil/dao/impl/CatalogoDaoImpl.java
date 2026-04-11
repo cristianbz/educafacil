@@ -5,11 +5,10 @@ package ec.mileniumtech.educafacil.dao.impl;
 
 import java.util.List;
 
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
+import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Catalogo;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.Query;
@@ -21,21 +20,19 @@ import jakarta.persistence.Query;
 @LocalBean
 @Stateless
 public class CatalogoDaoImpl extends GenericoDaoImpl<Catalogo,Long>{
-	public CatalogoDaoImpl() {
+public CatalogoDaoImpl() {
 		
 	}
 	public CatalogoDaoImpl(EntityManager em, Class<Catalogo> entityClass) {
 		super(em, entityClass);
-		// TODO Auto-generated constructor stub
 	}
 	/**
 	 * Devuelve los catalogos acorde al tipo
 	 * @param tipoCatalogo
-	 * @return
-	 * @throws DaoException
+	 * @return List<Catalogo>
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Catalogo> catalogosPorTipo(String tipoCatalogo) throws DaoException{
+	public List<Catalogo> catalogosPorTipo(String tipoCatalogo) {
 		try {
 			Query query=getEntityManager().createNamedQuery(Catalogo.BUSCAR_POR_TIPO_CATALOGO);
 			query.setParameter("tipoCatalogo",tipoCatalogo);
@@ -43,16 +40,16 @@ public class CatalogoDaoImpl extends GenericoDaoImpl<Catalogo,Long>{
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al buscar catálogos por tipo", "CATA-TYPE-ERR", e);
 		}
 	}
 	/**
 	 * Busca catalogo por id del padre
 	 * @param padre
-	 * @return
-	 * @throws DaoException
+	 * @return List<Catalogo>
 	 */
-	public List<Catalogo> catalogosPorPadre(Catalogo padre) throws DaoException{
+	@SuppressWarnings("unchecked")
+	public List<Catalogo> catalogosPorPadre(Catalogo padre) {
 		try {
 			Query query=getEntityManager().createNamedQuery(Catalogo.BUSCAR_POR_PADRE);
 			query.setParameter("padre",padre);
@@ -60,7 +57,7 @@ public class CatalogoDaoImpl extends GenericoDaoImpl<Catalogo,Long>{
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al buscar catálogos por padre", "CATA-PARENT-ERR", e);
 		}
 	}
 }

@@ -65,7 +65,7 @@ public class BackingEgresos implements Serializable{
 
 	@PostConstruct
 	public void init() {
-		try {
+	
 			getBeanEgresos().setListaProveedores(new ArrayList<>());
 			getBeanEgresos().setListaTipoEgreso(new ArrayList<>());
 			getBeanEgresos().setListaTipoEgreso(getCatalogoServicio().catalogosPorTipo("TPEGR"));
@@ -75,9 +75,7 @@ public class BackingEgresos implements Serializable{
 			
 			getBeanEgresos().setNuevoProveedor(new Proveedor());
 
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+
 	}
 
 	public void nuevoRegistroEgreso() {
@@ -87,7 +85,7 @@ public class BackingEgresos implements Serializable{
 	}
 
 	public void registrarEgreso() {
-		try {
+	
 			if (Double.parseDouble(getBeanEgresos().getEgreso().getEgreValor().toString()) > 0.00) {
 			getBeanEgresos().getEgreso().setCatalogo(getBeanEgresos().getEgresoSeleccionado());
 			getBeanEgresos().getEgreso().setProveedor(getBeanEgresos().getProveedorSeleccionado());
@@ -101,13 +99,11 @@ public class BackingEgresos implements Serializable{
 				Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.informacion"));
 				
 			}
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+	
 	}
 
 	public void registrarProveedor() {
-		try {
+	
 			if (getProveedorServicio().validaProveedor(getBeanEgresos().getNuevoProveedor().getProvRuc())==null) {
 				getProveedorServicio().agregarActualizarProveedor(getBeanEgresos().getNuevoProveedor());
 				getBeanEgresos().getListaProveedores().add(getBeanEgresos().getNuevoProveedor());
@@ -116,9 +112,7 @@ public class BackingEgresos implements Serializable{
 			}else {
 				Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.proveedor"));
 			}
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+	
 	}
 
 	public void nuevoProveedor() {
@@ -133,12 +127,10 @@ public class BackingEgresos implements Serializable{
 	}
 	
 	public void buscarEgresos() {
-		try {
+	
 			getBeanEgresos().setListaEgresosRegistrados(getEgresoServicio().listaEgresosFechas(getBeanEgresos().getFechaInicial(), getBeanEgresos().getFechaFinal()));
 			Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.cargarInfo"));
 			Mensaje.ocultarDialogo("dlgBuscaEgresos");
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+
 	}
 }

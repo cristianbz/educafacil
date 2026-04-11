@@ -69,7 +69,7 @@ public class BackingAdminCampanias implements Serializable{
 	
 	@PostConstruct
 	public void init() {
-		try {
+	
 			getBeanAdminCampanias().setListaCampanias(new ArrayList<>());
 			getBeanAdminCampanias().setListaCampanias(getCampaniaDao().listaTodasCampanias());
 			getBeanAdminCampanias().setModelGrafico(new HorizontalBarChartModel());
@@ -78,9 +78,7 @@ public class BackingAdminCampanias implements Serializable{
 			getBeanAdminCampanias().setListaCursos(new ArrayList<>());
 			getBeanAdminCampanias().setListaCursos(getCursoDaoImpl().listaCursos());
 			getBeanAdminCampanias().setCampaniaSeleccionada(new Campania());			
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+
 	}
 	
 	public void mostrarDialogoCampania() {
@@ -96,7 +94,7 @@ public class BackingAdminCampanias implements Serializable{
 	}
 	
 	public void grabar() {
-		try {
+	
 			Curso curso = new Curso();
 			curso.setCursId(getBeanAdminCampanias().getCursoSeleccionado());
 			getBeanAdminCampanias().getCampaniaSeleccionada().setCurso(curso);
@@ -106,10 +104,7 @@ public class BackingAdminCampanias implements Serializable{
 			getBeanAdminCampanias().setListaCampanias(getCampaniaDao().listaTodasCampanias());
 			Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.grabar"));	
 			Mensaje.ocultarDialogo("dlgCampania");
-		}catch(Exception e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.grabar"));
-			e.printStackTrace();
-		}
+	
 	}
 	
 	public void nuevaCampania() {
@@ -119,7 +114,7 @@ public class BackingAdminCampanias implements Serializable{
 	}
 	
 	public void resumenCampania() {
-		try {
+		
 			String pattern = "yyyy-MM-dd";
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 			String f1 = simpleDateFormat.format(getBeanAdminCampanias().getCampaniaSeleccionada().getCampFechaDesde());
@@ -200,10 +195,7 @@ public class BackingAdminCampanias implements Serializable{
 	        options.setTitle(title);
 	        getBeanAdminCampanias().getModelGrafico().setOptions(options);
 	        
-		}catch(Exception e) {
-			e.printStackTrace();
-			
-		}
+
 	}
     public void createHorizontalBarModel() {
         

@@ -5,11 +5,11 @@ package ec.mileniumtech.educafacil.dao.impl;
 
 import java.util.List;
 
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
+
+import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Especialidad;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.Query;
@@ -34,14 +34,14 @@ public class EspecialidadDaoImpl extends GenericoDaoImpl<Especialidad, Long> {
 	 * @throws DaoException
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Especialidad> listaDeEspecialidades()throws DaoException{
+	public List<Especialidad> listaDeEspecialidades(){
 		try {
 			Query query=getEntityManager().createNamedQuery(Especialidad.LISTA_DE_ESPECIALIDAD);
 			return query.getResultList();
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al listar especialidades", "ESPE-LIST-ERR", e);
 		}
 	}
 }

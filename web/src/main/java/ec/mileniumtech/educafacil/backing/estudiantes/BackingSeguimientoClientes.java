@@ -17,12 +17,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-import jakarta.json.Json;
-import jakarta.json.JsonObject;
-
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -44,20 +38,21 @@ import ec.mileniumtech.educafacil.modelo.persistencia.entity.Campania;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Curso;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleSeguimiento;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.SeguimientoClientes;
-import ec.mileniumtech.educafacil.utilitario.Cadenas;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitarios.dto.registrodatos.FormFacebookAdsRecord;
 import ec.mileniumtech.educafacil.utilitarios.dto.registrodatos.PreguntasFormFacesbookRecord;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumEstadosContactoCliente;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumMedioContacto;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumMedioInformacion;
-import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumUbicacionDomicilio;
 import ec.mileniumtech.educafacil.utilitarios.fechas.FechaFormato;
+import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
 import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.ExternalContext;
-import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import lombok.Getter;
 
 /**
@@ -111,7 +106,7 @@ public class BackingSeguimientoClientes implements Serializable{
 
 	@PostConstruct
 	public void init() {
-		try {
+		
 			getBeanSeguimiento().setSeguirIngresandoClientes(false);	
 			getBeanSeguimiento().setSeguimientoSeleccionado(new SeguimientoClientes());
 
@@ -142,12 +137,7 @@ public class BackingSeguimientoClientes implements Serializable{
 			getBeanSeguimiento().setCampaniaSeleccionada(new Campania());
 			getBeanSeguimiento().setListaPorLlamar(new ArrayList<SeguimientoClientes>());
 			getBeanSeguimiento().setListaPorLlamar(getSeguimientoClientesServicioImpl().listaPendientesLlamada());
-			
-			
 
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
 	}
 	public void vaciarCodigos() {
 		getBeanSeguimiento().setCodigoCurso(null);
@@ -190,12 +180,13 @@ public class BackingSeguimientoClientes implements Serializable{
 					getBeanSeguimiento().getListaLlamarAhora().add(sc);				
 			}
 		} catch (ParseException ex) {
-			ex.printStackTrace();
+			log.error("Error al filtrar pendientes llamar", ex);
+			throw new RuntimeException(ex);
 		}
 	}
 
 	public void grabarSeguimiento() {
-		try {
+	
 			if(getBeanSeguimiento().getCodigoEstadoContacto().equals(EnumEstadosContactoCliente.ABANDONADO.getCodigo()) && getBeanSeguimiento().getSeguimientoClientes().getSegcMotivosNoMatricula().isEmpty()) {
 				Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.noInteres"));
 			}else {
@@ -247,9 +238,7 @@ public class BackingSeguimientoClientes implements Serializable{
 				}
 				
 			}
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+
 	}
 	
 	public void mostrarDialogoGrabar() {
@@ -302,25 +291,21 @@ public class BackingSeguimientoClientes implements Serializable{
 	}
 	
 	public void cargarSeguimientoCampania() {
-		try {
+	
 			getBeanSeguimiento().setListadoSeguimiento(new ArrayList<SeguimientoClientes>());
 			getBeanSeguimiento().setListadoSeguimiento(getSeguimientoClientesServicioImpl().listaSeguimientoCampania(getBeanSeguimiento().getCampaniaSeleccionada().getCampId()));				
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+
 	}
 	
 	
 	public void cargarSeguimiento() {
-		try {
+	
 			getBeanSeguimiento().setListadoSeguimiento(new ArrayList<SeguimientoClientes>());
 			getBeanSeguimiento().setListadoSeguimiento(getSeguimientoClientesServicioImpl().listaSeguimiento());				
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+
 	}
 	public void cargaDetalleSeguimiento() {
-		try {
+		
 			getBeanSeguimiento().setListaDetalle(new ArrayList<DetalleSeguimiento>());
 			getBeanSeguimiento().setListaDetalle(getDetalleServicio().listaDetalle(getBeanSeguimiento().getSeguimientoClientes().getSegcId()));
 			
@@ -332,12 +317,10 @@ public class BackingSeguimientoClientes implements Serializable{
 				getBeanSeguimiento().getTrazabilidadObj().add(dt);
 			}
 			Mensaje.verDialogo("dlgDetalleSeguimiento");
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+	
 	}
 	public void agregarNuevoSeguimiento() {
-		try {
+	
 			getBeanSeguimiento().setSeguirIngresandoClientes(false);
 			getBeanSeguimiento().setProximaLlamada(null);
 			getBeanSeguimiento().setMedioContactoLlamada(false);
@@ -369,9 +352,7 @@ public class BackingSeguimientoClientes implements Serializable{
 					
 				Mensaje.verDialogo("dlgNuevoSeguimiento");
 			}
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+
 	}
 	
 	public void mostrarDialogoMotivos() {
@@ -414,7 +395,7 @@ public class BackingSeguimientoClientes implements Serializable{
 		}
 	}
 	public void cargarInformacion() {
-		try {
+	
 			getBeanSeguimiento().setListadoSeguimiento(new ArrayList<SeguimientoClientes>());
 			if(getBeanSeguimiento().getTipoCargaInformacion() ==2) {				
 				getBeanSeguimiento().setListadoSeguimiento(new ArrayList<SeguimientoClientes>());
@@ -430,14 +411,11 @@ public class BackingSeguimientoClientes implements Serializable{
 			
 			Mensaje.ocultarDialogo("dlgCargarInfo");
 			Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.cargarInfo"));	
-		}catch(Exception e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.generico"));	
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "cargarInformacion " + ": ").append(e.getMessage()));
-		}
+
 	}
 	
 	public void localizaCampaniaCurso() {
-		try {
+	
 			Campania campania = new Campania();
 			campania = getCampaniaDao().campaniaCurso(getBeanSeguimiento().getCodigoCurso());
 			int codigocampania=0;
@@ -458,17 +436,13 @@ public class BackingSeguimientoClientes implements Serializable{
 			}else
 				getBeanSeguimiento().setNohabilitaGrabar(false);
 			
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+
 	}
 	public void actualizarCliente() {
-		try {
+		
 			getSeguimientoClientesServicioImpl().actualizarSeguimiento(getBeanSeguimiento().getSeguimientoClientes());
 			Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.actualizar"));	
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+
 	}
 	
 	public void mostrarDlgSeguimiento() {
@@ -529,7 +503,8 @@ public class BackingSeguimientoClientes implements Serializable{
             	Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.archivoCargado"));
         	}
         }catch(Exception e) {
-        	e.printStackTrace();
+        	log.error("Error al generar reporte de pagos", e);
+			throw new RuntimeException(e);
         }
     }
 	
@@ -690,7 +665,8 @@ public class BackingSeguimientoClientes implements Serializable{
             	Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.archivoCargado"));
         	}
         }catch(Exception e) {
-        	e.printStackTrace();
+        	log.error("Error al generar reporte de pagos", e);
+			throw new RuntimeException(e);
         }
     }
 	
@@ -719,13 +695,14 @@ public class BackingSeguimientoClientes implements Serializable{
             fecha1 = LocalDate.parse(fecha, formato);
             
         } catch (DateTimeParseException e) {
-            System.err.println("Error al parsear la fecha: " + e.getMessage());
+        	log.error("Error al parsear la fecha", e);
+			throw new RuntimeException(e);
         }
         return fecha1;
 	}
 	
 	public void procesarSubidaFormulario() {
-		try {
+	
 			List<SeguimientoClientes> listaAux = new ArrayList<>();
 			if(getBeanSeguimiento().getListadoSeguimientoExcel().size()>0) {
 				listaAux = getSeguimientoClientesServicioImpl().listaSeguimientoCampania(getBeanSeguimiento().getCampaniaSeleccionada().getCampId());
@@ -734,13 +711,11 @@ public class BackingSeguimientoClientes implements Serializable{
 				Mensaje.ocultarDialogo("dlgFormulario");
 			}else
 				Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.nodatos"));
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+
 	}
 	
 	public void procesarSubidaExcel() {
-		try {
+	
 			SeguimientoClientes seguimiento= new SeguimientoClientes();
 			List<SeguimientoClientes> listaAux = new ArrayList<>();
 			if(getBeanSeguimiento().getListadoSeguimientoExcel().size()>0) {
@@ -756,13 +731,11 @@ public class BackingSeguimientoClientes implements Serializable{
 
 				Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.nodatos"));
 			}
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+
 	}
 	
 	public void procesaListaFormulario(List<SeguimientoClientes> listaBase, List<SeguimientoClientes> listaExcel) {
-		try {
+	
 			for (SeguimientoClientes segE : listaExcel) {
 				boolean encontrado=false;
 				for (SeguimientoClientes segC : listaBase) {
@@ -799,15 +772,10 @@ public class BackingSeguimientoClientes implements Serializable{
 					getSeguimientoClientesServicioImpl().agregarSeguimiento(seguimiento, listaTemp);
 				}
 			}
-			
-			
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	public void procesarFormularioFacebook() {
-		try {
+
 			for (FormFacebookAdsRecord formulario: getBeanSeguimiento().getListadoLeadsForm()) {				
 					SeguimientoClientes seguimiento = new SeguimientoClientes();
 					DetalleSeguimiento detalle = new DetalleSeguimiento();
@@ -855,14 +823,12 @@ public class BackingSeguimientoClientes implements Serializable{
 				}
 			Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.agregar"));
 			Mensaje.ocultarDialogo("dlgActualizaDesdeExcel");
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+
 	}
 
 	
 	public void procesaListas(List<SeguimientoClientes> listaBase, List<SeguimientoClientes> listaExcel) {
-		try {
+
 			for (SeguimientoClientes segC : listaBase) {
 				for (SeguimientoClientes segE : listaExcel) {
 					if(segC.getSegcId().equals(segE.getSegcId()) && !segC.getSegcUltimoSeguimiento().trim().equals(segE.getSegcUltimoSeguimiento().trim())) {
@@ -896,9 +862,7 @@ public class BackingSeguimientoClientes implements Serializable{
 					}
 				}
 			}
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+
 	}
 	
 	public SeguimientoClientes validaNumeroTelefono() {
@@ -906,7 +870,7 @@ public class BackingSeguimientoClientes implements Serializable{
 		String numero=getBeanSeguimiento().getSeguimientoClientes().getSegcTelefono();
 		int curso=0;
 		int campania=0;
-		try {
+	
 			if(getBeanSeguimiento().getCodigoCurso()==null)
 				curso=0;
 			else
@@ -921,9 +885,7 @@ public class BackingSeguimientoClientes implements Serializable{
 				getBeanSeguimiento().setNohabilitaGrabar(true);
 			else
 				getBeanSeguimiento().setNohabilitaGrabar(false);
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+
 		return seg;
 	}
 	
@@ -968,14 +930,12 @@ public class BackingSeguimientoClientes implements Serializable{
 	 * Permite anular la proxima llamada
 	 */
 	public void anularPendienteLlamada() {
-		try {
+	
 			getBeanSeguimiento().getSeguimientoClientes().setSegcProximaLlamada(null);
 			getBeanSeguimiento().getListaPorLlamar().remove(getBeanSeguimiento().getSeguimientoClientes());
 			getSeguimientoClientesServicioImpl().actualizarSeguimiento(getBeanSeguimiento().getSeguimientoClientes());
 			Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.procesoexito"));
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+
 	}
 	public void onRowSelect(SelectEvent<SeguimientoClientes> event) {
 		

@@ -12,12 +12,6 @@ import org.apache.log4j.Logger;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.administracion.BeanCreacionCursos;
-import ec.mileniumtech.educafacil.dao.excepciones.AreaException;
-import ec.mileniumtech.educafacil.dao.excepciones.CursoException;
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
-import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
-import ec.mileniumtech.educafacil.dao.excepciones.EspecialidadException;
-import ec.mileniumtech.educafacil.dao.excepciones.OfertaCapacitacionException;
 import ec.mileniumtech.educafacil.dao.impl.AreaDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.CursoDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.EspecialidadDaoImpl;
@@ -71,8 +65,7 @@ public class BackingCreacionCursos implements Serializable{
 	
 	@PostConstruct
 	public void init() {
-		try {
-			
+	
 			getBeanCreacionCursos().setAsignarOferta(false);
 			getBeanCreacionCursos().setListaCursos(new ArrayList<>());
 			getBeanCreacionCursos().setListaCursos(getCursoServicioImpl().listaCursos());
@@ -93,10 +86,7 @@ public class BackingCreacionCursos implements Serializable{
 			getBeanCreacionCursos().setListaEspecialidades(getBeanCreacionCursos().getListaEspecialidades().stream().sorted((e1,e2)->e1.getEspeNombre().compareTo(e2.getEspeNombre())).collect(Collectors.toList()));
 			
 			getBeanCreacionCursos().setOfertaCapacitacion(new OfertaCapacitacion());
-		}catch(DaoException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.cargarcursos"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "init" + ": ").append(e.getMessage()));
-		}
+		
 	}
 	/**
 	 * Permite crear un nuevo curso
@@ -182,7 +172,7 @@ public class BackingCreacionCursos implements Serializable{
 	 * Muestra el dialogo Grabar Oferta
 	 */
 	public void grabarOferta() {
-		try {
+	
 			OfertaCursos ofertaCursos=new OfertaCursos();
 			Instructor instructor=new Instructor();
 			Persona persona = new Persona();
@@ -198,28 +188,21 @@ public class BackingCreacionCursos implements Serializable{
 			ofertaCursos.setOcurTipo(EnumTipoCapacitacion.CURSO.getCodigo());
 			ofertaCursos.setInstructor(instructor);
 			ofertaCursos.setOfertaCapacitacion(getBeanCreacionCursos().getOfertaCapacitacion());
-			try {
+			
 				getOfertaCapacitacionServicioImpl().agregarOfertaCapacitacion(getBeanCreacionCursos().getOfertaCapacitacion(),ofertaCursos);
-			} catch (EntidadDuplicadaException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			
 			getBeanCreacionCursos().setListaOfertaCapacitacion(new ArrayList<>());
 			getBeanCreacionCursos().setListaOfertaCapacitacion(getOfertaCapacitacionServicioImpl().listarOfertasCapacitacion());
 			getBeanCreacionCursos().setAsignarOferta(false);
 			getBeanCreacionCursos().setCursoActivo(false);
 			Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.agregar"));
-		}catch(DaoException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.grabarOfertaCurso"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "grabarOferta" + ": ").append(e.getMessage()));
-		}
+		
 	}
 	/**
 	 * Permite grabar / actualizar un curso
 	 */
 	public void grabarActualizarCurso() {
-		try {	
-			
+	
 			if(getBeanCreacionCursos().getCurso().getCursId()==0) {
 				getBeanCreacionCursos().setCodigoArea(0);
 				getBeanCreacionCursos().setCodigoEspecialidad(0);
@@ -229,10 +212,7 @@ public class BackingCreacionCursos implements Serializable{
 			getBeanCreacionCursos().setListaCursos(new ArrayList<>());
 			getBeanCreacionCursos().setListaCursos(getCursoServicioImpl().listaCursos());
 			Mensaje.ocultarDialogo("dlgGrabaCurso");
-		}catch(DaoException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.grabar"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "grabarActualizarCurso" + ": ").append(e.getMessage()));
-		}
+
 	}
 
 }

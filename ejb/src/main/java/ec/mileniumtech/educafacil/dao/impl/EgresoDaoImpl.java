@@ -10,8 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
-import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
+import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.dao.util.JpaDaoSupport;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.DtoFlujoDinero;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Egresos;
@@ -42,7 +41,7 @@ public class EgresoDaoImpl extends GenericoDaoImpl<Egresos, Long> {
 	 * @throws DaoException
 	 * @throws EntidadDuplicadaException
 	 */
-	public void agregarActualizarEgreso(Egresos egreso) throws DaoException, EntidadDuplicadaException{
+	public void agregarActualizarEgreso(Egresos egreso) {
 		try{
 			if (egreso.getEgreId() == null)
 				getEntityManager().persist(egreso);
@@ -51,9 +50,9 @@ public class EgresoDaoImpl extends GenericoDaoImpl<Egresos, Long> {
 			
 		}catch(PersistenceException e){
 			JpaDaoSupport.throwIfConstraintViolationDuplicate(e);
-			throw new DaoException(e);
+			throw new SystemException("Error de persistencia en egreso", "EGRE-PERSIST-ERR", e);
 		} 	catch (Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error inesperado en egreso", "EGRE-UNEXPECTED-ERR", e);
 		}	
 	}
 
@@ -63,18 +62,18 @@ public class EgresoDaoImpl extends GenericoDaoImpl<Egresos, Long> {
 	 * @throws DaoException
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Egresos> listaEgresos()throws DaoException{
+	public List<Egresos> listaEgresos(){
 		try {
 			Query query=getEntityManager().createNamedQuery(Egresos.CARGA_EGRESOS);
 			return query.getResultList();
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al listar egresos", "EGRE-LIST-ERR", e);
 		}
 	}
 	
-	public List<Egresos> listaEgresosFechas(Date fechaUno, Date fechaDos)throws DaoException{
+	public List<Egresos> listaEgresosFechas(Date fechaUno, Date fechaDos){
 		try {
 			Query query=getEntityManager().createNamedQuery(Egresos.CARGA_EGRESOS_POR_FECHA);
 			query.setParameter("fechauno", fechaUno);
@@ -83,12 +82,11 @@ public class EgresoDaoImpl extends GenericoDaoImpl<Egresos, Long> {
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al listar egresos por fechas", "EGRE-LIST-DATE-ERR", e);
 		}
 	}
 	
-	public List<DtoFlujoDinero> buscaEgresosReporteria(Date fechaInicial, Date fechaFinal)
-			throws DaoException {
+	public List<DtoFlujoDinero> buscaEgresosReporteria(Date fechaInicial, Date fechaFinal){
 		try {
 			DateFormat formatoFecha = new SimpleDateFormat ("yyyy-MM-dd");
 			SimpleDateFormat dt1 = new SimpleDateFormat("yyyy-MM-dd",new Locale("es","ES"));
@@ -119,7 +117,7 @@ public class EgresoDaoImpl extends GenericoDaoImpl<Egresos, Long> {
 				return null;
 			}
 		} catch (Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al buscar egresos para reportes", "EGRE-REPORT-ERR", e);
 		}
 	}
 }

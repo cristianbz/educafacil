@@ -8,8 +8,7 @@ import java.util.List;
 
 import org.hibernate.Hibernate;
 
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
-import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
+import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.dao.util.JpaDaoSupport;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.CategoriaRespuesta;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Respuestas;
@@ -35,7 +34,7 @@ public class CategoriaRespuestaDaoImpl extends GenericoDaoImpl<CategoriaRespuest
 		// TODO Auto-generated constructor stub
 	}
 	@SuppressWarnings("unchecked")
-	public List<CategoriaRespuesta> listaDeCategorias()throws DaoException{
+	public List<CategoriaRespuesta> listaDeCategorias(){
 		try {
 			Query query=getEntityManager().createNamedQuery(CategoriaRespuesta.CARGAR_CATEGORIA);
 			for (Object object : query.getResultList()) {
@@ -52,10 +51,10 @@ public class CategoriaRespuestaDaoImpl extends GenericoDaoImpl<CategoriaRespuest
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al buscar categoria respuesta", "CARE-FIND-ERR", e);
 		}
 	}
-	public CategoriaRespuesta actualizarCategoriaRespuesta(CategoriaRespuesta categoriaRespuesta)throws DaoException,EntidadDuplicadaException {
+	public CategoriaRespuesta actualizarCategoriaRespuesta(CategoriaRespuesta categoriaRespuesta) {
 		try{
 			if(categoriaRespuesta.getCatrId()==null)
 				getEntityManager().persist(categoriaRespuesta);
@@ -64,13 +63,13 @@ public class CategoriaRespuestaDaoImpl extends GenericoDaoImpl<CategoriaRespuest
 			return categoriaRespuesta;
 		}catch(PersistenceException e){
 			JpaDaoSupport.throwIfConstraintViolationDuplicate(e);
-			throw new DaoException(e);
+			throw new SystemException("Error de persistencia en categoria respuesta", "CATRESP-PERSIST-ERR", e);
 		} 	catch (Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error inesperado en categoria respuesta", "CATRESP-UNEXPECTED-ERR", e);
 		}	
 	}
 	
-	public CategoriaRespuesta buscaCategoria(int codigoCategoria)throws DaoException{
+	public CategoriaRespuesta buscaCategoria(int codigoCategoria){
 		try {
 			CategoriaRespuesta categoria=null;
 			Query query=getEntityManager().createNamedQuery(CategoriaRespuesta.BUSCAR_CATEGORIA);
@@ -84,7 +83,7 @@ public class CategoriaRespuestaDaoImpl extends GenericoDaoImpl<CategoriaRespuest
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al buscar categoria respuesta por codigo", "CARE-FIND-ERR", e);
 		}
 	}
 }

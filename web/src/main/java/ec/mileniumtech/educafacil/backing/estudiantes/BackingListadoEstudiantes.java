@@ -57,7 +57,7 @@ import com.opencsv.CSVWriter;
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.estudiantes.BeanListadoEstudiantes;
 import ec.mileniumtech.educafacil.bean.usuarios.BeanLogin;
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
+
 import ec.mileniumtech.educafacil.dao.impl.CursoDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.MatriculaDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.OfertaCursosDaoImpl;
@@ -129,15 +129,16 @@ public class BackingListadoEstudiantes implements Serializable {
 	public void iniciar() {
 		nuevaBusqueda();
 		try {
-		getBeanListadoEstudiantes().setListaCursos(new ArrayList<>());
-		getBeanListadoEstudiantes().setListaCursos(getCursosServicio().listaCursos());
-		getBeanListadoEstudiantes().setOfertaSeleccionada(new OfertaCursos());
-		getBeanListadoEstudiantes().getOfertaSeleccionada().setOcurFechaFin(new Date());
-		getBeanListadoEstudiantes().getOfertaSeleccionada().setOcurFechaInicio(new Date());
-		InputStream reportStream = getClass().getResourceAsStream("/reports/reporteMatriculadosCurso.jasper");
-        jasperReport = (JasperReport) JRLoader.loadObject(reportStream);
+			getBeanListadoEstudiantes().setListaCursos(new ArrayList<>());
+			getBeanListadoEstudiantes().setListaCursos(getCursosServicio().listaCursos());
+			getBeanListadoEstudiantes().setOfertaSeleccionada(new OfertaCursos());
+			getBeanListadoEstudiantes().getOfertaSeleccionada().setOcurFechaFin(new Date());
+			getBeanListadoEstudiantes().getOfertaSeleccionada().setOcurFechaInicio(new Date());
+			InputStream reportStream = getClass().getResourceAsStream("/reports/reporteMatriculadosCurso.jasper");
+	        jasperReport = (JasperReport) JRLoader.loadObject(reportStream);
 		}catch(Exception e) {
-			e.printStackTrace();
+			log.error("Error al generar reporte de pagos", e);
+			throw new RuntimeException(e);
 		}
 	}
 	/**
@@ -150,7 +151,7 @@ public class BackingListadoEstudiantes implements Serializable {
 	 * Permite buscar las matriculas/inscripciones/culimaciones existentes
 	 */
 	public void buscarMatriculas() {
-		try {
+
 			getBeanListadoEstudiantes().setListaMatriculas(new ArrayList<>());
 //			getBeanListadoEstudiantes().setListaMatriculas(getMatriculaServicioImpl().listaMatriculasCurso(getBeanListadoEstudiantes().getCodigoEstadoMatricula(), getBeanListadoEstudiantes().getCursoSeleccionado().getCursId()));			
 			getBeanListadoEstudiantes().setListaMatriculas(getMatriculaServicioImpl().listaMatriculadosPorOfertaCurso(getBeanListadoEstudiantes().getOfertaSeleccionada().getOcurId()));
@@ -161,10 +162,7 @@ public class BackingListadoEstudiantes implements Serializable {
 			}
 			Mensaje.ocultarDialogo("dlgBuscar");	
 			
-		}catch(DaoException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.cargarMatriculas"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "buscarMatriculas" + ": ").append(e.getMessage()));			
-		}
+
 	}
 	/**
 	 * Realiza una nueva busqueda
@@ -353,15 +351,14 @@ public class BackingListadoEstudiantes implements Serializable {
 			context.responseComplete();
 
 		}  catch (DocumentException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.crearPdf"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "generarPdf" + ": ").append(e.getMessage()));			
+			log.error("Error al generar documento", e);
+			throw new RuntimeException(e);			
 		} catch (IOException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.crearArchivo"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "generarPdf" + ": ").append(e.getMessage()));			
+			log.error("Error al generar reporte ", e);
+			throw new RuntimeException(e);			
 		} catch (WriterException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.escribirArchivo"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "generarPdf" + ": ").append(e.getMessage()));			
-		}
+			log.error("Error al escribir el reporte", e);
+			throw new RuntimeException(e);		}
 	}
 	/**
 	 * Genera el codigo QR
@@ -425,13 +422,11 @@ public class BackingListadoEstudiantes implements Serializable {
 	}
 	
 	public void cargarOfertaCursos() {
-		try {
+
 			getBeanListadoEstudiantes().setListaOfertaCursos(new ArrayList<>());
 			getBeanListadoEstudiantes().setListaOfertaCursos(getOfertaCursosServicio().listaOfertaCursosPorCursoAnio(getBeanListadoEstudiantes().getCursoSeleccionado().getCursId(),getBeanListadoEstudiantes().getAnioBusqueda()));
 			
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+
 		
 	}
 	public String formatDate(Date fecha, String pattern) {
@@ -462,7 +457,8 @@ public class BackingListadoEstudiantes implements Serializable {
 			
 		}catch(Exception e) {
 			
-			e.printStackTrace();
+			log.error("Error al generar modelo csv", e);
+			throw new RuntimeException(e);
 		}
 	}
 	public void generarReporte() {
@@ -481,7 +477,8 @@ public class BackingListadoEstudiantes implements Serializable {
                     .name("reporteMatriculadosCurso.pdf");
                 fileDownload = builder.build();
         } catch (Exception e) {
-           e.printStackTrace();
+        	log.error("Error al generar reporte", e);
+			throw new RuntimeException(e);
         }
 	}
 

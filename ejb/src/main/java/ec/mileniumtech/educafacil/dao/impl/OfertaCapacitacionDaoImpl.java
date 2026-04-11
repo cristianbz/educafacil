@@ -5,8 +5,8 @@ package ec.mileniumtech.educafacil.dao.impl;
 
 import java.util.List;
 
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
-import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
+
+import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.dao.util.JpaDaoSupport;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Curso;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Especialidad;
@@ -41,7 +41,7 @@ public class OfertaCapacitacionDaoImpl extends GenericoDaoImpl<OfertaCapacitacio
 	 * @return
 	 * @throws DaoException
 	 */
-	public OfertaCapacitacion buscarOfertaCapacitacion(int area,int especialidad,int curso) throws DaoException{
+	public OfertaCapacitacion buscarOfertaCapacitacion(int area,int especialidad,int curso) {
 		try {
 			Query query=getEntityManager().createNamedQuery(OfertaCapacitacion.OFERTA_CAPACITACION);
 			query.setParameter("area", area);
@@ -51,7 +51,7 @@ public class OfertaCapacitacionDaoImpl extends GenericoDaoImpl<OfertaCapacitacio
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al grabar  ofertaCapacitacion", "OFERCAP-SINGLE-ERR", e);
 		}
 	}
 	/**
@@ -61,7 +61,7 @@ public class OfertaCapacitacionDaoImpl extends GenericoDaoImpl<OfertaCapacitacio
 	 * @throws DaoException
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Especialidad> listaEspecialidadPorArea(int area)throws DaoException{
+	public List<Especialidad> listaEspecialidadPorArea(int area){
 		try {
 			Query query=getEntityManager().createNamedQuery(OfertaCapacitacion.LISTA_ESPECIALIDAD_POR_AREA);
 			query.setParameter("area", area);
@@ -69,7 +69,7 @@ public class OfertaCapacitacionDaoImpl extends GenericoDaoImpl<OfertaCapacitacio
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al cargar  lista especialidadPorArea", "OFERCAP-LIST-ERR", e);
 		}
 	}
 	/**
@@ -80,7 +80,7 @@ public class OfertaCapacitacionDaoImpl extends GenericoDaoImpl<OfertaCapacitacio
 	 * @throws DaoException
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Curso> listaCursosPorAreaEspecilidad(int area,int especialidad) throws DaoException{
+	public List<Curso> listaCursosPorAreaEspecilidad(int area,int especialidad) {
 		try {
 			Query query=getEntityManager().createNamedQuery(OfertaCapacitacion.LISTA_CURSOS_POR_AREA_ESPECIALIDAD);
 			query.setParameter("area", area);
@@ -89,7 +89,7 @@ public class OfertaCapacitacionDaoImpl extends GenericoDaoImpl<OfertaCapacitacio
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al cargar  lista cursosPorAreaEspecialidad", "OFERCAP-LIST-ERR", e);
 		}
 	}
 	/**
@@ -98,12 +98,12 @@ public class OfertaCapacitacionDaoImpl extends GenericoDaoImpl<OfertaCapacitacio
 	 * @return
 	 * @throws DaoException
 	 */
-	public OfertaCapacitacion buscarPorCurso(int codigoCurso)throws DaoException{
+	public OfertaCapacitacion buscarPorCurso(int codigoCurso){
 		try {
 			Query query=getEntityManager().createNamedQuery(OfertaCapacitacion.BUSCAR_POR_CURSO);
 			return JpaDaoSupport.singleResultOrNull(query);
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al buscar  ofertaCapacitacion", "OFERCAP-SINGLE-ERR", e);
 		}
 	}
 	/**
@@ -112,14 +112,14 @@ public class OfertaCapacitacionDaoImpl extends GenericoDaoImpl<OfertaCapacitacio
 	 * @throws DaoException
 	 */
 	@SuppressWarnings("unchecked")
-	public List<OfertaCapacitacion> listarOfertasCapacitacion() throws DaoException{
+	public List<OfertaCapacitacion> listarOfertasCapacitacion(){
 		try {
 			Query query=getEntityManager().createNamedQuery(OfertaCapacitacion.CARGAR_TODAS_OFERTAS);
 			return query.getResultList();
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al cargar lista  ofertaCapacitacion", "OFERCAP-LIST-ERR", e);
 		}
 	}
 	/**
@@ -129,16 +129,16 @@ public class OfertaCapacitacionDaoImpl extends GenericoDaoImpl<OfertaCapacitacio
 	 * @throws DaoException
 	 * @throws EntidadDuplicadaException
 	 */
-	public void agregarOfertaCapacitacion(OfertaCapacitacion ofertaCapacitacion, OfertaCursos ofertaCursos) throws DaoException,EntidadDuplicadaException{
+	public void agregarOfertaCapacitacion(OfertaCapacitacion ofertaCapacitacion, OfertaCursos ofertaCursos){
 		try {
 			getEntityManager().persist(ofertaCapacitacion);
 			ofertaCursos.setOfertaCapacitacion(ofertaCapacitacion);
 			getEntityManager().persist(ofertaCursos);
 		}catch(PersistenceException e){
 			JpaDaoSupport.throwIfConstraintViolationDuplicate(e);
-				throw new DaoException(e);
-			} 	catch (Exception e) {
-				throw new DaoException(e);
-			}	
+			throw new SystemException("Error de persistencia en ofertaCapacitacion", "OFERCAP-PERSIST-ERR", e);
+		} 	catch (Exception e) {
+			throw new SystemException("Error inesperado en ofertaCapacitacion", "OFERCAP-UNEXPECTED-ERR", e);
+		}		
 	}
 }

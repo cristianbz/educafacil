@@ -21,8 +21,7 @@ import org.apache.log4j.Logger;
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.estudiantes.BeanInscripcionMatricula;
 import ec.mileniumtech.educafacil.bean.usuarios.BeanLogin;
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
-import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
+
 import ec.mileniumtech.educafacil.dao.impl.AreaDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.CursoDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.EspecialidadDaoImpl;
@@ -139,45 +138,29 @@ public class ComponenteBackingMatriculaInscripcion implements Serializable{
 	 * Carga la modalidad de estudio
 	 */
 	public void cargarArea() {
-		try {
-			getBeanInscripcionMatricula().setListaAreas(new ArrayList<>());
-			getBeanInscripcionMatricula().setListaAreas(getAreaServicioImpl().listaDeAreas());
-		}catch(DaoException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.cargarmodalidad"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "cargarModalidad" + ": ").append(e.getMessage()));
-		}
+		getBeanInscripcionMatricula().setListaAreas(new ArrayList<>());
+		getBeanInscripcionMatricula().setListaAreas(getAreaServicioImpl().listaDeAreas());
 	}
 	/**
 	 * Carga las Especialidades
 	 */
 	public void cargaEspecialidades() {
-		try {
-			getBeanInscripcionMatricula().setListaEspecialidad(new ArrayList<>());
-			getBeanInscripcionMatricula().setListaCurso(new ArrayList<>());
-			getBeanInscripcionMatricula().setListaEspecialidad(getOfertaCapacitacionServicioImpl().listaEspecialidadPorArea(getBeanInscripcionMatricula().getCodigoArea()));
-		}catch(DaoException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.cargarespecialidad"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "cargarEspecialidades" + ": ").append(e.getMessage()));
-		}		
+		getBeanInscripcionMatricula().setListaEspecialidad(new ArrayList<>());
+		getBeanInscripcionMatricula().setListaCurso(new ArrayList<>());
+		getBeanInscripcionMatricula().setListaEspecialidad(getOfertaCapacitacionServicioImpl().listaEspecialidadPorArea(getBeanInscripcionMatricula().getCodigoArea()));
 	}
 	/**
 	 * Carga los cursos
 	 */
 	public void cargarCursos() {
-		try {
-			getBeanInscripcionMatricula().setListaCurso(new ArrayList<>());
-			getBeanInscripcionMatricula().setListaCurso(getOfertaCapacitacionServicioImpl().listaCursosPorAreaEspecilidad(getBeanInscripcionMatricula().getCodigoArea(), getBeanInscripcionMatricula().getCodigoEspecialidad()));
-		}catch(DaoException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.cargarcursos"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "cargarCursos" + ": ").append(e.getMessage()));
-		}
+		getBeanInscripcionMatricula().setListaCurso(new ArrayList<>());
+		getBeanInscripcionMatricula().setListaCurso(getOfertaCapacitacionServicioImpl().listaCursosPorAreaEspecilidad(getBeanInscripcionMatricula().getCodigoArea(), getBeanInscripcionMatricula().getCodigoEspecialidad()));
 	}
 	
 	/**
 	 * Graba una matricula o inscripcion
 	 */
 	public void grabar() {
-//		try {
 			MedioInformacion medioInformacion=new MedioInformacion();	
 			List<Estudiante> listaEstudiante=new ArrayList<>();
 			if (getBeanInscripcionMatricula().getOfertaCursosSeleccionado()!=null || isEsInscripcion()) {
@@ -210,12 +193,6 @@ public class ComponenteBackingMatriculaInscripcion implements Serializable{
 				getBeanInscripcionMatricula().getMatricula().setEstudiante(getBeanInscripcionMatricula().getEstudiante());
 				getBeanInscripcionMatricula().getEstudiante().setPersona(getBeanInscripcionMatricula().getPersona());
 				getBeanInscripcionMatricula().getEstudiante().setEstuIngresosMensuales(getBeanInscripcionMatricula().getCodigoIngresosMensuales());
-//				listaEstudiante.add(getBeanInscripcionMatricula().getEstudiante());
-//				getBeanInscripcionMatricula().getPersona().setEstudiantes(listaEstudiante);
-
-//				getMatriculaServicioImpl().grabarMatriculaInscripcion(getBeanInscripcionMatricula().getPersona(), getBeanInscripcionMatricula().getMatricula());
-//				if(matriculaDesdeRegistroDatos)
-//					actualizarPersonaRegistroDatos();
 				if(isEsInscripcion())
 					Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.inscripcionCorrecta"));
 				else
@@ -231,13 +208,6 @@ public class ComponenteBackingMatriculaInscripcion implements Serializable{
 				Mensaje.actualizarComponente(":form:matricula:growl");
 				
 			}
-//		}catch(EntidadDuplicadaException e) {
-//			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.entidadDuplicada"));			
-//			log.error(new StringBuilder().append(this.getClass().getName() + "." + "grabar" + ": ").append(e.getMessage()));
-//		}catch(MatriculaException e) {
-//			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.grabar"));			
-//			log.error(new StringBuilder().append(this.getClass().getName() + "." + "grabar" + ": ").append(e.getMessage()));			
-//		}
 	}
 	/**
 	 * Busca una persona por su cedula
@@ -245,56 +215,38 @@ public class ComponenteBackingMatriculaInscripcion implements Serializable{
 	 */
 	public void buscaPersonaPorCedula() {
 		Persona persona=null;
-		try {			
-			persona=getPersonaServicioImpl().buscarPersonaPorCedula(getBeanInscripcionMatricula().getPersona().getPersDocumentoIdentidad());
-			datosMatriculaAlBuscarPersona(persona);
-		}catch(DaoException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.buscaCedula"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "buscaPersonaPorCedula " + ": ").append(e.getMessage()));
-		} 	
+		persona=getPersonaServicioImpl().buscarPersonaPorCedula(getBeanInscripcionMatricula().getPersona().getPersDocumentoIdentidad());
+		datosMatriculaAlBuscarPersona(persona);
 	}
 	/**
 	 * Actualiza la informacion de la persona
 	 */
 	public void actualizarPersona() {
-		try {
-			List<Estudiante> listaEstudiante=new ArrayList<>();
-			getBeanInscripcionMatricula().getEstudiante().setEstuCargoOcupa(getBeanInscripcionMatricula().getCodigoCargo());
-			getBeanInscripcionMatricula().getEstudiante().setEstuNivelEstudio(getBeanInscripcionMatricula().getCodigoNivelEstudio());
-			listaEstudiante.add(getBeanInscripcionMatricula().getEstudiante());
-			getBeanInscripcionMatricula().getPersona().setEstudiantes(listaEstudiante);
-			getBeanInscripcionMatricula().setPersona(getPersonaServicioImpl().actualizarPersona(getBeanInscripcionMatricula().getPersona()));
-		}catch(DaoException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.grabar"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "grabar" + ": ").append(e.getMessage()));
-		} catch (EntidadDuplicadaException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.entidadDuplicada"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "grabar" + ": ").append(e.getMessage()));
-		}
+		List<Estudiante> listaEstudiante=new ArrayList<>();
+		getBeanInscripcionMatricula().getEstudiante().setEstuCargoOcupa(getBeanInscripcionMatricula().getCodigoCargo());
+		getBeanInscripcionMatricula().getEstudiante().setEstuNivelEstudio(getBeanInscripcionMatricula().getCodigoNivelEstudio());
+		listaEstudiante.add(getBeanInscripcionMatricula().getEstudiante());
+		getBeanInscripcionMatricula().getPersona().setEstudiantes(listaEstudiante);
+		getBeanInscripcionMatricula().setPersona(getPersonaServicioImpl().actualizarPersona(getBeanInscripcionMatricula().getPersona()));
 	}
 	/**
 	 * Carga la oferta de cursos configurados mediante grupo
 	 */
 	public void cargarGruposCursos() {
-		try {
-			if(FacesMessage.SEVERITY_ERROR.toString().trim().equals("ERROR 2")){
-				OfertaCapacitacion ofertaCapacitacion=new OfertaCapacitacion();
-				ofertaCapacitacion=getOfertaCapacitacionServicioImpl().buscarOfertaCapacitacion(getBeanInscripcionMatricula().getCodigoArea(), getBeanInscripcionMatricula().getCodigoEspecialidad(), getBeanInscripcionMatricula().getCodigoCurso());
-				if(ofertaCapacitacion!=null) {
-					getBeanInscripcionMatricula().setListaOfertaCursos(new ArrayList<>());
-					getBeanInscripcionMatricula().setListaOfertaCursos(getOfertaCursosServicioImpl().listaCursosDisponibles(ofertaCapacitacion.getOfcaId()));					
-					Mensaje.verDialogo("dlgOfertaCursos");
-				}else {
-					Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.noExisteOfertaCapacitacion"));
-					Mensaje.actualizarComponente(":form:matricula:growl");
-				}
+		if(FacesMessage.SEVERITY_ERROR.toString().trim().equals("ERROR 2")){
+			OfertaCapacitacion ofertaCapacitacion=new OfertaCapacitacion();
+			ofertaCapacitacion=getOfertaCapacitacionServicioImpl().buscarOfertaCapacitacion(getBeanInscripcionMatricula().getCodigoArea(), getBeanInscripcionMatricula().getCodigoEspecialidad(), getBeanInscripcionMatricula().getCodigoCurso());
+			if(ofertaCapacitacion!=null) {
+				getBeanInscripcionMatricula().setListaOfertaCursos(new ArrayList<>());
+				getBeanInscripcionMatricula().setListaOfertaCursos(getOfertaCursosServicioImpl().listaCursosDisponibles(ofertaCapacitacion.getOfcaId()));					
+				Mensaje.verDialogo("dlgOfertaCursos");
 			}else {
-				Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.datosEstudiante"));
+				Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.noExisteOfertaCapacitacion"));
 				Mensaje.actualizarComponente(":form:matricula:growl");
 			}
-		}catch(DaoException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.cargarOfertaCursos"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "cargarGruposCursos" + ": ").append(e.getMessage()));
+		}else {
+			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.datosEstudiante"));
+			Mensaje.actualizarComponente(":form:matricula:growl");
 		}
 	}
 	
@@ -433,22 +385,17 @@ public class ComponenteBackingMatriculaInscripcion implements Serializable{
     	contenido.append("<tr><td><h4>INSTRUCTOR:</h4></td><td>");
     	contenido.append(getBeanInscripcionMatricula().getMatricula().getOfertaCursos().getInstructor().getPersona().getPersNombres()).append(" ") .append(getBeanInscripcionMatricula().getMatricula().getOfertaCursos().getInstructor().getPersona().getPersApellidos()) ;
     	contenido.append("</td></tr></table>");
-    	Correo correo=new Correo("Registro de inscripci�n en uno de nuestros cursos", contenido.toString(), true, getBeanInscripcionMatricula().getPersona().getPersCorreoElectronico(), null,beanLogin.getConfiguraciones().getConfServidorSmtp(),beanLogin.getConfiguraciones().getConfUsuarioCorreo(),beanLogin.getConfiguraciones().getConfClaveCorreo(),beanLogin.getConfiguraciones().getConfEnviadoMailDesde());
+    	Correo correo=new Correo("Registro de inscripcin en uno de nuestros cursos", contenido.toString(), true, getBeanInscripcionMatricula().getPersona().getPersCorreoElectronico(), null,beanLogin.getConfiguraciones().getConfServidorSmtp(),beanLogin.getConfiguraciones().getConfUsuarioCorreo(),beanLogin.getConfiguraciones().getConfClaveCorreo(),beanLogin.getConfiguraciones().getConfEnviadoMailDesde());
     	correo.start();
     }
     /**
      * Busca una persona por Apellido
      */
     public void buscaPersonaPorApellidos() {
-    	try {
-    		eliminarEspaciosBlancoApellidos();
-    		getBeanInscripcionMatricula().setListaPersonas(getPersonaServicioImpl().buscarPersonaPorApellidos(getBeanInscripcionMatricula().getPersona().getPersApellidos().toLowerCase()));
-    		if(getBeanInscripcionMatricula().getListaPersonas()!=null && !getBeanInscripcionMatricula().getListaPersonas().isEmpty()) {
-    			Mensaje.verDialogo("dlgfiltroPersona");    			
-    		}
-    	}catch(DaoException e) {
-    		Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.buscaApellidos"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "buscaPersonaPorApellidos " + ": ").append(e.getMessage()));
+    	eliminarEspaciosBlancoApellidos();
+    	getBeanInscripcionMatricula().setListaPersonas(getPersonaServicioImpl().buscarPersonaPorApellidos(getBeanInscripcionMatricula().getPersona().getPersApellidos().toLowerCase()));
+    	if(getBeanInscripcionMatricula().getListaPersonas()!=null && !getBeanInscripcionMatricula().getListaPersonas().isEmpty()) {
+    		Mensaje.verDialogo("dlgfiltroPersona");    			
     	}
     }
     /**
@@ -465,27 +412,22 @@ public class ComponenteBackingMatriculaInscripcion implements Serializable{
      * @param persona
      */
     public void datosMatriculaAlBuscarPersona(Persona persona) {
-    	try {
-	    	if(persona!=null) {
-	    		persona=getPersonaServicioImpl().buscarPersonaPorId(persona.getPersId());
-		    	getBeanInscripcionMatricula().setPersona(persona);	
-		    	getBeanInscripcionMatricula().setEstudiante(persona.getEstudiantes().get(0));
-		    	getBeanInscripcionMatricula().setCodigoCargo(persona.getEstudiantes().get(0).getEstuCargoOcupa());
-		    	getBeanInscripcionMatricula().setCodigoNivelEstudio(persona.getEstudiantes().get(0).getEstuNivelEstudio());
-				if(isEsInscripcion()) {
-					getBeanInscripcionMatricula().setListaMatriculas(getMatriculaServicioImpl().listaMatriculasAlumno(persona.getPersId(), EnumEstadosMatricula.INSCRITO.getCodigo()));					
-				}else if(isEsMatricula()) {
-					getBeanInscripcionMatricula().setListaMatriculas(getMatriculaServicioImpl().listaMatriculasAlumno(persona.getPersId(), EnumEstadosMatricula.INSCRITO.getCodigo()));
-					if(getBeanInscripcionMatricula().getListaMatriculas().size()==0) {
-						getBeanInscripcionMatricula().setListaMatriculas(getMatriculaServicioImpl().listaMatriculasAlumno(persona.getPersId(), EnumEstadosMatricula.MATRICULADO.getCodigo()));
-					}
-				}				
-				datosMatriculas(getBeanInscripcionMatricula().getListaMatriculas());
-	    	}
-    	}catch (DaoException e) {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.cargarMatriculas"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "datosMatriculaAlBuscarPersona " + ": ").append(e.getMessage()));
-		}	
+    	if(persona!=null) {
+    		persona=getPersonaServicioImpl().buscarPersonaPorId(persona.getPersId());
+	    	getBeanInscripcionMatricula().setPersona(persona);	
+	    	getBeanInscripcionMatricula().setEstudiante(persona.getEstudiantes().get(0));
+	    	getBeanInscripcionMatricula().setCodigoCargo(persona.getEstudiantes().get(0).getEstuCargoOcupa());
+	    	getBeanInscripcionMatricula().setCodigoNivelEstudio(persona.getEstudiantes().get(0).getEstuNivelEstudio());
+			if(isEsInscripcion()) {
+				getBeanInscripcionMatricula().setListaMatriculas(getMatriculaServicioImpl().listaMatriculasAlumno(persona.getPersId(), EnumEstadosMatricula.INSCRITO.getCodigo()));					
+			}else if(isEsMatricula()) {
+				getBeanInscripcionMatricula().setListaMatriculas(getMatriculaServicioImpl().listaMatriculasAlumno(persona.getPersId(), EnumEstadosMatricula.INSCRITO.getCodigo()));
+				if(getBeanInscripcionMatricula().getListaMatriculas().size()==0) {
+					getBeanInscripcionMatricula().setListaMatriculas(getMatriculaServicioImpl().listaMatriculasAlumno(persona.getPersId(), EnumEstadosMatricula.MATRICULADO.getCodigo()));
+				}
+			}				
+			datosMatriculas(getBeanInscripcionMatricula().getListaMatriculas());
+    	}
     }
     /**
      * Carga mediante web service personas registradas en formulario
@@ -525,46 +467,38 @@ public class ComponenteBackingMatriculaInscripcion implements Serializable{
      * Selecciona una persona del registro de datos
      */
     public void seleccionarPersonaRegistrada() {
-    	try {
-    		if(getBeanInscripcionMatricula().getClienteRegistradoSeleccionado()!=null) {
-    			setMatriculaDesdeRegistroDatos(true);
-    			Persona persona= personaServicioImpl.buscarPersonaPorCedula(getBeanInscripcionMatricula().getClienteRegistradoSeleccionado().getPer_cedula());
-    			if (persona!=null) {
-    				getBeanInscripcionMatricula().setPersona(persona);
-    				getBeanInscripcionMatricula().setCodigoModalidadCurso(EnumModalidadCurso.VIRTUAL.getCodigo());
-    				if(getBeanInscripcionMatricula().getPersona().getEstudiantes().size()>1) {
-	    				getBeanInscripcionMatricula().setCodigoNivelEstudio(getBeanInscripcionMatricula().getPersona().getEstudiantes().get(0).getEstuNivelEstudio());
-	    				getBeanInscripcionMatricula().setCodigoCargo(getBeanInscripcionMatricula().getPersona().getEstudiantes().get(0).getEstuCargoOcupa());
-	    				
-    				}
-    			}else {
-			    	getBeanInscripcionMatricula().getPersona().setPersApellidos(getBeanInscripcionMatricula().getClienteRegistradoSeleccionado().getPer_apellidos());
-			    	getBeanInscripcionMatricula().getPersona().setPersNombres(getBeanInscripcionMatricula().getClienteRegistradoSeleccionado().getPer_nombres());
-			    	getBeanInscripcionMatricula().getPersona().setPersCorreoElectronico(getBeanInscripcionMatricula().getClienteRegistradoSeleccionado().getPer_correo_electronico());
-			    	getBeanInscripcionMatricula().getEstudiante().setEstuDireccionTrabajo(getBeanInscripcionMatricula().getClienteRegistradoSeleccionado().getPer_direccion_trabajo());
-			    	getBeanInscripcionMatricula().getPersona().setPersDocumentoIdentidad(getBeanInscripcionMatricula().getClienteRegistradoSeleccionado().getPer_cedula());
-			    	if(getBeanInscripcionMatricula().getClienteRegistradoSeleccionado().getPer_cargo_ocupa().isEmpty())
-			    		getBeanInscripcionMatricula().getPersona().setPersFechaNacimiento(null);
-			    	else
-			    		getBeanInscripcionMatricula().getPersona().setPersFechaNacimiento(getBeanInscripcionMatricula().getClienteRegistradoSeleccionado().getPer_fecha_nacimiento());
-			    	getBeanInscripcionMatricula().getPersona().setPersDomicilio(getBeanInscripcionMatricula().getClienteRegistradoSeleccionado().getPer_domicilio());
-			    	getBeanInscripcionMatricula().setCodigoCargo(getBeanInscripcionMatricula().getClienteRegistradoSeleccionado().getPer_cargo_ocupa());
-			    	getBeanInscripcionMatricula().setCodigoNivelEstudio(getBeanInscripcionMatricula().getClienteRegistradoSeleccionado().getPer_nivel_estudio());
-			    	getBeanInscripcionMatricula().getPersona().setPersTelefonoMobil(getBeanInscripcionMatricula().getClienteRegistradoSeleccionado().getPer_telefono_mobil());
-			    	getBeanInscripcionMatricula().setCodigoModalidadCurso(EnumModalidadCurso.VIRTUAL.getCodigo());
-			    	getBeanInscripcionMatricula().setCodigoMedioInformacion(getBeanInscripcionMatricula().getClienteRegistradoSeleccionado().getReg_medio_informacion()); 
-	
-			    	getBeanInscripcionMatricula().getMatricula().setMatrObservacion(getBeanInscripcionMatricula().getClienteRegistradoSeleccionado().getReg_observacion());    	
-			    	}
+    	if(getBeanInscripcionMatricula().getClienteRegistradoSeleccionado()!=null) {
+    		setMatriculaDesdeRegistroDatos(true);
+    		Persona persona= personaServicioImpl.buscarPersonaPorCedula(getBeanInscripcionMatricula().getClienteRegistradoSeleccionado().getPer_cedula());
+    		if (persona!=null) {
+    			getBeanInscripcionMatricula().setPersona(persona);
+    			getBeanInscripcionMatricula().setCodigoModalidadCurso(EnumModalidadCurso.VIRTUAL.getCodigo());
+    			if(getBeanInscripcionMatricula().getPersona().getEstudiantes().size()>1) {
+    				getBeanInscripcionMatricula().setCodigoNivelEstudio(getBeanInscripcionMatricula().getPersona().getEstudiantes().get(0).getEstuNivelEstudio());
+    				getBeanInscripcionMatricula().setCodigoCargo(getBeanInscripcionMatricula().getPersona().getEstudiantes().get(0).getEstuCargoOcupa());
+    				
+    			}
     		}else {
-    			Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.seleccioneregistro"));
-    		}
-    	}catch(DaoException e) {
-    		Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.buscaCedula"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "seleccionarPersonaRegistrada " + ": ").append(e.getMessage()));
-    	}catch(Exception e) {
-    		Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.generico"));			
-			log.error(new StringBuilder().append(this.getClass().getName() + "." + "seleccionarPersonaRegistrada " + ": ").append(e.getMessage()));
+		    	getBeanInscripcionMatricula().getPersona().setPersApellidos(getBeanInscripcionMatricula().getClienteRegistradoSeleccionado().getPer_apellidos());
+		    	getBeanInscripcionMatricula().getPersona().setPersNombres(getBeanInscripcionMatricula().getClienteRegistradoSeleccionado().getPer_nombres());
+		    	getBeanInscripcionMatricula().getPersona().setPersCorreoElectronico(getBeanInscripcionMatricula().getClienteRegistradoSeleccionado().getPer_correo_electronico());
+		    	getBeanInscripcionMatricula().getEstudiante().setEstuDireccionTrabajo(getBeanInscripcionMatricula().getClienteRegistradoSeleccionado().getPer_direccion_trabajo());
+		    	getBeanInscripcionMatricula().getPersona().setPersDocumentoIdentidad(getBeanInscripcionMatricula().getClienteRegistradoSeleccionado().getPer_cedula());
+		    	if(getBeanInscripcionMatricula().getClienteRegistradoSeleccionado().getPer_cargo_ocupa().isEmpty())
+		    		getBeanInscripcionMatricula().getPersona().setPersFechaNacimiento(null);
+		    	else
+		    		getBeanInscripcionMatricula().getPersona().setPersFechaNacimiento(getBeanInscripcionMatricula().getClienteRegistradoSeleccionado().getPer_fecha_nacimiento());
+		    	getBeanInscripcionMatricula().getPersona().setPersDomicilio(getBeanInscripcionMatricula().getClienteRegistradoSeleccionado().getPer_domicilio());
+		    	getBeanInscripcionMatricula().setCodigoCargo(getBeanInscripcionMatricula().getClienteRegistradoSeleccionado().getPer_cargo_ocupa());
+		    	getBeanInscripcionMatricula().setCodigoNivelEstudio(getBeanInscripcionMatricula().getClienteRegistradoSeleccionado().getPer_nivel_estudio());
+		    	getBeanInscripcionMatricula().getPersona().setPersTelefonoMobil(getBeanInscripcionMatricula().getClienteRegistradoSeleccionado().getPer_telefono_mobil());
+		    	getBeanInscripcionMatricula().setCodigoModalidadCurso(EnumModalidadCurso.VIRTUAL.getCodigo());
+		    	getBeanInscripcionMatricula().setCodigoMedioInformacion(getBeanInscripcionMatricula().getClienteRegistradoSeleccionado().getReg_medio_informacion()); 
+
+		    	getBeanInscripcionMatricula().getMatricula().setMatrObservacion(getBeanInscripcionMatricula().getClienteRegistradoSeleccionado().getReg_observacion());    	
+		    	}
+    	}else {
+    		Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.seleccioneregistro"));
     	}
     }
     /**

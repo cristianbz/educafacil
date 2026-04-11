@@ -102,7 +102,7 @@ public class BackingGestionVendedores implements Serializable{
 	
 	@PostConstruct
 	public void init () {
-		try {
+	
 			mostrarPanelReportesVentas=false;
 			mostrarPanelVendedorCliente=true;
 			mostrarPanelTotalSeguimiento=false;
@@ -127,9 +127,7 @@ public class BackingGestionVendedores implements Serializable{
 			getBeanGestionVendedores().setBarModel(new BarChartModel());
 			getBeanGestionVendedores().setChartDataVendedores(new ChartData());
 			cargarCampaniasPasadas();
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+
 
 	}
 	
@@ -137,7 +135,7 @@ public class BackingGestionVendedores implements Serializable{
 	
 	
 	public void asignarVendedor() {
-		try {
+	
 			mostrarPanelReportesVentas=false;
 			mostrarPanelVendedorCliente=true;
 			mostrarPanelTotalSeguimiento=false;
@@ -162,24 +160,19 @@ public class BackingGestionVendedores implements Serializable{
 				}
 				
 			}
-		
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+
 	}
 	
 	public void cargarClientesPotenciales() {
-		try {
+	
 			getBeanGestionVendedores().setListaSeguimientoClientesSinVendedores(new ArrayList<>());
 			getBeanGestionVendedores().setListaSeguimientoClientesSinVendedores((getSeguimientoClientesServicioImpl().listaSeguimientoCampaniaVendedor(getBeanGestionVendedores().getCursoSeleccionado().getCampId())));
 			
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+
 	}
 	
 	public void guardarAsignacionVendedor() {
-		try {
+	
 			if(getBeanGestionVendedores().getListaSeguimientoClientesSelect().isEmpty()) {
 				Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.vendedorCliente"));
 			}else {
@@ -192,9 +185,7 @@ public class BackingGestionVendedores implements Serializable{
 				getBeanGestionVendedores().setListaSeguimientoClientes(new ArrayList<>());
 				getBeanGestionVendedores().setListaSeguimientoClientes(getSeguimientoClientesServicioImpl().listaSeguimientoVendedorAsignado());
 			}
-			}catch(Exception e) {
-			e.printStackTrace();
-		}
+
 	}
 	
 	public void consultarVentas() {
@@ -215,7 +206,6 @@ public class BackingGestionVendedores implements Serializable{
 	}
 	
 	public void consultarVentasVendedores() {
-		try {
 
 			mostrarPanelReportesVentas=true;
 			int codigoVend = getBeanGestionVendedores().getVendedorSeleccionadoReporte().getVendId();
@@ -245,22 +235,17 @@ public class BackingGestionVendedores implements Serializable{
 			}
 			graficoBarrasTotalVendedores();
 		Mensaje.ocultarDialogo("dlgConsultarVentas");
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+
 	}
 	
 	public void cargarCampaniasPasadas() {
-		try {
 
 			if(getBeanGestionVendedores().isCampaniasFinalizadas()) {
 				getBeanGestionVendedores().setListaCursosReporte(getCampaniaServicioImpl().listaTodasCampanias());
 			}else {
 				getBeanGestionVendedores().setListaCursosReporte(getCampaniaServicioImpl().listaCampaniasporCurso());
 			}
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+
 	}
 	
 	public void graficoBarrasTotalVendedores() {
@@ -329,7 +314,8 @@ public class BackingGestionVendedores implements Serializable{
 		    getBeanGestionVendedores().getBarModel().setOptions(options);
 	        
 	    } catch (Exception e) {
-	        e.printStackTrace();
+	    	log.error("Error al generar el grafico de totales", e);
+			throw new RuntimeException(e);
 	    }
 	}
 

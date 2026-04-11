@@ -5,8 +5,8 @@ package ec.mileniumtech.educafacil.dao.impl;
 
 import java.util.List;
 
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
-import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
+
+import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.dao.util.JpaDaoSupport;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Estudiante;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Persona;
@@ -35,10 +35,10 @@ public class EstudianteDaoImpl extends GenericoDaoImpl<Estudiante, Long>{
 	 * Busca estudiantes por el apellido
 	 * @param apellidos
 	 * @return
-	 * @throws DaoException
+	 * @
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Estudiante> estudiantesPorApellido(String apellidos) throws DaoException{
+	public List<Estudiante> estudiantesPorApellido(String apellidos) {
 		try {
 			Query query=getEntityManager().createNamedQuery(Estudiante.BUSCA_POR_APELLIDO);
 			query.setParameter("apellidos", "%"+apellidos.toLowerCase()+"%");
@@ -46,7 +46,7 @@ public class EstudianteDaoImpl extends GenericoDaoImpl<Estudiante, Long>{
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al buscar estudiantes por apellido", "ESTU-LIST-ERR", e);
 		}
 	}
 	/**
@@ -55,13 +55,13 @@ public class EstudianteDaoImpl extends GenericoDaoImpl<Estudiante, Long>{
 	 * @return
 	 * @throws DaoException
 	 */
-	public Estudiante estudiantesPorCedula(String cedula) throws DaoException{
+	public Estudiante estudiantesPorCedula(String cedula) {
 		try {
 			Query query=getEntityManager().createNamedQuery(Estudiante.BUSCA_POR_CEDULA);
 			query.setParameter("cedula", cedula);			
 			return JpaDaoSupport.singleResultOrNull(query);
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al buscar estudiante por cédula", "ESTU-FIND-ERR", e);
 		}
 	}
 	/**
@@ -70,7 +70,7 @@ public class EstudianteDaoImpl extends GenericoDaoImpl<Estudiante, Long>{
 	 * @throws DaoException
 	 * @throws EntidadDuplicadaException
 	 */
-	public void actualizaEstudiante(Estudiante estudiante) throws DaoException, EntidadDuplicadaException{
+	public void actualizaEstudiante(Estudiante estudiante){
 		try{
 			Persona persona = estudiante.getPersona();
 			getEntityManager().merge(estudiante);
@@ -78,9 +78,9 @@ public class EstudianteDaoImpl extends GenericoDaoImpl<Estudiante, Long>{
 			
 		}catch(PersistenceException e){
 			JpaDaoSupport.throwIfConstraintViolationDuplicate(e);
-			throw new DaoException(e);
+			throw new SystemException("Error de persistencia en estudiante", "ESTU-UPDATE-ERR", e);
 		} 	catch (Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error inesperado en estudiante", "ESTU-UNEXPECTED-ERR", e);
 		}	
 	}
 }

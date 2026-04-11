@@ -10,8 +10,8 @@ import java.util.List;
 
 import org.hibernate.Hibernate;
 
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
-import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
+
+import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.dao.util.JpaDaoSupport;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.DtoMatriculasCurso;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetallePagos;
@@ -62,7 +62,7 @@ public class MatriculaDaoImpl extends GenericoDaoImpl<Matricula, Long>{
 	 * @throws DaoException
 	 * @throws EntidadDuplicadaException
 	 */
-	public void agregarMatriculaInscripcion(Persona persona,Matricula matricula, Usuario usuario, UsuarioRol usuarioRol)throws DaoException,EntidadDuplicadaException {
+	public void agregarMatriculaInscripcion(Persona persona,Matricula matricula, Usuario usuario, UsuarioRol usuarioRol) {
 		try{
 			if(persona.getPersId()==0) {
 				getPersonaDaoImpl().agregarPersona(persona);
@@ -86,9 +86,9 @@ public class MatriculaDaoImpl extends GenericoDaoImpl<Matricula, Long>{
 				getEntityManager().merge(matricula);
 		}catch(PersistenceException e){
 			JpaDaoSupport.throwIfConstraintViolationDuplicate(e);
-			throw new DaoException(e);
+			throw new SystemException("Error de persistencia en matricula", "MATRI-PERSIST-ERR", e);
 		} 	catch (Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error inesperado en matricula", "MATRI-UNEXPECTED-ERR", e);
 		}	
 	}
 	/**
@@ -99,7 +99,7 @@ public class MatriculaDaoImpl extends GenericoDaoImpl<Matricula, Long>{
 	 * @throws DaoException
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Matricula> listaMatriculasAlumno(int codigoPersona,String codigoEstado)throws DaoException{
+	public List<Matricula> listaMatriculasAlumno(int codigoPersona,String codigoEstado){
 		try {
 			
 			Query query=getEntityManager().createNamedQuery(Matricula.INSCRIPCION_MATRICULA_CULMINACION_ALUMNO);
@@ -110,7 +110,7 @@ public class MatriculaDaoImpl extends GenericoDaoImpl<Matricula, Long>{
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al cargar lista  matriculasAlumno", "MATRI-LIST-ERR", e);
 		}
 	}
 	/**
@@ -122,7 +122,7 @@ public class MatriculaDaoImpl extends GenericoDaoImpl<Matricula, Long>{
 	 * @throws DaoException
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Matricula> listaMatriculasInscripcion(String estado,Date fechaInicio,Date fechaFin) throws DaoException{
+	public List<Matricula> listaMatriculasInscripcion(String estado,Date fechaInicio,Date fechaFin){
 		try {
 			Query query=null;
 			if(estado.equals("INSMAT01")) 
@@ -136,12 +136,12 @@ public class MatriculaDaoImpl extends GenericoDaoImpl<Matricula, Long>{
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al cargar lista  matriculasInscripcion", "MATRI-LIST-ERR", e);
 		}
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<Matricula> listaMatriculasCurso(String estado,int codigoCurso) throws DaoException{
+	public List<Matricula> listaMatriculasCurso(String estado,int codigoCurso) {
 		try {
 			Query query=null;
 			query=getEntityManager().createNamedQuery(Matricula.BUSCAR_POR_CURSO_ESTADO);
@@ -151,7 +151,7 @@ public class MatriculaDaoImpl extends GenericoDaoImpl<Matricula, Long>{
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al cargar lista  matriculasCurso", "MATRI-LIST-ERR", e);
 		}
 	}
 	/**
@@ -160,7 +160,7 @@ public class MatriculaDaoImpl extends GenericoDaoImpl<Matricula, Long>{
 	 * @throws DaoException
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Matricula> listaMatriculadosOEnCursoPorOferta(int codigoOferta) throws DaoException{
+	public List<Matricula> listaMatriculadosOEnCursoPorOferta(int codigoOferta) {
 		try {
 			Query query=null;
 			query=getEntityManager().createNamedQuery(Matricula.BUSCAR_MATRICULADOS_O_ENCURSO_POR_OFERTA);
@@ -169,7 +169,7 @@ public class MatriculaDaoImpl extends GenericoDaoImpl<Matricula, Long>{
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al cargar lista  matriculadosEnCursoPorOferta", "MATRI-LIST-ERR", e);
 		}
 	}
 	/**
@@ -178,7 +178,7 @@ public class MatriculaDaoImpl extends GenericoDaoImpl<Matricula, Long>{
 	 * @throws DaoException
 	 */
 	@SuppressWarnings({ "unchecked", "unused" })
-	public List<Matricula> listaOportunidades() throws DaoException{
+	public List<Matricula> listaOportunidades(){
 		try {
 			Query query=null;
 			query=getEntityManager().createNamedQuery(Matricula.BUSCAR_OPORTUNIDADES);
@@ -186,7 +186,7 @@ public class MatriculaDaoImpl extends GenericoDaoImpl<Matricula, Long>{
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al cargar lista  oportunidades", "MATRI-LIST-ERR", e);
 		}
 	}
 	/**
@@ -196,7 +196,7 @@ public class MatriculaDaoImpl extends GenericoDaoImpl<Matricula, Long>{
 	 * @throws DaoException
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Matricula> listaMatriculasEstudiante(int codigoEstudiante) throws DaoException{
+	public List<Matricula> listaMatriculasEstudiante(int codigoEstudiante) {
 		try {
 			Query query=null;
 			query=getEntityManager().createNamedQuery(Matricula.BUSCAR_MATRICULAS_ALUMNO);
@@ -205,7 +205,7 @@ public class MatriculaDaoImpl extends GenericoDaoImpl<Matricula, Long>{
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al cargar lista  matriculasEstudiante", "MATRI-LIST-ERR", e);
 		}
 	}
 	/**
@@ -213,19 +213,19 @@ public class MatriculaDaoImpl extends GenericoDaoImpl<Matricula, Long>{
 	 * @param matricula
 	 * @throws DaoException
 	 */
-	public void actualizaMatricula(Matricula matricula) throws DaoException{
+	public void actualizaMatricula(Matricula matricula) {
 		try {
 			getEntityManager().merge(matricula);
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al grabar matricula", "MATRI-SINGLE-ERR", e);
 		}
 	}
-	public void actualizaMatriculaUsuario(Matricula matricula, Usuario usuario)throws DaoException{
+	public void actualizaMatriculaUsuario(Matricula matricula, Usuario usuario){
 		try {			 
 			actualizaMatricula(matricula);
 			getUsuarioDaoImpl().actualizaUsuario(usuario);
-		}catch(DaoException e) {			
-			throw new DaoException(e);
+		}catch(Exception e) {			
+			throw new SystemException("Error al actualizar matricula", "MATRI-SINGLE-ERR", e);
 		}
 	}
 	/**
@@ -235,7 +235,7 @@ public class MatriculaDaoImpl extends GenericoDaoImpl<Matricula, Long>{
 	 * @return
 	 * @throws DaoException
 	 */
-	public Matricula existeMatricula(int oferta,int estudiante)throws DaoException{
+	public Matricula existeMatricula(int oferta,int estudiante){
 		try {
 			
 			Query query=getEntityManager().createNamedQuery(Matricula.BUSCAR_MATRICULA_ESTUDIANTE_CURSO);
@@ -243,10 +243,10 @@ public class MatriculaDaoImpl extends GenericoDaoImpl<Matricula, Long>{
 			query.setParameter("codigoEstudiante", estudiante);					
 			return JpaDaoSupport.singleResultOrNull(query);
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al buscar matricula", "MATRI-SINGLE-ERR", e);
 		}
 	}
-	public List<Matricula> listaMatriculadosPorOfertaCurso(int codigoOferta) throws DaoException{
+	public List<Matricula> listaMatriculadosPorOfertaCurso(int codigoOferta) {
 		try {
 			Query query=null;
 			query=getEntityManager().createNamedQuery(Matricula.BUSCAR_MATRICULA_POR_OFERTA_CURSO);
@@ -268,11 +268,11 @@ public class MatriculaDaoImpl extends GenericoDaoImpl<Matricula, Long>{
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al cargar lista  matriculadosPorOferta", "MATRI-LIST-ERR", e);
 		}
 	}	
 	@SuppressWarnings("unchecked")
-	public List<Matricula> listaMatriculasEstudianteActivas(int codigoEstudiante) throws DaoException{
+	public List<Matricula> listaMatriculasEstudianteActivas(int codigoEstudiante) {
 		try {
 			Query query=null;
 			query=getEntityManager().createNamedQuery(Matricula.BUSCAR_MATRICULAS_ALUMNO_ACTIVAS);
@@ -281,7 +281,7 @@ public class MatriculaDaoImpl extends GenericoDaoImpl<Matricula, Long>{
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al cargar lista  matriculasEstudianteActivas", "MATRI-LIST-ERR", e);
 		}
 	}
 	/**
@@ -290,7 +290,7 @@ public class MatriculaDaoImpl extends GenericoDaoImpl<Matricula, Long>{
 	 * @return
 	 * @throws Exception
 	 */
-	public BigDecimal totalDatosMatricula(int estado) throws DaoException{
+	public BigDecimal totalDatosMatricula(int estado){
 		List<Object[]> resultado= null;
 		BigDecimal valor= new BigDecimal(0);
 		String sql="";
@@ -316,7 +316,7 @@ public class MatriculaDaoImpl extends GenericoDaoImpl<Matricula, Long>{
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
-	public List<DtoMatriculasCurso> listaMatriculasCurso(int tipo) throws DaoException{
+	public List<DtoMatriculasCurso> listaMatriculasCurso(int tipo){
 		List<Object[]> resultado= null;
 		List<DtoMatriculasCurso> listaResultado = new ArrayList<DtoMatriculasCurso>();
 		String sql ="";

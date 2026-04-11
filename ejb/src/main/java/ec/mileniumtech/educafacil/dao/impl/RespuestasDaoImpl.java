@@ -5,8 +5,7 @@ package ec.mileniumtech.educafacil.dao.impl;
 
 import java.util.List;
 
-import ec.mileniumtech.educafacil.dao.excepciones.DaoException;
-import ec.mileniumtech.educafacil.dao.excepciones.EntidadDuplicadaException;
+import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.dao.util.JpaDaoSupport;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Respuestas;
 import jakarta.ejb.LocalBean;
@@ -31,18 +30,18 @@ public class RespuestasDaoImpl extends GenericoDaoImpl<Respuestas, Long>{
 		// TODO Auto-generated constructor stub
 	}
 	@SuppressWarnings("unchecked")
-	public List<Respuestas> listaRespuestas()throws DaoException{
+	public List<Respuestas> listaRespuestas(){
 		try {
 			Query query=getEntityManager().createNamedQuery(Respuestas.CARGAR_RESPUESTAS);
 			return query.getResultList();
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al buscar lista respuestas", "RESPU-LIST-ERR", e);
 		}
 	}
 	
-	public Respuestas agregActualizarRespuestas(Respuestas respuestas)throws DaoException,EntidadDuplicadaException {
+	public Respuestas agregActualizarRespuestas(Respuestas respuestas) {
 		try{
 			if(respuestas.getRespId()==null)
 				getEntityManager().persist(respuestas);
@@ -51,13 +50,13 @@ public class RespuestasDaoImpl extends GenericoDaoImpl<Respuestas, Long>{
 			return respuestas;
 		}catch(PersistenceException e){
 			JpaDaoSupport.throwIfConstraintViolationDuplicate(e);
-			throw new DaoException(e);
+			throw new SystemException("Error de persistencia en respuestas", "RESPU-PERSIST-ERR", e);
 		} 	catch (Exception e) {
-			throw new DaoException(e);
-		}	
+			throw new SystemException("Error inesperado en respuestas", "RESPU-UNEXPECTED-ERR", e);
+		}		
 	}
 	
-	public List<Respuestas> listaRespuestasPorCategoria(int codigoCategoria)throws DaoException{
+	public List<Respuestas> listaRespuestasPorCategoria(int codigoCategoria){
 		try {
 			Query query=getEntityManager().createNamedQuery(Respuestas.CARGAR_RESPUESTAS_POR_CATEGORIA);
 			query.setParameter("codigo", codigoCategoria);
@@ -65,7 +64,7 @@ public class RespuestasDaoImpl extends GenericoDaoImpl<Respuestas, Long>{
 		}catch(NoResultException e) {
 			return null;
 		}catch(Exception e) {
-			throw new DaoException(e);
+			throw new SystemException("Error al buscar lista respuestas por categoria", "RESPU-LIST-ERR", e);
 		}
 	}
 

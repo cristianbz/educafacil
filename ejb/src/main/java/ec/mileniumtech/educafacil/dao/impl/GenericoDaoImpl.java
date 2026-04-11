@@ -4,9 +4,11 @@ import java.util.List;
 import java.util.Optional;
 
 import ec.mileniumtech.educafacil.dao.GenericoDao;
+import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.PersistenceException;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,13 +34,21 @@ public class GenericoDaoImpl <T,K> implements GenericoDao<T,K> {
 
 	@Override
 	public T guardar(T entity) {
-		entityManager.persist(entity);
-		return entity;
+		try {
+			entityManager.persist(entity);
+			return entity;
+		} catch (PersistenceException e) {
+			throw new SystemException("Error al persistir la entidad " + entityClass.getSimpleName(), "DB-PERSIST-ERR", e);
+		}
 	}
 
 	@Override
 	public void remover(T entity) {
-		entityManager.remove(entityManager.merge(entity));
+		try {
+			entityManager.remove(entityManager.merge(entity));
+		} catch (PersistenceException e) {
+			throw new SystemException("Error al remover la entidad " + entityClass.getSimpleName(), "DB-REMOVE-ERR", e);
+		}
 	}
 
 	@Override
@@ -48,9 +58,13 @@ public class GenericoDaoImpl <T,K> implements GenericoDao<T,K> {
 
 	@Override
 	public T actualizar(T entity) {		
-		entityManager.merge(entity);
-		entityManager.flush();
-		return entity;
+		try {
+			entityManager.merge(entity);
+			entityManager.flush();
+			return entity;
+		} catch (PersistenceException e) {
+			throw new SystemException("Error al actualizar la entidad " + entityClass.getSimpleName(), "DB-UPDATE-ERR", e);
+		}
 	}	
 
 	public void cerrarConexion() {
