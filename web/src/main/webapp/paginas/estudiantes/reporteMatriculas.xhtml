@@ -1,13 +1,17 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
-	xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:comp="http://java.sun.com/jsf/composite/componentes/matricula" xmlns:val="http://java.sun.com/jsf/composite/componentes">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:f="jakarta.faces.core"
+	xmlns:h="jakarta.faces.html"
+	xmlns:p="http://primefaces.org/ui">
 	<ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">	
 		<ui:define name="contenido">
 			<f:event listener="#{backingLogin.validarSesion()}" type="preRenderView" />
 			<h:form prependId="false">
 				<p:growl id="growl" life="3000" showDetail="true" />
 				<!-- DIALOGO DETALLES ALUMNO -->
-				<p:dialog widgetVar="dlgMatriculaSeleccionda" header="#{titulos['datosEstudiante']}">
+				<p:dialog widgetVar="dlgMatriculaSeleccionda" header="#{titulos['datosEstudiante']}"
+					modal="true" responsive="true" appendTo="@(body)" styleClass="p-fluid">
 					<p:panelGrid id="datosMatriculaSeleccionada" styleClass="panelNoBorder">
 						<p:row>
 							<p:column>
@@ -93,104 +97,84 @@
 				<p:fieldset legend="#{titulos['datosReportes']}" style="margin-bottom:20px">	
 					
 				<p:panel>
-					<p:panelGrid styleClass="panelNoBorder" id="panelDatosBusqueda">
-						<p:row>
-							<p:column>
-								<h:graphicImage value="/imagenes/utilitarios/asterisco.gif"
-												width="5" height="5" />
-							</p:column>
-							<p:column>
-								<p:outputLabel value="#{etiquetas['fechaInicio']}"/>
-							</p:column>
-							<p:column>
+					<h:panelGroup id="panelDatosBusqueda" layout="block">
+						<div class="ui-fluid p-formgrid p-grid">
+							<div class="p-field p-col-12 p-md-6 p-lg-4">
+								<div class="reporte-busqueda-label">
+									<h:graphicImage value="/imagenes/utilitarios/asterisco.gif" width="5" height="5" alt=""/>
+									<p:outputLabel for="fechaInicio" value="#{etiquetas['fechaInicio']}"/>
+								</div>
 								<p:calendar value="#{backingListadoEstudiantes.beanListadoEstudiantes.fechaInicio}" navigator="true" locale="es"
 									pattern="yyyy-MM-dd" required="true" requiredMessage="#{mensajes['campoRequerido']}"
-									id="fechaInicio"/>
-							</p:column>
-							<p:column>
+									id="fechaInicio" inputStyle="width:100%;box-sizing:border-box;" style="width:100%;"/>
 								<p:message for="fechaInicio"/>
-							</p:column>
-							<p:column>
-								<h:graphicImage value="/imagenes/utilitarios/asterisco.gif"
-												width="5" height="5" />
-							</p:column>
-							<p:column>
-								<p:outputLabel value="#{etiquetas['fechaFin']}"/>
-							</p:column>
-							<p:column>
+							</div>
+							<div class="p-field p-col-12 p-md-6 p-lg-4">
+								<div class="reporte-busqueda-label">
+									<h:graphicImage value="/imagenes/utilitarios/asterisco.gif" width="5" height="5" alt=""/>
+									<p:outputLabel for="fechaFin" value="#{etiquetas['fechaFin']}"/>
+								</div>
 								<p:calendar value="#{backingListadoEstudiantes.beanListadoEstudiantes.fechaFin}" navigator="true" locale="es"
 									pattern="yyyy-MM-dd" required="true" requiredMessage="#{mensajes['campoRequerido']}"
-									id="fechaFin"/>
-							</p:column>
-							<p:column>
+									id="fechaFin" inputStyle="width:100%;box-sizing:border-box;" style="width:100%;"/>
 								<p:message for="fechaFin"/>
-							</p:column>
-						</p:row>
-						<p:row>
-							<p:column>
-								<h:graphicImage value="/imagenes/utilitarios/asterisco.gif"
-												width="5" height="5" />
-							</p:column>
-							<p:column>
-								<p:outputLabel value="#{etiquetas['estado']}"/>
-							</p:column>
-							<p:column>
-								<p:selectOneMenu value="#{backingListadoEstudiantes.beanListadoEstudiantes.codigoEstadoMatricula}" id="comboEstados" 
-									required="true" requiredMessage="#{mensajes['campoRequerido']}">
+							</div>
+							<div class="p-field p-col-12 p-md-6 p-lg-4">
+								<div class="reporte-busqueda-label">
+									<h:graphicImage value="/imagenes/utilitarios/asterisco.gif" width="5" height="5" alt=""/>
+									<p:outputLabel for="comboEstados" value="#{etiquetas['estado']}"/>
+								</div>
+								<p:selectOneMenu value="#{backingListadoEstudiantes.beanListadoEstudiantes.codigoEstadoMatricula}" id="comboEstados"
+									required="true" requiredMessage="#{mensajes['campoRequerido']}" style="width:100%;">
 									<f:selectItem
 										itemLabel="#{etiquetas['seleccionar']}"
 										itemValue="#{null}" noSelectionOption="true" />
-									<f:selectItems value="#{backingListadoEstudiantes.beanListadoEstudiantes.listaEstadosMatricula}" 
-										itemLabel="#{estados.label}" itemValue="#{estados.codigo}" 
+									<f:selectItems value="#{backingListadoEstudiantes.beanListadoEstudiantes.listaEstadosMatricula}"
+										itemLabel="#{estados.label}" itemValue="#{estados.codigo}"
 										var="estados"/>
-									<p:ajax process="@this listaMatriculas" event="change" listener="#{backingListadoEstudiantes.vaciarTablaDatos()}" update="listaMatriculas"/>	
+									<p:ajax process="@this listaMatriculas" event="change" listener="#{backingListadoEstudiantes.vaciarTablaDatos()}" update="listaMatriculas"/>
 								</p:selectOneMenu>
-							</p:column>
-							<p:column colspan="5">
 								<p:message for="comboEstados"/>
-							</p:column>
-						</p:row>	
-	
-						<p:row>
-							<p:column>
-							
-							</p:column>
-							<p:column>
+							</div>
+							<div class="p-col-12 reporte-matriculas-actions">
 								<p:commandButton icon="#{botones['icono.nuevo']}" value="#{botones['nuevo']}"
 									resetValues="true" immediate="true"
 									actionListener="#{backingListadoEstudiantes.nuevaBusqueda()}" process="@this panelDatosBusqueda" update="listaMatriculas panelDatosBusqueda"/>
-							</p:column>
-							<p:column>
-								<p:commandButton icon="#{botones['icono.buscar']}" value="#{botones['buscar']}" 
+								<p:commandButton icon="#{botones['icono.buscar']}" value="#{botones['buscar']}"
 									actionListener="#{backingListadoEstudiantes.buscarMatriculas()}"
 									process="@this panelDatosBusqueda" update="listaMatriculas panelDatosBusqueda"/>
-							</p:column>
-						</p:row>				
-					</p:panelGrid>
-					<p:spacer height="20px;"/>
-					<p:dataTable value="#{backingListadoEstudiantes.beanListadoEstudiantes.listaMatriculas}" id="listaMatriculas" 
-						rows="15" rowKey="#{matricula.matrId}" paginator="true"
+							</div>
+						</div>
+					</h:panelGroup>
+					<p:spacer height="20"/>
+					<p:dataTable value="#{backingListadoEstudiantes.beanListadoEstudiantes.listaMatriculas}" id="listaMatriculas"
+						styleClass="reporte-matriculas-table"
+						rows="15" rowKey="#{matricula.matrId}" paginator="true" reflow="true"
+						emptyMessage="#{mensajes['noRegistros']}"
+						widgetVar="tblReporteMatriculas"
 						var="matricula">
-						<p:column headerText="#{etiquetas['estudiante']}" filterBy="#{matricula.estudiante.persona.persApellidos} #{matricula.estudiante.persona.persNombres}" filterMatchMode="contains">
-							#{matricula.estudiante.persona.persApellidos} #{matricula.estudiante.persona.persNombres}  
+						<p:column headerText="#{etiquetas['estudiante']}" responsivePriority="1"
+							filterBy="#{matricula.estudiante.persona.persApellidos} #{matricula.estudiante.persona.persNombres}" filterMatchMode="contains">
+							<p:outputLabel value="#{matricula.estudiante.persona.persApellidos} #{matricula.estudiante.persona.persNombres}"/>
 						</p:column>
-						<p:column headerText="#{etiquetas['fechaInscripcion']}" width="120px;">
+						<p:column headerText="#{etiquetas['fechaInscripcion']}" responsivePriority="4" style="width:8rem;min-width:7rem;">
 							<p:outputLabel value="#{matricula.matrFechaInscripcion}" id="fechaInscripcion">
-								<f:convertDateTime for="fechaIncripcion" pattern="yyyy-MM-dd"/>
-							</p:outputLabel>							
+								<f:convertDateTime for="fechaInscripcion" pattern="yyyy-MM-dd"/>
+							</p:outputLabel>
 						</p:column>
-						<p:column  headerText="#{etiquetas['fechaMatricula']}" width="120px;">
+						<p:column headerText="#{etiquetas['fechaMatricula']}" responsivePriority="5" style="width:8rem;min-width:7rem;">
 							<p:outputLabel value="#{matricula.matrFechaMatricula}" id="fechaMatricula">
 								<f:convertDateTime for="fechaMatricula" pattern="yyyy-MM-dd"/>
 							</p:outputLabel>
 						</p:column>
-						<p:column  headerText="#{etiquetas['curso']}" filterBy="#{matricula.ofertaCursos.ofertaCapacitacion.curso.cursNombre}" filterMatchMode="contains">
+						<p:column headerText="#{etiquetas['curso']}" responsivePriority="2"
+							filterBy="#{matricula.ofertaCursos.ofertaCapacitacion.curso.cursNombre}" filterMatchMode="contains">
 							<p:outputLabel value="#{matricula.ofertaCursos.ofertaCapacitacion.curso.cursNombre}"/>
-						</p:column>						
-						<p:column headerText="#{etiquetas['observacion']}">
-							#{matricula.matrObservacion}
 						</p:column>
-						<p:column headerText="#{etiquetas['datosMatCerti']}">
+						<p:column headerText="#{etiquetas['observacion']}" responsivePriority="6">
+							<h:outputText value="#{matricula.matrObservacion}"/>
+						</p:column>
+						<p:column headerText="#{etiquetas['datosMatCerti']}" responsivePriority="3">
 							<p:commandButton icon="#{botones['icono.notas']}" oncomplete="PF('dlgMatriculaSeleccionda').show();" process="@this" update="datosMatriculaSeleccionada">
 								<f:setPropertyActionListener value="#{matricula}" target="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada}"/>
 							</p:commandButton>
@@ -198,7 +182,7 @@
 								<f:setPropertyActionListener value="#{matricula}" target="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada}"/>
 							</p:commandButton>
 							<p:commandButton icon="#{botones['icono.pdf']}" action="#{backingListadoEstudiantes.generaCertificadoPdf}" alt="Certificado"
-							process="@this" disabled="#{matricula.matrEstado.equals('INSMAT05')?false:true}" ajax="false">
+								process="@this" disabled="#{matricula.matrEstado.equals('INSMAT05')?false:true}" ajax="false">
 								<f:setPropertyActionListener value="#{matricula}" target="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada}"/>
 							</p:commandButton>
 						</p:column>

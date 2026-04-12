@@ -1,0 +1,102 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:f="jakarta.faces.core"
+	xmlns:h="jakarta.faces.html"
+	xmlns:p="http://primefaces.org/ui">
+<p:dialog widgetVar="dlgCargarInfo" modal="true" closable="false"
+				header="#{titulos['selInformacion']}">
+
+				<p:outputPanel id="campanias">
+					<p:scrollPanel mode="native"
+						style="max-height:450px; max-width:500px;">
+						<div class="ui-fluid p-formgrid p-grid">
+							<div class="p-field p-col-12 p-md-12">
+								<p:selectOneRadio
+									value="#{backingSeguimientoClientes.beanSeguimiento.tipoCargaInformacion}">
+									<f:selectItem itemLabel="Por campania" itemValue="2" />
+									<f:selectItem itemLabel="Por curso" itemValue="3" />
+									<f:selectItem itemLabel="Por fechas" itemValue="4" />
+									<p:ajax event="change" process="@this"
+										update="idcampanias idcursos finicio ffin" />
+								</p:selectOneRadio>
+							</div>
+							<div class="p-field p-col-12 p-md-12">
+								<span class="ui-float-label ui-input-icon-right"
+									style="margin-top: 2em"> <p:selectOneMenu
+										id="idcampanias" converter="selectOneMenuConverter"
+										filterMatchMode="contains" filter="true"
+										panelStyle="width:300px;" style="width:300px;"
+										disabled="#{backingSeguimientoClientes.beanSeguimiento.tipoCargaInformacion==3 || backingSeguimientoClientes.beanSeguimiento.tipoCargaInformacion==4}"
+										value="#{backingSeguimientoClientes.beanSeguimiento.campaniaSeleccionada}">
+										<f:selectItems
+											value="#{backingSeguimientoClientes.beanSeguimiento.listaCampaniasTodas}"
+											var="camp"
+											itemLabel="#{camp.campDescripcion} / #{camp.fechasCampania}"
+											itemValue="#{camp}" required="true"
+											requiredMessage="#{mensajes['campoRequerido']}" />
+										<p:ajax process="@this idcampanias " partialSubmit="true"
+											event="change" />
+									</p:selectOneMenu> <p:outputLabel value="#{etiquetas['campania']}" />
+								</span>
+								<p:message for="idcampanias" />
+							</div>
+							<div class="p-field p-col-12 p-md-12">
+								<span class="ui-float-label ui-input-icon-right"
+									> <p:selectOneMenu id="idcursos"
+										converter="selectOneMenuConverter" filterMatchMode="contains"
+										filter="true" panelStyle="width:300px;" style="width:300px;"
+										disabled="#{backingSeguimientoClientes.beanSeguimiento.tipoCargaInformacion==2 || backingSeguimientoClientes.beanSeguimiento.tipoCargaInformacion==4}"
+										value="#{backingSeguimientoClientes.beanSeguimiento.cursoSeleccionado}">
+										<f:selectItems
+											value="#{backingSeguimientoClientes.beanSeguimiento.listaCursos}"
+											var="cur" itemLabel="#{cur.cursNombre}" itemValue="#{cur}"
+											required="true"
+											requiredMessage="#{mensajes['campoRequerido']}" />
+										<p:ajax process="@this idcursos " partialSubmit="true"
+											event="change" />
+									</p:selectOneMenu>
+									<p:outputLabel value="#{etiquetas['curso']}" />
+								</span>
+								<p:message for="idcursos" />
+							</div>
+							<div class="p-field p-col-12 p-md-12">
+								<span class="ui-float-label ui-input-icon-right"
+									>
+								<p:datePicker pattern="yyyy-MM-dd" id="finicio"
+									value="#{backingSeguimientoClientes.beanSeguimiento.fechaInicio}"
+									locale="es_ES" required="true"
+									requiredMessage="#{mensajes['campoRequerido']}"
+									disabled="#{backingSeguimientoClientes.beanSeguimiento.tipoCargaInformacion==2 || backingSeguimientoClientes.beanSeguimiento.tipoCargaInformacion==3}">
+								</p:datePicker><p:outputLabel value="#{etiquetas['fechaInicio']}" />
+								</span>
+								</div>
+								<p:message for="finicio" />
+								<div class="p-field p-col-12 p-md-12">
+									<span class="ui-float-label ui-input-icon-right"
+									>
+									<p:datePicker pattern="yyyy-MM-dd" id="ffin"
+										value="#{backingSeguimientoClientes.beanSeguimiento.fechaFin}"
+										locale="es_ES" required="true"
+										requiredMessage="#{mensajes['campoRequerido']}"
+										disabled="#{backingSeguimientoClientes.beanSeguimiento.tipoCargaInformacion==2 || backingSeguimientoClientes.beanSeguimiento.tipoCargaInformacion==3}">
+									</p:datePicker><p:outputLabel value="#{etiquetas['fechaFin']}" />
+									</span>
+									<p:message for="ffin" />
+								</div>
+
+							</div>
+					</p:scrollPanel>
+				</p:outputPanel>
+				<h:panelGrid columns="2" style="margin: 0 auto; text-align: center;">
+					<p:commandButton value="#{botones['aceptar']}"
+						update="tblSeg growl campanias" process="@this campanias tblSeg"
+						icon="#{botones['icono.select']}"
+						oncomplete="PF('tblseguimiento').clearFilters(); PF('dlgEnProc').hide();"
+						onstart="PF('dlgEnProc').show();" partialSubmit="true"
+						actionListener="#{backingSeguimientoClientes.cargarInformacion()}" />
+					<p:commandButton value="#{botones['cancelar']}"
+						icon="#{botones['icono.cancelar']}" process="@this"
+						partialSubmit="true" oncomplete="PF('dlgCargarInfo').hide()" />
+				</h:panelGrid>				
+			</p:dialog>
+</ui:composition>

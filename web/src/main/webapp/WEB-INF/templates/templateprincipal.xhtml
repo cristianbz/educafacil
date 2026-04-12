@@ -75,13 +75,46 @@
 		
 </h:head>
 <script>
-    function toggleSidebar() {
-        var sidebar = document.getElementById("sidebar");
-        var content = document.getElementById("content");
-
-        sidebar.classList.toggle("collapsed");
-        content.classList.toggle("expanded");
-    }
+    (function () {
+        var mq = window.matchMedia("(max-width: 991.98px)");
+        function syncLayoutForViewport() {
+            var sidebar = document.getElementById("sidebar");
+            var backdrop = document.getElementById("sidebar-backdrop");
+            if (!mq.matches &amp;&amp; sidebar) {
+                sidebar.classList.remove("mobile-open");
+                if (backdrop) backdrop.classList.remove("active");
+                document.body.classList.remove("sidebar-mobile-open");
+            }
+        }
+        window.toggleSidebar = function () {
+            var sidebar = document.getElementById("sidebar");
+            var content = document.getElementById("content");
+            var backdrop = document.getElementById("sidebar-backdrop");
+            if (!sidebar || !content) return;
+            if (mq.matches) {
+                var open = sidebar.classList.toggle("mobile-open");
+                if (backdrop) backdrop.classList.toggle("active", open);
+                document.body.classList.toggle("sidebar-mobile-open", open);
+                var btn = document.getElementById("sidebar-toggle-btn");
+                if (btn) btn.setAttribute("aria-expanded", open ? "true" : "false");
+            } else {
+                sidebar.classList.toggle("collapsed");
+                content.classList.toggle("expanded");
+            }
+        };
+        window.closeSidebarMobile = function () {
+            if (!mq.matches) return;
+            var sidebar = document.getElementById("sidebar");
+            var backdrop = document.getElementById("sidebar-backdrop");
+            if (sidebar) sidebar.classList.remove("mobile-open");
+            if (backdrop) backdrop.classList.remove("active");
+            document.body.classList.remove("sidebar-mobile-open");
+            var btn = document.getElementById("sidebar-toggle-btn");
+            if (btn) btn.setAttribute("aria-expanded", "false");
+        };
+        if (mq.addEventListener) mq.addEventListener("change", syncLayoutForViewport);
+        else if (mq.addListener) mq.addListener(syncLayoutForViewport);
+    })();
 </script>
 <body>
 	<h:form id="logoutForm">
@@ -101,7 +134,8 @@
     </h:form>
         <!-- 🔵 TOP BAR -->
         <div class="topbar">
-            <button type="button" class="toggle-btn" onclick="toggleSidebar()">
+            <button type="button" class="toggle-btn" onclick="toggleSidebar()"
+                aria-label="Abrir o cerrar menú de navegación" aria-expanded="false" id="sidebar-toggle-btn">
                 <i class="pi pi-bars"></i>
             </button>
 
@@ -111,6 +145,9 @@
                 #{backingLogin.beanLogin.usuario.persona.persNombres}
             </div>
         </div>
+
+        <div id="sidebar-backdrop" class="sidebar-backdrop" role="presentation" onclick="closeSidebarMobile();"
+            aria-hidden="true"></div>
 
         <!-- 🔵 SIDEBAR -->
         <div id="sidebar" class="sidebar">
