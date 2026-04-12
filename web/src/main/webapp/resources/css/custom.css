@@ -289,3 +289,159 @@ body {
     color: var(--primary-color) !important;
     margin-right: 0.75rem !important;
 }
+
+/* -------------------------------------------------------------------------
+   Responsive shell: off-canvas sidebar (tablet & phone)
+   Desktop keeps fixed sidebar + collapse; narrow viewports use a drawer.
+   ------------------------------------------------------------------------- */
+.sidebar-backdrop {
+    display: none;
+}
+
+body.sidebar-mobile-open {
+    overflow: hidden;
+}
+
+@media (max-width: 991.98px) {
+    .sidebar-backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 997;
+        background: rgb(15 23 42 / 0.42);
+        backdrop-filter: blur(2px);
+        -webkit-backdrop-filter: blur(2px);
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity var(--transition-base), visibility var(--transition-base);
+    }
+
+    .sidebar-backdrop.active {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+    }
+
+    .sidebar,
+    .sidebar.collapsed {
+        width: min(280px, 88vw) !important;
+        transform: translateX(-100%);
+        box-shadow: none;
+    }
+
+    .sidebar.mobile-open {
+        transform: translateX(0);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .content,
+    .content.expanded {
+        margin-left: 0 !important;
+        padding: 1.25rem 1rem;
+        min-height: calc(100vh - var(--topbar-height));
+    }
+
+    .topbar {
+        padding: 0 1rem;
+    }
+
+    .user-info {
+        min-width: 0;
+        max-width: min(100%, 14rem);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .page-header {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .page-actions {
+        width: 100%;
+        margin-left: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .page-actions > * {
+        margin-left: 0;
+    }
+}
+
+/* Reporte matrículas (paginas/estudiantes/reporteMatriculas): filtros + tabla reflow */
+.reporte-busqueda-label {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.35rem;
+}
+
+.reporte-matriculas-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    padding-top: 0.25rem;
+}
+
+@media (max-width: 767.98px) {
+    .reporte-matriculas-actions .ui-button {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+.reporte-matriculas-table.ui-datatable-reflow .ui-datatable-data > tr > td,
+.reporte-matriculas-table.ui-datatable .ui-datatable-data > tr > td,
+.seguimiento-clientes-table.ui-datatable-reflow .ui-datatable-data > tr > td,
+.seguimiento-clientes-table.ui-datatable .ui-datatable-data > tr > td,
+.seguimiento-llamar-table.ui-datatable-reflow .ui-datatable-data > tr > td,
+.seguimiento-llamar-table.ui-datatable .ui-datatable-data > tr > td,
+.seguimiento-detalle-table.ui-datatable-reflow .ui-datatable-data > tr > td,
+.seguimiento-detalle-table.ui-datatable .ui-datatable-data > tr > td,
+.seguimiento-excel-table.ui-datatable-reflow .ui-datatable-data > tr > td,
+.seguimiento-excel-table.ui-datatable .ui-datatable-data > tr > td {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.reporte-matriculas-table .ui-datatable-data .ui-button,
+.seguimiento-clientes-table .ui-datatable-data .ui-button {
+    margin: 0.15rem 0.35rem 0.15rem 0;
+}
+
+/* Seguimiento clientes: diálogos y formularios */
+.seguimiento-dlg-scroll {
+    max-height: min(450px, 70vh) !important;
+    max-width: min(500px, calc(100vw - 2rem)) !important;
+}
+
+.seguimiento-dlg-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+@media (max-width: 767.98px) {
+    .seguimiento-dlg-actions .ui-button {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+.seguimiento-motivos-checkbox .ui-grid .ui-g,
+.seguimiento-motivos-checkbox table {
+    width: 100%;
+}
+
+@media (max-width: 767.98px) {
+    .seguimiento-motivos-checkbox .ui-selectmanycheckbox .ui-grid-responsive .ui-g-4 {
+        width: 100% !important;
+    }
+}

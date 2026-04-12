@@ -1,0 +1,29 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:f="jakarta.faces.core"
+	xmlns:h="jakarta.faces.html"
+	xmlns:p="http://primefaces.org/ui">
+<p:dialog widgetVar="dlgDetalleSeguimiento" showEffect="fade"
+				hideEffect="fade" width="40%" height="300px;" modal="true"
+				header="#{titulos['seguimientoRealizado']}" closable="true"
+				appendTo="@(body)">
+				<p:scrollPanel mode="native"
+					style="max-height:350px; max-width:1200px;">
+					<p:outputPanel id="detalleSeguimiento">
+						<p:chronoline
+							value="#{backingSeguimientoClientes.beanSeguimiento.trazabilidadObj}"
+							var="event">
+							        #{event.dsegObservacion} #{event.dsegEstado.equals('CONTAC01')?'[EN SEGUIMIENTO]':event.dsegEstado.equals('CONTAC02')?'[ABANDONADO]':event.dsegEstado.equals('CONTAC03')?'[MATRICULADO]':event.dsegEstado.equals('CONTAC04')?'[CANDIDATO]':'[PROXIMAOCASION]'}						
+							        <f:facet name="opposite">
+								<small class="text-secondary"> <p:outputLabel
+										value="#{event.dsegFecha}" id="fseg">
+										<f:convertDateTime for="fseg" pattern="yyyy-MM-dd" />
+									</p:outputLabel>
+								</small>
+							</f:facet>
+						</p:chronoline>
+						<br />
+					</p:outputPanel>
+				</p:scrollPanel>
+			</p:dialog>
+</ui:composition>			

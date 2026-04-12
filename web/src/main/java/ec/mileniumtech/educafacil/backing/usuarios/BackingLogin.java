@@ -158,7 +158,7 @@ public class BackingLogin implements Serializable{
 						getBeanLogin().setConfiguraciones(getConfiguracionesServicioImpl().listaConfiguraciones().get(0));
 					}
 					this.menumodel.getElements();
-					respuesta="/paginas/index.xhtml";
+					respuesta="/paginas/index.cap?faces-redirect=true";
 				}else {
 					Mensaje.verMensaje("growl",FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.clave"));
 				}
