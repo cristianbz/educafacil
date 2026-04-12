@@ -15,6 +15,9 @@
 	<link
 		href="#{facesContext.externalContext.requestContextPath}/resources/css/estilos.css"
 		rel="stylesheet" type="text/css" />
+	<link
+		href="#{facesContext.externalContext.requestContextPath}/resources/css/custom.css"
+		rel="stylesheet" type="text/css" />
 
 	<script
 		src="#{facesContext.externalContext.requestContextPath}/resources/js/bootstrap.min.js"></script>
@@ -32,28 +35,29 @@
 		name="font-awesome/5.12.0/css/all.min-jsf.css" />
 	<h:outputStylesheet library="webjars"
 		name="font-awesome/5.12.0/css/v4-shims.min-jsf.css" />
+	<!-- Google Fonts -->
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800" rel="stylesheet" />
+	
 	<style type="text/css">
 .inscrito {
 	background-color: #40e577 !important;
-	background-image: none !important;
 	color: #ffffff !important;
 }
 
 .abandonado {
 	background-color: #f28b65 !important;
-	background-image: none !important;
 	color: #ffffff !important;
 }
 
 .candidato {
 	background-color: #11ddcc !important;
-	background-image: none !important;
 	color: #ffffff !important;
 }
 
 .otraocasion {
 	background-color: #FFAB68 !important;
-	background-image: none !important;
 	color: #ffffff !important;
 }
 .colorDesertado{
@@ -64,65 +68,6 @@
 }
 .colorCulminado{
 	background-color:#116FBF !important;	
-}
-/*-------------------*/
-body {
-    margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
-}
-
-/* TOPBAR */
-.topbar {
-    height: 60px;
-    background: #0d6efd;
-    color: white;
-    display: flex;
-    align-items: center;
-    padding: 0 20px;
-    justify-content: space-between;
-}
-
-.toggle-btn {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 1.5rem;
-    cursor: pointer;
-}
-
-/* SIDEBAR */
-.sidebar {
-    position: fixed;
-    top: 60px;
-    left: 0;
-    width: 250px;
-    height: calc(100% - 60px);
-    background: #1f2d3d;
-    padding: 15px;
-    transition: all 0.3s ease;
-    overflow-y: auto;
-}
-
-/* Colapsado */
-.sidebar.collapsed {
-    width: 70px;
-}
-
-/* CONTENT */
-.content {
-    margin-left: 250px;
-    padding: 20px;
-    margin-top: 60px;
-    transition: all 0.3s ease;
-}
-
-/* Cuando colapsa */
-.content.expanded {
-    margin-left: 70px;
-}
-
-.logout-container {
-    margin-top: 20px;
 }
 </style>
 	<meta name="viewport"

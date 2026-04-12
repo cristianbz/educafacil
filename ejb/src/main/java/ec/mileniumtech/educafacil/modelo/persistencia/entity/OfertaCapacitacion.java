@@ -48,7 +48,7 @@ public class OfertaCapacitacion implements Serializable {
 	@SequenceGenerator(name="ofertaCapacitacionSeq", sequenceName="oferta_capacitacion_seq", allocationSize = 1)
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ofertaCapacitacionSeq")
 	@Column(name="ofca_id")
-	private int ofcaId;
+	private Integer ofcaId;
 	
 	@Column(name="ofca_estado")
 	private boolean ofcaEstado;
