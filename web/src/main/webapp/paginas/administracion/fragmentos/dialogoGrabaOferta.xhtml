@@ -1,0 +1,28 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:f="jakarta.faces.core"
+	xmlns:h="jakarta.faces.html"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:dialog widgetVar="dlgGrabaOferta" showEffect="fade" hideEffect="fade"
+		modal="true" appendTo="@(body)" closable="false"
+		header="#{titulos['grabar']}" id="idgrabaoferta">
+		<p:scrollPanel mode="native" style="max-height:450px; max-width:500px;">
+			<div class="ui-fluid p-formgrid p-grid">
+				<div class="p-field p-col-12 p-md-12">
+					<p:commandButton value="#{botones['grabar']}"
+						icon="#{botones['icono.grabar']}" update="tablaoferta growl"
+						actionListener="#{backingCreacionCursos.grabarOferta()}"
+						process="@this "
+						oncomplete="PF('dlgGrabaOferta').hide(); PF('dlgNuevoCurso').hide();" />
+				</div>
+				<div class="p-field p-col-12 p-md-12">
+					<p:commandButton value="#{botones['cancelar']}"
+						oncomplete="PF('dlgGrabaOferta').hide();"
+						icon="#{botones['icono.cancelar']}" />
+				</div>
+			</div>
+		</p:scrollPanel>
+	</p:dialog>
+
+</ui:composition>

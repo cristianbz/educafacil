@@ -1,0 +1,47 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:f="jakarta.faces.core"
+	xmlns:h="jakarta.faces.html"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:dialog widgetVar="dlgGrabaCurso" showEffect="fade" hideEffect="fade"
+		modal="true" appendTo="@(body)" closable="false"
+		header="#{titulos['agregaEditaCurso']}" id="iddlggrabar">
+		<p:outputPanel id="pnlCurso">
+			<p:outputLabel
+				value="#{backingCreacionCursos.beanCreacionCursos.curso.cursNombre}" />
+			<p:scrollPanel mode="native" style="max-height:450px; max-width:300px;">
+				<div class="ui-fluid p-formgrid p-grid">
+					<div class="p-field p-col-12 p-md-12">
+
+						<span class="ui-float-label ui-input-icon-right"
+							style="margin-top: 2em"><p:inputTextarea required="true"
+								requiredMessage="#{mensajes['campoRequerido']}"
+								value="#{backingCreacionCursos.beanCreacionCursos.curso.cursNombre}"
+								maxlength="150" id="nombrecurso">
+								<p:ajax process="@this pnlCurso" event="blur" />
+							</p:inputTextarea> <p:outputLabel value="#{etiquetas['curso']}:*" /> </span>
+					</div>
+					<div class="p-field p-col-12 p-md-12">
+						<p:message for="nombrecurso" />
+					</div>
+					<div class="p-field p-col-12 p-md-12">
+						<p:commandButton value="#{botones['grabar']}"
+							process="@this pnlCurso"
+							update="tablaoferta growl pnlCurso nombrecurso"
+							partialSubmit="true" icon="#{botones['icono.grabar']}"
+							actionListener="#{backingCreacionCursos.grabarActualizarCurso()}" />
+					</div>
+					<div class="p-field p-col-12 p-md-12">
+						<p:commandButton value="#{botones['cancelar']}" process="@this"
+							oncomplete="PF('dlgGrabaCurso').hide();"
+							icon="#{botones['icono.cancelar']}" />
+					</div>
+				</div>
+			</p:scrollPanel>
+
+		</p:outputPanel>
+
+	</p:dialog>
+
+</ui:composition>

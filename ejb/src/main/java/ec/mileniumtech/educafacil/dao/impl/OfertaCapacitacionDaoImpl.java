@@ -131,9 +131,13 @@ public class OfertaCapacitacionDaoImpl extends GenericoDaoImpl<OfertaCapacitacio
 	 */
 	public void agregarOfertaCapacitacion(OfertaCapacitacion ofertaCapacitacion, OfertaCursos ofertaCursos){
 		try {
-			getEntityManager().persist(ofertaCapacitacion);
-			ofertaCursos.setOfertaCapacitacion(ofertaCapacitacion);
-			getEntityManager().persist(ofertaCursos);
+			if(ofertaCapacitacion.getOfcaId()!=null)
+				getEntityManager().merge(ofertaCapacitacion);
+			else {
+				getEntityManager().persist(ofertaCapacitacion);
+				ofertaCursos.setOfertaCapacitacion(ofertaCapacitacion);
+				getEntityManager().persist(ofertaCursos);
+			}
 		}catch(PersistenceException e){
 			JpaDaoSupport.throwIfConstraintViolationDuplicate(e);
 			throw new SystemException("Error de persistencia en ofertaCapacitacion", "OFERCAP-PERSIST-ERR", e);

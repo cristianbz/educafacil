@@ -5,29 +5,20 @@ package ec.mileniumtech.educafacil.backing.administracion;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.administracion.BeanAdminCursos;
-import ec.mileniumtech.educafacil.dao.impl.AreaDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.CatalogoDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.EvaluacionCursoDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.InstructorDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.ObjetoEvaluacionDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.OfertaCapacitacionDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.OfertaCursosDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.TipoEncuestaDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.EvaluacionCurso;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Instructor;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.ObjetoEvaluacion;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.OfertaCapacitacion;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.OfertaCursos;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.TipoEncuesta;
+import ec.mileniumtech.educafacil.service.AdministracionService;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumEstadosOfertaCurso;
-import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumTipoCatalogo;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
 import jakarta.faces.application.FacesMessage;
@@ -37,9 +28,9 @@ import jakarta.inject.Named;
 import lombok.Getter;
 
 /**
-*@author christian  Jul 13, 2024
-*
-*/
+ *@author christian  Jul 13, 2024
+ *
+ */
 @Named("backingAdminCursos")
 @ViewScoped
 public class BackingAdminCursos implements Serializable{
@@ -57,36 +48,7 @@ public class BackingAdminCursos implements Serializable{
 	private BeanAdminCursos beanAdminCursos;
 	
 	@EJB
-	@Getter
-	private OfertaCursosDaoImpl ofertaCursosServicioImpl;
-	
-	@EJB
-	@Getter
-	private InstructorDaoImpl instructorServicioImpl;
-	
-	@EJB
-	@Getter
-	private AreaDaoImpl areaServicioImpl;
-	
-	@EJB
-	@Getter
-	private OfertaCapacitacionDaoImpl ofertaCapacitacionServicioImpl;
-	
-	@EJB
-	@Getter
-	private ObjetoEvaluacionDaoImpl objetoEvaluacionServicioImpl;
-	
-	@EJB
-	@Getter
-	private TipoEncuestaDaoImpl tipoEncuestaServicioImpl;
-	
-	@EJB
-	@Getter
-	private CatalogoDaoImpl catalogoServicioImpl;
-	
-	@EJB
-	@Getter
-	private EvaluacionCursoDaoImpl evaluacionCursoServicioImpl;
+	private AdministracionService administracionService;
 	
 	@PostConstruct
 	public void init() {
@@ -97,7 +59,7 @@ public class BackingAdminCursos implements Serializable{
 		getBeanAdminCursos().setNuevaOfertaCurso(false);
 		getBeanAdminCursos().setObjetoEvaluacion(new ObjetoEvaluacion());
 		cargaObjetosEvaluacion();
-		getBeanAdminCursos().setListaEvaluacionCursoAsig(new ArrayList<>());;
+		getBeanAdminCursos().setListaEvaluacionCursoAsig(new ArrayList<>());
 
 
 	}
@@ -105,8 +67,7 @@ public class BackingAdminCursos implements Serializable{
 	 * Carga los objetos de Evaluacion
 	 */
 	public void cargaObjetosEvaluacion() {
-		getBeanAdminCursos().setListaObjetoEvaluacion(new ArrayList<>());
-		getBeanAdminCursos().setListaObjetoEvaluacion(objetoEvaluacionServicioImpl.listaDeObjetosDeEvaluacion());
+		getBeanAdminCursos().setListaObjetoEvaluacion(administracionService.listarObjetosEvaluacion());
 	}
 	
 	/**
@@ -114,10 +75,8 @@ public class BackingAdminCursos implements Serializable{
 	 */
 	public void cargaTiposEncuestas() {
 		if(getBeanAdminCursos().getObjetoEvaluacion().getObjeId()!=null) {
-			getBeanAdminCursos().setListaTipoEncuestas(new ArrayList<>());
-			getBeanAdminCursos().setListaEvaluacionCursoAsig(new ArrayList<>());
-			getBeanAdminCursos().setListaEvaluacionCursoAsig(getEvaluacionCursoServicioImpl().listaDeEvaluacionesPorCurso(getBeanAdminCursos().getOfertaCursos().getOcurId(),getBeanAdminCursos().getObjetoEvaluacion().getObjeId()));
-			getBeanAdminCursos().setListaTipoEncuestas(getTipoEncuestaServicioImpl().listaDeTiposDeEncuestasPorOe(getBeanAdminCursos().getObjetoEvaluacion().getObjeId()));
+			getBeanAdminCursos().setListaEvaluacionCursoAsig(administracionService.listarEvaluacionesPorCurso(getBeanAdminCursos().getOfertaCursos().getOcurId(),getBeanAdminCursos().getObjetoEvaluacion().getObjeId()));
+			getBeanAdminCursos().setListaTipoEncuestas(administracionService.listarTiposEncuestasPorObjeto(getBeanAdminCursos().getObjetoEvaluacion().getObjeId()));
 		}
 	}
 	
@@ -125,50 +84,38 @@ public class BackingAdminCursos implements Serializable{
 	 * Carga la oferta de cursos activos
 	 */
 	public void cargarOfertaCursosActivos() {
-		getBeanAdminCursos().setListaOfertaCursos(new ArrayList<>());
-		getBeanAdminCursos().setListaOfertaCursos(getOfertaCursosServicioImpl().listaOfertaCursosActivos());
-		getBeanAdminCursos().setListaOfertaCursos(getBeanAdminCursos().getListaOfertaCursos().stream().sorted((a1,a2) -> a1.getOfertaCapacitacion().getArea().getAreaNombre().compareTo(a2.getOfertaCapacitacion().getArea().getAreaNombre())).collect(Collectors.toList()));		
+		getBeanAdminCursos().setListaOfertaCursos(administracionService.listarOfertaCursosActivosOrdenados());
 	}
 	/**
 	 * Carga las areas
 	 */
 	public void cargarArea() {
-		getBeanAdminCursos().setListaAreas(new ArrayList<>());
-		getBeanAdminCursos().setListaAreas(getAreaServicioImpl().listaDeAreas());
-		getBeanAdminCursos().setListaAreas(getBeanAdminCursos().getListaAreas().stream().sorted((a1,a2)->a1.getAreaNombre().compareTo(a2.getAreaNombre())).collect(Collectors.toList()));
+		getBeanAdminCursos().setListaAreas(administracionService.listarAreasOrdenadas());
 	}
 	/**
 	 * Carga las Especialidades
 	 */
 	public void cargaEspecialidades() {
-		getBeanAdminCursos().setListaEspecialidad(new ArrayList<>());
+		getBeanAdminCursos().setListaEspecialidad(administracionService.listarEspecialidadesPorAreaOrdenadas(getBeanAdminCursos().getCodigoArea()));
 		getBeanAdminCursos().setListaCurso(new ArrayList<>());
-		getBeanAdminCursos().setListaEspecialidad(getOfertaCapacitacionServicioImpl().listaEspecialidadPorArea(getBeanAdminCursos().getCodigoArea()));
-		getBeanAdminCursos().setListaEspecialidad(getBeanAdminCursos().getListaEspecialidad().stream().sorted((e1,e2)->e1.getEspeNombre().compareTo(e2.getEspeNombre())).collect(Collectors.toList()));
 	}
 	/**
 	 * Carga la lista de instructores
 	 */
 	public void cargarInstructor() {
-		getBeanAdminCursos().setListaInstructores(new ArrayList<>());
-		getBeanAdminCursos().setListaInstructores(getInstructorServicioImpl().listaInstructores());
-		getBeanAdminCursos().setListaInstructores(getBeanAdminCursos().getListaInstructores().stream().sorted((i1,i2)->i1.getPersona().getPersApellidos().compareTo(i2.getPersona().getPersApellidos())).collect(Collectors.toList()));
+		getBeanAdminCursos().setListaInstructores(administracionService.listarInstructoresOrdenados());
 	}
 	/**
 	 * Carga los cursos
 	 */
 	public void cargarCursos() {
-		getBeanAdminCursos().setListaCurso(new ArrayList<>());
-		getBeanAdminCursos().setListaCurso(getOfertaCapacitacionServicioImpl().listaCursosPorAreaEspecilidad(getBeanAdminCursos().getCodigoArea(), getBeanAdminCursos().getCodigoEspecialidad()));
-		getBeanAdminCursos().setListaCurso(getBeanAdminCursos().getListaCurso().stream().sorted((c1,c2)->c1.getCursNombre().compareTo(c2.getCursNombre())).collect(Collectors.toList()));
+		getBeanAdminCursos().setListaCurso(administracionService.listarCursosPorAreaEspecialidadOrdenados(getBeanAdminCursos().getCodigoArea(), getBeanAdminCursos().getCodigoEspecialidad()));
 	}
 	/**
 	 * Carga los tipos de capacitacion
 	 */
 	public void cargaTipoCapacitacion() {
-		getBeanAdminCursos().setListaCatalogo(new ArrayList<>());
-		getBeanAdminCursos().setListaCatalogo(getCatalogoServicioImpl().catalogosPorTipo(EnumTipoCatalogo.TIPOCAPACITACION.getNemotecnico()));
-		getBeanAdminCursos().setListaCatalogo(getBeanAdminCursos().getListaCatalogo().stream().sorted((t1,t2)->t1.getCataDescripcion().compareTo(t2.getCataDescripcion())).collect(Collectors.toList()));
+		getBeanAdminCursos().setListaCatalogo(administracionService.listarTipoCapacitacionOrdenados());
 	}
 	/**
 	 * Permite editar una oferta de curso
@@ -190,9 +137,9 @@ public class BackingAdminCursos implements Serializable{
 	}
 	/**
 	 * Graba una oferta de curso
-	 */
+		 */
 	public void grabarCurso() {
-		OfertaCapacitacion ofertaCapacitacion=getOfertaCapacitacionServicioImpl().buscarOfertaCapacitacion(getBeanAdminCursos().getCodigoArea(), getBeanAdminCursos().getCodigoEspecialidad(), getBeanAdminCursos().getCodigoCurso());
+		OfertaCapacitacion ofertaCapacitacion=administracionService.buscarOfertaCapacitacion(getBeanAdminCursos().getCodigoArea(), getBeanAdminCursos().getCodigoEspecialidad(), getBeanAdminCursos().getCodigoCurso());
 		getBeanAdminCursos().setOfertaCapacitacion(ofertaCapacitacion);
 		Instructor instructor=new Instructor();
 		instructor.setInstId(getBeanAdminCursos().getCodigoInstructor());
@@ -204,10 +151,8 @@ public class BackingAdminCursos implements Serializable{
 		else
 			getBeanAdminCursos().getOfertaCursos().setOcurEstado(EnumEstadosOfertaCurso.INICIADO.getCodigo());
 		
-		if(getBeanAdminCursos().getOfertaCursos().getOcurId()>0) 
-			getOfertaCursosServicioImpl().editarOfertaCursos(getBeanAdminCursos().getOfertaCursos());
-		else 
-			getOfertaCursosServicioImpl().agregarOfertaCursos(getBeanAdminCursos().getOfertaCursos());							
+		administracionService.guardarOfertaCurso(getBeanAdminCursos().getOfertaCursos());
+
 		getBeanAdminCursos().setEditarOfertaCurso(false);
 		getBeanAdminCursos().setOfertaCursos(new OfertaCursos());
 		cargarOfertaCursosActivos();
@@ -241,8 +186,8 @@ public class BackingAdminCursos implements Serializable{
 		getBeanAdminCursos().setListaEncuestasSelect(new ArrayList<>());
 		getBeanAdminCursos().setListaEvaluacionCursoAsig(new ArrayList<>());
 		if(getBeanAdminCursos().getListaObjetoEvaluacion().size()>0) {
-			getBeanAdminCursos().setListaTipoEncuestas(getTipoEncuestaServicioImpl().listaDeTiposDeEncuestasPorOe(getBeanAdminCursos().getListaObjetoEvaluacion().get(0).getObjeId()));
-			getBeanAdminCursos().setListaEvaluacionCursoAsig(getEvaluacionCursoServicioImpl().listaDeEvaluacionesPorCurso(getBeanAdminCursos().getOfertaCursos().getOcurId(), getBeanAdminCursos().getListaObjetoEvaluacion().get(0).getObjeId()));
+			getBeanAdminCursos().setListaTipoEncuestas(administracionService.listarTiposEncuestasPorObjeto(getBeanAdminCursos().getListaObjetoEvaluacion().get(0).getObjeId()));
+			getBeanAdminCursos().setListaEvaluacionCursoAsig(administracionService.listarEvaluacionesPorCurso(getBeanAdminCursos().getOfertaCursos().getOcurId(), getBeanAdminCursos().getListaObjetoEvaluacion().get(0).getObjeId()));
 			Mensaje.verDialogo("dlgAsignacionEncuestasCurso");
 		}else {
 			Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.agregarDatosEncu"));
@@ -287,7 +232,7 @@ public class BackingAdminCursos implements Serializable{
 	 */
 	public void guardarEvaluacionCurso() {
 		for (EvaluacionCurso evaluaciaoCurso : getBeanAdminCursos().getListaEvaluacionCursoAsig()) 
-			getEvaluacionCursoServicioImpl().agregarEvaluacionCurso(evaluaciaoCurso);
+			administracionService.agregarEvaluacionCurso(evaluaciaoCurso);
 			
 		cargarOfertaCursosActivos();
 		Mensaje.ocultarDialogo("dlgAsignacionEncuestasCurso");
@@ -299,9 +244,10 @@ public class BackingAdminCursos implements Serializable{
 	public void eliminarEvaluacionCurso() {
 		getBeanAdminCursos().getListaEvaluacionCursoAsig().remove(getBeanAdminCursos().getEvaluacionCurso());
 		getBeanAdminCursos().getEvaluacionCurso().setEvcuEstado(false);;
-		getEvaluacionCursoServicioImpl().agregarEvaluacionCurso(getBeanAdminCursos().getEvaluacionCurso());
+		administracionService.agregarEvaluacionCurso(getBeanAdminCursos().getEvaluacionCurso());
 		Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.eliminar"));
 	}
 }
+
 
 

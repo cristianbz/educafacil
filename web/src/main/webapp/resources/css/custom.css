@@ -1,0 +1,291 @@
+:root {
+    /* Color Palette - Educafacil Premium */
+    --primary-color: #2563eb;
+    --primary-hover: #1d4ed8;
+    --secondary-color: #64748b;
+    --success-color: #10b981;
+    --danger-color: #ef4444;
+    --warning-color: #f59e0b;
+    --background-color: #f8fafc;
+    --surface-color: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    
+    /* Layout Variables */
+    --sidebar-width: 280px;
+    --sidebar-collapsed: 80px;
+    --topbar-height: 70px;
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    
+    /* Transitions */
+    --transition-fast: 0.2s ease;
+    --transition-base: 0.3s ease;
+}
+
+/* Global Styles */
+body {
+    background-color: var(--background-color);
+    color: var(--text-main);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Layout Overrides */
+.topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--topbar-height);
+    background: var(--surface-color);
+    color: var(--text-main);
+    box-shadow: var(--shadow-sm);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0 2rem;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: var(--topbar-height);
+    height: calc(100% - var(--topbar-height));
+    width: var(--sidebar-width);
+    background: #1e293b; /* Dark Slate 800 */
+    border-right: 1px solid var(--border-color);
+    padding: 1.5rem 1rem;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition-base);
+    overflow-y: auto;
+    z-index: 999;
+}
+
+.sidebar.collapsed {
+    width: var(--sidebar-collapsed);
+}
+
+.content {
+    margin-left: var(--sidebar-width);
+    margin-top: var(--topbar-height);
+    padding: 2.5rem;
+    background: var(--background-color);
+    min-height: calc(100vh - var(--topbar-height));
+}
+
+.content.expanded {
+    margin-left: var(--sidebar-collapsed);
+}
+
+/* PrimeFaces Component Enhancements */
+
+/* Cards and Panels */
+.ui-panel, .ui-card {
+    border-radius: 12px !important;
+    border: 1px solid var(--border-color) !important;
+    box-shadow: var(--shadow-sm) !important;
+    background: var(--surface-color) !important;
+    overflow: hidden;
+}
+
+.ui-panel-titlebar {
+    background: transparent !important;
+    border: none !important;
+    padding: 1.25rem !important;
+    border-bottom: 1px solid var(--border-color) !important;
+}
+
+/* Common PrimeFaces Button Aesthetics */
+.ui-button {
+    border-radius: 8px !important;
+    padding: 0.5rem 1rem !important;
+    transition: var(--transition-fast) !important;
+    font-weight: 500 !important;
+}
+
+.ui-button:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md) !important;
+}
+
+/* DataTables Styling */
+.ui-datatable {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.ui-datatable thead th {
+    background: #f1f5f9 !important;
+    color: var(--text-main) !important;
+    border-color: var(--border-color) !important;
+    padding: 1rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase;
+    font-size: 0.75rem !important;
+    letter-spacing: 0.05em;
+}
+
+.ui-datatable tbody td {
+    padding: 1rem !important;
+    border-color: var(--border-color) !important;
+}
+
+.ui-datatable-odd {
+    background: #f8fafc !important;
+}
+
+/* Topbar User Info */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 1rem;
+    background: #f1f5f9;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+}
+
+.user-info i {
+    color: var(--primary-color);
+    font-size: 1.1rem;
+}
+
+/* Sidebar Toggle custom style */
+.toggle-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: #f1f5f9;
+    border: 1px solid var(--border-color);
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-fast);
+}
+
+.toggle-btn:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+/* Dialogs */
+.ui-dialog {
+    border-radius: 16px !important;
+    box-shadow: var(--shadow-lg) !important;
+    border: none !important;
+}
+
+.ui-dialog-titlebar {
+    background: var(--surface-color) !important;
+    padding: 1.5rem !important;
+    font-weight: 700 !important;
+    border-bottom: 1px solid var(--border-color) !important;
+}
+
+/* Micro-animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.page-header {
+    animation: fadeIn 0.4s ease-out;
+}
+
+.ui-datatable {
+    animation: fadeIn 0.6s ease-out;
+}
+
+/* Custom Page Header (Educafacil Refined) */
+.page-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+}
+
+.page-title h2 {
+    font-weight: 800;
+    color: var(--text-main);
+    letter-spacing: -0.025em;
+    font-size: 1.875rem;
+}
+
+.page-title small {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+/* Breadcrumb Styling */
+.ui-breadcrumb {
+    background: transparent !important;
+    border: none !important;
+    padding-left: 0 !important;
+}
+
+/* Sidebar Menu Customization */
+.sidebar .ui-panelmenu {
+    border: none !important;
+}
+
+.sidebar .ui-panelmenu-panel {
+    border: none !important;
+    background: transparent !important;
+    margin-bottom: 0.5rem;
+}
+
+.sidebar .ui-panelmenu-header {
+    background: transparent !important;
+    border: none !important;
+    color: #94a3b8 !important; /* Slate 400 */
+    transition: var(--transition-fast);
+    border-radius: 8px !important;
+}
+
+.sidebar .ui-panelmenu-header.ui-state-active {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: white !important;
+}
+
+.sidebar .ui-panelmenu-header:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+}
+
+.sidebar .ui-panelmenu-content {
+    background: transparent !important;
+    border: none !important;
+    padding-left: 1rem !important;
+}
+
+.sidebar .ui-menuitem-link {
+    color: #cbd5e1 !important; /* Slate 300 */
+    border-radius: 6px;
+    margin: 2px 0;
+    transition: var(--transition-fast);
+}
+
+.sidebar .ui-menuitem-link:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+}
+
+.sidebar .ui-menuitem-text {
+    font-size: 0.9rem;
+    font-weight: 400;
+}
+
+.sidebar .ui-menuitem-icon {
+    color: var(--primary-color) !important;
+    margin-right: 0.75rem !important;
+}
