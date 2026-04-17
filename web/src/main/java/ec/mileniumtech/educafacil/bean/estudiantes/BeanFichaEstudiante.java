@@ -12,7 +12,7 @@ import ec.mileniumtech.educafacil.modelo.persistencia.entity.Matricula;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumCargoTrabajo;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumModalidadCurso;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumNivelEstudio;
-import jakarta.enterprise.context.RequestScoped;
+import jakarta.faces.view.ViewScoped;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,7 +21,7 @@ import lombok.Setter;
  *
  */
 
-@RequestScoped
+@ViewScoped
 public class BeanFichaEstudiante implements Serializable{
 
 	
