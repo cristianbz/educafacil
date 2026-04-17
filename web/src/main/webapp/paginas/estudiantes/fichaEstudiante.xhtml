@@ -67,6 +67,7 @@
 							<div class="p-field p-col-12 p-md-1">
 								<p:message for="idCedula" />
 							</div>
+							<br/>
 							<div class="p-field p-col-12 p-md-8"></div>
 							<div class="p-field p-col-12 p-md-3">
 								<span class="ui-float-label ui-input-icon-right" 
@@ -77,6 +78,7 @@
 									<p:outputLabel value="#{etiquetas['apellidos']}:*" />
 								</span>
 							</div>
+							
 							<div class="p-field p-col-12 p-md-1">
 								<p:message for="idApellidos" />
 							</div>
@@ -286,13 +288,14 @@
 							<p:column style="width:50px;">
 								<p:commandLink
 									disabled="#{matricula.matrEstado.equals('INSMAT05')?false:true}"
-									title="#{tooltip['certCurso']}"
+									title="#{tooltip['certCurso']}" 
 									action="#{backingFichaEstudiante.generarPdf()}" process="@this"
 									ajax="false">
 									<f:setPropertyActionListener value="#{matricula}"
 										target="#{backingFichaEstudiante.beanFichaEstudiante.matriculaSeleccionada}"></f:setPropertyActionListener>
 									<i class="pi pi-file-pdf" style="font-size: 1em; color: green;"></i>	
 								</p:commandLink>
+
 							</p:column>
 						</p:dataTable>
 					</p:tab>

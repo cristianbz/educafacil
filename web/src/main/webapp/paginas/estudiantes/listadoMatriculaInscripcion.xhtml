@@ -169,14 +169,27 @@
 				<p:menuitem value="Secretaria" url="#" />
 				<p:menuitem value="Reporte clientes" url="#" />
 			</p:breadCrumb>				
-			<br/>
-			<p:splitButton value="#{etiquetas['accionesRealizar']}">
-	            <p:menuitem value="#{botones['nuevaBusqueda']}" process="@this" 
+						<div class="page-header">
+
+				<div class="page-title">
+					<h2>Reportes estudiantes</h2>
+					<small>Reportes matriculas por cursos</small>
+				</div>
+
+				<div class="page-actions">
+
+					<!-- Acción primaria -->
+					<p:commandButton value="#{botones['nuevaBusqueda']}" process="@this" icon="pi pi-plus"
+						styleClass="ui-button-success"
 							update="panelDatosBusqueda panelBuscar" resetValues="true"
-							partialSubmit="true" icon="#{botones['icono.nuevo']}" actionListener="#{backingListadoEstudiantes.mostrarDialogoBuscar()}"/>
-	        </p:splitButton>	
-			<br/>	
-			<br/>
+							partialSubmit="true"  actionListener="#{backingListadoEstudiantes.mostrarDialogoBuscar()}"/>
+
+					
+
+				</div>
+
+			</div>
+
 					<p:panel id="panelDatosBusqueda">	
 						<h:panelGrid columns="2">
 							<p:outputLabel value="#{etiquetas['curso']}: #{backingListadoEstudiantes.beanListadoEstudiantes.cursoSeleccionado.cursNombre} [Inicio: #{backingListadoEstudiantes.formatDate(backingListadoEstudiantes.beanListadoEstudiantes.ofertaSeleccionada.ocurFechaInicio,'yyyy-MM-dd')} Fin: #{backingListadoEstudiantes.formatDate(backingListadoEstudiantes.beanListadoEstudiantes.ofertaSeleccionada.ocurFechaFin,'yyyy-MM-dd')}] #{etiquetas['horario']}: #{backingListadoEstudiantes.beanListadoEstudiantes.ofertaSeleccionada.ocurHorario}"/>
