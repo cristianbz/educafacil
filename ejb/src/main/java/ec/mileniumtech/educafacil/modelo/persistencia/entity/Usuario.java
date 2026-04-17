@@ -92,7 +92,8 @@ public class Usuario implements Serializable {
 //	@OneToMany(mappedBy="persona", fetch=FetchType.LAZY)
 //	private List<Usuario> usuarios;
 
-	
+	@Getter
+	@Setter
 	@OneToMany(mappedBy="usuario", fetch=FetchType.LAZY,cascade={CascadeType.PERSIST,CascadeType.MERGE})
 	private List<UsuarioRol> usuarioRol;
 }

@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import ec.mileniumtech.educafacil.dao.impl.AreaDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.CatalogoDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.CursoDaoImpl;
+import ec.mileniumtech.educafacil.dao.impl.MatriculaDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.EspecialidadDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.EvaluacionCursoDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.InstructorDaoImpl;
@@ -28,6 +29,11 @@ import ec.mileniumtech.educafacil.modelo.persistencia.entity.OfertaCursos;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Persona;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.TipoEncuesta;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumTipoCatalogo;
+import ec.mileniumtech.educafacil.modelo.persistencia.dto.CursoDto;
+import ec.mileniumtech.educafacil.modelo.persistencia.dto.PersonaDto;
+import ec.mileniumtech.educafacil.modelo.persistencia.dto.MatriculaDto;
+import ec.mileniumtech.educafacil.modelo.persistencia.dto.DtoMapper;
+import ec.mileniumtech.educafacil.dao.impl.PersonaDaoImpl;
 import jakarta.ejb.EJB;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
@@ -71,6 +77,12 @@ public class AdministracionService {
 
     @EJB
     private EspecialidadDaoImpl especialidadDao;
+
+    @EJB
+    private PersonaDaoImpl personaDao;
+
+    @EJB
+    private MatriculaDaoImpl matriculaDao;
 
     /**
      * Lista la oferta de cursos activos ordenados por área.
@@ -228,5 +240,87 @@ public class AdministracionService {
      */
     public void agregarEvaluacionCurso(EvaluacionCurso evaluacionCurso) {
         evaluacionCursoDao.agregarEvaluacionCurso(evaluacionCurso);
+    }
+    
+    // Métodos para API REST
+    
+    /**
+     * Lista todos los cursos en formato DTO.
+     */
+    public List<CursoDto> listarCursosDto() {
+        return cursoDao.listaCursos().stream()
+                .map(DtoMapper::entidadACursoDto)
+                .collect(Collectors.toList());
+    }
+    
+    /**
+     * Busca una persona por cédula y correo en formato DTO.
+     */
+    public PersonaDto buscarPersonaDto(String cedula, String correo) {
+        Persona persona = personaDao.buscarPersonaPorCedulaCorreo(cedula, correo);
+        return DtoMapper.entidadAPersonaDto(persona);
+    }
+
+    /**
+     * Lista las matrículas de un estudiante en formato DTO.
+     */
+    public List<MatriculaDto> listarMatriculasEstudianteDto(int codigoEstudiante) {
+        return matriculaDao.listaMatriculasEstudiante(codigoEstudiante).stream()
+                .map(DtoMapper::entidadAMatriculaDto)
+                .collect(Collectors.toList());
+    }
+    /**
+     * Guarda una nueva persona desde un DTO.
+     */
+    public PersonaDto guardarPersona(PersonaDto personaDto) {
+        Persona persona = DtoMapper.dtoAEntidadPersona(personaDto);
+        personaDao.agregarPersona(persona);
+        return DtoMapper.entidadAPersonaDto(persona);
+    }
+
+    /**
+     * Actualiza una persona existente desde un DTO.
+     */
+    public PersonaDto actualizarPersona(PersonaDto personaDto) {
+        Persona persona = DtoMapper.dtoAEntidadPersona(personaDto);
+        personaDao.actualizarPersona(persona);
+        return DtoMapper.entidadAPersonaDto(persona);
+    }
+
+    /**
+     * Guarda un nuevo curso desde un DTO.
+     */
+    public CursoDto guardarCurso(CursoDto cursoDto) {
+        Curso curso = DtoMapper.dtoAEntidadCurso(cursoDto);
+        cursoDao.guardar(curso);
+        return DtoMapper.entidadACursoDto(curso);
+    }
+
+    /**
+     * Actualiza un curso existente desde un DTO.
+     */
+    public CursoDto actualizarCursoDto(CursoDto cursoDto) {
+        Curso curso = DtoMapper.dtoAEntidadCurso(cursoDto);
+        cursoDao.actualizar(curso);
+        return DtoMapper.entidadACursoDto(curso);
+    }
+    /**
+     * Elimina una persona por su ID.
+     */
+    public void eliminarPersona(int id) {
+        Persona persona = personaDao.buscarPersonaPorId(id);
+        if (persona != null) {
+            personaDao.remover(persona);
+        }
+    }
+
+    /**
+     * Elimina un curso por su ID.
+     */
+    public void eliminarCurso(int id) {
+        Curso curso = cursoDao.getEntityManager().find(Curso.class, id);
+        if (curso != null) {
+            cursoDao.remover(curso);
+        }
     }
 }
