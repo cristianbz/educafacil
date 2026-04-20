@@ -65,9 +65,9 @@ public class Puntoemision implements Serializable {
 
     // Relación con la entidad Empresa
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "empr_id", referencedColumnName = "empr_id", 
+    @JoinColumn(name = "empm_id", referencedColumnName = "empm_id", 
                 insertable = false, updatable = false)
-    private Empresa empresa;
+    private EmpresaMatriz empresaMatriz;
 
     // Constructor por defecto
     public Puntoemision() {

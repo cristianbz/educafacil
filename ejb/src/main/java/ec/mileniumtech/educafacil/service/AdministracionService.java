@@ -10,6 +10,8 @@ import ec.mileniumtech.educafacil.dao.impl.AreaDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.CatalogoDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.CursoDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.MatriculaDaoImpl;
+import ec.mileniumtech.educafacil.dao.impl.EmpresaMatrizDaoImpl;
+import ec.mileniumtech.educafacil.dao.impl.PagosDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.EspecialidadDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.EvaluacionCursoDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.InstructorDaoImpl;
@@ -20,12 +22,15 @@ import ec.mileniumtech.educafacil.dao.impl.TipoEncuestaDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Area;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Catalogo;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Curso;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.Empresa;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.EmpresaMatriz;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Especialidad;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.EvaluacionCurso;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Instructor;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.ObjetoEvaluacion;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.OfertaCapacitacion;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.OfertaCursos;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.Pagos;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Persona;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.TipoEncuesta;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumTipoCatalogo;
@@ -83,6 +88,12 @@ public class AdministracionService {
 
     @EJB
     private MatriculaDaoImpl matriculaDao;
+
+    @EJB
+    private EmpresaMatrizDaoImpl empresaDao;
+
+    @EJB
+    private PagosDaoImpl pagosDao;
 
     /**
      * Lista la oferta de cursos activos ordenados por área.
@@ -322,5 +333,33 @@ public class AdministracionService {
         if (curso != null) {
             cursoDao.remover(curso);
         }
+    }
+
+    /**
+     * Lista todas las empresas activas.
+     */
+    public List<EmpresaMatriz> listarEmpresas() {
+        return empresaDao.listaEmpresas();
+    }
+
+    /**
+     * Guarda o actualiza una empresa.
+     */
+    public void guardarEmpresa(EmpresaMatriz empresa) {
+        empresaDao.agregarEmpresa(empresa);
+    }
+
+    /**
+     * Lista todos los pagos.
+     */
+    public List<Pagos> listarPagos() {
+        return pagosDao.listarTodosLosPagos();
+    }
+
+    /**
+     * Actualiza un pago.
+     */
+    public void actualizarPago(Pagos pago) {
+        pagosDao.actualizarPago(pago);
     }
 }

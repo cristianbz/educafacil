@@ -1,0 +1,133 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core"
+      xmlns:h="jakarta.faces.html"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
+
+	<ui:define name="contenido">
+		<f:event listener="#{backingLogin.validarSesion()}"
+			type="preRenderView" />
+		<h:form id="formEmpresa" prependId="false">
+			<p:growl id="growl" life="3000" showDetail="true" />
+
+			<p:breadCrumb styleClass="mb-3">
+				<p:menuitem value="Inicio" icon="pi pi-home" outcome="/paginas/index?faces-redirect=true" />
+				<p:menuitem value="Administración" />
+				<p:menuitem value="Configuración Emisor" />
+			</p:breadCrumb>
+
+			<div class="page-header">
+				<div class="page-title">
+					<h2>Configuración de Emisor</h2>
+					<small>Datos tributarios y firma electrónica para facturación</small>
+				</div>
+				<div class="page-actions">
+					<p:commandButton value="#{botones['grabar']}" 
+                                     icon="pi pi-save" styleClass="ui-button-primary" 
+                                     actionListener="#{backingEmpresa.guardarEmpresa()}"
+                                     process="@form" update="growl formEmpresa" />
+				</div>
+			</div>
+			
+			<div class="grid">
+                <div class="col-12 md:col-6">
+                    <p:panel header="Datos Básicos" styleClass="mb-3">
+                        <div class="ui-fluid">
+                            <div class="field mb-3">
+                                <p:outputLabel for="ruc" value="RUC" />
+                                <p:inputText id="ruc" value="#{backingEmpresa.beanEmpresa.empresa.empmRuc}" maxlength="13" required="true" />
+                            </div>
+                            <div class="field mb-3">
+                                <p:outputLabel for="razonSocial" value="Razón Social" />
+                                <p:inputText id="razonSocial" value="#{backingEmpresa.beanEmpresa.empresa.empmRazonSocial}" required="true" />
+                            </div>
+                            <div class="field mb-3">
+                                <p:outputLabel for="nombreComercial" value="Nombre Comercial" />
+                                <p:inputText id="nombreComercial" value="#{backingEmpresa.beanEmpresa.empresa.empmNombreComercial}" />
+                            </div>
+                            <div class="field mb-3">
+                                <p:outputLabel for="mail" value="CORREO" />
+                                <p:inputText id="mail" value="#{backingEmpresa.beanEmpresa.empresa.empmMail}" required="true" >
+                                	<p:ajax event="blur" process="@this" />
+									<f:validateRegex
+										pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$" />
+                                </p:inputText>
+                            </div>
+                            <div class="field mb-3">
+                                <p:outputLabel for="dirMatriz" value="Dirección Matriz" />
+                                <p:inputTextarea id="dirMatriz" value="#{backingEmpresa.beanEmpresa.empresa.empmDireccion}" required="true" />
+                            </div>
+                        </div>
+                    </p:panel>
+                </div>
+
+                <div class="col-12 md:col-6">
+                    <p:panel header="Configuración SRI" styleClass="mb-3">
+                        <div class="ui-fluid">
+                            <div class="field mb-3">
+                                <p:outputLabel for="ambiente" value="Ambiente" />
+                                <p:selectOneMenu id="ambiente" value="#{backingEmpresa.beanEmpresa.empresa.empmAmbiente}">
+                                    <f:selectItem itemLabel="PRUEBAS" itemValue="1" />
+                                    <f:selectItem itemLabel="PRODUCCIÓN" itemValue="2" />
+                                </p:selectOneMenu>
+                            </div>
+                            <div class="field mb-3">
+                                <p:outputLabel for="tipoEmision" value="Tipo Emisión" />
+                                <p:selectOneMenu id="tipoEmision" value="#{backingEmpresa.beanEmpresa.empresa.empmTipoEmision}">
+                                    <f:selectItem itemLabel="NORMAL" itemValue="1" />
+                                </p:selectOneMenu>
+                            </div>
+                            <div class="field mb-3">
+                                <p:outputLabel for="obligado" value="Obligado a llevar Contabilidad" />
+                                <p:selectBooleanButton id="obligado" value="#{backingEmpresa.beanEmpresa.empresa.empmObligadoContabilidad}" onLabel="SÍ" offLabel="NO" style="width:6rem" />
+                            </div>
+                        </div>
+                    </p:panel>
+
+                    <p:panel header="Firma Electrónica (.p12)" styleClass="mb-3">
+                        <div class="ui-fluid">
+                            <div class="field mb-3">
+                                <p:outputLabel for="claveFirma" value="Contraseña de Firma" />
+                                <p:password id="claveFirma" value="#{backingEmpresa.beanEmpresa.empresa.empmPasswordCertificado}" feedback="false" redisplay="true" />
+                            </div>
+                            <div class="field">
+                                <p:fileUpload listener="#{backingEmpresa.handleFileUploadCertificado}" 
+                                              mode="advanced" update="growl" auto="true" 
+                                              label="Seleccionar Certificado"
+                                              allowTypes="/(\.|\/)(p12|pfx)$/" />
+                                <h:outputText value="Certificado cargado: " rendered="#{backingEmpresa.beanEmpresa.empresa.empmCertificado != null}" style="color:green; font-weight:bold" />
+                                <h:outputText value="SÍ" rendered="#{backingEmpresa.beanEmpresa.empresa.empmCertificado != null}" style="color:green; font-weight:bold" />
+                            </div>
+                        </div>
+                    </p:panel>
+                </div>
+
+                <div class="col-12">
+                    <p:panel header="Logo de la Empresa">
+                        <div class="grid">
+                            <div class="col-12 md:col-4 text-center">
+                                <p:graphicImage value="#{backingEmpresa.beanEmpresa.empresa.empmLogo}" 
+                                                stream="false" cache="false"
+                                                rendered="#{backingEmpresa.beanEmpresa.empresa.empmLogo != null}"
+                                                style="max-width: 200px; max-height: 100px;"/>
+                            </div>
+                            <div class="col-12 md:col-8">
+                                <p:fileUpload listener="#{backingEmpresa.handleFileUploadLogo}" 
+                                              mode="advanced" update="growl @form" auto="true" 
+                                              label="Subir Nuevo Logo"
+                                              allowTypes="/(\.|\/)(gif|jpe?g|png)$/" />
+                            </div>
+                        </div>
+                    </p:panel>
+                </div>
+            </div>
+		</h:form>
+	</ui:define>
+
+</ui:composition>
+
+</html>

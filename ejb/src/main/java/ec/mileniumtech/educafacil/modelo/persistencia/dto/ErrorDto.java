@@ -1,5 +1,6 @@
 package ec.mileniumtech.educafacil.modelo.persistencia.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import lombok.Data;
@@ -18,5 +19,7 @@ public class ErrorDto implements Serializable {
 
     private String mensaje;
     private String codigo;
+    
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime timestamp;
 }

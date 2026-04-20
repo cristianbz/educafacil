@@ -1,0 +1,63 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:f="jakarta.faces.core"
+	xmlns:h="jakarta.faces.html"
+	xmlns:p="http://primefaces.org/ui">
+				<p:dialog widgetVar="dlgCursos" draggable="false" modal="true"
+				resizable="false" closable="false" responsive="true"
+				header="#{titulos['escojerCurso']}" style="font-size: 10px;width:100px;">
+				<p:scrollPanel mode="native" style="max-height:350px; max-width:350px;">
+				<div class="ui-fluid p-formgrid p-grid">
+					<div class="p-field p-col-12 p-md-6" >
+					<p:outputLabel value="#{etiquetas['cursosFinalizados']}:"/>
+					</div>
+					<div class="p-field p-col-12 p-md-6" >
+					<p:toggleSwitch value="#{backingPagos.beanPagos.cursosFinalizados}" >
+						<p:ajax listener="#{backingPagos.cargarCursosActivosCerrados}" update="idcurso" process="@this" partialSubmit="true"/>
+					</p:toggleSwitch>
+					</div>
+					<div class="p-field p-col-12 p-md-12" >
+					<span class="ui-float-label ui-input-icon-right" style="margin-top: 2em">
+					<p:selectOneMenu id="idcurso" tabindex="1" filter="true" filterMatchMode="contains"
+							requiredMessage="#{mensajes['campoRequerido']}" required="true"
+							value="#{backingPagos.beanPagos.cursoSeleccionado}"
+							converter="selectOneMenuConverter" panelStyle="width:380px"
+							style="width:300px;" effect="fade" var="c">
+							<f:selectItem itemLabel="#{mensajes['seleccionElemento']}"
+									itemValue="#{null}" noSelectionOption="true" />
+							<f:selectItems
+								value="#{backingPagos.beanPagos.listaOfertaCursos}" var="obj"
+								itemLabel="#{obj.ofertaCapacitacion.curso.cursNombre} - #{obj.ocurHorario}"
+								itemValue="#{obj}" />
+							<p:column width="80" headerText="#{etiquetas['curso']}">
+								<h:outputText value="#{c.ofertaCapacitacion.curso.cursNombre}" />
+							</p:column>
+							<p:column width="120" headerText="#{etiquetas['horario']}">
+								<p:outputLabel value="#{c.ocurHorario}" />
+							</p:column>
+							<p:column width="80" headerText="#{etiquetas['fechaInicio']}">
+								<h:outputLabel value="#{c.ocurFechaInicio}" id="finicio">
+									<f:convertDateTime for="finicio" pattern="yyyy-MM-dd" />
+								</h:outputLabel>
+							</p:column>
+							<p:column width="80" headerText="#{etiquetas['fechaFin']}">
+								<h:outputLabel value="#{c.ocurFechaFin}" id="ffin">
+									<f:convertDateTime for="ffin" pattern="yyyy-MM-dd" />
+								</h:outputLabel>
+							</p:column>
+							<p:ajax process="@this" event="change" />
+						</p:selectOneMenu><p:outputLabel value="#{etiquetas['curso']}: " />
+						</span>
+						</div>
+							
+				</div>
+				</p:scrollPanel>
+				<hr/>
+				<h:panelGrid columns="2" style="margin: 0 auto; text-align: center;">
+					<p:commandButton value="#{botones['aceptar']}" process="@this nombrecurso" partialSubmit="true"
+							update=":form:tablamatriculas nombrecurso growl" icon="#{botones['icono.select']}" tabindex="2"
+							actionListener="#{backingPagos.buscarMatriculadosCurso()}" />
+						<p:commandButton value="#{botones['cancelar']}" process="@this" icon="#{botones['icono.cancelar']}" oncomplete="PF('dlgCursos').hide();" tabindex="3"/>
+				</h:panelGrid>
+			</p:dialog>
+</ui:composition>
