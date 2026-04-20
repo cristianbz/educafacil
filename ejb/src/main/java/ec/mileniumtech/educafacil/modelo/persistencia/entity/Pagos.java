@@ -53,6 +53,21 @@ public class Pagos implements Serializable {
 	
 	@Column(name="pago_usuario_ingreso")
 	private String pagoUsuarioIngreso;
+	
+	@Column(name="pago_clave_acceso")
+	private String pagoClaveAcceso;
+
+	@Column(name="pago_estado_sri")
+	private String pagoEstadoSri;
+
+	@Column(name="pago_xml_autorizado")
+	private byte[] pagoXmlAutorizado;
+
+	@Column(name="pago_pdf_ride")
+	private byte[] pagoPdfRide;
+
+	@Column(name="pago_mensaje_sri")
+	private String pagoMensajeSri;
 		
 	@ManyToOne
 	@JoinColumn(name="matr_id")

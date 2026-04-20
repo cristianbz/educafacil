@@ -51,7 +51,25 @@ public class PagosDaoImpl extends GenericoDaoImpl<Pagos, Long>{
 			throw new SystemException("Error inesperado en pagos", "PAGO-UNEXPECTED-ERR", e);
 		}	
 	}
+	public void actualizarPago(Pagos pago) {
+		try {
+			getEntityManager().merge(pago);
+		} catch (PersistenceException e) {
+			throw new SystemException("Error de persistencia al actualizar pagos", "PAGO-UPDATE-ERR", e);
+		} catch (Exception e) {
+			throw new SystemException("Error inesperado al actualizar pagos", "PAGO-UNEXPECTED-ERR", e);
+		}
+	}
 
+	@SuppressWarnings("unchecked")
+	public List<Pagos> listarTodosLosPagos() {
+		try {
+			Query query = getEntityManager().createQuery("SELECT p FROM Pagos p ORDER BY p.pagoFecha DESC");
+			return query.getResultList();
+		} catch (Exception e) {
+			throw new SystemException("Error al listar todos los pagos", "PAGO-LIST-ERR", e);
+		}
+	}
 	@SuppressWarnings("unchecked")
 	public List<DetallePagos> buscaPagosPorMatricula(int codigoMatricula){
 		try {

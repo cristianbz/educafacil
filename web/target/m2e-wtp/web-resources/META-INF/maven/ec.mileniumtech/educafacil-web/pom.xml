@@ -241,6 +241,11 @@
   <artifactId>microprofile-openapi-api</artifactId>
   <version>3.1</version> <!-- Puedes elegir otra versión si tu servidor la requiere -->
 </dependency>
+<dependency>
+    <groupId>com.fasterxml.jackson.datatype</groupId>
+    <artifactId>jackson-datatype-jsr310</artifactId>
+    <version>2.15.2</version>
+</dependency>
     </dependencies>
 
     <build>

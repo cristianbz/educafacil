@@ -1,0 +1,105 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core"
+      xmlns:h="jakarta.faces.html"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
+
+	<ui:define name="contenido">
+		<f:event listener="#{backingLogin.validarSesion()}"
+			type="preRenderView" />
+		<h:form id="formFacturas" prependId="false">
+			<p:growl id="growl" life="3000" showDetail="true" />
+
+			<p:breadCrumb styleClass="mb-3">
+				<p:menuitem value="Inicio" icon="pi pi-home" outcome="/paginas/index?faces-redirect=true" />
+				<p:menuitem value="Administración" />
+				<p:menuitem value="Gestión de Facturas" />
+			</p:breadCrumb>
+
+			<div class="page-header">
+				<div class="page-title">
+					<h2>Gestión de Facturación Electrónica</h2>
+					<small>Monitoreo de estados SRI y descarga de comprobantes</small>
+				</div>
+                <div class="page-actions">
+                    <p:commandButton value="Actualizar Lista" icon="pi pi-refresh" 
+                                     actionListener="#{backingFacturacion.cargarPagos()}" 
+                                     update="tablaPagos" styleClass="ui-button-secondary" />
+                </div>
+			</div>
+			
+			<p:panel>
+				<p:dataTable id="tablaPagos" value="#{backingFacturacion.beanFacturacion.listaPagos}" 
+                             var="pago" rows="15" paginator="true" reflow="true"
+                             rowKey="#{pago.pagoId}" emptyMessage="No hay registros de facturación.">
+
+                    <p:column headerText="Fecha" style="width:100px">
+                        <h:outputText value="#{pago.pagoFecha}">
+                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column headerText="Cliente" filterBy="#{pago.matricula.estudiante.persona.persApellidos}" filterMatchMode="contains">
+                        <h:outputText value="#{pago.matricula.estudiante.persona.persApellidos} #{pago.matricula.estudiante.persona.persNombres}" />
+                        <br/>
+                        <small style="color:gray">#{pago.matricula.estudiante.persona.persDocumentoIdentidad}</small>
+                    </p:column>
+
+                    <p:column headerText="No. Factura" filterBy="#{pago.pagoNumeroFactura}" filterMatchMode="contains" style="width:120px">
+                        <h:outputText value="#{pago.pagoNumeroFactura}" />
+                    </p:column>
+
+                    <p:column headerText="Estado SRI" style="width:120px; text-align:center">
+                        <p:tag value="#{pago.pagoEstadoSri}" 
+                               severity="#{pago.pagoEstadoSri eq 'AUTORIZADO' ? 'success' : (pago.pagoEstadoSri eq 'RECHAZADO' ? 'danger' : 'warning')}" 
+                               rendered="#{pago.pagoEstadoSri != null}" />
+                        <h:outputText value="PENDIENTE" rendered="#{pago.pagoEstadoSri == null}" style="color:gray" />
+                    </p:column>
+
+                    <p:column headerText="Mensaje SRI">
+                        <h:outputText value="#{pago.pagoMensajeSri}" title="#{pago.pagoMensajeSri}" 
+                                     style="font-size: 0.85em; display: block; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" />
+                    </p:column>
+
+                    <p:column headerText="Acciones" style="width:180px; text-align:center">
+                        <!-- Descargar XML -->
+                        <p:commandButton icon="pi pi-file-excel" title="Descargar XML" 
+                                         ajax="false" rendered="#{pago.pagoXmlAutorizado != null}"
+                                         styleClass="ui-button-outlined ui-button-info mr-2">
+                            <p:fileDownload value="#{backingFacturacion.getXmlDownload(pago)}" />
+                        </p:commandButton>
+
+                        <!-- Descargar PDF -->
+                        <p:commandButton icon="pi pi-file-pdf" title="Descargar PDF (RIDE)" 
+                                         ajax="false" rendered="#{pago.pagoPdfRide != null}"
+                                         styleClass="ui-button-outlined ui-button-help mr-2">
+                            <p:fileDownload value="#{backingFacturacion.getPdfDownload(pago)}" />
+                        </p:commandButton>
+
+                        <!-- Reintentar -->
+                        <p:commandButton icon="pi pi-send" title="Reintentar Envío al SRI" 
+                                         actionListener="#{backingFacturacion.reintentarFacturacion(pago)}"
+                                         update="growl tablaPagos"
+                                         rendered="#{pago.pagoEstadoSri ne 'AUTORIZADO'}"
+                                         styleClass="ui-button-outlined ui-button-warning" />
+                    </p:column>
+
+                    <p:rowExpansion>
+                        <div class="p-3">
+                            <strong>Clave de Acceso:</strong> #{pago.pagoClaveAcceso}
+                            <br/>
+                            <strong>Detalle del Error:</strong> #{pago.pagoMensajeSri}
+                        </div>
+                    </p:rowExpansion>
+				</p:dataTable>
+			</p:panel>
+		</h:form>
+	</ui:define>
+
+</ui:composition>
+
+</html>

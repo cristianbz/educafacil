@@ -29,6 +29,7 @@ import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetallePagos;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Matricula;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.OfertaCursos;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Pagos;
+import ec.mileniumtech.educafacil.service.PagosService;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumFormaPago;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumTipoCatalogo;
@@ -70,6 +71,9 @@ public class BackingPagos implements Serializable{
 	@EJB
 	@Getter
 	private PagosDaoImpl pagosServicio;
+
+	@EJB
+	private PagosService pagosService;
 
 	@EJB
 	@Getter
@@ -141,23 +145,38 @@ public class BackingPagos implements Serializable{
 		}
 	}
 	public void grabarPago() {
-	
+		try {
 			double totalPagado= getBeanPagos().getMatricula().getTotalPagadoCurso(); 
 			getBeanPagos().getPago().setPagoFecha(new Date());			
-//			getBeanPagos().getPago().setMatricula(getBeanPagos().getListaCursosMatriculados().get(0));
 			getBeanPagos().getPago().setDetallePagos(getBeanPagos().getListaDetallePagos());
 			getBeanPagos().getPago().setPagoUsuarioIngreso(getBeanLogin().getUsuario().getUsuaUsuario());
-			getPagosServicio().agregarPago(getBeanPagos().getPago());
+			
+			// Usar el nuevo servicio que orquesta pago + facturación
+			pagosService.registrarPagoYFacturar(getBeanPagos().getPago());
+			
 			getBeanPagos().setListaDetallePagosRealizados(new ArrayList<>());
 			getBeanPagos().setListaDetallePagosRealizados(getPagosServicio().buscaPagosPorMatricula(getBeanPagos().getPago().getMatricula().getMatrId()));
 			
 			getBeanPagos().getMatricula().setTotalPagadoCurso(totalPagado + getBeanPagos().getPago().getDetallePagos().stream().mapToDouble(p -> p.getDepaValor()).sum());
+			
 			Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.grabar"));
+			
+			// Notificar estado del SRI
+			String estadoSri = getBeanPagos().getPago().getPagoEstadoSri();
+			if ("AUTORIZADO".equals(estadoSri)) {
+				Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Facturación Electrónica", "Comprobante " + getBeanPagos().getPago().getPagoNumeroFactura() + " AUTORIZADO y enviado al correo.");
+			} else if (estadoSri != null) {
+				Mensaje.verMensaje(FacesMessage.SEVERITY_WARN, "Facturación Electrónica", "Estado: " + estadoSri + ". Puede revisar el detalle en Gestión de Facturas.");
+			}
+			
 			Mensaje.ocultarDialogo("dlgGrabar");
 			Mensaje.ocultarDialogo("dlgRegistroPago");
 			getBeanPagos().setListaDetallePagos(new ArrayList<>());
 			getBeanPagos().setPago(new Pagos());
-		
+		} catch (Exception e) {
+			log.error("Error al registrar pago y factura", e);
+			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), "Error en facturación: " + e.getMessage());
+		}
 	}
 	public void mostrarDialogoGrabar() {
 		if(getBeanPagos().getListaDetallePagos().size()>0 && getBeanPagos().getMatricula().getEstudiante()!=null) {
