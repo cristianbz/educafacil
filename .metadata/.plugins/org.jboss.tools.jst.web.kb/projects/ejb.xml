@@ -59,9 +59,9 @@
   <path value="C:/Users/christian/.m2/repository/com/google/errorprone/error_prone_annotations/2.28.0/error_prone_annotations-2.28.0.jar"/>
   <path value="C:/Users/christian/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.10.1/junit-jupiter-params-5.10.1.jar"/>
   <path value="C:/Users/christian/.m2/repository/jakarta/transaction/jakarta.transaction-api/2.0.1/jakarta.transaction-api-2.0.1.jar"/>
+  <path value="C:/Users/christian/.m2/repository/jakarta/mail/jakarta.mail-api/2.1.0/jakarta.mail-api-2.1.0.jar"/>
   <path value="C:/Users/christian/wildfly-30.0.0.Final/modules/system/layers/base/jakarta/transaction/api/main/jakarta.transaction-api-2.0.1.jar"/>
   <path value="C:/Users/christian/wildfly-30.0.0.Final/modules/system/layers/base/org/wildfly/security/elytron-base/main/wildfly-elytron-password-impl-2.2.2.Final.jar"/>
-  <path value="C:/Users/christian/.m2/repository/jakarta/mail/jakarta.mail-api/2.1.0/jakarta.mail-api-2.1.0.jar"/>
   <path value="C:/Users/christian/.m2/repository/javax/xml/bind/jaxb-api/2.3.1/jaxb-api-2.3.1.jar"/>
   <path value="C:/Users/christian/wildfly-30.0.0.Final/modules/system/layers/base/org/wildfly/security/elytron-base/main/wildfly-elytron-mechanism-http-2.2.2.Final.jar"/>
   <path value="C:/Users/christian/.m2/repository/org/mockito/mockito-all/1.8.4/mockito-all-1.8.4.jar"/>
@@ -132,8 +132,8 @@
   <path value="C:/Users/christian/.m2/repository/org/jfree/jfreechart/1.0.19/jfreechart-1.0.19.jar"/>
   <path value="C:/Users/christian/.m2/repository/org/jboss/shrinkwrap/descriptors/shrinkwrap-descriptors-spi/2.0.0/shrinkwrap-descriptors-spi-2.0.0.jar"/>
   <path value="C:/Users/christian/.m2/repository/commons-codec/commons-codec/1.10/commons-codec-1.10.jar"/>
-  <path value="C:/Users/christian/wildfly-30.0.0.Final/modules/system/layers/base/jakarta/mail/api/main/jakarta.mail-api-2.1.2.jar"/>
   <path value="C:/Users/christian/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.15.2/jackson-annotations-2.15.2.jar"/>
+  <path value="C:/Users/christian/wildfly-30.0.0.Final/modules/system/layers/base/jakarta/mail/api/main/jakarta.mail-api-2.1.2.jar"/>
   <path value="C:/Users/christian/wildfly-30.0.0.Final/modules/system/layers/base/org/wildfly/security/elytron-base/main/wildfly-elytron-http-digest-2.2.2.Final.jar"/>
   <path value="C:/Users/christian/wildfly-30.0.0.Final/modules/system/layers/base/org/wildfly/security/elytron-base/main/wildfly-elytron-sasl-localuser-2.2.2.Final.jar"/>
   <path value="C:/Users/christian/wildfly-30.0.0.Final/modules/system/layers/base/org/jboss/resteasy/resteasy-jaxb-provider/main/resteasy-jaxb-provider-6.2.5.Final.jar"/>
@@ -299,20 +299,28 @@
  <validation>
   <core validator-id="jboss.cdi.core"/>
   <el>
-   <linked-el length="21" name="%0" offset="5865" path="%1"/>
-   <linked-el length="21" name="%2" offset="5476" path="%1"/>
-   <linked-el length="21" name="%3" offset="5476" path="%1"/>
-   <linked-el length="21" name="%4" offset="5865" path="%1"/>
-   <linked-el length="21" name="%5" offset="5865" path="%1"/>
+   <linked-el length="53" name="%0" offset="8004" path="%1"/>
+   <linked-el length="53" name="%0" offset="8823" path="%1"/>
+   <linked-el length="21" name="%2" offset="6876" path="%1"/>
+   <linked-el length="21" name="%3" offset="6487" path="%1"/>
+   <linked-el length="53" name="%4" offset="8004" path="%1"/>
+   <linked-el length="21" name="%4" offset="6487" path="%1"/>
+   <linked-el length="53" name="%4" offset="8823" path="%1"/>
+   <linked-el length="53" name="%5" offset="8004" path="%1"/>
+   <linked-el length="53" name="%5" offset="8823" path="%1"/>
+   <linked-el length="21" name="%6" offset="6876" path="%1"/>
+   <linked-el length="21" name="%7" offset="6876" path="%1"/>
   </el>
  </validation>
  <aliases>
+  <alias path="project.build.directory" value="%0"/>
   <alias path="/ejb/pom.xml" value="%1"/>
-  <alias path="version.ejb" value="%0"/>
-  <alias path="project.artifactId" value="%2"/>
-  <alias path="project" value="%3"/>
-  <alias path="version" value="%4"/>
-  <alias path="version.ejb.plugin" value="%5"/>
+  <alias path="version.ejb" value="%2"/>
+  <alias path="project.artifactId" value="%3"/>
+  <alias path="project" value="%4"/>
+  <alias path="project.build" value="%5"/>
+  <alias path="version" value="%6"/>
+  <alias path="version.ejb.plugin" value="%7"/>
  </aliases>
  <includes/>
  <uris/>

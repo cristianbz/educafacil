@@ -24,8 +24,7 @@
       <!-- If you are running in a production environment, add a managed
          data source, this configuration uses the JakartaEE default data source is just for development and testing! -->
       <jta-data-source>java:/capacitacionesDS</jta-data-source>
-      <class>ec.mileniumtech.educafacil.modelo.persistencia.entity.Puntoemision</class>
-      <class>ec.mileniumtech.educafacil.modelo.persistencia.entity.Puntoemision</class>
+      <class>ec.mileniumtech.educafacil.modelo.persistencia.entity.PuntoEmision</class>
       <class>ec.mileniumtech.educafacil.modelo.persistencia.entity.Producto</class>
       <properties>
          <!--The database schema is auto created on deployment and dropped before redeploy.
