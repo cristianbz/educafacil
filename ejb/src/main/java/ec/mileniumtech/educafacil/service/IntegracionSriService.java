@@ -3,13 +3,15 @@ package ec.mileniumtech.educafacil.service;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 
-import ec.mileniumtech.educafacil.dao.impl.PagosDaoImpl;
-import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetallePagos;
+import ec.mileniumtech.educafacil.dao.impl.FacturaDaoImpl;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleFactura;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.DocumentoElectronico;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.EmpresaMatriz;
-import ec.mileniumtech.educafacil.modelo.persistencia.entity.Pagos;
-import ec.mileniumtech.educafacil.modelo.sri.Factura;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.Factura;
 import ec.mileniumtech.educafacil.modelo.sri.Factura.Detalle;
 import ec.mileniumtech.educafacil.modelo.sri.Factura.InfoFactura;
 import ec.mileniumtech.educafacil.modelo.sri.Factura.InfoTributaria;
@@ -25,6 +27,7 @@ import jakarta.ejb.Stateless;
 
 /**
  * Orquestador del proceso de facturación electrónica: Generación -> Firma -> Envío -> Autorización.
+ * Refactorizado para utilizar la entidad Factura.
  */
 @Stateless
 @LocalBean
@@ -49,24 +52,31 @@ public class IntegracionSriService {
     private NotificacionService notificacionService;
 
     @EJB
-    private PagosDaoImpl pagosDao;
+    private FacturaDaoImpl facturaDao;
 
     /**
-     * Procesa una factura electrónica completa a partir de un pago.
+     * Procesa una factura electrónica completa a partir de la entidad Factura.
      * 
-     * @param pago    Entidad Pagos con la información de la transacción.
-     * @param empresa Entidad Empresa con la configuración del emisor y certificado.
+     * @param facturaEntity Entidad Factura con toda la información cargada.
      * @throws Exception Si falla algún paso del proceso.
      */
-    public void procesarFacturaElectronica(Pagos pago, EmpresaMatriz empresa) throws Exception {
-        // 1. Datos iniciales y clave de acceso
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        String fechaEmision = sdf.format(pago.getPagoFecha() != null ? pago.getPagoFecha() : new Date());
+    public void procesarFacturaElectronica(Factura facturaEntity) throws Exception {
+        // 1. Obtener información del emisor y configuración
+        EmpresaMatriz empresa = facturaEntity.getPuntoEmision().getEmpresaMatriz();
+        if (empresa == null) {
+            throw new Exception("La factura no tiene una empresa matriz asociada.");
+        }
+
+        // Datos para la clave de acceso
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String fechaEmisionStr = facturaEntity.getFechaEmision().format(dtf);
         
-        // Estos valores deberían venir configurados en la Empresa o Punto de Emisión
-        String estab = "001"; 
-        String ptoEmi = "001";
-        String secuencial = String.format("%09d", pago.getPagoId()); // Usamos el ID como secuencial para el ejemplo
+        // El número de factura suele venir como XXX-XXX-XXXXXXXXX
+        String[] partesNumero = facturaEntity.getNumero().split("-");
+        String estab = partesNumero.length > 0 ? partesNumero[0] : "001";
+        String ptoEmi = partesNumero.length > 1 ? partesNumero[1] : "001";
+        String secuencial = partesNumero.length > 2 ? partesNumero[2] : String.format("%09d", facturaEntity.getId());
+        
         String serie = estab + ptoEmi;
         
         String claveAcceso = claveAccesoGenerator.generarClaveAcceso(
@@ -74,8 +84,8 @@ public class IntegracionSriService {
                 empresa.getEmpmAmbiente().toString(), serie, secuencial, 
                 "12345678", "1");
 
-        // 2. Construcción del objeto Factura (JAXB)
-        Factura factura = new Factura();
+        // 2. Construcción del objeto Factura SRI (JAXB)
+        ec.mileniumtech.educafacil.modelo.sri.Factura facturaSri = new ec.mileniumtech.educafacil.modelo.sri.Factura();
         
         // Info Tributaria
         InfoTributaria infoTrib = new InfoTributaria();
@@ -89,50 +99,84 @@ public class IntegracionSriService {
         infoTrib.setPtoEmi(ptoEmi);
         infoTrib.setSecuencial(secuencial);
         infoTrib.setDirMatriz(empresa.getEmpmDireccion());
-        factura.setInfoTributaria(infoTrib);
+        facturaSri.setInfoTributaria(infoTrib);
 
         // Info Factura
         InfoFactura infoFact = new InfoFactura();
-        infoFact.setFechaEmision(fechaEmision);
+        infoFact.setFechaEmision(fechaEmisionStr);
         infoFact.setDirEstablecimiento(empresa.getEmpmDireccion());
         infoFact.setObligadoContabilidad(empresa.isEmpmObligadoContabilidad() ? "SI" : "NO");
         
-        // Datos del cliente (Estudiante)
-        infoFact.setTipoIdentificacionComprador("05"); // Cédula por defecto
-        infoFact.setIdentificacionComprador(pago.getMatricula().getEstudiante().getPersona().getPersDocumentoIdentidad());
-        infoFact.setRazonSocialComprador(pago.getMatricula().getEstudiante().getPersona().getPersApellidos() + " " + 
-                                         pago.getMatricula().getEstudiante().getPersona().getPersNombres());
+        // Datos del cliente
+        infoFact.setTipoIdentificacionComprador(String.format("%02d", facturaEntity.getCliente().getTipoIdentificacion()));
+        infoFact.setIdentificacionComprador(facturaEntity.getCliente().getNumeroIdentificacion());
+        infoFact.setRazonSocialComprador(facturaEntity.getCliente().getNombresCompletos());
         
-        double totalSinImpuestos = 0;
-        for (DetallePagos dp : pago.getDetallePagos()) {
-            totalSinImpuestos += dp.getDepaValor();
-            
-            Detalle det = new Detalle();
-            det.setCodigoPrincipal(dp.getDepaId().toString());
-            det.setDescripcion("Servicio de Capacitación");
-            det.setCantidad(1);
-            det.setPrecioUnitario(dp.getDepaValor());
-            det.setPrecioTotalSinImpuesto(dp.getDepaValor());
-            factura.getDetalles().add(det);
+        infoFact.setTotalSinImpuestos(facturaEntity.getSubtotal().doubleValue());
+        infoFact.setTotalDescuento(facturaEntity.getDescuentoTotal().doubleValue());
+        infoFact.setImporteTotal(facturaEntity.getTotal().doubleValue());
+        
+        // Mapeo de Detalles
+        if (facturaEntity.getDetalles() != null) {
+            for (DetalleFactura df : facturaEntity.getDetalles()) {
+                Detalle det = new Detalle();
+                det.setCodigoPrincipal(df.getItem() != null ? df.getItem().getId().toString() : "SERV");
+                det.setDescripcion(df.getDescripcion());
+                det.setCantidad(df.getCantidad().doubleValue());
+                det.setPrecioUnitario(df.getPrecioUnitario().doubleValue());
+                det.setDescuento(df.getDescuento().doubleValue());
+                det.setPrecioTotalSinImpuesto(df.getPrecioUnitario().multiply(new java.math.BigDecimal(df.getCantidad())).subtract(df.getDescuento()).doubleValue());
+                
+                // SRI requiere impuestos por detalle
+                // Asumimos IVA 0% (Educación) para este ejemplo simplificado
+                ec.mileniumtech.educafacil.modelo.sri.Factura.Impuesto impDet = new ec.mileniumtech.educafacil.modelo.sri.Factura.Impuesto();
+                impDet.setCodigo("2"); // IVA
+                impDet.setCodigoPorcentaje("0"); // 0%
+                impDet.setBaseImponible(det.getPrecioTotalSinImpuesto());
+                impDet.setTarifa("0");
+                impDet.setValor(0.0);
+                det.getImpuestos().add(impDet);
+                
+                facturaSri.getDetalles().add(det);
+            }
         }
         
-        infoFact.setTotalSinImpuestos(totalSinImpuestos);
-        infoFact.setImporteTotal(totalSinImpuestos); // Asumiendo IVA 0% para educación
-        
-        // SRI requiere al menos un total con impuesto (aunque sea 0%)
+        // SRI requiere totales con impuestos
         TotalImpuesto ti = new TotalImpuesto();
         ti.setCodigo("2"); // IVA
         ti.setCodigoPorcentaje("0"); // 0%
-        ti.setBaseImponible(totalSinImpuestos);
-        ti.setValor(0);
+        ti.setBaseImponible(facturaEntity.getSubtotal().doubleValue());
+        ti.setValor(facturaEntity.getTotalImpuestos().doubleValue());
         infoFact.getTotalConImpuestos().add(ti);
         
-        factura.setInfoFactura(infoFact);
+        facturaSri.setInfoFactura(infoFact);
 
-        // 3. Generación del XML
-        String xmlString = facturaXmlService.generarXml(factura);
+        // Información Adicional
+        if (facturaEntity.getCliente().getDireccion() != null) {
+            ec.mileniumtech.educafacil.modelo.sri.Factura.CampoAdicional campoDir = new ec.mileniumtech.educafacil.modelo.sri.Factura.CampoAdicional();
+            campoDir.setNombre("Direccion");
+            campoDir.setValor(facturaEntity.getCliente().getDireccion());
+            facturaSri.getInfoAdicional().add(campoDir);
+        }
+        
+        if (facturaEntity.getCliente().getCorreo() != null) {
+            ec.mileniumtech.educafacil.modelo.sri.Factura.CampoAdicional campoEmail = new ec.mileniumtech.educafacil.modelo.sri.Factura.CampoAdicional();
+            campoEmail.setNombre("Email");
+            campoEmail.setValor(facturaEntity.getCliente().getCorreo());
+            facturaSri.getInfoAdicional().add(campoEmail);
+        }
 
-        // 4. Firma Electrónica
+        // 3. Inicializar o recuperar DocumentoElectronico
+        DocumentoElectronico docElec = facturaEntity.getDocumentoElectronico();
+        if (docElec == null) {
+            docElec = new DocumentoElectronico();
+            docElec.setFactura(facturaEntity);
+            facturaEntity.setDocumentoElectronico(docElec);
+        }
+        docElec.setClaveAcceso(claveAcceso);
+
+        // 4. Generación y Firma
+        String xmlString = facturaXmlService.generarXml(facturaSri);
         byte[] pkcs12 = empresa.getEmpmCertificado();
         String password = CriptografiaUtil.desencriptar(empresa.getEmpmPasswordCertificado());
             
@@ -141,53 +185,52 @@ public class IntegracionSriService {
         }
             
         byte[] xmlFirmado = xadesSignatureService.firmarDocumento(xmlString.getBytes("UTF-8"), pkcs12, password);
+        docElec.setXmlFirmado(xmlFirmado);
 
         // 5. Envío al SRI
         boolean esProduccion = empresa.getEmpmAmbiente() == 2;
         RespuestaSolicitud respuestaEnvio = sriWebServiceService.enviarComprobante(xmlFirmado, esProduccion);
         
         if ("RECIBIDA".equals(respuestaEnvio.getEstado())) {
-            // 6. Autorización (esperar un momento para que el SRI procese)
             Thread.sleep(3000);
             RespuestaComprobante respuestaAut = sriWebServiceService.autorizarComprobante(claveAcceso, esProduccion);
             
-            pago.setPagoClaveAcceso(claveAcceso);
-            
             if (!respuestaAut.getAutorizaciones().getAutorizacion().isEmpty()) {
                 Autorizacion aut = respuestaAut.getAutorizaciones().getAutorizacion().get(0);
-                pago.setPagoEstadoSri(aut.getEstado());
+                docElec.setEstado(aut.getEstado());
+                docElec.setNumeroAutorizacion(aut.getNumeroAutorizacion());
                 
                 if ("AUTORIZADO".equals(aut.getEstado())) {
-                    pago.setPagoXmlAutorizado(xmlFirmado); // Se debería guardar el XML que devuelve el SRI con la autorización, pero por ahora guardamos el firmado
+                    docElec.setXmlAutorizadoSri(xmlFirmado); // Idealmente el XML del SRI
                     
-                    // 7. Generar RIDE (PDF)
-                    // Nota: Se intenta cargar el .jrxml y el servicio lo compila si es necesario
+                    // 6. Generar RIDE (PDF)
                     InputStream jrxmlStream = getClass().getResourceAsStream("/reportes/factura.jrxml");
                     InputStream logoStream = (empresa.getEmpmLogo() != null) ? new ByteArrayInputStream(empresa.getEmpmLogo()) : null;
                     
                     if (jrxmlStream != null) {
-                        byte[] pdfContent = rideGeneratorService.generarRidePdf(factura, logoStream, jrxmlStream);
-                        pago.setPagoPdfRide(pdfContent);
+                        byte[] pdfContent = rideGeneratorService.generarRidePdf(facturaSri, logoStream, jrxmlStream);
+                        docElec.setPdfRide(pdfContent);
                         
-                        // 8. Enviar Notificación
-                        String destinatario = pago.getMatricula().getEstudiante().getPersona().getPersCorreoElectronico();
+                        // 7. Enviar Notificación
+                        String destinatario = facturaEntity.getCliente().getCorreo();
                         notificacionService.enviarComprobante(destinatario, xmlFirmado, pdfContent, secuencial);
                     }
                 } else {
                     if (!aut.getMensajes().getMensaje().isEmpty()) {
-                        pago.setPagoMensajeSri(aut.getMensajes().getMensaje().get(0).getMensaje());
+                        docElec.setMensajeSri(aut.getMensajes().getMensaje().get(0).getMensaje());
                     }
                 }
             }
-            // 9. Actualizar el pago con los resultados del SRI
-            pagosDao.actualizarPago(pago);
         } else {
-            pago.setPagoEstadoSri("RECHAZADO");
-            if (!respuestaEnvio.getComprobantes().getComprobante().get(0).getMensajes().getMensaje().isEmpty()) {
-                pago.setPagoMensajeSri(respuestaEnvio.getComprobantes().getComprobante().get(0).getMensajes().getMensaje().get(0).getMensaje());
+            docElec.setEstado("RECHAZADO");
+            if (respuestaEnvio.getComprobantes() != null && !respuestaEnvio.getComprobantes().getComprobante().isEmpty()) {
+                docElec.setMensajeSri(respuestaEnvio.getComprobantes().getComprobante().get(0).getMensajes().getMensaje().get(0).getMensaje());
             }
-            pagosDao.actualizarPago(pago);
-            throw new Exception("Error en envío al SRI: " + pago.getPagoMensajeSri());
+            facturaDao.actualizarFactura(facturaEntity);
+            throw new Exception("Error en envío al SRI: " + docElec.getMensajeSri());
         }
+        
+        // 8. Actualizar persistencia
+        facturaDao.actualizarFactura(facturaEntity);
     }
 }

@@ -20,38 +20,14 @@ public class PagosService {
     @EJB
     private PagosDaoImpl pagosDao;
 
-    @EJB
-    private EmpresaMatrizDaoImpl empresaDao;
-
-    @EJB
-    private IntegracionSriService integracionSriService;
-
     /**
-     * Registra un pago en el sistema y dispara automáticamente el proceso de facturación electrónica.
+     * Registra un pago en el sistema.
      * 
      * @param pago Entidad Pagos a registrar.
-     * @throws Exception Si ocurre un error en el registro o en la facturación.
+     * @throws Exception Si ocurre un error en el registro.
      */
     public void registrarPagoYFacturar(Pagos pago) throws Exception {
         // 1. Registrar el pago en la base de datos
         pagosDao.agregarPago(pago);
-
-        // 2. Obtener la información del emisor (Empresa)
-        List<EmpresaMatriz> empresas = empresaDao.listaEmpresas();
-        if (empresas == null || empresas.isEmpty()) {
-            throw new Exception("No se encontró una empresa activa configurada para facturar.");
-        }
-
-        // Tomamos la primera empresa activa por defecto
-        EmpresaMatriz empresa = empresas.get(0);
-
-        // 3. Procesar la facturación electrónica
-        try {
-            integracionSriService.procesarFacturaElectronica(pago, empresa);
-        } catch (Exception e) {
-            // Se puede decidir si revertir la transacción o simplemente registrar el error
-            // En este caso, lanzamos la excepción para informar al usuario
-            throw new Exception("Error al procesar la factura electrónica: " + e.getMessage(), e);
-        }
     }
 }

@@ -161,14 +161,6 @@ public class BackingPagos implements Serializable{
 			
 			Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.grabar"));
 			
-			// Notificar estado del SRI
-			String estadoSri = getBeanPagos().getPago().getPagoEstadoSri();
-			if ("AUTORIZADO".equals(estadoSri)) {
-				Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Facturación Electrónica", "Comprobante " + getBeanPagos().getPago().getPagoNumeroFactura() + " AUTORIZADO y enviado al correo.");
-			} else if (estadoSri != null) {
-				Mensaje.verMensaje(FacesMessage.SEVERITY_WARN, "Facturación Electrónica", "Estado: " + estadoSri + ". Puede revisar el detalle en Gestión de Facturas.");
-			}
-			
 			Mensaje.ocultarDialogo("dlgGrabar");
 			Mensaje.ocultarDialogo("dlgRegistroPago");
 			getBeanPagos().setListaDetallePagos(new ArrayList<>());

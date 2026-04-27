@@ -1,5 +1,6 @@
 package ec.mileniumtech.educafacil.dao.impl;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.Optional;
 
@@ -88,7 +89,7 @@ public class GenericoDaoImpl <T,K> implements GenericoDao<T,K> {
 
 	@Override
 	public List<T> findAll() {
-		return getEntityManager().createQuery("SELECT E FROM "+ entityClass.getSimpleName() + "e",entityClass).getResultList();
+		return getEntityManager().createQuery("SELECT E FROM "+ entityClass.getSimpleName() + " e",entityClass).getResultList();
 	}
 	
 }

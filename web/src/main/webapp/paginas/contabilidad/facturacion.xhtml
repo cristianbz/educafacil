@@ -9,49 +9,179 @@
 <ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
 
 	<ui:define name="contenido">
-		
-		<f:event listener="#{backingLogin.validarSesion()}"
-			type="preRenderView" />
-		<h:form id="form" prependId="false">
-
+		<f:event listener="#{backingLogin.validarSesion()}" type="preRenderView" />
+		<h:form id="formFacturacion">
 			<p:growl id="growl" life="3000" showDetail="true" />
-			<p:hotkey bind="esc" handler="PF('dlgNuevoSeguimiento').hide();"></p:hotkey>
 			
 			<p:breadCrumb>
-				<p:menuitem value="Categorias" url="#" />
-				<p:menuitem value="Marketing" url="#" />
-				<p:menuitem value="Seguimiento clientes" />
+				<p:menuitem value="Inicio" url="/paginas/inicio.xhtml" />
+				<p:menuitem value="Contabilidad" url="#" />
+				<p:menuitem value="Gestión de Facturación" />
 			</p:breadCrumb>
+			
 			<br />
-			<p:splitButton value="#{etiquetas['accionesRealizar']}">
-				<p:menuitem update="campanias tblllamar"
-					value="#{botones['cargarregistrodatos']}"
-					onclick="PF('tblseguimiento').clearFilters()" process="@this "
-					partialSubmit="true" icon="pi pi-cloud-upload"
-					actionListener="#{backingSeguimientoClientes.mostrarDialogoCargaInfo()}">
-					<p:resetInput target="tblSeg" />
-				</p:menuitem>
-				<p:menuitem value="#{botones['nuevoSeguimiento']}"
-					process="@this panelSeguimiento" icon="pi pi-file-o"
-					onclick="PF('tblseguimiento').clearFilters()"
-					actionListener="#{backingSeguimientoClientes.nuevoSeguimiento()}"
-					partialSubmit="true" update="pnlseguimiento panelSeguimiento " />
-				<p:menuitem value="#{botones['actSeguimiento']}" process="@this "
-					icon="pi pi-refresh"
-					actionListener="#{backingSeguimientoClientes.mostrarDlgSeguimiento()}"
-					update="tblsegexcel" partialSubmit="true" />
-				<p:menuitem value="#{botones['descargarFormulario']}"
-					icon="pi pi-facebook"
-					update="idcampaniaFormulario archivoFormulario" process="@this "
-					actionListener="#{backingSeguimientoClientes.mostrarDlgFormulario()}"
-					partialSubmit="true" />
-			</p:splitButton>
-			<br />
-			<br />
-
-			<p:outputPanel id="panelSeguimiento">
+			
+			<p:dataTable id="tblFacturas" value="#{beanFacturacion.listaFacturas}" var="fac" 
+						 paginator="true" rows="10" responsiveLayout="scroll"
+						 emptyMessage="No se encontraron facturas registradas.">
 				
-			</p:outputPanel>
+				<p:column headerText="Fecha" sortBy="#{fac.fechaEmision}">
+					<h:outputText value="#{fac.fechaEmision}" />
+				</p:column>
+				
+				<p:column headerText="Número" filterBy="#{fac.numero}" filterMatchMode="contains">
+					<h:outputText value="#{fac.numero}" />
+				</p:column>
+				
+				<p:column headerText="Cliente">
+					<h:outputText value="#{fac.cliente.nombresCompletos}" />
+				</p:column>
+				
+				<p:column headerText="Total" style="text-align: right;">
+					<h:outputText value="#{fac.total}">
+						<f:convertNumber type="currency" currencySymbol="$" />
+					</h:outputText>
+				</p:column>
+				
+				<p:column headerText="Estado SRI">
+					<p:tag value="#{fac.documentoElectronico != null ? fac.documentoElectronico.estado : 'PENDIENTE'}" 
+						   severity="#{fac.documentoElectronico != null and fac.documentoElectronico.estado == 'AUTORIZADO' ? 'success' : (fac.documentoElectronico != null and fac.documentoElectronico.estado == 'RECHAZADO' ? 'danger' : 'warning')}" />
+				</p:column>
+				
+				<p:column headerText="Acciones" style="width: 150px; text-align: center;">
+					<p:commandButton icon="pi pi-cloud-upload" title="Emitir al SRI" 
+									 actionListener="#{backingFacturacion.emitirFactura(fac)}"
+									 rendered="#{fac.documentoElectronico == null or fac.documentoElectronico.estado != 'AUTORIZADO'}"
+									 update=":formFacturacion:growl :formFacturacion:tblFacturas" 
+									 styleClass="ui-button-warning" />
+					
+					<p:commandButton icon="pi pi-file-pdf" title="Descargar RIDE" ajax="false"
+									 rendered="#{fac.documentoElectronico != null and fac.documentoElectronico.pdfRide != null}"
+									 styleClass="ui-button-success">
+						<p:fileDownload value="#{backingFacturacion.descargarRide(fac)}" />
+					</p:commandButton>
+				</p:column>
+				
+			</p:dataTable>
+			
+			<br />
+			
+			<p:commandButton value="Nueva Factura" icon="pi pi-plus" 
+							 actionListener="#{backingFacturacion.prepararNuevaFactura()}"
+							 oncomplete="PF('dlgNuevaFactura').show()"
+							 update="dlgNuevaFactura" />
+							 
+			<p:dialog id="dlgNuevaFactura" widgetVar="dlgNuevaFactura" header="Crear Nueva Factura" 
+					  modal="true" width="90%" responsive="true">
+				
+				<p:outputPanel id="pnlNuevaFactura">
+					<div class="ui-fluid">
+						<p:panel header="Datos del Cliente">
+							<h:panelGrid columns="4" cellpadding="7">
+								<p:outputLabel value="Identificación:" />
+								<h:panelGroup id="pnlBusquedaCliente">
+									<p:inputText id="txtIdentificacion" value="#{beanFacturacion.identificacionBusqueda}" placeholder="Cédula/RUC" />
+									<p:commandButton icon="pi pi-search" actionListener="#{backingFacturacion.buscarCliente()}" 
+													 process="@this txtIdentificacion"
+													 update="pnlDatosCliente pnlFormularioCliente" style="width: auto; margin-left: 5px;"/>
+								</h:panelGroup>
+								
+								<p:outputPanel id="pnlDatosCliente">
+									<h:outputText value="#{beanFacturacion.clienteSeleccionado.nombresCompletos}" 
+												  style="font-weight: bold; color: #2196F3;" 
+												  rendered="#{beanFacturacion.clienteSeleccionado != null and !beanFacturacion.mostrarFormularioNuevoCliente}" />
+									<h:outputText value="Cliente no seleccionado" style="color: red;"
+												  rendered="#{beanFacturacion.clienteSeleccionado == null}" />
+								</p:outputPanel>
+							</h:panelGrid>
+
+							<!-- Formulario para Nuevo Cliente o Edición de Recuperado -->
+							<p:outputPanel id="pnlFormularioCliente">
+								<h:panelGrid columns="4" cellpadding="7" rendered="#{beanFacturacion.mostrarFormularioNuevoCliente}" style="width: 100%;">
+									<p:outputLabel value="Nombres Completos:" for="txtNombres" />
+									<p:inputText id="txtNombres" value="#{beanFacturacion.clienteSeleccionado.nombresCompletos}" required="true" />
+
+									<p:outputLabel value="Correo:" for="txtCorreo" />
+									<p:inputText id="txtCorreo" value="#{beanFacturacion.clienteSeleccionado.correo}" required="true" />
+
+									<p:outputLabel value="Teléfono:" for="txtTelefono" />
+									<p:inputText id="txtTelefono" value="#{beanFacturacion.clienteSeleccionado.telefono}" required="true" />
+
+									<p:outputLabel value="Dirección:" for="txtDireccion" />
+									<p:inputText id="txtDireccion" value="#{beanFacturacion.clienteSeleccionado.direccion}" required="true" />
+									
+									<p:outputLabel value="Tipo Identificación:" for="selTipoId" />
+									<p:selectOneMenu id="selTipoId" value="#{beanFacturacion.clienteSeleccionado.tipoIdentificacion}">
+										<f:selectItem itemLabel="Cédula" itemValue="1" />
+										<f:selectItem itemLabel="RUC" itemValue="2" />
+										<f:selectItem itemLabel="Pasaporte" itemValue="3" />
+									</p:selectOneMenu>
+								</h:panelGrid>
+							</p:outputPanel>
+						</p:panel>
+						
+						<br/>
+						
+						<p:panel header="Detalle de Factura">
+							<h:panelGrid id="pnlAddDetalle" columns="5" cellpadding="7">
+								<p:outputLabel value="Ítem:" />
+								<p:selectOneMenu id="selItem" value="#{beanFacturacion.itemSeleccionado}" converter="selectOneMenuConverter">
+									<f:selectItem itemLabel="Seleccione un ítem..." itemValue="#{null}" />
+									<f:selectItems value="#{beanFacturacion.listaItems}" var="it" 
+												   itemLabel="#{it.nombre}" itemValue="#{it}" />
+								</p:selectOneMenu>
+								
+								<p:outputLabel value="Cantidad:" />
+								<p:inputNumber id="txtCantidad" value="#{beanFacturacion.detalleNuevo.cantidad}" decimalPlaces="0" />
+								
+								<p:commandButton value="Agregar" icon="pi pi-plus" 
+												 actionListener="#{backingFacturacion.agregarDetalle()}" 
+												 process="@this pnlAddDetalle"
+												 update="tblDetalles pnlTotales" />
+							</h:panelGrid>
+							
+							<p:dataTable id="tblDetalles" value="#{beanFacturacion.listaDetallesNueva}" var="det" 
+										 style="margin-top: 10px;">
+								<p:column headerText="Descripción">
+									<h:outputText value="#{det.item.nombre}" />
+								</p:column>
+								<p:column headerText="Cantidad" style="text-align: center;">
+									<h:outputText value="#{det.cantidad}" />
+								</p:column>
+								<p:column headerText="Precio Unit." style="text-align: right;">
+									<h:outputText value="#{det.precioUnitario}">
+										<f:convertNumber type="currency" currencySymbol="$" />
+									</h:outputText>
+								</p:column>
+								<p:column headerText="Subtotal" style="text-align: right;">
+									<h:outputText value="#{det.precioUnitario * det.cantidad}">
+										<f:convertNumber type="currency" currencySymbol="$" />
+									</h:outputText>
+								</p:column>
+							</p:dataTable>
+							
+							<div style="text-align: right; margin-top: 10px;">
+								<p:outputPanel id="pnlTotales">
+									<h:outputText value="TOTAL: " style="font-weight: bold; font-size: 1.2em;" />
+									<h:outputText value="#{beanFacturacion.nuevaFactura.total}" style="font-weight: bold; font-size: 1.2em; color: green;">
+										<f:convertNumber type="currency" currencySymbol="$" />
+									</h:outputText>
+								</p:outputPanel>
+							</div>
+						</p:panel>
+					</div>
+				</p:outputPanel>
+				
+				<f:facet name="footer">
+					<p:commandButton value="Guardar y Emitir" icon="pi pi-check" 
+									 actionListener="#{backingFacturacion.guardarFactura()}" 
+									 process="@this pnlNuevaFactura"
+									 update="growl tblFacturas" />
+					<p:commandButton value="Cancelar" icon="pi pi-times" 
+									 onclick="PF('dlgNuevaFactura').hide()" 
+									 styleClass="ui-button-secondary" />
+				</f:facet>
+			</p:dialog>
 
 		</h:form>
 	</ui:define>
