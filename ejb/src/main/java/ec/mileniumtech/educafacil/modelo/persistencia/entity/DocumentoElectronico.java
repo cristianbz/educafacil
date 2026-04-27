@@ -13,6 +13,8 @@ import lombok.AllArgsConstructor;
 public class DocumentoElectronico {
 
     @Id
+    @SequenceGenerator(name="documentoElectronicoSeq", sequenceName="documentoelectronico_seq", allocationSize = 1)
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="documentoElectronicoSeq")
     @Column(name = "doel_id")
     private Integer id;
 
@@ -20,27 +22,27 @@ public class DocumentoElectronico {
     @JoinColumn(name = "fact_id", nullable = false)
     private Factura factura;
 
-    @Column(name = "doel_clave_acceso", length = 49, nullable = false)
+    @Column(name = "doel_clave_acceso", length = 49)
     private String claveAcceso;
 
-    @Column(name = "doel_estado", nullable = false)
+    @Column(name = "doel_estado")
     private String estado;
 
     @Lob
-    @Column(name = "doel_xml_autorizado_sri", nullable = false)
+    @Column(name = "doel_xml_autorizado_sri")
     private byte[] xmlAutorizadoSri;
 
     @Lob
-    @Column(name = "doel_xml_firmado", nullable = false)
+    @Column(name = "doel_xml_firmado")
     private byte[] xmlFirmado;
 
     @Lob
-    @Column(name = "doel_pdf_ride", nullable = false)
+    @Column(name = "doel_pdf_ride")
     private byte[] pdfRide;
 
-    @Column(name = "doel_mensaje_sri", nullable = false)
+    @Column(name = "doel_mensaje_sri")
     private String mensajeSri;
 
-    @Column(name = "doel_numero_autorizacion", length = 49, nullable = false)
+    @Column(name = "doel_numero_autorizacion", length = 49)
     private String numeroAutorizacion;
 }

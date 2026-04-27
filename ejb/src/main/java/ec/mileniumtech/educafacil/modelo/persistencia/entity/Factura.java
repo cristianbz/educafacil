@@ -17,6 +17,8 @@ import lombok.AllArgsConstructor;
 public class Factura {
 
     @Id
+    @SequenceGenerator(name="facturaSeq", sequenceName="factura_seq", allocationSize = 1)
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="facturaSeq")
     @Column(name = "fact_id")
     private Integer id;
 
@@ -59,6 +61,6 @@ public class Factura {
     private List<PagosFacturados> pagos;
 
     // Relación con el documento electrónico (SRI)
-    @OneToOne(mappedBy = "factura", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "factura", cascade = CascadeType.ALL, orphanRemoval = true)
     private DocumentoElectronico documentoElectronico;
 }

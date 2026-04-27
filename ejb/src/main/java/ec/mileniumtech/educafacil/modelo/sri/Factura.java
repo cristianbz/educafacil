@@ -69,6 +69,7 @@ public class Factura {
         private String tipoIdentificacionComprador;
         private String razonSocialComprador;
         private String identificacionComprador;
+        private String direccionComprador;
         private double totalSinImpuestos;
         private double totalDescuento;
         private double importeTotal;

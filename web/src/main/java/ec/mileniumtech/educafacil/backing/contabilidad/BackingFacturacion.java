@@ -1,0 +1,325 @@
+package ec.mileniumtech.educafacil.backing.contabilidad;
+
+import java.io.ByteArrayInputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+
+import org.apache.log4j.Logger;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
+
+import ec.mileniumtech.educafacil.backing.MensajesBacking;
+import ec.mileniumtech.educafacil.bean.contabilidad.BeanFacturacion;
+import ec.mileniumtech.educafacil.dao.impl.CatalogoItemDaoImpl;
+import ec.mileniumtech.educafacil.dao.impl.ClienteDaoImpl;
+import ec.mileniumtech.educafacil.dao.impl.EstudianteDaoImpl;
+import ec.mileniumtech.educafacil.dao.impl.FacturaDaoImpl;
+import ec.mileniumtech.educafacil.dao.impl.PersonaDaoImpl;
+import ec.mileniumtech.educafacil.dao.impl.PuntoEmisionDaoImpl;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.CatalogoItem;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.Cliente;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleFactura;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.DocumentoElectronico;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.Estudiante;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.Factura;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.Persona;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.PuntoEmision;
+import ec.mileniumtech.educafacil.service.FacturacionService;
+import ec.mileniumtech.educafacil.utilitario.Mensaje;
+import jakarta.annotation.PostConstruct;
+import jakarta.ejb.EJB;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import lombok.Getter;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Backing bean para la gestión de facturación electrónica en la UI.
+ */
+@Named("backingFacturacion")
+@ViewScoped
+public class BackingFacturacion implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+    private static final Logger log = Logger.getLogger(BackingFacturacion.class);
+
+    @EJB
+    private FacturaDaoImpl facturaDao;
+
+    @EJB
+    private ClienteDaoImpl clienteDao;
+
+    @EJB
+    private CatalogoItemDaoImpl catalogoItemDao;
+
+    @EJB
+    private PuntoEmisionDaoImpl puntoEmisionDao;
+
+    @EJB
+    private EstudianteDaoImpl estudianteDao;
+
+    @EJB
+    private PersonaDaoImpl personaDao;
+
+    @EJB
+    private FacturacionService facturacionService;
+
+    @Inject
+    @Getter
+    private BeanFacturacion beanFacturacion;
+
+    @Inject
+    @Getter
+    private MensajesBacking mensajesBacking;
+
+    @PostConstruct
+    public void init() {
+        try {
+            cargarFacturas();
+            prepararNuevaFactura();            
+            getBeanFacturacion().setListaItems(catalogoItemDao.findAll());
+        } catch (Exception e) {
+            log.error("Error en init de BackingFacturacion", e);
+            Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "Error al inicializar la página: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Prepara los objetos para una nueva factura.
+     */
+    public void prepararNuevaFactura() {
+        getBeanFacturacion().setNuevaFactura(new Factura());
+        getBeanFacturacion().getNuevaFactura().setFechaEmision(LocalDate.now());
+        getBeanFacturacion().setClienteSeleccionado(null);
+        getBeanFacturacion().setListaDetallesNueva(new ArrayList<>());
+        getBeanFacturacion().setDetalleNuevo(new DetalleFactura());
+        getBeanFacturacion().setIdentificacionBusqueda("");
+        getBeanFacturacion().getDetalleNuevo().setCantidad(0);
+        getBeanFacturacion().setMostrarFormularioNuevoCliente(false);
+    }
+
+    /**
+     * Busca un cliente por identificación con la siguiente lógica:
+     * 1. Busca en Estudiante.
+     * 2. Busca en Cliente.
+     * 3. Busca en Persona (fallback).
+     * 4. Si no existe, permite creación manual.
+     */
+    public void buscarCliente() {
+        try {
+            String id = getBeanFacturacion().getIdentificacionBusqueda();
+            if (id == null || id.trim().isEmpty()) return;
+
+            getBeanFacturacion().setMostrarFormularioNuevoCliente(false);
+            
+            // 1. Buscar en Cliente (Directo)
+            Cliente c = clienteDao.buscarPorIdentificacion(id);
+            if (c != null) {
+                getBeanFacturacion().setClienteSeleccionado(c);
+                Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Cliente Encontrado", c.getNombresCompletos());
+                return;
+            }
+
+            // 2. Buscar en Estudiante
+            Estudiante e = estudianteDao.estudiantesPorCedula(id);
+            if (e != null && e.getPersona() != null) {
+                prepararNuevoClienteDesdePersona(e.getPersona());
+                Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Datos recuperados de Estudiante", getBeanFacturacion().getClienteSeleccionado().getNombresCompletos());
+                return;
+            }
+
+            // 3. Buscar en Persona (General)
+            Persona p = personaDao.buscarPersonaPorCedula(id);
+            if (p != null) {
+                prepararNuevoClienteDesdePersona(p);
+                Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Datos recuperados de Persona", getBeanFacturacion().getClienteSeleccionado().getNombresCompletos());
+                return;
+            }
+
+            // 4. No existe en ningún lado
+            Cliente nuevo = new Cliente();
+            nuevo.setNumeroIdentificacion(id);
+            nuevo.setTipoIdentificacion(1); // Default Cédula
+            nuevo.setEstado(true);
+            getBeanFacturacion().setClienteSeleccionado(nuevo);
+            getBeanFacturacion().setMostrarFormularioNuevoCliente(true);
+            Mensaje.verMensaje(FacesMessage.SEVERITY_WARN, "Aviso", "Identificación no encontrada. Ingrese los datos manualmente.");
+
+        } catch (Exception e) {
+            log.error("Error al buscar cliente", e);
+            Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "Ocurrió un error en la búsqueda: " + e.getMessage());
+        }
+    }
+
+    private void prepararNuevoClienteDesdePersona(Persona p) {
+        Cliente nuevo = new Cliente();
+        nuevo.setNumeroIdentificacion(p.getPersDocumentoIdentidad());
+        nuevo.setNombresCompletos(p.getPersApellidos() + " " + p.getPersNombres());
+        nuevo.setCorreo(p.getPersCorreoElectronico());
+        nuevo.setTelefono(p.getPersTelefonoMobil() != null ? p.getPersTelefonoMobil() : p.getPersTelefonoCasa());
+        nuevo.setDireccion(p.getPersDomicilio());
+        nuevo.setTipoIdentificacion(1); // Asumimos cédula por defecto
+        nuevo.setEstado(true);
+        
+        getBeanFacturacion().setClienteSeleccionado(nuevo);
+        getBeanFacturacion().setMostrarFormularioNuevoCliente(true); // Permitir revisar/completar datos
+    }
+
+    /**
+     * Agrega un ítem a la lista de detalles de la nueva factura.
+     */
+    public void agregarDetalle() {
+        if (getBeanFacturacion().getItemSeleccionado() != null) {
+            DetalleFactura df = getBeanFacturacion().getDetalleNuevo();
+            df.setItem(getBeanFacturacion().getItemSeleccionado());
+            df.setFactura(getBeanFacturacion().getNuevaFactura());
+            df.setDescuento(BigDecimal.ZERO);
+            
+            // Si el precio viene del ítem
+            if (df.getPrecioUnitario() == null || df.getPrecioUnitario().compareTo(BigDecimal.ZERO) == 0) {
+                df.setPrecioUnitario(getBeanFacturacion().getItemSeleccionado().getPrecio());
+            }
+            
+            getBeanFacturacion().getListaDetallesNueva().add(df);
+            getBeanFacturacion().setDetalleNuevo(new DetalleFactura());
+            calcularTotales();
+        }
+    }
+
+    /**
+     * Calcula los totales de la nueva factura.
+     */
+    private void calcularTotales() {
+        BigDecimal subtotal = BigDecimal.ZERO;
+        for (DetalleFactura df : getBeanFacturacion().getListaDetallesNueva()) {
+            subtotal = subtotal.add(df.getPrecioUnitario().multiply(new BigDecimal(df.getCantidad())));
+        }
+        getBeanFacturacion().getNuevaFactura().setSubtotal(subtotal);
+        getBeanFacturacion().getNuevaFactura().setTotal(subtotal); // Asumiendo IVA 0%
+    }
+
+    /**
+     * Guarda la nueva factura y procesa la emisión electrónica.
+     */
+    public void guardarFactura() {
+        try {
+            if (getBeanFacturacion().getClienteSeleccionado() == null) {
+                throw new Exception("Debe seleccionar un cliente.");
+            }
+            if (getBeanFacturacion().getListaDetallesNueva().isEmpty()) {
+                throw new Exception("Debe agregar al menos un detalle.");
+            }
+
+            Factura f = getBeanFacturacion().getNuevaFactura();
+            Cliente c = getBeanFacturacion().getClienteSeleccionado();
+            
+            // Si el cliente no existe en la base de datos (ID nulo), lo guardamos primero
+            if (c.getId() == null) {
+                clienteDao.guardar(c);
+            }
+            
+            f.setCliente(c);
+            f.setDetalles(getBeanFacturacion().getListaDetallesNueva());
+            
+            // Obtener Punto de Emisión
+            List<PuntoEmision> puntos = puntoEmisionDao.listarPuntosEmisionActivos();
+            if (puntos.isEmpty()) throw new Exception("No hay puntos de emisión activos.");
+            PuntoEmision puem = puntos.get(0);
+            f.setPuntoEmision(puem);
+            
+            // Secuencial
+            int nuevoSec = puem.getSecuencialFactura() + 1;
+            f.setNumero(String.format("001-%s-%09d", puem.getCodigo(), nuevoSec));
+            puem.setSecuencialFactura(nuevoSec);
+            puntoEmisionDao.actualizar(puem);
+            
+            f.setTotalImpuestos(BigDecimal.ZERO);
+            f.setDescuentoTotal(BigDecimal.ZERO);
+
+            facturaDao.guardar(f);
+            
+            // Emitir electrónicamente
+            facturacionService.emitirFactura(f.getId());
+            
+            Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Éxito", "Factura generada y enviada al SRI.");
+            cargarFacturas();
+            prepararNuevaFactura();
+            Mensaje.ocultarDialogo("dlgNuevaFactura");
+            
+        } catch (Exception e) {
+            log.error("Error al guardar factura", e);
+            Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage());
+        }
+    }
+
+    /**
+     * Carga la lista de facturas desde la base de datos.
+     */
+    public void cargarFacturas() {
+        try {
+            // Por ahora cargamos todas, idealmente usaríamos filtros del DAO
+            getBeanFacturacion().setListaFacturas(facturaDao.findAll());
+        } catch (Exception e) {
+            log.error("Error al cargar facturas", e);
+            Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "No se pudieron cargar las facturas.");
+        }
+    }
+
+    /**
+     * Procesa la emisión electrónica de una factura seleccionada.
+     * @param factura Factura a emitir.
+     */
+    public void emitirFactura(Factura factura) {
+        try {
+            facturacionService.emitirFactura(factura.getId());
+            cargarFacturas(); // Refrescar lista para ver cambios en estado
+            Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Éxito", "Proceso de facturación iniciado.");
+        } catch (Exception e) {
+            log.error("Error al emitir factura", e);
+            Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage());
+        }
+    }
+
+    /**
+     * Genera la descarga del archivo RIDE (PDF) de la factura.
+     * @param factura Factura seleccionada.
+     * @return StreamedContent para la descarga.
+     */
+    public StreamedContent descargarRide(Factura factura) {
+        DocumentoElectronico doc = factura.getDocumentoElectronico();
+        if (doc != null && doc.getPdfRide() != null) {
+            return DefaultStreamedContent.builder()
+                    .name("RIDE_" + factura.getNumero() + ".pdf")
+                    .contentType("application/pdf")
+                    .stream(() -> new ByteArrayInputStream(doc.getPdfRide()))
+                    .build();
+        } else {
+            Mensaje.verMensaje(FacesMessage.SEVERITY_WARN, "Aviso", "El RIDE no está disponible para esta factura.");
+            return null;
+        }
+    }
+
+    /**
+     * Genera la descarga del archivo XML de la factura.
+     * @param factura Factura seleccionada.
+     * @return StreamedContent para la descarga.
+     */
+    public StreamedContent descargarXml(Factura factura) {
+        DocumentoElectronico doc = factura.getDocumentoElectronico();
+        if (doc != null && doc.getXmlAutorizadoSri() != null) {
+            return DefaultStreamedContent.builder()
+                    .name("Factura_" + factura.getNumero() + ".xml")
+                    .contentType("text/xml")
+                    .stream(() -> new ByteArrayInputStream(doc.getXmlAutorizadoSri()))
+                    .build();
+        } else {
+            Mensaje.verMensaje(FacesMessage.SEVERITY_WARN, "Aviso", "El XML no está disponible para esta factura.");
+            return null;
+        }
+    }
+}
