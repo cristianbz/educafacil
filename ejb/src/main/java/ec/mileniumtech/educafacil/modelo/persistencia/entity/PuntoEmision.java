@@ -28,7 +28,7 @@ public class PuntoEmision implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-	@SequenceGenerator(name="puntoemisionSeq", sequenceName="puntoemision_seq", allocationSize = 1)
+	@SequenceGenerator(name="puntoemisionSeq", sequenceName="puntoemision_puem_id_seq", allocationSize = 1)
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="puntoemisionSeq")
     @Column(name = "puem_id", nullable = false)
     private Integer id;
@@ -54,20 +54,17 @@ public class PuntoEmision implements Serializable {
     @Column(name = "puem_sec_guia_remision")
     private Integer secuencialGuiaRemision;
 
-    @Column(name = "puem_info_adicional", length = 250)
+    @Column(name = "puem_informacion_adicional", length = 250)
     private String informacionAdicional;
 
     @Column(name = "puem_estado", columnDefinition = "BIT(1)")
     private Boolean estado;
 
-    @Column(name = "empr_id")
-    private Integer empresaId;
-
-    // Relación con la entidad Empresa
+    // Relación con la entidad Establecimiento
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "empm_id", referencedColumnName = "empm_id", 
+    @JoinColumn(name = "esta_id", referencedColumnName = "esta_id", 
                 insertable = false, updatable = false)
-    private EmpresaMatriz empresaMatriz;
+    private Establecimiento establecimientos;
 
     // Constructor por defecto
     public PuntoEmision() {

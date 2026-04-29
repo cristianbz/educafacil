@@ -62,7 +62,7 @@ public class IntegracionSriService {
      */
     public void procesarFacturaElectronica(Factura facturaEntity) throws Exception {
         // 1. Obtener información del emisor y configuración
-        EmpresaMatriz empresa = facturaEntity.getPuntoEmision().getEmpresaMatriz();
+        EmpresaMatriz empresa = facturaEntity.getPuntoEmision().getEstablecimientos().getEmpresaMatriz();
         if (empresa == null) {
             throw new Exception("La factura no tiene una empresa matriz asociada.");
         }

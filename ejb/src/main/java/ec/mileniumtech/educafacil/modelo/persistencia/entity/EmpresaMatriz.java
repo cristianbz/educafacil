@@ -82,5 +82,5 @@ public class EmpresaMatriz implements Serializable{
 	
 	
 	@OneToMany(mappedBy="empresaMatriz", fetch=FetchType.LAZY)
-	private List<PuntoEmision> puntoemsiones;
+	private List<Establecimiento> establecimientos;
 }

@@ -1,12 +1,12 @@
 package ec.mileniumtech.educafacil.dao.impl;
 
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Optional;
 
 import ec.mileniumtech.educafacil.dao.GenericoDao;
 import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
-import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.PersistenceException;
@@ -17,7 +17,6 @@ import lombok.Setter;
  * @author [ Christian Baez ]cbaez
  *
  */
-@Stateless
 @Getter
 @Setter
 public class GenericoDaoImpl <T,K> implements GenericoDao<T,K> {
@@ -29,8 +28,12 @@ public class GenericoDaoImpl <T,K> implements GenericoDao<T,K> {
         this.entityManager = em;
         this.entityClass = entityClass;
     }
+    @SuppressWarnings("unchecked")
     public GenericoDaoImpl() {
-    	
+        Type genericSuperclass = getClass().getGenericSuperclass();
+        if (genericSuperclass instanceof ParameterizedType) {
+            this.entityClass = (Class<T>) ((ParameterizedType) genericSuperclass).getActualTypeArguments()[0];
+        }
     }
 
 	@Override
