@@ -72,118 +72,203 @@
 							 update="dlgNuevaFactura" />
 							 
 			<p:dialog id="dlgNuevaFactura" widgetVar="dlgNuevaFactura" header="Crear Nueva Factura" 
-					  modal="true" width="90%" responsive="true">
+					  modal="true" width="95%" height="85vh" responsive="true" fitViewport="true"
+					  styleClass="invoice-dialog" closeOnEscape="true" draggable="false" resizable="false">
 				
-				<p:outputPanel id="pnlNuevaFactura">
-					<div class="ui-fluid">
-						<p:panel header="Datos del Cliente">
-							<h:panelGrid columns="4" cellpadding="7">
-								<p:outputLabel value="Identificación:" />
-								<h:panelGroup id="pnlBusquedaCliente">
-									<p:inputText id="txtIdentificacion" value="#{beanFacturacion.identificacionBusqueda}" placeholder="Cédula/RUC" />
-									<p:commandButton icon="pi pi-search" actionListener="#{backingFacturacion.buscarCliente()}" 
-													 process="@this txtIdentificacion"
-													 update="pnlDatosCliente pnlFormularioCliente" style="width: auto; margin-left: 5px;"/>
-								</h:panelGroup>
-								
-								<p:outputPanel id="pnlDatosCliente">
-									<h:outputText value="#{beanFacturacion.clienteSeleccionado.nombresCompletos}" 
-												  style="font-weight: bold; color: #2196F3;" 
-												  rendered="#{beanFacturacion.clienteSeleccionado != null and !beanFacturacion.mostrarFormularioNuevoCliente}" />
-									<h:outputText value="Cliente no seleccionado" style="color: red;"
-												  rendered="#{beanFacturacion.clienteSeleccionado == null}" />
+				<p:scrollPanel mode="native" style="height:calc(85vh - 110px); border:none;">
+					<p:outputPanel id="pnlNuevaFactura" style="padding: 1.5rem;">
+						<div class="ui-fluid">
+							<!-- Datos del Cliente -->
+							<p:panel header="Datos del Cliente" styleClass="invoice-panel">
+								<div class="p-grid p-formgrid">
+									<div class="p-col-12 p-md-4 p-field">
+										<p:outputLabel value="Identificación:" for="txtIdentificacion" />
+										<div class="ui-inputgroup">
+											<p:inputText id="txtIdentificacion" value="#{beanFacturacion.identificacionBusqueda}" placeholder="Cédula/RUC" />
+											<p:commandButton icon="pi pi-search" actionListener="#{backingFacturacion.buscarCliente()}" 
+															 process="@this txtIdentificacion"
+															 update="pnlDatosCliente pnlFormularioCliente" 
+															 styleClass="ui-button-primary"/>
+										</div>
+									</div>
+									<div class="p-col-12 p-md-8 p-field p-d-flex p-ai-center" style="padding-top: 1.5rem;">
+										<p:outputPanel id="pnlDatosCliente">
+											<h:outputText value="#{beanFacturacion.clienteSeleccionado.nombresCompletos}" 
+														  style="font-weight: 700; color: var(--primary-color); font-size: 1.25rem;" 
+														  rendered="#{beanFacturacion.clienteSeleccionado != null and !beanFacturacion.mostrarFormularioNuevoCliente}" />
+											<h:panelGroup rendered="#{beanFacturacion.clienteSeleccionado == null}" styleClass="p-d-flex p-ai-center" style="color: var(--danger-color);">
+												<i class="pi pi-exclamation-circle p-mr-2"></i>
+												<h:outputText value="Seleccione un cliente para continuar" />
+											</h:panelGroup>
+										</p:outputPanel>
+									</div>
+								</div>
+
+								<!-- Formulario para Nuevo Cliente -->
+								<p:outputPanel id="pnlFormularioCliente">
+									<h:panelGroup rendered="#{beanFacturacion.mostrarFormularioNuevoCliente}">
+										<div class="p-grid p-formgrid p-mt-3">
+											<div class="p-col-12 p-md-6 p-field">
+												<p:outputLabel value="Nombres Completos:" for="txtNombres" />
+												<p:inputText id="txtNombres" value="#{beanFacturacion.clienteSeleccionado.nombresCompletos}" required="true" />
+											</div>
+											<div class="p-col-12 p-md-6 p-field">
+												<p:outputLabel value="Correo:" for="txtCorreo" />
+												<p:inputText id="txtCorreo" value="#{beanFacturacion.clienteSeleccionado.correo}" required="true" />
+											</div>
+											<div class="p-col-12 p-md-4 p-field">
+												<p:outputLabel value="Teléfono:" for="txtTelefono" />
+												<p:inputText id="txtTelefono" value="#{beanFacturacion.clienteSeleccionado.telefono}" required="true" />
+											</div>
+											<div class="p-col-12 p-md-4 p-field">
+												<p:outputLabel value="Dirección:" for="txtDireccion" />
+												<p:inputText id="txtDireccion" value="#{beanFacturacion.clienteSeleccionado.direccion}" required="true" />
+											</div>
+											<div class="p-col-12 p-md-4 p-field">
+												<p:outputLabel value="Tipo Identificación:" for="selTipoId" />
+												<p:selectOneMenu id="selTipoId" value="#{beanFacturacion.clienteSeleccionado.tipoIdentificacion}">
+													<f:selectItem itemLabel="Cédula" itemValue="1" />
+													<f:selectItem itemLabel="RUC" itemValue="2" />
+													<f:selectItem itemLabel="Pasaporte" itemValue="3" />
+												</p:selectOneMenu>
+											</div>
+										</div>
+									</h:panelGroup>
 								</p:outputPanel>
-							</h:panelGrid>
-
-							<!-- Formulario para Nuevo Cliente o Edición de Recuperado -->
-							<p:outputPanel id="pnlFormularioCliente">
-								<h:panelGrid columns="4" cellpadding="7" rendered="#{beanFacturacion.mostrarFormularioNuevoCliente}" style="width: 100%;">
-									<p:outputLabel value="Nombres Completos:" for="txtNombres" />
-									<p:inputText id="txtNombres" value="#{beanFacturacion.clienteSeleccionado.nombresCompletos}" required="true" />
-
-									<p:outputLabel value="Correo:" for="txtCorreo" />
-									<p:inputText id="txtCorreo" value="#{beanFacturacion.clienteSeleccionado.correo}" required="true" />
-
-									<p:outputLabel value="Teléfono:" for="txtTelefono" />
-									<p:inputText id="txtTelefono" value="#{beanFacturacion.clienteSeleccionado.telefono}" required="true" />
-
-									<p:outputLabel value="Dirección:" for="txtDireccion" />
-									<p:inputText id="txtDireccion" value="#{beanFacturacion.clienteSeleccionado.direccion}" required="true" />
-									
-									<p:outputLabel value="Tipo Identificación:" for="selTipoId" />
-									<p:selectOneMenu id="selTipoId" value="#{beanFacturacion.clienteSeleccionado.tipoIdentificacion}">
-										<f:selectItem itemLabel="Cédula" itemValue="1" />
-										<f:selectItem itemLabel="RUC" itemValue="2" />
-										<f:selectItem itemLabel="Pasaporte" itemValue="3" />
-									</p:selectOneMenu>
-								</h:panelGrid>
-							</p:outputPanel>
-						</p:panel>
-						
-						<br/>
-						
-						<p:panel header="Detalle de Factura">
-							<h:panelGrid id="pnlAddDetalle" columns="5" cellpadding="7">
-								<p:outputLabel value="Ítem:" />
-								<p:selectOneMenu id="selItem" value="#{beanFacturacion.itemSeleccionado}" converter="selectOneMenuConverter">
-									<f:selectItem itemLabel="Seleccione un ítem..." itemValue="#{null}" />
-									<f:selectItems value="#{beanFacturacion.listaItems}" var="it" 
-												   itemLabel="#{it.nombre}" itemValue="#{it}" />
-								</p:selectOneMenu>
-								
-								<p:outputLabel value="Cantidad:" />
-								<p:inputNumber id="txtCantidad" value="#{beanFacturacion.detalleNuevo.cantidad}" decimalPlaces="0" />
-								
-								<p:commandButton value="Agregar" icon="pi pi-plus" 
-												 actionListener="#{backingFacturacion.agregarDetalle()}" 
-												 process="@this pnlAddDetalle"
-												 update="tblDetalles pnlTotales" />
-							</h:panelGrid>
+							</p:panel>
 							
-							<p:dataTable id="tblDetalles" value="#{beanFacturacion.listaDetallesNueva}" var="det" 
-										 style="margin-top: 10px;">
-								<p:column headerText="Descripción">
-									<h:outputText value="#{det.item.nombre}" />
-								</p:column>
-								<p:column headerText="Cantidad" style="text-align: center;">
-									<h:outputText value="#{det.cantidad}" />
-								</p:column>
-								<p:column headerText="Precio Unit." style="text-align: right;">
-									<h:outputText value="#{det.precioUnitario}">
-										<f:convertNumber type="currency" currencySymbol="$" />
-									</h:outputText>
-								</p:column>
-								<p:column headerText="Subtotal" style="text-align: right;">
-									<h:outputText value="#{det.precioUnitario * det.cantidad}">
-										<f:convertNumber type="currency" currencySymbol="$" />
-									</h:outputText>
-								</p:column>
-							</p:dataTable>
+							<br/>
 							
-							<div style="text-align: right; margin-top: 10px;">
-								<p:outputPanel id="pnlTotales">
-									<h:outputText value="TOTAL: " style="font-weight: bold; font-size: 1.2em;" />
-									<h:outputText value="#{beanFacturacion.nuevaFactura.total}" style="font-weight: bold; font-size: 1.2em; color: green;">
-										<f:convertNumber type="currency" currencySymbol="$" />
-									</h:outputText>
-								</p:outputPanel>
-							</div>
-						</p:panel>
-					</div>
-				</p:outputPanel>
+							<!-- Detalle de Factura -->
+							<p:panel header="Detalle de Factura" styleClass="invoice-panel">
+								<div class="p-grid p-formgrid p-ai-end p-mb-3">
+									<div class="p-col-12 p-md-6 p-field">
+										<p:outputLabel value="Ítem:" for="selItem" />
+										<div class="ui-inputgroup">
+											<p:selectOneMenu id="selItem" value="#{beanFacturacion.itemSeleccionado}" converter="selectOneMenuConverter" filter="true" filterMatchMode="contains">
+												<f:selectItem itemLabel="Seleccione un ítem..." itemValue="#{null}" />
+												<f:selectItems value="#{beanFacturacion.listaItems}" var="it" 
+															   itemLabel="#{it.nombre}" itemValue="#{it}" />
+											</p:selectOneMenu>
+											<p:commandButton icon="pi pi-plus" actionListener="#{backingFacturacion.prepararNuevoItem()}"
+															 oncomplete="PF('dlgNuevoItem').show()" update=":formNuevoItem"
+															 styleClass="ui-button-info" process="@this" title="Crear nuevo ítem">
+												<p:resetInput target=":formNuevoItem" />
+											</p:commandButton>
+										</div>
+									</div>
+									<div class="p-col-12 p-md-3 p-field">
+										<p:outputLabel value="Cantidad:" for="txtCantidad" />
+										<p:inputNumber id="txtCantidad" value="#{beanFacturacion.detalleNuevo.cantidad}" decimalPlaces="0" />
+									</div>
+									<div class="p-col-12 p-md-3 p-field">
+										<p:commandButton value="Agregar" icon="pi pi-plus" 
+														 actionListener="#{backingFacturacion.agregarDetalle()}" 
+														 process="@this selItem txtCantidad"
+														 update="tblDetalles pnlTotales" 
+														 styleClass="ui-button-success"/>
+									</div>
+								</div>
+								
+								<p:dataTable id="tblDetalles" value="#{beanFacturacion.listaDetallesNueva}" var="det" 
+											 reflow="true" styleClass="p-mt-2" emptyMessage="No hay detalles agregados.">
+									<p:column headerText="Descripción">
+										<h:outputText value="#{det.item.nombre}" />
+									</p:column>
+									<p:column headerText="Cantidad" style="text-align: center; width: 80px;">
+										<h:outputText value="#{det.cantidad}" />
+									</p:column>
+									<p:column headerText="Precio Unit." style="text-align: right; width: 120px;">
+										<h:outputText value="#{det.precioUnitario}">
+											<f:convertNumber type="currency" currencySymbol="$" />
+										</h:outputText>
+									</p:column>
+									<p:column headerText="Subtotal" style="text-align: right; width: 120px;">
+										<h:outputText value="#{det.precioUnitario * det.cantidad}">
+											<f:convertNumber type="currency" currencySymbol="$" />
+										</h:outputText>
+									</p:column>
+								</p:dataTable>
+								
+								<div class="invoice-total-section">
+									<p:outputPanel id="pnlTotales" styleClass="p-d-flex p-ai-center">
+										<h:outputText value="TOTAL A PAGAR:" styleClass="invoice-total-label p-mr-3" />
+										<h:outputText value="#{beanFacturacion.nuevaFactura.total}" styleClass="invoice-total-value">
+											<f:convertNumber type="currency" currencySymbol="$" />
+										</h:outputText>
+									</p:outputPanel>
+								</div>
+							</p:panel>
+						</div>
+					</p:outputPanel>
+				</p:scrollPanel>
 				
 				<f:facet name="footer">
-					<p:commandButton value="Guardar y Emitir" icon="pi pi-check" 
-									 actionListener="#{backingFacturacion.guardarFactura()}" 
-									 process="@this pnlNuevaFactura"
-									 update="growl tblFacturas" />
-					<p:commandButton value="Cancelar" icon="pi pi-times" 
-									 onclick="PF('dlgNuevaFactura').hide()" 
-									 styleClass="ui-button-secondary" />
+					<div class="p-d-flex p-jc-end p-ai-center" style="gap: 1rem; padding: 0.5rem 1rem;">
+						<p:commandButton value="Cancelar" icon="pi pi-times" 
+										 onclick="PF('dlgNuevaFactura').hide()" 
+										 styleClass="ui-button-secondary ui-button-outlined" />
+						<p:commandButton value="Guardar y Emitir Factura" icon="pi pi-check" 
+										 actionListener="#{backingFacturacion.guardarFactura()}" 
+										 process="@this pnlNuevaFactura"
+										 update="growl tblFacturas" 
+										 styleClass="ui-button-primary"
+										 style="min-width: 250px;"/>
+					</div>
 				</f:facet>
 			</p:dialog>
-
 		</h:form>
+
+		<p:dialog id="dlgNuevoItem" widgetVar="dlgNuevoItem" header="Registrar Nuevo Ítem" 
+				  modal="true" responsive="true" width="450px" fitViewport="true"
+				  appendTo="@(body)" closeOnEscape="true" draggable="false" resizable="false">
+			<h:form id="formNuevoItem">
+				<p:messages id="msgsItem" closable="true" showDetail="true">
+					<p:autoUpdate />
+				</p:messages>
+				
+				<p:scrollPanel mode="native" style="max-height: 60vh; border:none;">
+					<p:outputPanel id="pnlNuevoItem" styleClass="ui-fluid" style="padding: 1rem;">
+						<div class="p-field p-mb-3">
+							<p:outputLabel value="Código:" for="txtCodItem" styleClass="p-d-block p-mb-1" />
+							<p:inputText id="txtCodItem" value="#{beanFacturacion.nuevoItem.codigo}" required="true" maxlength="8" />
+							<p:message for="txtCodItem" />
+						</div>
+						<div class="p-field p-mb-3">
+							<p:outputLabel value="Nombre:" for="txtNomItem" styleClass="p-d-block p-mb-1" />
+							<p:inputText id="txtNomItem" value="#{beanFacturacion.nuevoItem.nombre}" required="true" maxlength="50" />
+							<p:message for="txtNomItem" />
+						</div>
+						<div class="p-field p-mb-3">
+							<p:outputLabel value="Tipo:" for="selTipoItem" styleClass="p-d-block p-mb-1" />
+							<p:selectOneMenu id="selTipoItem" value="#{beanFacturacion.nuevoItem.tipo}">
+								<f:selectItem itemLabel="Bien" itemValue="BIEN" />
+								<f:selectItem itemLabel="Servicio" itemValue="SERVICIO" />
+							</p:selectOneMenu>
+							<p:message for="selTipoItem" />
+						</div>
+						<div class="p-field p-mb-3">
+							<p:outputLabel value="Descripción:" for="txtDesItem" styleClass="p-d-block p-mb-1" />
+							<p:inputTextarea id="txtDesItem" value="#{beanFacturacion.nuevoItem.descripcion}" required="true" rows="2" />
+							<p:message for="txtDesItem" />
+						</div>
+						<div class="p-field p-mb-3">
+							<p:outputLabel value="Precio Unitario:" for="txtPreItem" styleClass="p-d-block p-mb-1" />
+							<p:inputNumber id="txtPreItem" value="#{beanFacturacion.nuevoItem.precio}" symbol="$" required="true" decimalPlaces="2" />
+							<p:message for="txtPreItem" />
+						</div>
+					</p:outputPanel>
+				</p:scrollPanel>
+
+				<div class="p-d-flex p-jc-end p-p-3" style="gap: 0.5rem; border-top: 1px solid var(--border-color);">
+					<p:commandButton value="Cancelar" icon="pi pi-times" onclick="PF('dlgNuevoItem').hide()" 
+									 styleClass="ui-button-secondary ui-button-flat" type="button" />
+					<p:commandButton value="Guardar" icon="pi pi-check" actionListener="#{backingFacturacion.guardarNuevoItem()}"
+									 process="@form" update="@form :formFacturacion:growl :formFacturacion:selItem" 
+									 styleClass="ui-button-success" />
+				</div>
+			</h:form>
+		</p:dialog>
 	</ui:define>
 </ui:composition>
 

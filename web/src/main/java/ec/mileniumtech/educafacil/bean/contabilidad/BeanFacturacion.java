@@ -39,6 +39,7 @@ public class BeanFacturacion implements Serializable {
     private List<DetalleFactura> listaDetallesNueva;
     private DetalleFactura detalleNuevo;
     private boolean mostrarFormularioNuevoCliente;
+    private CatalogoItem nuevoItem;
 
     @jakarta.annotation.PostConstruct
     public void init() {
@@ -49,5 +50,6 @@ public class BeanFacturacion implements Serializable {
         nuevaFactura.setTotal(java.math.BigDecimal.ZERO);
         detalleNuevo = new ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleFactura();
         clienteSeleccionado = new ec.mileniumtech.educafacil.modelo.persistencia.entity.Cliente();
+        nuevoItem = new ec.mileniumtech.educafacil.modelo.persistencia.entity.CatalogoItem();
     }
 }

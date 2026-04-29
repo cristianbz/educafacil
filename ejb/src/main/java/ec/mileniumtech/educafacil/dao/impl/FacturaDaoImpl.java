@@ -33,8 +33,8 @@ public class FacturaDaoImpl extends GenericoDaoImpl<Factura, Integer> {
             TypedQuery<Factura> query = getEntityManager().createQuery(
                 "SELECT f FROM Factura f " +
                 "JOIN FETCH f.cliente " +
-                "JOIN FETCH f.puntoEmision p " +
-                "JOIN FETCH p.empresaMatriz " +
+                "JOIN FETCH f.puntoEmision " +
+                "JOIN FETCH f.puntoEmision.establecimientos.empresaMatriz " +
                 "LEFT JOIN FETCH f.detalles " +
                 "WHERE f.id = :id", Factura.class);
             query.setParameter("id", id);

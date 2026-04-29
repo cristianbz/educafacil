@@ -17,7 +17,7 @@ import lombok.AllArgsConstructor;
 public class Factura {
 
     @Id
-    @SequenceGenerator(name="facturaSeq", sequenceName="factura_seq", allocationSize = 1)
+    @SequenceGenerator(name="facturaSeq", sequenceName="factura_fact_id_seq", allocationSize = 1)
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="facturaSeq")
     @Column(name = "fact_id")
     private Integer id;
@@ -49,7 +49,7 @@ public class Factura {
     @Column(name = "fact_total", precision = 6, scale = 2, nullable = false)
     private BigDecimal total;
 
-    @Column(name = "fact_notas", nullable = false)
+    @Column(name = "fact_notas")
     private String notas;
     
  // Relación con los detalles (Maestro-Detalle)

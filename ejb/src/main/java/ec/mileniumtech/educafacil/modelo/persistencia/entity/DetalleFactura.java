@@ -35,6 +35,6 @@ public class DetalleFactura {
     @Column(name = "defa_precio_unitario", precision = 5, scale = 2, nullable = false)
     private BigDecimal precioUnitario;
 
-    @Column(name = "defa_descuento", precision = 5, scale = 2, nullable = false)
+    @Column(name = "defa_descuento", precision = 5, scale = 2)
     private BigDecimal descuento;
 }

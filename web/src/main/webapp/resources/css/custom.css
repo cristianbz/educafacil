@@ -444,4 +444,53 @@ body.sidebar-mobile-open {
     .seguimiento-motivos-checkbox .ui-selectmanycheckbox .ui-grid-responsive .ui-g-4 {
         width: 100% !important;
     }
+/* Invoicing Dialog Enhancements */
+.invoice-dialog {
+    max-width: 1200px !important;
 }
+
+.invoice-dialog .ui-dialog-content {
+    padding: 0 !important;
+}
+
+.invoice-panel {
+    margin-bottom: 1.5rem !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+.invoice-total-section {
+    background: #f8fafc;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.invoice-total-label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.invoice-total-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--success-color);
+}
+
+.p-field label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+.ui-inputgroup .ui-button {
+    margin-bottom: 0 !important;
+}
+

@@ -171,6 +171,40 @@ public class BackingFacturacion implements Serializable {
     }
 
     /**
+     * Prepara el objeto para un nuevo ítem de catálogo.
+     */
+    public void prepararNuevoItem() {
+        getBeanFacturacion().setNuevoItem(new CatalogoItem());
+        getBeanFacturacion().getNuevoItem().setPrecio(BigDecimal.ZERO);
+        getBeanFacturacion().getNuevoItem().setTipo("BIEN"); // Default
+    }
+
+    /**
+     * Guarda el nuevo ítem en la base de datos.
+     */
+    public void guardarNuevoItem() {
+        try {
+            log.info("Iniciando guardado de nuevo ítem...");
+            CatalogoItem item = getBeanFacturacion().getNuevoItem();
+            if (item.getCodigo() == null || item.getCodigo().isEmpty()) throw new Exception("El código es obligatorio.");
+            if (item.getNombre() == null || item.getNombre().isEmpty()) throw new Exception("El nombre es obligatorio.");
+            
+            catalogoItemDao.guardar(item);
+            
+            // Actualizar lista y seleccionar el nuevo ítem
+            getBeanFacturacion().setListaItems(catalogoItemDao.findAll());
+            getBeanFacturacion().setItemSeleccionado(item);
+            
+            Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Éxito", "Ítem creado correctamente.");
+            Mensaje.ocultarDialogo("dlgNuevoItem");
+            
+        } catch (Exception e) {
+            log.error("Error al guardar nuevo ítem", e);
+            Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage());
+        }
+    }
+
+    /**
      * Agrega un ítem a la lista de detalles de la nueva factura.
      */
     public void agregarDetalle() {
@@ -178,6 +212,7 @@ public class BackingFacturacion implements Serializable {
             DetalleFactura df = getBeanFacturacion().getDetalleNuevo();
             df.setItem(getBeanFacturacion().getItemSeleccionado());
             df.setFactura(getBeanFacturacion().getNuevaFactura());
+            df.setDescripcion(df.getItem().getDescripcion());
             df.setDescuento(BigDecimal.ZERO);
             
             // Si el precio viene del ítem
