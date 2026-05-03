@@ -63,4 +63,7 @@ public class Factura {
     // Relación con el documento electrónico (SRI)
     @OneToOne(mappedBy = "factura", cascade = CascadeType.ALL, orphanRemoval = true)
     private DocumentoElectronico documentoElectronico;
+    
+    @OneToMany(mappedBy = "factura", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FormaPagoFactura> formaPagoFacturas;
 }

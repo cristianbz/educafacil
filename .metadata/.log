@@ -8243,3 +8243,335 @@ java.lang.IllegalStateException: The profile is currently in use.
 	at org.eclipse.equinox.internal.p2.ui.sdk.scheduler.migration.MigrationSupport.performMigration(MigrationSupport.java:62)
 	at org.eclipse.equinox.internal.p2.ui.sdk.scheduler.AutomaticUpdateScheduler$1.run(AutomaticUpdateScheduler.java:77)
 	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+
+!ENTRY org.eclipse.lsp4e 2 0 2026-05-02 21:25:47.759
+!MESSAGE Timeout waiting for data to generate LS hover
+!STACK 0
+java.util.concurrent.TimeoutException
+	at java.base/java.util.concurrent.CompletableFuture.timedGet(CompletableFuture.java:2004)
+	at java.base/java.util.concurrent.CompletableFuture.get(CompletableFuture.java:2139)
+	at org.eclipse.lsp4e.jdt.LSJavaHoverProvider.getHoverInfo2(LSJavaHoverProvider.java:65)
+	at org.eclipse.jdt.internal.ui.text.java.hover.BestMatchHover.getHoverInfo2(BestMatchHover.java:163)
+	at org.eclipse.jdt.internal.ui.text.java.hover.BestMatchHover.getHoverInfo2(BestMatchHover.java:130)
+	at org.eclipse.jdt.internal.ui.text.java.hover.JavaEditorTextHoverProxy.getHoverInfo2(JavaEditorTextHoverProxy.java:89)
+	at org.eclipse.jface.text.TextViewerHoverManager$1.run(TextViewerHoverManager.java:155)
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:25:49.342
+!MESSAGE cannot find file for org.junit.jupiter:junit-jupiter
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:25:49.353
+!MESSAGE cannot find file for org.mockito:mockito-all
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:25:49.356
+!MESSAGE cannot find file for org.jboss.arquillian.junit:arquillian-junit-container
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:25:52.895
+!MESSAGE cannot find file for org.junit.jupiter:junit-jupiter
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:25:52.897
+!MESSAGE cannot find file for org.mockito:mockito-all
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:25:52.899
+!MESSAGE cannot find file for org.jboss.arquillian.junit:arquillian-junit-container
+
+!ENTRY org.eclipse.wildwebdeveloper.xml 2 0 2026-05-02 21:26:10.009
+!MESSAGE The given URI https://jakarta.ee/xml/ns/jakartaee/application-client_9.xsd from org.eclipse.jst.standard.schemas could not be resolved for local access
+
+!ENTRY org.eclipse.wildwebdeveloper.xml 2 0 2026-05-02 21:26:10.012
+!MESSAGE The given URI https://jakarta.ee/xml/ns/jakartaee/jobXML_2_0.xsd from org.eclipse.jst.standard.schemas could not be resolved for local access
+
+!ENTRY org.eclipse.wildwebdeveloper.xml 2 0 2026-05-02 21:26:10.019
+!MESSAGE The given URI https://jakarta.ee/xml/ns/jakartaee/beans_3_0.xsd from org.eclipse.jst.standard.schemas could not be resolved for local access
+
+!ENTRY org.eclipse.wildwebdeveloper.xml 2 0 2026-05-02 21:26:10.024
+!MESSAGE The given URI https://jakarta.ee/xml/ns/jaxb/bindingschema_3_0.xsd from org.eclipse.jst.standard.schemas could not be resolved for local access
+
+!ENTRY org.eclipse.wildwebdeveloper.xml 2 0 2026-05-02 21:26:10.047
+!MESSAGE The given URI https://jakarta.ee/xml/ns/validation/validation-configuration-3.0.xsd from org.eclipse.jst.standard.schemas could not be resolved for local access
+
+!ENTRY org.eclipse.wildwebdeveloper.xml 2 0 2026-05-02 21:26:10.060
+!MESSAGE The given URI http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_1.xsd from org.eclipse.jst.standard.schemas could not be resolved for local access
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:29:51.139
+!MESSAGE cannot find file for org.junit.jupiter:junit-jupiter
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:29:51.171
+!MESSAGE cannot find file for org.mockito:mockito-all
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:29:51.183
+!MESSAGE cannot find file for org.jboss.arquillian.junit:arquillian-junit-container
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:29:55.662
+!MESSAGE cannot find file for org.junit.jupiter:junit-jupiter
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:29:55.665
+!MESSAGE cannot find file for org.mockito:mockito-all
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:29:55.667
+!MESSAGE cannot find file for org.jboss.arquillian.junit:arquillian-junit-container
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:30:40.291
+!MESSAGE cannot find file for org.junit.jupiter:junit-jupiter
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:30:40.385
+!MESSAGE cannot find file for org.mockito:mockito-all
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:30:40.388
+!MESSAGE cannot find file for org.jboss.arquillian.junit:arquillian-junit-container
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:30:43.712
+!MESSAGE cannot find file for org.junit.jupiter:junit-jupiter
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:30:43.715
+!MESSAGE cannot find file for org.mockito:mockito-all
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:30:43.718
+!MESSAGE cannot find file for org.jboss.arquillian.junit:arquillian-junit-container
+
+!ENTRY org.eclipse.core.expressions 4 201 2026-05-02 21:31:15.824
+!MESSAGE No property tester contributes a property org.eclipse.core.resources.projectNature to type class org.eclipse.jdt.internal.core.PackageFragment
+!STACK 1
+org.eclipse.core.runtime.CoreException: No property tester contributes a property org.eclipse.core.resources.projectNature to type class org.eclipse.jdt.internal.core.PackageFragment
+	at org.eclipse.core.internal.expressions.TypeExtensionManager.getProperty(TypeExtensionManager.java:132)
+	at org.eclipse.core.expressions.TestExpression.evaluate(TestExpression.java:104)
+	at org.eclipse.core.expressions.CompositeExpression.evaluateAnd(CompositeExpression.java:54)
+	at org.eclipse.core.expressions.AndExpression.evaluate(AndExpression.java:36)
+	at org.eclipse.ui.internal.dialogs.RegistryPageContributor.failsEnablement(RegistryPageContributor.java:283)
+	at org.eclipse.ui.internal.dialogs.RegistryPageContributor.isApplicableTo(RegistryPageContributor.java:226)
+	at org.eclipse.ui.internal.dialogs.PropertyPageContributorManager.getApplicableContributors(PropertyPageContributorManager.java:224)
+	at org.eclipse.ui.internal.dialogs.PropertyPageContributorManager.getApplicableContributors(PropertyPageContributorManager.java:241)
+	at org.eclipse.ui.dialogs.PropertyDialogAction.hasPropertyPagesFor(PropertyDialogAction.java:105)
+	at org.eclipse.ui.dialogs.PropertyDialogAction.isApplicableForSelection(PropertyDialogAction.java:146)
+	at org.eclipse.ui.dialogs.PropertyDialogAction.isApplicableForSelection(PropertyDialogAction.java:127)
+	at org.eclipse.ui.internal.navigator.resources.actions.PropertiesActionProvider.fillContextMenu(PropertiesActionProvider.java:55)
+	at org.eclipse.ui.navigator.NavigatorActionService$2.run(NavigatorActionService.java:224)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:47)
+	at org.eclipse.ui.navigator.NavigatorActionService.addCommonActionProviderMenu(NavigatorActionService.java:218)
+	at org.eclipse.ui.navigator.NavigatorActionService.fillContextMenu(NavigatorActionService.java:176)
+	at org.eclipse.ui.navigator.CommonNavigatorManager.fillContextMenu(CommonNavigatorManager.java:257)
+	at org.eclipse.jface.action.MenuManager.fireAboutToShow(MenuManager.java:338)
+	at org.eclipse.jface.action.MenuManager.handleAboutToShow(MenuManager.java:467)
+	at org.eclipse.jface.action.MenuManager$2.menuShown(MenuManager.java:494)
+	at org.eclipse.swt.widgets.TypedListener.handleEvent(TypedListener.java:272)
+	at org.eclipse.swt.widgets.EventTable.sendEvent(EventTable.java:91)
+	at org.eclipse.swt.widgets.Display.sendEvent(Display.java:4326)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1174)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1198)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1179)
+	at org.eclipse.swt.widgets.Control.WM_INITMENUPOPUP(Control.java:5138)
+	at org.eclipse.swt.widgets.Control.windowProc(Control.java:4756)
+	at org.eclipse.swt.widgets.Canvas.windowProc(Canvas.java:342)
+	at org.eclipse.swt.widgets.Decorations.windowProc(Decorations.java:1482)
+	at org.eclipse.swt.widgets.Shell.windowProc(Shell.java:2311)
+	at org.eclipse.swt.widgets.Display.windowProc(Display.java:5091)
+	at org.eclipse.swt.internal.win32.OS.TrackPopupMenu(Native Method)
+	at org.eclipse.swt.widgets.Menu._setVisible(Menu.java:241)
+	at org.eclipse.swt.widgets.Display.runPopups(Display.java:4165)
+	at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:3706)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$5.run(PartRenderingEngine.java:1151)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:339)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.run(PartRenderingEngine.java:1042)
+	at org.eclipse.e4.ui.internal.workbench.E4Workbench.createAndRunUI(E4Workbench.java:153)
+	at org.eclipse.ui.internal.Workbench.lambda$3(Workbench.java:639)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:339)
+	at org.eclipse.ui.internal.Workbench.createAndRunWorkbench(Workbench.java:546)
+	at org.eclipse.ui.PlatformUI.createAndRunWorkbench(PlatformUI.java:173)
+	at org.eclipse.ui.internal.ide.application.IDEApplication.start(IDEApplication.java:152)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:208)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:143)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:109)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:439)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:271)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:668)
+	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:605)
+	at org.eclipse.equinox.launcher.Main.run(Main.java:1481)
+!SUBENTRY 1 org.eclipse.core.expressions 4 201 2026-05-02 21:31:15.824
+!MESSAGE No property tester contributes a property org.eclipse.core.resources.projectNature to type class org.eclipse.jdt.internal.core.PackageFragment
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:31:55.386
+!MESSAGE cannot find file for org.junit.jupiter:junit-jupiter
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:31:55.390
+!MESSAGE cannot find file for org.mockito:mockito-all
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:31:55.392
+!MESSAGE cannot find file for org.jboss.arquillian.junit:arquillian-junit-container
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:31:58.980
+!MESSAGE cannot find file for org.junit.jupiter:junit-jupiter
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:31:58.982
+!MESSAGE cannot find file for org.mockito:mockito-all
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:31:58.984
+!MESSAGE cannot find file for org.jboss.arquillian.junit:arquillian-junit-container
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:32:15.676
+!MESSAGE cannot find file for org.junit.jupiter:junit-jupiter
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:32:15.681
+!MESSAGE cannot find file for org.mockito:mockito-all
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:32:15.720
+!MESSAGE cannot find file for org.jboss.arquillian.junit:arquillian-junit-container
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:32:20.287
+!MESSAGE cannot find file for org.junit.jupiter:junit-jupiter
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:32:20.289
+!MESSAGE cannot find file for org.mockito:mockito-all
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:32:20.291
+!MESSAGE cannot find file for org.jboss.arquillian.junit:arquillian-junit-container
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:33:12.883
+!MESSAGE cannot find file for org.junit.jupiter:junit-jupiter
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:33:12.889
+!MESSAGE cannot find file for org.mockito:mockito-all
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:33:12.892
+!MESSAGE cannot find file for org.jboss.arquillian.junit:arquillian-junit-container
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:33:16.498
+!MESSAGE cannot find file for org.junit.jupiter:junit-jupiter
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:33:16.501
+!MESSAGE cannot find file for org.mockito:mockito-all
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:33:16.505
+!MESSAGE cannot find file for org.jboss.arquillian.junit:arquillian-junit-container
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:36:22.619
+!MESSAGE cannot find file for org.junit.jupiter:junit-jupiter
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:36:22.621
+!MESSAGE cannot find file for org.mockito:mockito-all
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:36:22.623
+!MESSAGE cannot find file for org.jboss.arquillian.junit:arquillian-junit-container
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:36:26.057
+!MESSAGE cannot find file for org.junit.jupiter:junit-jupiter
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:36:26.059
+!MESSAGE cannot find file for org.mockito:mockito-all
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:36:26.061
+!MESSAGE cannot find file for org.jboss.arquillian.junit:arquillian-junit-container
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:38:22.179
+!MESSAGE cannot find file for org.junit.jupiter:junit-jupiter
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:38:22.184
+!MESSAGE cannot find file for org.mockito:mockito-all
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:38:22.280
+!MESSAGE cannot find file for org.jboss.arquillian.junit:arquillian-junit-container
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:38:25.586
+!MESSAGE cannot find file for org.junit.jupiter:junit-jupiter
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:38:25.587
+!MESSAGE cannot find file for org.mockito:mockito-all
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:38:25.589
+!MESSAGE cannot find file for org.jboss.arquillian.junit:arquillian-junit-container
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:40:10.347
+!MESSAGE cannot find file for org.junit.jupiter:junit-jupiter
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:40:10.350
+!MESSAGE cannot find file for org.mockito:mockito-all
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:40:10.351
+!MESSAGE cannot find file for org.jboss.arquillian.junit:arquillian-junit-container
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:40:13.465
+!MESSAGE cannot find file for org.junit.jupiter:junit-jupiter
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:40:13.468
+!MESSAGE cannot find file for org.mockito:mockito-all
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:40:13.474
+!MESSAGE cannot find file for org.jboss.arquillian.junit:arquillian-junit-container
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:41:05.221
+!MESSAGE cannot find file for org.junit.jupiter:junit-jupiter
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:41:05.227
+!MESSAGE cannot find file for org.mockito:mockito-all
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:41:05.240
+!MESSAGE cannot find file for org.jboss.arquillian.junit:arquillian-junit-container
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:41:08.970
+!MESSAGE cannot find file for org.junit.jupiter:junit-jupiter
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:41:08.972
+!MESSAGE cannot find file for org.mockito:mockito-all
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:41:08.975
+!MESSAGE cannot find file for org.jboss.arquillian.junit:arquillian-junit-container
+
+!ENTRY org.jboss.ide.eclipse.as.core 1 16842760 2026-05-02 21:43:09.987
+!MESSAGE Server Starting
+
+!ENTRY org.jboss.ide.eclipse.as.core 1 16842769 2026-05-02 21:44:46.796
+!MESSAGE Server Startup Succeeded
+
+!ENTRY org.eclipse.jface 2 0 2026-05-02 21:47:49.009
+!MESSAGE Keybinding conflicts occurred.  They may interfere with normal accelerator operation.
+!SUBENTRY 1 org.eclipse.jface 2 0 2026-05-02 21:47:49.009
+!MESSAGE A conflict occurred for CTRL+SHIFT+T:
+Binding(CTRL+SHIFT+T,
+	ParameterizedCommand(Command(org.eclipse.jdt.ui.navigate.open.type,Open Type,
+		Open a type in a Java editor,
+		Category(org.eclipse.ui.category.navigate,Navigate,null,true),
+		WorkbenchHandlerServiceHandler("org.eclipse.jdt.ui.navigate.open.type"),
+		,,true),null),
+	org.eclipse.ui.defaultAcceleratorConfiguration,
+	org.eclipse.ui.contexts.window,,,system)
+Binding(CTRL+SHIFT+T,
+	ParameterizedCommand(Command(org.eclipse.lsp4e.symbolinworkspace,Go to Symbol in Workspace,
+		,
+		Category(org.eclipse.lsp4e.category,Language Servers,null,true),
+		WorkbenchHandlerServiceHandler("org.eclipse.lsp4e.symbolinworkspace"),
+		,,true),null),
+	org.eclipse.ui.defaultAcceleratorConfiguration,
+	org.eclipse.ui.contexts.window,,,system)
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:50:07.503
+!MESSAGE cannot find file for org.junit.jupiter:junit-jupiter
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:50:07.505
+!MESSAGE cannot find file for org.mockito:mockito-all
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:50:07.507
+!MESSAGE cannot find file for org.jboss.arquillian.junit:arquillian-junit-container
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:50:11.308
+!MESSAGE cannot find file for org.junit.jupiter:junit-jupiter
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:50:11.310
+!MESSAGE cannot find file for org.mockito:mockito-all
+
+!ENTRY org.eclipse.m2e.logback.appender 2 0 2026-05-02 21:50:11.312
+!MESSAGE cannot find file for org.jboss.arquillian.junit:arquillian-junit-container
+
+!ENTRY org.jboss.ide.eclipse.as.core 1 16842776 2026-05-02 21:50:25.004
+!MESSAGE Server shutting down
+
+!ENTRY org.jboss.ide.eclipse.as.core 1 16842785 2026-05-02 21:50:25.321
+!MESSAGE Server Shutdown Succeeded
+
+!ENTRY org.jboss.ide.eclipse.as.core 1 16842760 2026-05-02 21:50:26.243
+!MESSAGE Server Starting
+
+!ENTRY org.jboss.ide.eclipse.as.core 1 16842769 2026-05-02 21:51:12.177
+!MESSAGE Server Startup Succeeded
+
+!ENTRY org.jboss.ide.eclipse.as.wtp.core 1 16973825 2026-05-02 21:52:27.526
+!MESSAGE Server processes have terminated prematurely. Please check your server logs for more details. 
