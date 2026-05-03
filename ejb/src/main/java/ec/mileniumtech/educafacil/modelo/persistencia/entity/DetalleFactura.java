@@ -37,4 +37,7 @@ public class DetalleFactura {
 
     @Column(name = "defa_descuento", precision = 5, scale = 2)
     private BigDecimal descuento;
+    
+    @Transient
+    private Integer impuestoIva;
 }

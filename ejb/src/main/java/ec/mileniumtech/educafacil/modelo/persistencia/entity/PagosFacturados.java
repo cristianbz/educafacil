@@ -31,16 +31,7 @@ public class PagosFacturados {
 
     @Column(name = "pafa_monto", precision = 5, scale = 2, nullable = false)
     private BigDecimal monto;
-    
-    @Column(name = "pafa_descuento", precision = 5, scale = 2, nullable = false)
-    private BigDecimal descuento;
-    
-    @Column(name = "pafa_valor_impuesto", precision = 5, scale = 2, nullable = false)
-    private BigDecimal valorImpuestos;
-    
-    @Transient
-    private Integer impuestoIva;
-
+       
     @Column(name = "pafa_referencia", length = 50, nullable = false)
     private String referencia;
 }
