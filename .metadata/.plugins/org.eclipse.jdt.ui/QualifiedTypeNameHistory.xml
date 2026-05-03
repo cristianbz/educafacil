@@ -19,10 +19,10 @@
     <fullyQualifiedTypeName name="jakarta.faces.view.ViewScoped"/>
     <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.dao.impl.EmpresaDaoImpl"/>
     <fullyQualifiedTypeName name="jakarta.annotation.PostConstruct"/>
-    <fullyQualifiedTypeName name="lombok.Getter"/>
-    <fullyQualifiedTypeName name="lombok.Setter"/>
     <fullyQualifiedTypeName name="java.io.Serializable"/>
     <fullyQualifiedTypeName name="java.nio.charset.StandardCharsets"/>
     <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.modelo.persistencia.entity.EmpresaMatriz"/>
     <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.modelo.persistencia.entity.PuntoEmision"/>
+    <fullyQualifiedTypeName name="lombok.Getter"/>
+    <fullyQualifiedTypeName name="lombok.Setter"/>
 </qualifiedTypeNameHistroy>

@@ -80,6 +80,9 @@ public class EmpresaMatriz implements Serializable{
 	@Column(name="empm_resolucion_agente")
 	private String empmResolucionAgente;
 	
+	@Column(name="empm_porcentaje_iva")
+	private Integer empmPorcentajeIva; 
+	
 	
 	@OneToMany(mappedBy="empresaMatriz", fetch=FetchType.LAZY)
 	private List<Establecimiento> establecimientos;
