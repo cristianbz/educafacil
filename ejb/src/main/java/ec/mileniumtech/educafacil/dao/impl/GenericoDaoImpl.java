@@ -86,8 +86,8 @@ public class GenericoDaoImpl <T,K> implements GenericoDao<T,K> {
 
 	@Override
 	public Optional<T> findById(K id) {
-		// TODO Auto-generated method stub
-		return Optional.empty();
+		T entity = entityManager.find(entityClass, id);
+        return Optional.ofNullable(entity);
 	}
 
 	@Override

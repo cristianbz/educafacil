@@ -40,7 +40,13 @@ public class BeanFacturacion implements Serializable {
     private DetalleFactura detalleNuevo;
     private boolean mostrarFormularioNuevoCliente;
     private CatalogoItem nuevoItem;
-
+    
+ // Campos para Formas de Pago
+    private List<ec.mileniumtech.educafacil.modelo.persistencia.entity.Sriformapago> listaFormasPagoSri;
+    private List<ec.mileniumtech.educafacil.modelo.persistencia.entity.FormaPagoFactura> listaFormasPagoAgregadas;
+    private ec.mileniumtech.educafacil.modelo.persistencia.entity.FormaPagoFactura nuevaFormaPago;
+    private Integer idFormaPagoSeleccionada;
+    
     @jakarta.annotation.PostConstruct
     public void init() {
         listaFacturas = new java.util.ArrayList<>();
@@ -51,5 +57,8 @@ public class BeanFacturacion implements Serializable {
         detalleNuevo = new ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleFactura();
         clienteSeleccionado = new ec.mileniumtech.educafacil.modelo.persistencia.entity.Cliente();
         nuevoItem = new ec.mileniumtech.educafacil.modelo.persistencia.entity.CatalogoItem();
+        listaFormasPagoSri = new java.util.ArrayList<>();
+        listaFormasPagoAgregadas = new java.util.ArrayList<>();
+        nuevaFormaPago = new ec.mileniumtech.educafacil.modelo.persistencia.entity.FormaPagoFactura();
     }
 }

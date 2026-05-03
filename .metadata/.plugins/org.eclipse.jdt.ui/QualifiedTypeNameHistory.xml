@@ -23,6 +23,9 @@
     <fullyQualifiedTypeName name="java.nio.charset.StandardCharsets"/>
     <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.modelo.persistencia.entity.EmpresaMatriz"/>
     <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.modelo.persistencia.entity.PuntoEmision"/>
+    <fullyQualifiedTypeName name="jakarta.persistence.Entity"/>
     <fullyQualifiedTypeName name="lombok.Getter"/>
     <fullyQualifiedTypeName name="lombok.Setter"/>
+    <fullyQualifiedTypeName name="jakarta.persistence.Table"/>
+    <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.modelo.persistencia.entity.Sriformapago"/>
 </qualifiedTypeNameHistroy>

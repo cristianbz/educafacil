@@ -13,6 +13,7 @@
 	<parameter name="TOTAL_SIN_IMPUESTOS" class="java.lang.Double"/>
 	<parameter name="IMPORTE_TOTAL" class="java.lang.Double"/>
 	<parameter name="LOGO" class="java.io.InputStream"/>
+	<parameter name="FORMAS_PAGO" class="java.lang.String"/>
 	<field name="codigoPrincipal" class="java.lang.String"/>
 	<field name="cantidad" class="java.lang.Double"/>
 	<field name="descripcion" class="java.lang.String"/>
@@ -244,6 +245,20 @@
 	</detail>
 	<summary>
 		<band height="100" splitType="Stretch">
+			<staticText>
+				<reportElement x="10" y="10" width="200" height="15" uuid="d24c5e31-50e5-4e3d-8e5c-7b4c4e5d6a7f"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[FORMAS DE PAGO]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement x="10" y="25" width="300" height="50" uuid="e24c5e31-50e5-4e3d-8e5c-7b4c4e5d6b7f"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{FORMAS_PAGO}]]></textFieldExpression>
+			</textField>
 			<staticText>
 				<reportElement x="335" y="10" width="140" height="15" uuid="d24c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
 				<textElement>
