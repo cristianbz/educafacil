@@ -59,6 +59,9 @@ public class BackingFacturacion implements Serializable {
 
     @EJB
     private PuntoEmisionDaoImpl puntoEmisionDao;
+    
+    @EJB
+    private ec.mileniumtech.educafacil.dao.impl.SriformapagoDaoImpl sriformapagoDao;
 
     @EJB
     private EstudianteDaoImpl estudianteDao;
@@ -83,6 +86,7 @@ public class BackingFacturacion implements Serializable {
             cargarFacturas();
             prepararNuevaFactura();            
             getBeanFacturacion().setListaItems(catalogoItemDao.findAll());
+            getBeanFacturacion().setListaFormasPagoSri(sriformapagoDao.findAll());
         } catch (Exception e) {
             log.error("Error en init de BackingFacturacion", e);
             Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "Error al inicializar la página: " + e.getMessage());
@@ -101,6 +105,9 @@ public class BackingFacturacion implements Serializable {
         getBeanFacturacion().setIdentificacionBusqueda("");
         getBeanFacturacion().getDetalleNuevo().setCantidad(0);
         getBeanFacturacion().setMostrarFormularioNuevoCliente(false);
+        getBeanFacturacion().setListaFormasPagoAgregadas(new ArrayList<>());
+        getBeanFacturacion().setNuevaFormaPago(new ec.mileniumtech.educafacil.modelo.persistencia.entity.FormaPagoFactura());
+        getBeanFacturacion().setIdFormaPagoSeleccionada(null);
     }
 
     /**
@@ -237,6 +244,37 @@ public class BackingFacturacion implements Serializable {
         getBeanFacturacion().getNuevaFactura().setSubtotal(subtotal);
         getBeanFacturacion().getNuevaFactura().setTotal(subtotal); // Asumiendo IVA 0%
     }
+    
+    public void agregarFormaPago() {
+        try {
+            Integer idFp = getBeanFacturacion().getIdFormaPagoSeleccionada();
+            if (idFp == null || idFp == 0) throw new Exception("Debe seleccionar una forma de pago.");
+            
+            ec.mileniumtech.educafacil.modelo.persistencia.entity.FormaPagoFactura fp = getBeanFacturacion().getNuevaFormaPago();
+            if (fp.getValor() == null || fp.getValor().compareTo(BigDecimal.ZERO) <= 0) {
+                throw new Exception("El valor debe ser mayor a cero.");
+            }
+            
+            ec.mileniumtech.educafacil.modelo.persistencia.entity.Sriformapago sriFp = sriformapagoDao.findById(idFp).orElse(null);
+            if (sriFp == null) throw new Exception("Forma de pago no encontrada.");
+            
+            fp.setSriformapagos(sriFp);
+            
+            getBeanFacturacion().getListaFormasPagoAgregadas().add(fp);
+            
+            getBeanFacturacion().setNuevaFormaPago(new ec.mileniumtech.educafacil.modelo.persistencia.entity.FormaPagoFactura());
+            getBeanFacturacion().setIdFormaPagoSeleccionada(null);
+            
+            Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Éxito", "Forma de pago agregada.");
+        } catch (Exception e) {
+            Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage());
+        }
+    }
+
+    public void removerFormaPago(ec.mileniumtech.educafacil.modelo.persistencia.entity.FormaPagoFactura fp) {
+        getBeanFacturacion().getListaFormasPagoAgregadas().remove(fp);
+        Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Éxito", "Forma de pago removida.");
+    }
 
     /**
      * Guarda la nueva factura y procesa la emisión electrónica.
@@ -249,6 +287,19 @@ public class BackingFacturacion implements Serializable {
             if (getBeanFacturacion().getListaDetallesNueva().isEmpty()) {
                 throw new Exception("Debe agregar al menos un detalle.");
             }
+            if (getBeanFacturacion().getListaFormasPagoAgregadas().isEmpty()) {
+                throw new Exception("Debe agregar al menos una forma de pago.");
+            }
+
+            BigDecimal totalFactura = getBeanFacturacion().getNuevaFactura().getTotal();
+            BigDecimal totalPagos = BigDecimal.ZERO;
+            for (ec.mileniumtech.educafacil.modelo.persistencia.entity.FormaPagoFactura fp : getBeanFacturacion().getListaFormasPagoAgregadas()) {
+                totalPagos = totalPagos.add(fp.getValor());
+            }
+
+            if (totalPagos.compareTo(totalFactura) != 0) {
+                throw new Exception("La suma de las formas de pago (" + totalPagos + ") no coincide con el total de la factura (" + totalFactura + ").");
+            }
 
             Factura f = getBeanFacturacion().getNuevaFactura();
             Cliente c = getBeanFacturacion().getClienteSeleccionado();
@@ -260,6 +311,13 @@ public class BackingFacturacion implements Serializable {
             
             f.setCliente(c);
             f.setDetalles(getBeanFacturacion().getListaDetallesNueva());
+            
+            List<ec.mileniumtech.educafacil.modelo.persistencia.entity.FormaPagoFactura> formasPago = new ArrayList<>();
+            for (ec.mileniumtech.educafacil.modelo.persistencia.entity.FormaPagoFactura fp : getBeanFacturacion().getListaFormasPagoAgregadas()) {
+                fp.setFactura(f);
+                formasPago.add(fp);
+            }
+            f.setFormaPagoFacturas(formasPago);
             
             // Obtener Punto de Emisión
             List<PuntoEmision> puntos = puntoEmisionDao.listarPuntosEmisionActivos();

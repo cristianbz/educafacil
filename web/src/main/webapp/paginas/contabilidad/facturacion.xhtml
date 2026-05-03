@@ -190,13 +190,101 @@
 									</p:column>
 								</p:dataTable>
 								
-								<div class="invoice-total-section">
-									<p:outputPanel id="pnlTotales" styleClass="p-d-flex p-ai-center">
-										<h:outputText value="TOTAL A PAGAR:" styleClass="invoice-total-label p-mr-3" />
-										<h:outputText value="#{beanFacturacion.nuevaFactura.total}" styleClass="invoice-total-value">
-											<f:convertNumber type="currency" currencySymbol="$" />
-										</h:outputText>
-									</p:outputPanel>
+								<div class="p-grid p-mt-3">
+									<div class="p-col-12 p-md-8">
+										<!-- Formas de Pago -->
+										<p:panel header="Formas de Pago" styleClass="invoice-panel" style="height: 100%;">
+											<div class="p-grid p-formgrid p-ai-end p-mb-3">
+												<div class="p-col-12 p-md-4 p-field">
+													<p:outputLabel value="Forma de Pago:" for="selFormaPago" />
+													<p:selectOneMenu id="selFormaPago" value="#{beanFacturacion.idFormaPagoSeleccionada}" filter="true" filterMatchMode="contains" style="width: 100%;">
+														<f:selectItem itemLabel="Seleccione..." itemValue="#{null}" />
+														<f:selectItems value="#{beanFacturacion.listaFormasPagoSri}" var="fpSri" 
+																	   itemLabel="#{fpSri.srfpCodigoSri} - #{fpSri.srfpDescripcion}" itemValue="#{fpSri.srfpId}" />
+													</p:selectOneMenu>
+												</div>
+												<div class="p-col-12 p-md-2 p-field">
+													<p:outputLabel value="Valor:" for="txtValorPago" />
+													<p:inputNumber id="txtValorPago" value="#{beanFacturacion.nuevaFormaPago.valor}" symbol="$" decimalPlaces="2" style="width: 100%;" />
+												</div>
+												<div class="p-col-12 p-md-2 p-field">
+													<p:outputLabel value="Plazo:" for="txtPlazoPago" />
+													<p:inputText id="txtPlazoPago" value="#{beanFacturacion.nuevaFormaPago.plazo}" placeholder="Ej: 30" style="width: 100%;" />
+												</div>
+												<div class="p-col-12 p-md-2 p-field">
+													<p:outputLabel value="Tiempo:" for="selTiempoPago" />
+													<p:selectOneMenu id="selTiempoPago" value="#{beanFacturacion.nuevaFormaPago.tiempo}" style="width: 100%;">
+														<f:selectItem itemLabel="Seleccione..." itemValue="#{null}" />
+														<f:selectItem itemLabel="Días" itemValue="Días" />
+														<f:selectItem itemLabel="Meses" itemValue="Meses" />
+														<f:selectItem itemLabel="Años" itemValue="Años" />
+													</p:selectOneMenu>
+												</div>
+												<div class="p-col-12 p-md-2 p-field">
+													<p:commandButton icon="pi pi-plus" 
+																	 actionListener="#{backingFacturacion.agregarFormaPago()}" 
+																	 process="@this selFormaPago txtValorPago txtPlazoPago selTiempoPago"
+																	 update="tblFormasPago selFormaPago txtValorPago txtPlazoPago selTiempoPago :formFacturacion:growl" 
+																	 styleClass="ui-button-success" style="width: 100%;" title="Agregar Pago"/>
+												</div>
+											</div>
+											
+											<p:dataTable id="tblFormasPago" value="#{beanFacturacion.listaFormasPagoAgregadas}" var="fpa" 
+														 reflow="true" styleClass="p-mt-2" emptyMessage="No hay formas de pago agregadas.">
+												<p:column headerText="Forma de Pago">
+													<h:outputText value="#{fpa.sriformapagos.srfpCodigoSri} - #{fpa.sriformapagos.srfpDescripcion}" />
+												</p:column>
+												<p:column headerText="Valor" style="text-align: right; width: 100px;">
+													<h:outputText value="#{fpa.valor}">
+														<f:convertNumber type="currency" currencySymbol="$" />
+													</h:outputText>
+												</p:column>
+												<p:column headerText="Plazo" style="text-align: center; width: 80px;">
+													<h:outputText value="#{fpa.plazo}" />
+												</p:column>
+												<p:column headerText="Tiempo" style="text-align: center; width: 80px;">
+													<h:outputText value="#{fpa.tiempo}" />
+												</p:column>
+												<p:column headerText="Acción" style="text-align: center; width: 60px;">
+													<p:commandButton icon="pi pi-trash" styleClass="ui-button-danger rounded-button" 
+																	 actionListener="#{backingFacturacion.removerFormaPago(fpa)}"
+																	 process="@this" update="tblFormasPago :formFacturacion:growl" />
+												</p:column>
+											</p:dataTable>
+										</p:panel>
+									</div>
+									<div class="p-col-12 p-md-4">
+										<!-- Resumen Totales -->
+										<p:panel header="Resumen" styleClass="invoice-panel" style="height: 100%;">
+											<p:outputPanel id="pnlTotales">
+												<div class="p-d-flex p-jc-between p-mb-2">
+													<h:outputText value="Subtotal (0%):" style="font-weight: bold;"/>
+													<h:outputText value="#{beanFacturacion.nuevaFactura.subtotal}">
+														<f:convertNumber type="currency" currencySymbol="$" />
+													</h:outputText>
+												</div>
+												<div class="p-d-flex p-jc-between p-mb-2">
+													<h:outputText value="Descuento:" style="font-weight: bold;"/>
+													<h:outputText value="#{beanFacturacion.nuevaFactura.descuentoTotal}">
+														<f:convertNumber type="currency" currencySymbol="$" />
+													</h:outputText>
+												</div>
+												<div class="p-d-flex p-jc-between p-mb-2">
+													<h:outputText value="Impuestos:" style="font-weight: bold;"/>
+													<h:outputText value="#{beanFacturacion.nuevaFactura.totalImpuestos}">
+														<f:convertNumber type="currency" currencySymbol="$" />
+													</h:outputText>
+												</div>
+												<p:divider />
+												<div class="p-d-flex p-jc-between p-mt-2" style="font-size: 1.25rem;">
+													<h:outputText value="TOTAL:" style="font-weight: bold; color: var(--primary-color);"/>
+													<h:outputText value="#{beanFacturacion.nuevaFactura.total}" style="font-weight: bold; color: var(--primary-color);">
+														<f:convertNumber type="currency" currencySymbol="$" />
+													</h:outputText>
+												</div>
+											</p:outputPanel>
+										</p:panel>
+									</div>
 								</div>
 							</p:panel>
 						</div>
