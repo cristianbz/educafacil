@@ -9,7 +9,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 
+import ec.mileniumtech.educafacil.dao.impl.ConfiguracionesDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.FacturaDaoImpl;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.Configuraciones;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleFactura;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DocumentoElectronico;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.EmpresaMatriz;
@@ -57,6 +59,9 @@ public class IntegracionSriService {
 
     @EJB
     private FacturaDaoImpl facturaDao;
+    
+    @EJB
+    private ConfiguracionesDaoImpl configuracionesDao;
 
     /**
      * Procesa una factura electrónica completa a partir de la entidad Factura.
@@ -65,6 +70,8 @@ public class IntegracionSriService {
      * @throws Exception Si falla algún paso del proceso.
      */
     public void procesarFacturaElectronica(Factura facturaEntity) throws Exception {
+    	//0. Obtener los url de servicios web del sri
+    	Configuraciones configuraciones = configuracionesDao.findAll().get(0);
         // 1. Obtener información del emisor y configuración
         EmpresaMatriz empresa = facturaEntity.getPuntoEmision().getEstablecimientos().getEmpresaMatriz();
         if (empresa == null) {
@@ -218,11 +225,11 @@ public class IntegracionSriService {
 
         // 5. Envío al SRI
         boolean esProduccion = empresa.getEmpmAmbiente() == 2;
-        RespuestaSolicitud respuestaEnvio = sriWebServiceService.enviarComprobante(xmlFirmado, esProduccion);
+        RespuestaSolicitud respuestaEnvio = sriWebServiceService.enviarComprobante(xmlFirmado, esProduccion,configuraciones);
         
         if ("RECIBIDA".equals(respuestaEnvio.getEstado())) {
             Thread.sleep(3000);
-            RespuestaComprobante respuestaAut = sriWebServiceService.autorizarComprobante(claveAcceso, esProduccion);
+            RespuestaComprobante respuestaAut = sriWebServiceService.autorizarComprobante(claveAcceso, esProduccion,configuraciones);
             
             if (!respuestaAut.getAutorizaciones().getAutorizacion().isEmpty()) {
                 Autorizacion aut = respuestaAut.getAutorizaciones().getAutorizacion().get(0);

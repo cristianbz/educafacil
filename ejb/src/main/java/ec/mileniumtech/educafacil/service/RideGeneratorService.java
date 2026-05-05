@@ -59,14 +59,14 @@ public class RideGeneratorService {
         // Formas de Pago
         StringBuilder sbPagos = new StringBuilder();
         if (factura.getInfoFactura().getPagos() != null) {
-            for (ec.mileniumtech.educafacil.modelo.sri.Factura.PagoSRI p : factura.getInfoFactura().getPagos()) {
+            for (ec.mileniumtech.educafacil.modelo.sri.Factura.PagoSRI p : factura.getInfoFactura().getPagosList()) {
                 sbPagos.append("Cod. ").append(p.getFormaPago()).append(" - $").append(String.format("%.2f", p.getTotal())).append("\n");
             }
         }
         parametros.put("FORMAS_PAGO", sbPagos.toString());
 
         // DataSource para los detalles
-        JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource(factura.getDetalles());
+        JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource(factura.getDetallesList());
 
         // Cargar y llenar el reporte
         JasperReport report;

@@ -1,0 +1,205 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
+
+    <ui:define name="contenido">
+        <f:event listener="#{backingLogin.validarSesion()}" type="preRenderView" />
+        
+        <style type="text/css">
+            .search-header {
+                display: flex;
+                width: 100%;
+                margin-bottom: 0;
+            }
+            .search-tab-general {
+                background-color: white;
+                color: #333;
+                padding: 10px 20px;
+                border-top: 2px solid #ff9800;
+                border-left: 1px solid #ddd;
+                border-right: 1px solid #ddd;
+                font-weight: bold;
+                width: 50%;
+            }
+            .search-tab-auth {
+                background-color: #003366;
+                color: white;
+                padding: 10px 20px;
+                font-weight: bold;
+                width: 50%;
+            }
+            .search-orange-bar {
+                background-color: #ff9800;
+                height: 5px;
+                width: 50%;
+            }
+            .search-blue-bar {
+                background-color: #003366;
+                height: 5px;
+                width: 50%;
+            }
+            .report-table thead th {
+                background-color: #003366 !important;
+                color: white !important;
+                text-align: center;
+            }
+            .download-link {
+                color: #003366;
+                text-decoration: none;
+                font-weight: bold;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                margin-top: 10px;
+            }
+            .custom-search-panel {
+                border: 1px solid #ddd;
+                padding: 15px;
+                background-color: #f9f9f9;
+            }
+        </style>
+
+        <h:form id="formReporte">
+            <p:growl id="growl" life="3000" showDetail="true" />
+            
+            <p:breadCrumb>
+                <p:menuitem value="Inicio" url="/paginas/inicio.xhtml" />
+                <p:menuitem value="Contabilidad" url="#" />
+                <p:menuitem value="Reporte de Facturas" />
+            </p:breadCrumb>
+            
+			<div class="page-header">
+				<div class="page-title">
+					<h2>Reporte de facturas</h2>
+					<small>Reporte de facturas emitidas</small>
+				</div>
+				<div class="page-actions">
+
+					<!-- Acción primaria -->
+					<p:commandButton value="#{botones['nuevo']}" 
+					action="#{backingReporteFacturas.nuevoReporte()}" 
+					styleClass="ui-button-success"
+					process="@this" icon="pi pi-check" resetValues="true" update="tblFacturas numAuth"/>					
+
+				</div>
+
+			</div>
+            <div class="search-header">
+                <div class="search-tab-general">Búsqueda general</div>                
+            </div>
+            <div style="display: flex;">
+                <div class="search-orange-bar"></div>
+                <div class="search-blue-bar"></div>
+            </div>
+            
+            <div class="custom-search-panel">
+                <div class="ui-fluid p-grid p-formgrid">
+                    <div class="p-col-12 p-md-3 p-field">
+                        <p:outputLabel value="Fecha inicio:" for="fechaInicio" style="font-weight: bold;"/>
+                        <p:datePicker id="fechaInicio" value="#{beanReporteFacturas.fechaInicio}" pattern="dd/MM/yyyy" showIcon="true" />
+                    </div>
+                    <div class="p-col-12 p-md-3 p-field">
+                        <p:outputLabel value="Fecha fin:" for="fechaFin" style="font-weight: bold;"/>
+                        <p:datePicker id="fechaFin" value="#{beanReporteFacturas.fechaFin}" pattern="dd/MM/yyyy" showIcon="true" />
+                    </div>
+                    <div class="p-col-12 p-md-3 p-field">
+                        <p:outputLabel value="Identificación:" for="identificacion" style="font-weight: bold;"/>
+                        <p:inputText id="identificacion" value="#{beanReporteFacturas.identificacion}" />
+                    </div>
+                    <div class="p-col-12 p-md-3 p-field">
+                        <p:outputLabel value="Comprobante:" for="comprobante" style="font-weight: bold;"/>
+                        <p:selectOneMenu id="comprobante" value="#{beanReporteFacturas.comprobanteTipo}">
+                            <f:selectItem itemLabel="Factura" itemValue="Factura" />
+                        </p:selectOneMenu>
+                    </div>
+                    
+                    <div class="p-col-12 p-md-9 p-field">
+                         <p:outputLabel value="Clave de acceso/ Nro. Autorización:" for="numAuth" style="font-weight: bold;"/>
+                         <p:inputText id="numAuth" value="#{beanReporteFacturas.numeroAutorizacion}" placeholder="Ingrese el número de autorización" />
+                    </div>
+                    
+                    <div class="p-col-12 p-md-3 p-field p-d-flex p-ai-end p-jc-end">
+                        <p:commandButton value="Buscar" icon="pi pi-search" 
+                                         actionListener="#{backingReporteFacturas.buscarFacturas()}" 
+                                         update="tblFacturas growl" 
+                                         style="background-color: #003366; border-color: #003366; width: 150px;"/>
+                    </div>
+                </div>
+            </div>
+            
+            <br />
+            
+            <p:dataTable id="tblFacturas" value="#{beanReporteFacturas.listaFacturas}" var="fac" 
+                         paginator="true" rows="10" 
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                         currentPageReportTemplate="({currentPage} of {totalPages})"
+                         emptyMessage="No se encontraron resultados"
+                         styleClass="report-table">
+                
+                <p:column headerText="Fecha de emisión" sortBy="#{fac.fechaEmision}">
+                    <h:outputText value="#{fac.fechaEmision}">
+                        <f:convertDateTime pattern="dd/MM/yyyy" type="localDate" />
+                    </h:outputText>
+                </p:column>
+                
+                <p:column headerText="Tipo de comprobante">
+                    <h:outputText value="Factura" />
+                </p:column>
+                
+                <p:column headerText="Número de comprobante" sortBy="#{fac.numero}">
+                    <h:outputText value="#{fac.numero}" />
+                </p:column>
+                
+                <p:column headerText="Identificación">
+                    <h:outputText value="#{fac.cliente.numeroIdentificacion}" />
+                </p:column>
+                
+                <p:column headerText="Razón social">
+                    <h:outputText value="#{fac.cliente.nombresCompletos}" />
+                </p:column>
+                
+                <p:column headerText="Clave de acceso/ Nro. Autorización">
+                    <h:outputText value="#{fac.documentoElectronico != null ? (fac.documentoElectronico.numeroAutorizacion != null ? fac.documentoElectronico.numeroAutorizacion : fac.documentoElectronico.claveAcceso) : ''}" />
+                </p:column>
+                
+                <p:column headerText="Valor total" style="text-align: right;">
+                    <h:outputText value="#{fac.total}">
+                        <f:convertNumber type="currency" currencySymbol="$" />
+                    </h:outputText>
+                </p:column>
+                
+                <p:column style="width: 50px; text-align: center;" exportable="false">
+                    <p:menuButton icon="pi pi-chevron-down" styleClass="ui-button-flat">
+                        <p:menuitem value="XML" ajax="false" icon="pi pi-file-excel">
+                            <p:fileDownload value="#{backingReporteFacturas.descargarXml(fac)}" />
+                        </p:menuitem>
+                        <p:menuitem value="RIDE" ajax="false" icon="pi pi-file-pdf">
+                            <p:fileDownload value="#{backingReporteFacturas.descargarRide(fac)}" />
+                        </p:menuitem>
+                        <p:menuitem value="Anular" actionListener="#{backingReporteFacturas.anularFactura(fac)}" 
+                                    update=":formReporte:growl" icon="pi pi-times-circle" />
+                        <p:menuitem value="Envío por correo" actionListener="#{backingReporteFacturas.enviarCorreo(fac)}" 
+                                    update=":formReporte:growl" icon="pi pi-envelope" />
+                    </p:menuButton>
+                </p:column>
+            </p:dataTable>
+            
+            <div class="p-d-flex p-ai-center" style="margin-top: 10px;">
+                <h:commandLink styleClass="download-link">
+                    <i class="pi pi-download"></i>
+                    <span>Descargar reporte</span>
+                    <p:dataExporter type="xls" target="tblFacturas" fileName="ReporteFacturas" />
+                </h:commandLink>
+            </div>
+            
+        </h:form>
+    </ui:define>
+</ui:composition>
+
+</html>
