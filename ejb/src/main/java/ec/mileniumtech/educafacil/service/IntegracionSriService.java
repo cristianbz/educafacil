@@ -2,6 +2,8 @@ package ec.mileniumtech.educafacil.service;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -12,9 +14,11 @@ import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleFactura;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DocumentoElectronico;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.EmpresaMatriz;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Factura;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.FormaPagoFactura;
 import ec.mileniumtech.educafacil.modelo.sri.Factura.Detalle;
 import ec.mileniumtech.educafacil.modelo.sri.Factura.InfoFactura;
 import ec.mileniumtech.educafacil.modelo.sri.Factura.InfoTributaria;
+import ec.mileniumtech.educafacil.modelo.sri.Factura.PagoSRI;
 import ec.mileniumtech.educafacil.modelo.sri.Factura.TotalImpuesto;
 import ec.mileniumtech.educafacil.service.sri.autorizacion.Autorizacion;
 import ec.mileniumtech.educafacil.service.sri.autorizacion.RespuestaComprobante;
@@ -73,9 +77,9 @@ public class IntegracionSriService {
         
         // El número de factura suele venir como XXX-XXX-XXXXXXXXX
         String[] partesNumero = facturaEntity.getNumero().split("-");
-        String estab = partesNumero.length > 0 ? partesNumero[0] : "001";
-        String ptoEmi = partesNumero.length > 1 ? partesNumero[1] : "001";
-        String secuencial = partesNumero.length > 2 ? partesNumero[2] : String.format("%09d", facturaEntity.getId());
+        String estab = String.format("%03d", Integer.parseInt(partesNumero.length > 0 ? partesNumero[0] : "1"));
+        String ptoEmi = String.format("%03d", Integer.parseInt(partesNumero.length > 1 ? partesNumero[1] : "1"));
+        String secuencial = String.format("%09d", Integer.parseInt(partesNumero.length > 2 ? partesNumero[2] : facturaEntity.getId().toString()));
         
         String serie = estab + ptoEmi;
         
@@ -92,6 +96,7 @@ public class IntegracionSriService {
         infoTrib.setAmbiente(empresa.getEmpmAmbiente().toString());
         infoTrib.setTipoEmision("1");
         infoTrib.setRazonSocial(empresa.getEmpmNombreComercial());
+        infoTrib.setNombreComercial(empresa.getEmpmNombreComercial());
         infoTrib.setRuc(empresa.getEmpmRuc());
         infoTrib.setClaveAcceso(claveAcceso);
         infoTrib.setCodDoc("01");
@@ -107,14 +112,23 @@ public class IntegracionSriService {
         infoFact.setDirEstablecimiento(empresa.getEmpmDireccion());
         infoFact.setObligadoContabilidad(empresa.isEmpmObligadoContabilidad() ? "SI" : "NO");
         
-        // Datos del cliente
-        infoFact.setTipoIdentificacionComprador(String.format("%02d", facturaEntity.getCliente().getTipoIdentificacion()));
+        // Mapeo de códigos de identificación del comprador según SRI
+        // 04: RUC, 05: Cédula, 06: Pasaporte, 07: Consumidor Final, 08: Exterior
+        String tipoIdentComprador = "05"; // Por defecto cédula
+        switch (facturaEntity.getCliente().getTipoIdentificacion()) {
+            case 1: tipoIdentComprador = "05"; break; // Asumiendo 1 = Cedula
+            case 2: tipoIdentComprador = "04"; break; // Asumiendo 2 = RUC
+            case 3: tipoIdentComprador = "06"; break; // Pasaporte
+            case 4: tipoIdentComprador = "07"; break; // Consumidor Final
+            default: tipoIdentComprador = "05";
+        }
+        infoFact.setTipoIdentificacionComprador(tipoIdentComprador);
         infoFact.setIdentificacionComprador(facturaEntity.getCliente().getNumeroIdentificacion());
         infoFact.setRazonSocialComprador(facturaEntity.getCliente().getNombresCompletos());
         
-        infoFact.setTotalSinImpuestos(facturaEntity.getSubtotal().doubleValue());
-        infoFact.setTotalDescuento(facturaEntity.getDescuentoTotal().doubleValue());
-        infoFact.setImporteTotal(facturaEntity.getTotal().doubleValue());
+        infoFact.setTotalSinImpuestos(facturaEntity.getSubtotal().setScale(2, RoundingMode.HALF_UP));
+        infoFact.setTotalDescuento(facturaEntity.getDescuentoTotal().setScale(2, RoundingMode.HALF_UP));
+        infoFact.setImporteTotal(facturaEntity.getTotal().setScale(2, RoundingMode.HALF_UP));
         
         // Mapeo de Detalles
         if (facturaEntity.getDetalles() != null) {
@@ -122,22 +136,22 @@ public class IntegracionSriService {
                 Detalle det = new Detalle();
                 det.setCodigoPrincipal(df.getItem() != null ? df.getItem().getId().toString() : "SERV");
                 det.setDescripcion(df.getDescripcion());
-                det.setCantidad(df.getCantidad().doubleValue());
-                det.setPrecioUnitario(df.getPrecioUnitario().doubleValue());
-                det.setDescuento(df.getDescuento().doubleValue());
-                det.setPrecioTotalSinImpuesto(df.getPrecioUnitario().multiply(new java.math.BigDecimal(df.getCantidad())).subtract(df.getDescuento()).doubleValue());
+                BigDecimal cantidadBd = BigDecimal.valueOf(df.getCantidad());
+                det.setCantidad(cantidadBd.setScale(2, RoundingMode.HALF_UP));
+                det.setPrecioUnitario(df.getPrecioUnitario().setScale(2, RoundingMode.HALF_UP));
+                det.setDescuento(df.getDescuento().setScale(2, RoundingMode.HALF_UP));
+                det.setPrecioTotalSinImpuesto(df.getPrecioUnitario().multiply(cantidadBd).subtract(df.getDescuento()).setScale(2, RoundingMode.HALF_UP));
                 
                 // SRI requiere impuestos por detalle
-                // Asumimos IVA 0% (Educación) para este ejemplo simplificado
                 ec.mileniumtech.educafacil.modelo.sri.Factura.Impuesto impDet = new ec.mileniumtech.educafacil.modelo.sri.Factura.Impuesto();
                 impDet.setCodigo("2"); // IVA
                 impDet.setCodigoPorcentaje("0"); // 0%
                 impDet.setBaseImponible(det.getPrecioTotalSinImpuesto());
                 impDet.setTarifa("0");
-                impDet.setValor(0.0);
-                det.getImpuestos().add(impDet);
+                impDet.setValor(BigDecimal.ZERO.setScale(2));
+                det.getImpuestosList().add(impDet);
                 
-                facturaSri.getDetalles().add(det);
+                facturaSri.getDetallesList().add(det);
             }
         }
         
@@ -145,10 +159,25 @@ public class IntegracionSriService {
         TotalImpuesto ti = new TotalImpuesto();
         ti.setCodigo("2"); // IVA
         ti.setCodigoPorcentaje("0"); // 0%
-        ti.setBaseImponible(facturaEntity.getSubtotal().doubleValue());
-        ti.setValor(facturaEntity.getTotalImpuestos().doubleValue());
-        infoFact.getTotalConImpuestos().add(ti);
-        
+        ti.setBaseImponible(facturaEntity.getSubtotal().setScale(2, RoundingMode.HALF_UP));
+        ti.setValor(facturaEntity.getTotalImpuestos().setScale(2, RoundingMode.HALF_UP));
+        infoFact.getTotalConImpuestosList().add(ti);
+
+        // Mapeo de Pagos — REQUERIDO por el SRI
+        if (facturaEntity.getFormaPagoFacturas() != null && !facturaEntity.getFormaPagoFacturas().isEmpty()) {
+            for (FormaPagoFactura fpf : facturaEntity.getFormaPagoFacturas()) {
+                PagoSRI pagoSri = new PagoSRI();
+                pagoSri.setFormaPago(fpf.getSriformapagos().getSrfpCodigoSri());
+                pagoSri.setTotal(fpf.getValor().setScale(2, RoundingMode.HALF_UP));
+                infoFact.getPagosList().add(pagoSri);
+            }
+        } else {
+            PagoSRI pagoDefecto = new PagoSRI();
+            pagoDefecto.setFormaPago("01");
+            pagoDefecto.setTotal(facturaEntity.getTotal().setScale(2, RoundingMode.HALF_UP));
+            infoFact.getPagosList().add(pagoDefecto);
+        }
+
         facturaSri.setInfoFactura(infoFact);
 
         // Información Adicional
@@ -156,14 +185,14 @@ public class IntegracionSriService {
             ec.mileniumtech.educafacil.modelo.sri.Factura.CampoAdicional campoDir = new ec.mileniumtech.educafacil.modelo.sri.Factura.CampoAdicional();
             campoDir.setNombre("Direccion");
             campoDir.setValor(facturaEntity.getCliente().getDireccion());
-            facturaSri.getInfoAdicional().add(campoDir);
+            facturaSri.getInfoAdicionalList().add(campoDir);
         }
         
         if (facturaEntity.getCliente().getCorreo() != null) {
             ec.mileniumtech.educafacil.modelo.sri.Factura.CampoAdicional campoEmail = new ec.mileniumtech.educafacil.modelo.sri.Factura.CampoAdicional();
             campoEmail.setNombre("Email");
             campoEmail.setValor(facturaEntity.getCliente().getCorreo());
-            facturaSri.getInfoAdicional().add(campoEmail);
+            facturaSri.getInfoAdicionalList().add(campoEmail);
         }
 
         // 3. Inicializar o recuperar DocumentoElectronico

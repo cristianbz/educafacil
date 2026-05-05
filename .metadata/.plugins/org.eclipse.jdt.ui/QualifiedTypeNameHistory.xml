@@ -28,4 +28,5 @@
     <fullyQualifiedTypeName name="lombok.Setter"/>
     <fullyQualifiedTypeName name="jakarta.persistence.Table"/>
     <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.modelo.persistencia.entity.Sriformapago"/>
+    <fullyQualifiedTypeName name="jakarta.persistence.Transient"/>
 </qualifiedTypeNameHistroy>
