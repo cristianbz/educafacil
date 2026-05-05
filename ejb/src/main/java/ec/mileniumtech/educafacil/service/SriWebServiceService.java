@@ -2,6 +2,7 @@ package ec.mileniumtech.educafacil.service;
 
 import java.net.URL;
 
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.Configuraciones;
 import ec.mileniumtech.educafacil.service.sri.autorizacion.AutorizacionComprobantesOffline;
 import ec.mileniumtech.educafacil.service.sri.autorizacion.AutorizacionComprobantesOfflineService;
 import ec.mileniumtech.educafacil.service.sri.autorizacion.RespuestaComprobante;
@@ -18,11 +19,11 @@ import jakarta.ejb.Stateless;
 @LocalBean
 public class SriWebServiceService {
 
-    private static final String WS_RECEPCION_PRUEBAS = "https://celcer.sri.gob.ec/comprobantes-electronicos-ws/RecepcionComprobantesOffline?wsdl";
-    private static final String WS_AUTORIZACION_PRUEBAS = "https://celcer.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantesOffline?wsdl";
-    
-    private static final String WS_RECEPCION_PRODUCCION = "https://cel.sri.gob.ec/comprobantes-electronicos-ws/RecepcionComprobantesOffline?wsdl";
-    private static final String WS_AUTORIZACION_PRODUCCION = "https://cel.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantesOffline?wsdl";
+//    private static final String WS_RECEPCION_PRUEBAS = "https://celcer.sri.gob.ec/comprobantes-electronicos-ws/RecepcionComprobantesOffline?wsdl";
+//    private static final String WS_AUTORIZACION_PRUEBAS = "https://celcer.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantesOffline?wsdl";
+//    
+//    private static final String WS_RECEPCION_PRODUCCION = "https://cel.sri.gob.ec/comprobantes-electronicos-ws/RecepcionComprobantesOffline?wsdl";
+//    private static final String WS_AUTORIZACION_PRODUCCION = "https://cel.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantesOffline?wsdl";
 
     /**
      * Envía un comprobante firmado al SRI para su recepción.
@@ -32,8 +33,8 @@ public class SriWebServiceService {
      * @return Respuesta de la solicitud de recepción.
      * @throws Exception Si ocurre un error en la comunicación o URL.
      */
-    public RespuestaSolicitud enviarComprobante(byte[] xmlFirmado, boolean esProduccion) throws Exception {
-        String urlWsdl = esProduccion ? WS_RECEPCION_PRODUCCION : WS_RECEPCION_PRUEBAS;
+    public RespuestaSolicitud enviarComprobante(byte[] xmlFirmado, boolean esProduccion, Configuraciones configuracion) throws Exception {
+        String urlWsdl = esProduccion ? configuracion.getConfWsRecepcionProduccion() : configuracion.getConf_wsRecepcionPruebas();
         RecepcionComprobantesOfflineService service = new RecepcionComprobantesOfflineService(new URL(urlWsdl));
         RecepcionComprobantesOffline port = service.getRecepcionComprobantesOfflinePort();
         return port.validarComprobante(xmlFirmado);
@@ -47,8 +48,8 @@ public class SriWebServiceService {
      * @return Respuesta con los detalles de la autorización.
      * @throws Exception Si ocurre un error en la comunicación o URL.
      */
-    public RespuestaComprobante autorizarComprobante(String claveAcceso, boolean esProduccion) throws Exception {
-        String urlWsdl = esProduccion ? WS_AUTORIZACION_PRODUCCION : WS_AUTORIZACION_PRUEBAS;
+    public RespuestaComprobante autorizarComprobante(String claveAcceso, boolean esProduccion, Configuraciones configuracion) throws Exception {
+        String urlWsdl = esProduccion ? configuracion.getConfWsAutorizacionProduccion() : configuracion.getConf_wsAutorizacionPruebas();
         AutorizacionComprobantesOfflineService service = new AutorizacionComprobantesOfflineService(new URL(urlWsdl));
         AutorizacionComprobantesOffline port = service.getAutorizacionComprobantesOfflinePort();
         return port.autorizacionComprobante(claveAcceso);

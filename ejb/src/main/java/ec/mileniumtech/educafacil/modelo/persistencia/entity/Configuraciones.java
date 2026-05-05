@@ -61,16 +61,16 @@ public class Configuraciones implements Serializable {
 	@Column(name="conf_representante_legal")
 	private String confRepresentanteLegal;
 	
-	@Column(name="conf_api_whatsapp")
-	private String confApiWhatsapp;
+	@Column(name="conf_ws_recepcion_pruebas")
+	private String conf_wsRecepcionPruebas;
 	
-	@Column(name="conf_apfacebook_id")
-	private String confApfacebookId;
+	@Column(name="conf_ws_autorizacion_pruebas")
+	private String conf_wsAutorizacionPruebas;
 	
-	@Column(name="conf_apfacebook_clave")
-	private String confApfacebookClave;
+	@Column(name="conf_ws_recepcion_produccion")
+	private String confWsRecepcionProduccion;
 	
-	@Column(name="conf_apfacebook_uriredirect")
-	private String confApfacebookUriredirect;
+	@Column(name="conf_ws_autorizacion_produccion")
+	private String confWsAutorizacionProduccion;
 	
 }

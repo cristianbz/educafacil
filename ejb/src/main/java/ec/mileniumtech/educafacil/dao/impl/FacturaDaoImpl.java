@@ -72,4 +72,56 @@ public class FacturaDaoImpl extends GenericoDaoImpl<Factura, Integer> {
             throw new SystemException("Error al listar facturas", "FACTURA-LIST-ERR", e);
         }
     }
+
+
+    /**
+     * Busca facturas por filtros para reportería.
+     * @param fechaInicio Fecha inicial de emisión.
+     * @param fechaFin Fecha final de emisión.
+     * @param identificacion Identificación del cliente.
+     * @param numeroAutorizacion Clave de acceso o número de autorización.
+     * @return Lista de facturas que coinciden con los criterios.
+     */
+    public java.util.List<Factura> buscarFacturasPorFiltros(java.time.LocalDate fechaInicio, java.time.LocalDate fechaFin, String identificacion, String numeroAutorizacion) {
+        try {
+            StringBuilder jpql = new StringBuilder("SELECT f FROM Factura f ");
+            jpql.append("JOIN FETCH f.cliente ");
+            jpql.append("JOIN FETCH f.documentoElectronico ");
+            jpql.append("WHERE f.documentoElectronico.estado = 'AUTORIZADO' ");
+
+            if (fechaInicio != null) {
+                jpql.append("AND f.fechaEmision >= :fechaInicio ");
+            }
+            if (fechaFin != null) {
+                jpql.append("AND f.fechaEmision <= :fechaFin ");
+            }
+            if (identificacion != null && !identificacion.trim().isEmpty()) {
+                jpql.append("AND f.cliente.persona.persIdentificacion = :identificacion ");
+            }
+            if (numeroAutorizacion != null && !numeroAutorizacion.trim().isEmpty()) {
+                jpql.append("AND (f.documentoElectronico.claveAcceso = :numeroAutorizacion OR f.documentoElectronico.numeroAutorizacion = :numeroAutorizacion) ");
+            }
+
+            jpql.append("ORDER BY f.fechaEmision DESC, f.id DESC");
+
+            TypedQuery<Factura> query = getEntityManager().createQuery(jpql.toString(), Factura.class);
+
+            if (fechaInicio != null) {
+                query.setParameter("fechaInicio", fechaInicio);
+            }
+            if (fechaFin != null) {
+                query.setParameter("fechaFin", fechaFin);
+            }
+            if (identificacion != null && !identificacion.trim().isEmpty()) {
+                query.setParameter("identificacion", identificacion);
+            }
+            if (numeroAutorizacion != null && !numeroAutorizacion.trim().isEmpty()) {
+                query.setParameter("numeroAutorizacion", numeroAutorizacion);
+            }
+
+            return query.getResultList();
+        } catch (PersistenceException e) {
+            throw new SystemException("Error al filtrar facturas para reporte", "FACTURA-FILTER-ERR", e);
+        }
+    }
 }
