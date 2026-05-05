@@ -55,4 +55,21 @@ public class FacturaDaoImpl extends GenericoDaoImpl<Factura, Integer> {
             throw new SystemException("Error al actualizar factura", "FACTURA-UPDATE-ERR", e);
         }
     }
+
+    /**
+     * Lista todas las facturas cargando el cliente y documento electronico para la UI.
+     * @return Lista de facturas
+     */
+    public java.util.List<Factura> listarTodasLasFacturas() {
+        try {
+            TypedQuery<Factura> query = getEntityManager().createQuery(
+                "SELECT f FROM Factura f " +
+                "JOIN FETCH f.cliente " +
+                "LEFT JOIN FETCH f.documentoElectronico " +
+                "ORDER BY f.id DESC", Factura.class);
+            return query.getResultList();
+        } catch (PersistenceException e) {
+            throw new SystemException("Error al listar facturas", "FACTURA-LIST-ERR", e);
+        }
+    }
 }

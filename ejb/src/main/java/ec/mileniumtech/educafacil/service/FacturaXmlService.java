@@ -26,9 +26,13 @@ public class FacturaXmlService {
         JAXBContext context = JAXBContext.newInstance(Factura.class);
         Marshaller marshaller = context.createMarshaller();
         
-        // Configurar para que el XML sea legible y use UTF-8
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        // El SRI requiere declaración XML con encoding UTF-8.
+        // NO usar FORMATTED_OUTPUT=true en producción: el SRI puede rechazar
+        // documentos con whitespace inesperado en versiones estrictas del validador.
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.FALSE);
         marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+        // Asegurar que la declaración <?xml version="1.0" encoding="UTF-8"?> esté presente
+        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.FALSE);
         
         StringWriter sw = new StringWriter();
         marshaller.marshal(factura, sw);

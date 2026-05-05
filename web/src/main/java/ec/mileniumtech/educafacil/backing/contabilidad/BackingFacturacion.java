@@ -16,6 +16,7 @@ import ec.mileniumtech.educafacil.dao.impl.EstudianteDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.FacturaDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.PersonaDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.PuntoEmisionDaoImpl;
+import ec.mileniumtech.educafacil.dao.impl.EmpresaMatrizDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.CatalogoItem;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Cliente;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleFactura;
@@ -23,6 +24,7 @@ import ec.mileniumtech.educafacil.modelo.persistencia.entity.DocumentoElectronic
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Estudiante;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Factura;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Persona;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.EmpresaMatriz;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.PuntoEmision;
 import ec.mileniumtech.educafacil.service.FacturacionService;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
@@ -59,6 +61,9 @@ public class BackingFacturacion implements Serializable {
 
     @EJB
     private PuntoEmisionDaoImpl puntoEmisionDao;
+    
+    @EJB
+    private EmpresaMatrizDaoImpl empresaMatrizDao;
     
     @EJB
     private ec.mileniumtech.educafacil.dao.impl.SriformapagoDaoImpl sriformapagoDao;
@@ -220,7 +225,16 @@ public class BackingFacturacion implements Serializable {
             df.setItem(getBeanFacturacion().getItemSeleccionado());
             df.setFactura(getBeanFacturacion().getNuevaFactura());
             df.setDescripcion(df.getItem().getDescripcion());
-            df.setDescuento(BigDecimal.ZERO);
+            if (df.getDescuento() == null) {
+                df.setDescuento(BigDecimal.ZERO);
+            }
+            
+            List<EmpresaMatriz> empresas = empresaMatrizDao.listaEmpresas();
+            if (empresas != null && !empresas.isEmpty()) {
+                df.setImpuestoIva(empresas.get(0).getEmpmPorcentajeIva());
+            } else {
+                df.setImpuestoIva(0);
+            }
             
             // Si el precio viene del ítem
             if (df.getPrecioUnitario() == null || df.getPrecioUnitario().compareTo(BigDecimal.ZERO) == 0) {
@@ -236,13 +250,35 @@ public class BackingFacturacion implements Serializable {
     /**
      * Calcula los totales de la nueva factura.
      */
-    private void calcularTotales() {
+    public void calcularTotales() {
         BigDecimal subtotal = BigDecimal.ZERO;
+        BigDecimal descuentoTotal = BigDecimal.ZERO;
+        BigDecimal totalImpuestos = BigDecimal.ZERO;
+
         for (DetalleFactura df : getBeanFacturacion().getListaDetallesNueva()) {
-            subtotal = subtotal.add(df.getPrecioUnitario().multiply(new BigDecimal(df.getCantidad())));
+            BigDecimal cant = new BigDecimal(df.getCantidad());
+            BigDecimal precio = df.getPrecioUnitario() != null ? df.getPrecioUnitario() : BigDecimal.ZERO;
+            BigDecimal desc = df.getDescuento() != null ? df.getDescuento() : BigDecimal.ZERO;
+            
+            BigDecimal subtotalItem = precio.multiply(cant).subtract(desc);
+            subtotal = subtotal.add(precio.multiply(cant));
+            descuentoTotal = descuentoTotal.add(desc);
+            
+            if (df.getImpuestoIva() != null && df.getImpuestoIva() > 0) {
+                BigDecimal iva = new BigDecimal(df.getImpuestoIva()).divide(new BigDecimal(100));
+                totalImpuestos = totalImpuestos.add(subtotalItem.multiply(iva));
+            }
         }
+        
         getBeanFacturacion().getNuevaFactura().setSubtotal(subtotal);
-        getBeanFacturacion().getNuevaFactura().setTotal(subtotal); // Asumiendo IVA 0%
+        getBeanFacturacion().getNuevaFactura().setDescuentoTotal(descuentoTotal);
+        getBeanFacturacion().getNuevaFactura().setTotalImpuestos(totalImpuestos);
+        getBeanFacturacion().getNuevaFactura().setTotal(subtotal.subtract(descuentoTotal).add(totalImpuestos));
+    }
+    
+    public void removerDetalle(DetalleFactura det) {
+        getBeanFacturacion().getListaDetallesNueva().remove(det);
+        calcularTotales();
     }
     
     public void agregarFormaPago() {
@@ -355,8 +391,7 @@ public class BackingFacturacion implements Serializable {
      */
     public void cargarFacturas() {
         try {
-            // Por ahora cargamos todas, idealmente usaríamos filtros del DAO
-            getBeanFacturacion().setListaFacturas(facturaDao.findAll());
+            getBeanFacturacion().setListaFacturas(facturaDao.listarTodasLasFacturas());
         } catch (Exception e) {
             log.error("Error al cargar facturas", e);
             Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "No se pudieron cargar las facturas.");

@@ -181,41 +181,7 @@
                         <ejbVersion>4.0</ejbVersion>
                     </configuration>
                 </plugin>
-                <plugin>
-                <groupId>com.sun.xml.ws</groupId>
-                <artifactId>jaxws-maven-plugin</artifactId>
-                <version>4.0.1</version>
-                <executions>
-                    <execution>
-                        <id>recepcion</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>wsimport</goal>
-                        </goals>
-                        <configuration>
-                            <wsdlUrls>
-                                <wsdlUrl>https://celcer.sri.gob.ec/comprobantes-electronicos-ws/RecepcionComprobantesOffline?wsdl</wsdlUrl>
-                            </wsdlUrls>
-                            <packageName>ec.mileniumtech.educafacil.service.sri.recepcion</packageName>
-                            <sourceDestDir>${project.build.directory}/generated-sources/wsimport</sourceDestDir>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>autorizacion</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>wsimport</goal>
-                        </goals>
-                        <configuration>
-                            <wsdlUrls>
-                                <wsdlUrl>https://celcer.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantesOffline?wsdl</wsdlUrl>
-                            </wsdlUrls>
-                            <packageName>ec.mileniumtech.educafacil.service.sri.autorizacion</packageName>
-                            <sourceDestDir>${project.build.directory}/generated-sources/wsimport</sourceDestDir>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+                
         </plugins>
     </build>
 </project>

@@ -28,16 +28,13 @@ public class DocumentoElectronico {
     @Column(name = "doel_estado")
     private String estado;
 
-    @Lob
-    @Column(name = "doel_xml_autorizado_sri")
+    @Column(name = "doel_xml_autorizado_sri", columnDefinition ="bytea")
     private byte[] xmlAutorizadoSri;
 
-    @Lob
-    @Column(name = "doel_xml_firmado")
+    @Column(name = "doel_xml_firmado", columnDefinition ="bytea")
     private byte[] xmlFirmado;
 
-    @Lob
-    @Column(name = "doel_pdf_ride")
+    @Column(name = "doel_pdf_ride", columnDefinition ="bytea")
     private byte[] pdfRide;
 
     @Column(name = "doel_mensaje_sri")

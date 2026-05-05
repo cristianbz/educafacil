@@ -179,14 +179,27 @@
 										<h:outputText value="#{det.cantidad}" />
 									</p:column>
 									<p:column headerText="Precio Unit." style="text-align: right; width: 120px;">
-										<h:outputText value="#{det.precioUnitario}">
+										<p:inputNumber value="#{det.precioUnitario}" decimalPlaces="2" style="width: 100%;">
+											<p:ajax listener="#{backingFacturacion.calcularTotales()}" update="tblDetalles :formFacturacion:pnlTotales" />
+										</p:inputNumber>
+									</p:column>
+									<p:column headerText="Descuento" style="text-align: right; width: 120px;">
+										<p:inputNumber value="#{det.descuento}" decimalPlaces="2" style="width: 100%;">
+											<p:ajax listener="#{backingFacturacion.calcularTotales()}" update="tblDetalles :formFacturacion:pnlTotales" />
+										</p:inputNumber>
+									</p:column>
+									<p:column headerText="IVA (%)" style="text-align: center; width: 80px;">
+										<h:outputText value="#{det.impuestoIva}%" />
+									</p:column>
+									<p:column headerText="Subtotal" style="text-align: right; width: 120px;">
+										<h:outputText value="#{(det.precioUnitario * det.cantidad) - det.descuento}">
 											<f:convertNumber type="currency" currencySymbol="$" />
 										</h:outputText>
 									</p:column>
-									<p:column headerText="Subtotal" style="text-align: right; width: 120px;">
-										<h:outputText value="#{det.precioUnitario * det.cantidad}">
-											<f:convertNumber type="currency" currencySymbol="$" />
-										</h:outputText>
+									<p:column headerText="Acción" style="text-align: center; width: 60px;">
+										<p:commandButton icon="pi pi-trash" styleClass="ui-button-danger rounded-button" 
+														 actionListener="#{backingFacturacion.removerDetalle(det)}"
+														 process="@this" update="tblDetalles :formFacturacion:pnlTotales" title="Eliminar" />
 									</p:column>
 								</p:dataTable>
 								
