@@ -9,6 +9,7 @@ import java.util.Enumeration;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -80,6 +81,8 @@ public class XadesSignatureService {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         TransformerFactory tf = TransformerFactory.newInstance();
         Transformer trans = tf.newTransformer();
+        trans.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+        trans.setOutputProperty(OutputKeys.INDENT, "no");
         trans.transform(new DOMSource(doc), new StreamResult(baos));
 
         return baos.toByteArray();

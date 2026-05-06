@@ -7,6 +7,8 @@ import java.io.Serializable;
 import java.util.List;
 
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.EmpresaMatriz;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.Establecimiento;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.PuntoEmision;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
@@ -32,8 +34,26 @@ public class BeanEmpresa implements Serializable {
     @Setter
     private List<EmpresaMatriz> listaEmpresas;
 
+    @Getter
+    @Setter
+    private Establecimiento establecimientoSelect;
+
+    @Getter
+    @Setter
+    private List<Establecimiento> listaEstablecimientos;
+
+    @Getter
+    @Setter
+    private PuntoEmision puntoEmisionSelect;
+
+    @Getter
+    @Setter
+    private List<PuntoEmision> listaPuntosEmision;
+
     @PostConstruct
     public void init() {
         setEmpresa(new EmpresaMatriz());
+        setEstablecimientoSelect(new Establecimiento());
+        setPuntoEmisionSelect(new PuntoEmision());
     }
 }

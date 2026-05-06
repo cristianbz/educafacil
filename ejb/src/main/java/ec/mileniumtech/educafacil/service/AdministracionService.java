@@ -13,6 +13,7 @@ import ec.mileniumtech.educafacil.dao.impl.MatriculaDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.EmpresaMatrizDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.PagosDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.EspecialidadDaoImpl;
+import ec.mileniumtech.educafacil.dao.impl.EstablecimientoDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.EvaluacionCursoDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.InstructorDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.ObjetoEvaluacionDaoImpl;
@@ -25,6 +26,7 @@ import ec.mileniumtech.educafacil.modelo.persistencia.entity.Curso;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Empresa;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.EmpresaMatriz;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Especialidad;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.Establecimiento;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.EvaluacionCurso;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Instructor;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.ObjetoEvaluacion;
@@ -32,6 +34,7 @@ import ec.mileniumtech.educafacil.modelo.persistencia.entity.OfertaCapacitacion;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.OfertaCursos;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Pagos;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Persona;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.PuntoEmision;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.TipoEncuesta;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumTipoCatalogo;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.CursoDto;
@@ -39,6 +42,7 @@ import ec.mileniumtech.educafacil.modelo.persistencia.dto.PersonaDto;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.MatriculaDto;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.DtoMapper;
 import ec.mileniumtech.educafacil.dao.impl.PersonaDaoImpl;
+import ec.mileniumtech.educafacil.dao.impl.PuntoEmisionDaoImpl;
 import jakarta.ejb.EJB;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
@@ -91,6 +95,12 @@ public class AdministracionService {
 
     @EJB
     private EmpresaMatrizDaoImpl empresaDao;
+
+    @EJB
+    private EstablecimientoDaoImpl establecimientoDao;
+
+    @EJB
+    private PuntoEmisionDaoImpl puntoEmisionDao;
 
     @EJB
     private PagosDaoImpl pagosDao;
@@ -361,5 +371,40 @@ public class AdministracionService {
      */
     public void actualizarPago(Pagos pago) {
         pagosDao.actualizarPago(pago);
+    }
+    /**
+     * Lista establecimientos por empresa.
+     */
+    public List<Establecimiento> listarEstablecimientosPorEmpresa(int empmId) {
+        return establecimientoDao.listarEstablecimientosPorEmpresa(empmId);
+    }
+
+    /**
+     * Guarda o actualiza un establecimiento.
+     */
+    public void guardarEstablecimiento(Establecimiento establecimiento) {
+        if (establecimiento.getEstaId() == null) {
+            establecimientoDao.guardar(establecimiento);
+        } else {
+            establecimientoDao.actualizar(establecimiento);
+        }
+    }
+
+    /**
+     * Lista puntos de emisión por establecimiento.
+     */
+    public List<PuntoEmision> listarPuntosEmisionPorEstablecimiento(int estaId) {
+        return puntoEmisionDao.listarPuntosEmisionPorEstablecimiento(estaId);
+    }
+
+    /**
+     * Guarda o actualiza un punto de emisión.
+     */
+    public void guardarPuntoEmision(PuntoEmision puntoEmision) {
+        if (puntoEmision.getId() == null) {
+            puntoEmisionDao.guardar(puntoEmision);
+        } else {
+            puntoEmisionDao.actualizar(puntoEmision);
+        }
     }
 }

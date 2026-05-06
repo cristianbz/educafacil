@@ -11,6 +11,8 @@ import org.primefaces.event.FileUploadEvent;
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.administracion.BeanEmpresa;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.EmpresaMatriz;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.Establecimiento;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.PuntoEmision;
 import ec.mileniumtech.educafacil.service.AdministracionService;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitarios.encriptacion.CriptografiaUtil;
@@ -56,6 +58,7 @@ public class BackingEmpresa implements Serializable{
         getBeanEmpresa().setListaEmpresas(administracionService.listarEmpresas());
         if (getBeanEmpresa().getListaEmpresas() != null && !getBeanEmpresa().getListaEmpresas().isEmpty()) {
             getBeanEmpresa().setEmpresa(getBeanEmpresa().getListaEmpresas().get(0));
+            cargarEstablecimientos();
         } else {
             getBeanEmpresa().setEmpresa(new EmpresaMatriz());
             getBeanEmpresa().getEmpresa().setEmpmAmbiente(1); // Por defecto Pruebas
@@ -64,6 +67,88 @@ public class BackingEmpresa implements Serializable{
         }
     }
 
+    /**
+     * Carga los establecimientos de la empresa actual.
+     */
+    public void cargarEstablecimientos() {
+        getBeanEmpresa().setListaEstablecimientos(administracionService.listarEstablecimientosPorEmpresa(getBeanEmpresa().getEmpresa().getEmpmId()));
+    }
+
+    /**
+     * Carga los puntos de emisión del establecimiento seleccionado.
+     */
+    public void onEstablecimientoChange() {
+        if (getBeanEmpresa().getEstablecimientoSelect() != null && getBeanEmpresa().getEstablecimientoSelect().getEstaId() != null) {
+            getBeanEmpresa().setListaPuntosEmision(administracionService.listarPuntosEmisionPorEstablecimiento(getBeanEmpresa().getEstablecimientoSelect().getEstaId()));
+        } else {
+            getBeanEmpresa().setListaPuntosEmision(null);
+        }
+    }
+
+    /**
+     * Prepara un nuevo establecimiento para ser creado.
+     */
+    public void nuevoEstablecimiento() {
+        getBeanEmpresa().setEstablecimientoSelect(new Establecimiento());
+        getBeanEmpresa().getEstablecimientoSelect().setEmpresaMatriz(getBeanEmpresa().getEmpresa());
+        getBeanEmpresa().getEstablecimientoSelect().setEstaEstado(true);
+    }
+    /**
+     * Edita la informacion del establecimiento seleccionado
+     */
+    public void editarEstablecimiento() {
+    	getBeanEmpresa().getEstablecimientoSelect().setEmpresaMatriz(getBeanEmpresa().getEmpresa());
+    }
+
+    /**
+     * Guarda el establecimiento seleccionado.
+     */
+    public void guardarEstablecimiento() {
+        try {
+            administracionService.guardarEstablecimiento(getBeanEmpresa().getEstablecimientoSelect());
+            cargarEstablecimientos();
+            Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.grabar"));
+        } catch (Exception e) {
+            log.error("Error al guardar establecimiento", e);
+            Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), e.getMessage());
+        }
+    }
+
+    /**
+     * Prepara un nuevo punto de emisión.
+     */
+    public void nuevoPuntoEmision() {
+        getBeanEmpresa().setPuntoEmisionSelect(new PuntoEmision());
+        getBeanEmpresa().getPuntoEmisionSelect().setEstablecimientos(getBeanEmpresa().getEstablecimientoSelect());
+        getBeanEmpresa().getPuntoEmisionSelect().setEstado(true);
+        getBeanEmpresa().getPuntoEmisionSelect().setSecuencialFactura(0);
+        getBeanEmpresa().getPuntoEmisionSelect().setSecuencialNotaCredito(0);
+        getBeanEmpresa().getPuntoEmisionSelect().setSecuencialNotaDebito(0);
+        getBeanEmpresa().getPuntoEmisionSelect().setSecuencialRetencion(0);
+        getBeanEmpresa().getPuntoEmisionSelect().setSecuencialLiquidacionCompra(0);
+        getBeanEmpresa().getPuntoEmisionSelect().setSecuencialGuiaRemision(0);
+    }
+
+    /**
+     * Prepara un punto de emisión para ser editado.
+     */
+    public void editarPuntoEmision(PuntoEmision pe) {
+        getBeanEmpresa().setPuntoEmisionSelect(pe);
+    }
+
+    /**
+     * Guarda el punto de emisión seleccionado.
+     */
+    public void guardarPuntoEmision() {
+        try {
+            administracionService.guardarPuntoEmision(getBeanEmpresa().getPuntoEmisionSelect());
+            onEstablecimientoChange();
+            Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.grabar"));
+        } catch (Exception e) {
+            log.error("Error al guardar punto de emisión", e);
+            Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), e.getMessage());
+        }
+    }
     /**
      * Guarda o actualiza los datos de la empresa.
      */

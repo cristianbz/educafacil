@@ -83,9 +83,9 @@ public class FacturacionService {
         
         // Generar número secuencial (Formato: EST-PTO-SEC)
         int nuevoSecuencial = puem.getSecuencialFactura() + 1;
-        String numeroFactura = String.format("%s-%s-%09d", 
-                "001", // Establecimiento (debería venir del punto de emisión)
-                puem.getCodigo(), 
+        String numeroFactura = String.format("%03d-%03d-%09d", 
+                Integer.parseInt(puem.getEstablecimientos().getEstaCodigo()), 
+                Integer.parseInt(puem.getCodigo()), 
                 nuevoSecuencial);
         factura.setNumero(numeroFactura);
         

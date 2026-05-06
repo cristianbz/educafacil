@@ -62,8 +62,7 @@ public class PuntoEmision implements Serializable {
 
     // Relación con la entidad Establecimiento
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "esta_id", referencedColumnName = "esta_id", 
-                insertable = false, updatable = false)
+    @JoinColumn(name = "esta_id", referencedColumnName = "esta_id")
     private Establecimiento establecimientos;
 
     // Constructor por defecto
