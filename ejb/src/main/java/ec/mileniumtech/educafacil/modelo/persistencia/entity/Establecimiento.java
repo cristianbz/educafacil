@@ -32,6 +32,9 @@ public class Establecimiento implements Serializable{
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="establecimientoSeq")
 	@Column(name="esta_id")
 	private Integer estaId;
+	
+	@Column(name="esta_codigo", length = 3)
+	private String estaCodigo;
    
 	@Column(name="esta_nombre_comercial")
 	private String estaNombreComercial;
@@ -44,8 +47,7 @@ public class Establecimiento implements Serializable{
 	
     // Relación con la entidad Empresa
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "empm_id", referencedColumnName = "empm_id", 
-                insertable = false, updatable = false)
+    @JoinColumn(name = "empm_id", referencedColumnName = "empm_id")
     private EmpresaMatriz empresaMatriz;
     
 	@OneToMany(mappedBy="establecimientos", fetch=FetchType.LAZY)

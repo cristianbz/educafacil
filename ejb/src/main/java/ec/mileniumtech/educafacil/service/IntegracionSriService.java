@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.concurrent.ThreadLocalRandom;
 
 import ec.mileniumtech.educafacil.dao.impl.ConfiguracionesDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.FacturaDaoImpl;
@@ -84,16 +85,19 @@ public class IntegracionSriService {
         
         // El número de factura suele venir como XXX-XXX-XXXXXXXXX
         String[] partesNumero = facturaEntity.getNumero().split("-");
-        String estab = String.format("%03d", Integer.parseInt(partesNumero.length > 0 ? partesNumero[0] : "1"));
-        String ptoEmi = String.format("%03d", Integer.parseInt(partesNumero.length > 1 ? partesNumero[1] : "1"));
+        String estab = String.format("%03d", Integer.parseInt(facturaEntity.getPuntoEmision().getEstablecimientos().getEstaCodigo()));
+        String ptoEmi = String.format("%03d", Integer.parseInt(facturaEntity.getPuntoEmision().getCodigo()));
         String secuencial = String.format("%09d", Integer.parseInt(partesNumero.length > 2 ? partesNumero[2] : facturaEntity.getId().toString()));
         
         String serie = estab + ptoEmi;
         
+        // Usar la fecha de la factura para la clave de acceso
+        java.util.Date fechaEmisionDate = java.sql.Date.valueOf(facturaEntity.getFechaEmision());
+        int random8Digits = ThreadLocalRandom.current().nextInt(10000000, 100000000);
         String claveAcceso = claveAccesoGenerator.generarClaveAcceso(
-                new Date(), "01", empresa.getEmpmRuc(), 
+        		fechaEmisionDate, "01", empresa.getEmpmRuc(), 
                 empresa.getEmpmAmbiente().toString(), serie, secuencial, 
-                "12345678", "1");
+                String.valueOf(random8Digits), "1");
 
         // 2. Construcción del objeto Factura SRI (JAXB)
         ec.mileniumtech.educafacil.modelo.sri.Factura facturaSri = new ec.mileniumtech.educafacil.modelo.sri.Factura();
@@ -101,22 +105,29 @@ public class IntegracionSriService {
         // Info Tributaria
         InfoTributaria infoTrib = new InfoTributaria();
         infoTrib.setAmbiente(empresa.getEmpmAmbiente().toString());
-        infoTrib.setTipoEmision("1");
-        infoTrib.setRazonSocial(empresa.getEmpmNombreComercial());
-        infoTrib.setNombreComercial(empresa.getEmpmNombreComercial());
+        infoTrib.setTipoEmision(empresa.getEmpmTipoEmision().toString());
+        String razonSocial = (empresa.getEmpmRazonSocial() != null && !empresa.getEmpmRazonSocial().isEmpty()) ? empresa.getEmpmRazonSocial() : empresa.getEmpmNombreComercial();
+        // Limpiar caracteres especiales que suelen dar problemas con la firma
+        razonSocial = razonSocial.replaceAll("[^\\x20-\\x7e]", ""); 
+        infoTrib.setRazonSocial(razonSocial);
+        
+        String nombreComercial = empresa.getEmpmNombreComercial().replaceAll("[^\\x20-\\x7e]", "");
+        infoTrib.setNombreComercial(nombreComercial);
         infoTrib.setRuc(empresa.getEmpmRuc());
         infoTrib.setClaveAcceso(claveAcceso);
         infoTrib.setCodDoc("01");
         infoTrib.setEstab(estab);
         infoTrib.setPtoEmi(ptoEmi);
         infoTrib.setSecuencial(secuencial);
-        infoTrib.setDirMatriz(empresa.getEmpmDireccion());
+        String dirMatriz = empresa.getEmpmDireccion().replaceAll("[^\\x20-\\x7e]", "");
+        infoTrib.setDirMatriz(dirMatriz);
         facturaSri.setInfoTributaria(infoTrib);
 
         // Info Factura
         InfoFactura infoFact = new InfoFactura();
         infoFact.setFechaEmision(fechaEmisionStr);
-        infoFact.setDirEstablecimiento(empresa.getEmpmDireccion());
+        String dirEst = facturaEntity.getPuntoEmision().getEstablecimientos().getEstaUbicacion().replaceAll("[^\\x20-\\x7e]", "");
+        infoFact.setDirEstablecimiento(dirEst);
         infoFact.setObligadoContabilidad(empresa.isEmpmObligadoContabilidad() ? "SI" : "NO");
         
         // Mapeo de códigos de identificación del comprador según SRI
@@ -142,7 +153,8 @@ public class IntegracionSriService {
             for (DetalleFactura df : facturaEntity.getDetalles()) {
                 Detalle det = new Detalle();
                 det.setCodigoPrincipal(df.getItem() != null ? df.getItem().getId().toString() : "SERV");
-                det.setDescripcion(df.getDescripcion());
+                String descripcion = df.getDescripcion().replaceAll("[^\\x20-\\x7e]", "");
+                det.setDescripcion(descripcion);
                 BigDecimal cantidadBd = BigDecimal.valueOf(df.getCantidad());
                 det.setCantidad(cantidadBd.setScale(2, RoundingMode.HALF_UP));
                 det.setPrecioUnitario(df.getPrecioUnitario().setScale(2, RoundingMode.HALF_UP));
@@ -213,6 +225,7 @@ public class IntegracionSriService {
 
         // 4. Generación y Firma
         String xmlString = facturaXmlService.generarXml(facturaSri);
+//        System.out.println(xmlString);
         byte[] pkcs12 = empresa.getEmpmCertificado();
         String password = CriptografiaUtil.desencriptar(empresa.getEmpmPasswordCertificado());
             

@@ -37,4 +37,19 @@ public class PuntoEmisionDaoImpl extends GenericoDaoImpl<PuntoEmision, Integer> 
             throw new SystemException("Error al listar puntos de emisión activos", "PUEM-LIST-ERR", e);
         }
     }
+    /**
+     * Devuelve la lista de puntos de emisión por establecimiento.
+     * @param estaId ID del establecimiento.
+     * @return Lista de puntos de emisión.
+     */
+    public List<PuntoEmision> listarPuntosEmisionPorEstablecimiento(int estaId) {
+        try {
+            TypedQuery<PuntoEmision> query = getEntityManager().createQuery(
+                "SELECT pe FROM PuntoEmision pe WHERE pe.establecimientos.estaId = :estaId ORDER BY pe.codigo", PuntoEmision.class);
+            query.setParameter("estaId", estaId);
+            return query.getResultList();
+        } catch (PersistenceException e) {
+            throw new SystemException("Error al listar puntos de emisión por establecimiento", "PUEM-ESTA-LIST-ERR", e);
+        }
+    }
 }
