@@ -36,6 +36,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import lombok.Getter;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -329,6 +330,8 @@ public class BackingFacturacion implements Serializable {
 
             BigDecimal totalFactura = getBeanFacturacion().getNuevaFactura().getTotal();
             BigDecimal totalPagos = BigDecimal.ZERO;
+            BigDecimal totalDescuento = BigDecimal.ZERO;
+            BigDecimal totalImpuestos = BigDecimal.ZERO;
             for (ec.mileniumtech.educafacil.modelo.persistencia.entity.FormaPagoFactura fp : getBeanFacturacion().getListaFormasPagoAgregadas()) {
                 totalPagos = totalPagos.add(fp.getValor());
             }
@@ -367,8 +370,25 @@ public class BackingFacturacion implements Serializable {
             puem.setSecuencialFactura(nuevoSec);
             puntoEmisionDao.actualizar(puem);
             
-            f.setTotalImpuestos(BigDecimal.ZERO);
-            f.setDescuentoTotal(BigDecimal.ZERO);
+            for (DetalleFactura df : f.getDetalles()) {
+                BigDecimal tasaImpuesto = BigDecimal.valueOf(df.getImpuestoIva()).divide(
+                        BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP
+                    );
+
+                // 1. Calcular la base imponible del detalle (Precio * Cantidad - Descuento)
+                // Usamos cantidad por si acaso la factura tiene más de 1 unidad
+                BigDecimal cantidad = BigDecimal.valueOf(df.getCantidad());
+                BigDecimal subtotalNeto = df.getPrecioUnitario().multiply(cantidad).subtract(df.getDescuento());
+
+                // 2. Calcular el impuesto sobre el valor NETO
+                BigDecimal impuesto = subtotalNeto.multiply(tasaImpuesto).setScale(2, RoundingMode.HALF_UP);
+                
+                totalImpuestos = totalImpuestos.add(impuesto);
+                totalDescuento = totalDescuento.add(df.getDescuento());
+            }
+            
+            f.setTotalImpuestos(totalImpuestos);
+            f.setDescuentoTotal(totalDescuento);
 
             facturaDao.guardar(f);
             

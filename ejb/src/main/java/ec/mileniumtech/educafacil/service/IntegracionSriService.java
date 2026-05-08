@@ -144,11 +144,12 @@ public class IntegracionSriService {
         infoFact.setIdentificacionComprador(facturaEntity.getCliente().getNumeroIdentificacion());
         infoFact.setRazonSocialComprador(facturaEntity.getCliente().getNombresCompletos());
         
-        infoFact.setTotalSinImpuestos(facturaEntity.getSubtotal().setScale(2, RoundingMode.HALF_UP));
+        infoFact.setTotalSinImpuestos(facturaEntity.getSubtotal().subtract(facturaEntity.getDescuentoTotal()).setScale(2, RoundingMode.HALF_UP));
         infoFact.setTotalDescuento(facturaEntity.getDescuentoTotal().setScale(2, RoundingMode.HALF_UP));
         infoFact.setImporteTotal(facturaEntity.getTotal().setScale(2, RoundingMode.HALF_UP));
         
         // Mapeo de Detalles
+     // ==================== BLOQUE DE DETALLES CORREGIDO ====================
         if (facturaEntity.getDetalles() != null) {
             for (DetalleFactura df : facturaEntity.getDetalles()) {
                 Detalle det = new Detalle();
@@ -159,26 +160,39 @@ public class IntegracionSriService {
                 det.setCantidad(cantidadBd.setScale(2, RoundingMode.HALF_UP));
                 det.setPrecioUnitario(df.getPrecioUnitario().setScale(2, RoundingMode.HALF_UP));
                 det.setDescuento(df.getDescuento().setScale(2, RoundingMode.HALF_UP));
+                
+                // Aquí ya se resta el descuento correctamente (180 - 60 = 120)
                 det.setPrecioTotalSinImpuesto(df.getPrecioUnitario().multiply(cantidadBd).subtract(df.getDescuento()).setScale(2, RoundingMode.HALF_UP));
                 
-                // SRI requiere impuestos por detalle
                 ec.mileniumtech.educafacil.modelo.sri.Factura.Impuesto impDet = new ec.mileniumtech.educafacil.modelo.sri.Factura.Impuesto();
                 impDet.setCodigo("2"); // IVA
-                impDet.setCodigoPorcentaje("0"); // 0%
+                String codPorcDetalle = mapCodigoIva(empresa.getEmpmPorcentajeIva());
+                impDet.setCodigoPorcentaje(codPorcDetalle);
+                
+                // CORRECCIÓN 1: La base imponible es directamente el total sin impuesto del detalle
                 impDet.setBaseImponible(det.getPrecioTotalSinImpuesto());
-                impDet.setTarifa("0");
-                impDet.setValor(BigDecimal.ZERO.setScale(2));
+                
+                BigDecimal tarifaDetalle = BigDecimal.valueOf(empresa.getEmpmPorcentajeIva() != null ? empresa.getEmpmPorcentajeIva() : 0);
+                impDet.setTarifa(tarifaDetalle.toPlainString());
+                
+                // CORRECCIÓN 2: El IVA se calcula directamente sobre la base (det.getPrecioTotalSinImpuesto())
+                BigDecimal valorIvaDetalle = det.getPrecioTotalSinImpuesto()
+                        .multiply(tarifaDetalle)
+                        .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+                        
+                impDet.setValor(valorIvaDetalle);
                 det.getImpuestosList().add(impDet);
                 
                 facturaSri.getDetallesList().add(det);
             }
         }
+        // ======================================================================
         
         // SRI requiere totales con impuestos
         TotalImpuesto ti = new TotalImpuesto();
         ti.setCodigo("2"); // IVA
-        ti.setCodigoPorcentaje("0"); // 0%
-        ti.setBaseImponible(facturaEntity.getSubtotal().setScale(2, RoundingMode.HALF_UP));
+        ti.setCodigoPorcentaje(mapCodigoIva(empresa.getEmpmPorcentajeIva()));
+        ti.setBaseImponible(facturaEntity.getSubtotal().subtract(facturaEntity.getDescuentoTotal()).setScale(2, RoundingMode.HALF_UP));
         ti.setValor(facturaEntity.getTotalImpuestos().setScale(2, RoundingMode.HALF_UP));
         infoFact.getTotalConImpuestosList().add(ti);
 
@@ -225,7 +239,7 @@ public class IntegracionSriService {
 
         // 4. Generación y Firma
         String xmlString = facturaXmlService.generarXml(facturaSri);
-//        System.out.println(xmlString);
+        System.out.println(xmlString);
         byte[] pkcs12 = empresa.getEmpmCertificado();
         String password = CriptografiaUtil.desencriptar(empresa.getEmpmPasswordCertificado());
             
@@ -281,5 +295,20 @@ public class IntegracionSriService {
         
         // 8. Actualizar persistencia
         facturaDao.actualizarFactura(facturaEntity);
+    }
+
+    /**
+     * Convierte el porcentaje de IVA al código SRI correspondiente.
+     * 0%  → "0"  (no sujeto)
+     * 12% → "2"  (IVA 12%)
+     * 14% → "3"  (IVA 14%)
+     * 15% → "4"  (IVA 15%)
+     */
+    private String mapCodigoIva(Integer porcentaje) {
+        if (porcentaje == null || porcentaje == 0) return "0";
+        if (porcentaje == 12) return "2";
+        if (porcentaje == 14) return "3";
+        if (porcentaje == 15) return "4";
+        return "0"; // fallback
     }
 }

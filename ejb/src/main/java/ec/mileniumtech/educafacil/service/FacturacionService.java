@@ -106,11 +106,10 @@ public class FacturacionService {
                 itemDefecto = items.get(0);
             }
         }
-
+        
         for (DetallePagos dp : pago.getDetallePagos()) {
             DetalleFactura df = new DetalleFactura();
             df.setFactura(factura);
-//            df.setDescripcion(dp.getDepaObservacion() != null ? dp.getDepaObservacion() : "Servicio de Capacitación");
             df.setCantidad(1);
             df.setPrecioUnitario(new BigDecimal(dp.getDepaValor()));
             df.setDescuento(BigDecimal.ZERO);
