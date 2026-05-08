@@ -29,4 +29,6 @@
     <fullyQualifiedTypeName name="jakarta.persistence.Table"/>
     <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.modelo.persistencia.entity.Sriformapago"/>
     <fullyQualifiedTypeName name="jakarta.persistence.Transient"/>
+    <fullyQualifiedTypeName name="java.math.BigDecimal"/>
+    <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleFactura"/>
 </qualifiedTypeNameHistroy>

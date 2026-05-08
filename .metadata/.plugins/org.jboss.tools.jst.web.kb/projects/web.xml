@@ -946,10 +946,10 @@
    <linked-el length="24" name="%187" offset="13596" path="%126"/>
    <linked-el length="37" name="%187" offset="13437" path="%126"/>
    <linked-el length="60" name="%187" offset="10349" path="%126"/>
-   <linked-el length="61" name="%67" offset="1894" path="%188"/>
-   <linked-el length="40" name="%67" offset="1749" path="%188"/>
-   <linked-el length="47" name="%67" offset="2247" path="%188"/>
-   <linked-el length="44" name="%67" offset="1005" path="%188"/>
+   <linked-el length="61" name="%65" offset="1894" path="%188"/>
+   <linked-el length="40" name="%65" offset="1749" path="%188"/>
+   <linked-el length="47" name="%65" offset="2247" path="%188"/>
+   <linked-el length="44" name="%65" offset="1005" path="%188"/>
    <linked-el length="104" name="%189" offset="10833" path="%128"/>
    <linked-el length="105" name="%189" offset="13777" path="%128"/>
    <linked-el length="108" name="%189" offset="15761" path="%128"/>
@@ -1366,24 +1366,24 @@
    <linked-el length="66" name="%200" offset="4339" path="%103"/>
    <linked-el length="20" name="%201" offset="1943" path="%160"/>
    <linked-el length="107" name="%202" offset="4873" path="%128"/>
-   <linked-el length="65" name="%64" offset="14571" path="%130"/>
-   <linked-el length="82" name="%64" offset="1469" path="%136"/>
-   <linked-el length="54" name="%64" offset="2252" path="%130"/>
-   <linked-el length="61" name="%64" offset="7846" path="%130"/>
-   <linked-el length="42" name="%64" offset="9826" path="%130"/>
-   <linked-el length="60" name="%64" offset="10626" path="%130"/>
-   <linked-el length="54" name="%64" offset="19877" path="%130"/>
-   <linked-el length="42" name="%64" offset="9477" path="%130"/>
-   <linked-el length="94" name="%64" offset="4873" path="%136"/>
-   <linked-el length="43" name="%64" offset="2785" path="%130"/>
-   <linked-el length="45" name="%64" offset="4584" path="%136"/>
-   <linked-el length="56" name="%64" offset="3005" path="%130"/>
-   <linked-el length="45" name="%64" offset="4108" path="%136"/>
-   <linked-el length="58" name="%64" offset="8562" path="%130"/>
-   <linked-el length="63" name="%64" offset="12981" path="%130"/>
-   <linked-el length="58" name="%64" offset="4110" path="%130"/>
-   <linked-el length="77" name="%64" offset="1242" path="%136"/>
-   <linked-el length="54" name="%64" offset="17040" path="%130"/>
+   <linked-el length="65" name="%66" offset="14571" path="%130"/>
+   <linked-el length="82" name="%66" offset="1469" path="%136"/>
+   <linked-el length="54" name="%66" offset="2252" path="%130"/>
+   <linked-el length="61" name="%66" offset="7846" path="%130"/>
+   <linked-el length="42" name="%66" offset="9826" path="%130"/>
+   <linked-el length="60" name="%66" offset="10626" path="%130"/>
+   <linked-el length="54" name="%66" offset="19877" path="%130"/>
+   <linked-el length="42" name="%66" offset="9477" path="%130"/>
+   <linked-el length="94" name="%66" offset="4873" path="%136"/>
+   <linked-el length="43" name="%66" offset="2785" path="%130"/>
+   <linked-el length="45" name="%66" offset="4584" path="%136"/>
+   <linked-el length="56" name="%66" offset="3005" path="%130"/>
+   <linked-el length="45" name="%66" offset="4108" path="%136"/>
+   <linked-el length="58" name="%66" offset="8562" path="%130"/>
+   <linked-el length="63" name="%66" offset="12981" path="%130"/>
+   <linked-el length="58" name="%66" offset="4110" path="%130"/>
+   <linked-el length="77" name="%66" offset="1242" path="%136"/>
+   <linked-el length="54" name="%66" offset="17040" path="%130"/>
    <linked-el length="38" name="%60" offset="19339" path="%130"/>
    <linked-el length="48" name="%60" offset="15499" path="%130"/>
    <linked-el length="40" name="%60" offset="8842" path="%130"/>
@@ -1467,24 +1467,6 @@
    <linked-el length="19" name="%215" offset="1824" path="%136"/>
    <linked-el length="106" name="%216" offset="14568" path="%128"/>
    <linked-el length="70" name="%217" offset="4983" path="%115"/>
-   <linked-el length="65" name="%65" offset="14571" path="%130"/>
-   <linked-el length="82" name="%65" offset="1469" path="%136"/>
-   <linked-el length="54" name="%65" offset="2252" path="%130"/>
-   <linked-el length="61" name="%65" offset="7846" path="%130"/>
-   <linked-el length="42" name="%65" offset="9826" path="%130"/>
-   <linked-el length="60" name="%65" offset="10626" path="%130"/>
-   <linked-el length="54" name="%65" offset="19877" path="%130"/>
-   <linked-el length="42" name="%65" offset="9477" path="%130"/>
-   <linked-el length="94" name="%65" offset="4873" path="%136"/>
-   <linked-el length="43" name="%65" offset="2785" path="%130"/>
-   <linked-el length="45" name="%65" offset="4584" path="%136"/>
-   <linked-el length="56" name="%65" offset="3005" path="%130"/>
-   <linked-el length="45" name="%65" offset="4108" path="%136"/>
-   <linked-el length="58" name="%65" offset="8562" path="%130"/>
-   <linked-el length="63" name="%65" offset="12981" path="%130"/>
-   <linked-el length="58" name="%65" offset="4110" path="%130"/>
-   <linked-el length="77" name="%65" offset="1242" path="%136"/>
-   <linked-el length="54" name="%65" offset="17040" path="%130"/>
    <linked-el length="110" name="%218" offset="21653" path="%128"/>
    <linked-el length="84" name="%53" offset="9081" path="%131"/>
    <linked-el length="40" name="%53" offset="4766" path="%131"/>
@@ -1504,6 +1486,24 @@
    <linked-el length="47" name="%53" offset="8706" path="%131"/>
    <linked-el length="46" name="%53" offset="8481" path="%131"/>
    <linked-el length="34" name="%53" offset="7429" path="%131"/>
+   <linked-el length="65" name="%67" offset="14571" path="%130"/>
+   <linked-el length="82" name="%67" offset="1469" path="%136"/>
+   <linked-el length="54" name="%67" offset="2252" path="%130"/>
+   <linked-el length="61" name="%67" offset="7846" path="%130"/>
+   <linked-el length="42" name="%67" offset="9826" path="%130"/>
+   <linked-el length="60" name="%67" offset="10626" path="%130"/>
+   <linked-el length="54" name="%67" offset="19877" path="%130"/>
+   <linked-el length="42" name="%67" offset="9477" path="%130"/>
+   <linked-el length="94" name="%67" offset="4873" path="%136"/>
+   <linked-el length="43" name="%67" offset="2785" path="%130"/>
+   <linked-el length="45" name="%67" offset="4584" path="%136"/>
+   <linked-el length="56" name="%67" offset="3005" path="%130"/>
+   <linked-el length="45" name="%67" offset="4108" path="%136"/>
+   <linked-el length="58" name="%67" offset="8562" path="%130"/>
+   <linked-el length="63" name="%67" offset="12981" path="%130"/>
+   <linked-el length="58" name="%67" offset="4110" path="%130"/>
+   <linked-el length="77" name="%67" offset="1242" path="%136"/>
+   <linked-el length="54" name="%67" offset="17040" path="%130"/>
    <linked-el length="34" name="%79" offset="593" path="%188"/>
    <linked-el length="27" name="%79" offset="794" path="%219"/>
    <linked-el length="158" name="%79" offset="5770" path="%154"/>
@@ -2458,10 +2458,10 @@
    <linked-el length="60" name="%261" offset="1328" path="%115"/>
    <linked-el length="60" name="%261" offset="1556" path="%106"/>
    <linked-el length="101" name="%262" offset="17422" path="%128"/>
-   <linked-el length="61" name="%66" offset="1894" path="%188"/>
-   <linked-el length="40" name="%66" offset="1749" path="%188"/>
-   <linked-el length="47" name="%66" offset="2247" path="%188"/>
-   <linked-el length="44" name="%66" offset="1005" path="%188"/>
+   <linked-el length="61" name="%64" offset="1894" path="%188"/>
+   <linked-el length="40" name="%64" offset="1749" path="%188"/>
+   <linked-el length="47" name="%64" offset="2247" path="%188"/>
+   <linked-el length="44" name="%64" offset="1005" path="%188"/>
    <linked-el length="98" name="%263" offset="11722" path="%128"/>
    <linked-el length="95" name="%7" offset="12988" path="%104"/>
    <linked-el length="18" name="%7" offset="20639" path="%108"/>
@@ -2641,8 +2641,8 @@
    <linked-el length="52" name="%61" offset="11579" path="%130"/>
    <linked-el length="35" name="%61" offset="18613" path="%130"/>
    <linked-el length="76" name="%61" offset="4529" path="%130"/>
-   <linked-el length="54" name="%61" offset="2252" path="%130"/>
    <linked-el length="50" name="%61" offset="5324" path="%130"/>
+   <linked-el length="54" name="%61" offset="2252" path="%130"/>
    <linked-el length="15" name="%61" offset="14150" path="%130"/>
    <linked-el length="94" name="%61" offset="2630" path="%130"/>
    <linked-el length="16" name="%61" offset="1224" path="%130"/>
@@ -6240,7 +6240,7 @@
   <alias
    path="/web/src/main/webapp/paginas/estudiantes/enviarWhatsapp.xhtml" value="%220"/>
   <alias path="beanReporteFacturas" value="%53"/>
-  <alias path="backingFacturacion" value="%65"/>
+  <alias path="backingFacturacion" value="%67"/>
   <alias
    path="/web/src/main/webapp/paginas/contabilidad/reportePagos.xhtml" value="%106"/>
   <alias
@@ -6541,7 +6541,7 @@
   <alias
    path="/web/src/main/java/ec/mileniumtech/educafacil/backing/estudiantes/BackingContactoRegistroDatos.java" value="%50"/>
   <alias path="beanCreacionCursos" value="%81"/>
-  <alias path="backingInscripcion" value="%67"/>
+  <alias path="backingInscripcion" value="%65"/>
   <alias
    path="/ejb/src/main/java/ec/mileniumtech/educafacil/modelo/persistencia/entity/Usuario.java" value="%186"/>
   <alias
@@ -6562,7 +6562,7 @@
   <alias
    path="cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.persona.persDocumentoIdentidad" value="%202"/>
   <alias
-   path="/web/src/main/java/ec/mileniumtech/educafacil/backing/contabilidad/BackingFacturacion.java" value="%64"/>
+   path="/web/src/main/java/ec/mileniumtech/educafacil/backing/contabilidad/BackingFacturacion.java" value="%66"/>
   <alias path="cambioClaveBacking.usuarioValido" value="%204"/>
   <alias
    path="/web/src/main/java/ec/mileniumtech/educafacil/bean/encuestas/BeanAplicarEncuesta.java" value="%44"/>
@@ -6626,7 +6626,7 @@
   <alias path="/web/src/main/webapp/login.xhtml" value="%118"/>
   <alias path="grupo.ocurValor" value="%259"/>
   <alias
-   path="/web/src/main/java/ec/mileniumtech/educafacil/backing/estudiantes/BackingInscripcion.java" value="%66"/>
+   path="/web/src/main/java/ec/mileniumtech/educafacil/backing/estudiantes/BackingInscripcion.java" value="%64"/>
   <alias
    path="cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.enumIngresos" value="%262"/>
   <alias path="mat.estudiante.persona.persNombres" value="%266"/>
