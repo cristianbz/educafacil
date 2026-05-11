@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
-                        
+                            
+    
     
     
     
     
     <wb-module deploy-name="educafacil">
-                                                
+                                                        
+        
         
         
         
         
         <wb-resource deploy-path="/" source-path="/target/m2e-wtp/ear-resources"/>
-                                                
+                                                        
+        
         
         
         
@@ -173,6 +176,33 @@
         <dependent-module archiveName="stax2-api.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/org/codehaus/woodstox/stax2-api/4.2.1/stax2-api-4.2.1.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module archiveName="jasperreports-fonts.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/net/sf/jasperreports/jasperreports-fonts/6.20.6/jasperreports-fonts-6.20.6.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="barcode4j.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/net/sf/barcode4j/barcode4j/2.1/barcode4j-2.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="avalon-framework-impl.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/avalon-framework/avalon-framework-impl/4.2.0/avalon-framework-impl-4.2.0.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-cli.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/commons-cli/commons-cli/1.0/commons-cli-1.0.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-lang.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/commons-lang/commons-lang/1.0/commons-lang-1.0.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="ant.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/org/apache/ant/ant/1.7.1/ant-1.7.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="ant-launcher.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/org/apache/ant/ant-launcher/1.7.1/ant-launcher-1.7.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="avalon-framework-api.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/org/apache/avalon/framework/avalon-framework-api/4.3.1/avalon-framework-api-4.3.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="avalon-framework-impl.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/org/apache/avalon/framework/avalon-framework-impl/4.3.1/avalon-framework-impl-4.3.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <dependent-module archiveName="xmlsec.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/org/apache/santuario/xmlsec/3.0.3/xmlsec-3.0.3.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
@@ -185,13 +215,15 @@
         <dependent-module archiveName="educafacil-web.war" deploy-path="/" handle="module:/resource/web/web">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-                                            
+                                                    
+    
     
     
     
     
     </wb-module>
-                    
+                        
+
 
 
 

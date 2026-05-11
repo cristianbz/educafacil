@@ -4,6 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -239,7 +241,7 @@ public class IntegracionSriService {
 
         // 4. Generación y Firma
         String xmlString = facturaXmlService.generarXml(facturaSri);
-        System.out.println(xmlString);
+//        System.out.println(xmlString);
         byte[] pkcs12 = empresa.getEmpmCertificado();
         String password = CriptografiaUtil.desencriptar(empresa.getEmpmPasswordCertificado());
             
@@ -249,7 +251,7 @@ public class IntegracionSriService {
             
         byte[] xmlFirmado = xadesSignatureService.firmarDocumento(xmlString.getBytes("UTF-8"), pkcs12, password);
         docElec.setXmlFirmado(xmlFirmado);
-
+        
         // 5. Envío al SRI
         boolean esProduccion = empresa.getEmpmAmbiente() == 2;
         RespuestaSolicitud respuestaEnvio = sriWebServiceService.enviarComprobante(xmlFirmado, esProduccion,configuraciones);
@@ -265,6 +267,10 @@ public class IntegracionSriService {
                 
                 if ("AUTORIZADO".equals(aut.getEstado())) {
                     docElec.setXmlAutorizadoSri(xmlFirmado); // Idealmente el XML del SRI
+                    URL resourceUrl = getClass().getResource("/reportes/factura.jrxml");
+                    System.out.println("=== RUTA REAL DEL JRXML ===");
+                    System.out.println(resourceUrl != null ? resourceUrl.getPath() : "NULL - no encontrado");
+                    System.out.println("===========================");
                     
                     // 6. Generar RIDE (PDF)
                     InputStream jrxmlStream = getClass().getResourceAsStream("/reportes/factura.jrxml");
@@ -273,7 +279,7 @@ public class IntegracionSriService {
                     if (jrxmlStream != null) {
                         byte[] pdfContent = rideGeneratorService.generarRidePdf(facturaSri, logoStream, jrxmlStream);
                         docElec.setPdfRide(pdfContent);
-                        
+                        facturaDao.actualizarFactura(facturaEntity);
                         // 7. Enviar Notificación
                         String destinatario = facturaEntity.getCliente().getCorreo();
                         notificacionService.enviarComprobante(destinatario, xmlFirmado, pdfContent, secuencial);
