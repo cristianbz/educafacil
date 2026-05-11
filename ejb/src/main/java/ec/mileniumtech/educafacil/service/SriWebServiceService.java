@@ -3,6 +3,7 @@ package ec.mileniumtech.educafacil.service;
 import java.net.URL;
 
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Configuraciones;
+import ec.mileniumtech.educafacil.service.sri.autorizacion.Autorizacion;
 import ec.mileniumtech.educafacil.service.sri.autorizacion.AutorizacionComprobantesOffline;
 import ec.mileniumtech.educafacil.service.sri.autorizacion.AutorizacionComprobantesOfflineService;
 import ec.mileniumtech.educafacil.service.sri.autorizacion.RespuestaComprobante;
@@ -52,6 +53,25 @@ public class SriWebServiceService {
         String urlWsdl = esProduccion ? configuracion.getConfWsAutorizacionProduccion() : configuracion.getConf_wsAutorizacionPruebas();
         AutorizacionComprobantesOfflineService service = new AutorizacionComprobantesOfflineService(new URL(urlWsdl));
         AutorizacionComprobantesOffline port = service.getAutorizacionComprobantesOfflinePort();
-        return port.autorizacionComprobante(claveAcceso);
+        
+        RespuestaComprobante respuesta = port.autorizacionComprobante(claveAcceso);
+
+        // ── DIAGNÓSTICO ──────────────────────────────────────────────────
+        if (respuesta.getAutorizaciones() != null &&
+            !respuesta.getAutorizaciones().getAutorizacion().isEmpty()) {
+            
+            Autorizacion aut = respuesta.getAutorizaciones().getAutorizacion().get(0);
+            String compXml = aut.getComprobante(); // ← el XML que devuelve el SRI
+            
+            if (compXml != null) {
+                System.out.println("=== COMPROBANTE SRI PRIMEROS 100 ===");
+                System.out.println(compXml.substring(0, Math.min(100, compXml.length())));
+                System.out.println("Char[0] hex: " + Integer.toHexString((int) compXml.charAt(0)));
+                System.out.println("====================================");
+            }
+        }
+        // ─────────────────────────────────────────────────────────────────
+
+        return respuesta;
     }
 }

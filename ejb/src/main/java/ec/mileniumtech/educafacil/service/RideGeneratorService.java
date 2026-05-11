@@ -8,12 +8,15 @@ import java.util.Map;
 import ec.mileniumtech.educafacil.modelo.sri.Factura;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
+import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 
 /**
  * Servicio para generar el RIDE (Representación Impresa de Documento Electrónico) en formato PDF.
@@ -67,27 +70,34 @@ public class RideGeneratorService {
 
         // DataSource para los detalles
         JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource(factura.getDetallesList());
+        // ✅ Leer bytes una sola vez y compilar directo — siempre es .jrxml
+        byte[] jrxmlBytes = jrxmlStream.readAllBytes();
+        JasperReport report = JasperCompileManager.compileReport(
+            new ByteArrayInputStream(jrxmlBytes)
+        );
 
-        // Cargar y llenar el reporte
-        JasperReport report;
-        if (jrxmlStream.markSupported()) {
-            jrxmlStream.mark(1000000); // Reservar espacio para leer
-        }
-        
-        try {
-            // Intentar cargar como objeto compilado (.jasper)
-            report = (JasperReport) JRLoader.loadObject(jrxmlStream);
-        } catch (Exception e) {
-            // Si falla, intentar compilar (.jrxml)
-            if (jrxmlStream.markSupported()) {
-                jrxmlStream.reset();
-            }
-            report = net.sf.jasperreports.engine.JasperCompileManager.compileReport(jrxmlStream);
-        }
-        
         JasperPrint print = JasperFillManager.fillReport(report, parametros, ds);
-
-        // Exportar a PDF
         return JasperExportManager.exportReportToPdf(print);
+//        // Cargar y llenar el reporte
+//        JasperReport report;
+//        if (jrxmlStream.markSupported()) {
+//            jrxmlStream.mark(1000000); // Reservar espacio para leer
+//        }
+//        
+//        try {
+//            // Intentar cargar como objeto compilado (.jasper)
+//            report = (JasperReport) JRLoader.loadObject(jrxmlStream);
+//        } catch (Exception e) {
+//            // Si falla, intentar compilar (.jrxml)
+//            if (jrxmlStream.markSupported()) {
+//                jrxmlStream.reset();
+//            }
+//            report = net.sf.jasperreports.engine.JasperCompileManager.compileReport(jrxmlStream);
+//        }
+//        
+//        JasperPrint print = JasperFillManager.fillReport(report, parametros, ds);
+//
+//        // Exportar a PDF
+//        return JasperExportManager.exportReportToPdf(print);
     }
 }
