@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import ec.mileniumtech.educafacil.dao.impl.ConfiguracionesDaoImpl;
@@ -73,6 +74,7 @@ public class IntegracionSriService {
      * @throws Exception Si falla algún paso del proceso.
      */
     public void procesarFacturaElectronica(Factura facturaEntity) throws Exception {
+    	
     	//0. Obtener los url de servicios web del sri
     	Configuraciones configuraciones = configuracionesDao.findAll().get(0);
         // 1. Obtener información del emisor y configuración
@@ -199,12 +201,12 @@ public class IntegracionSriService {
         infoFact.getTotalConImpuestosList().add(ti);
 
         // Mapeo de Pagos — REQUERIDO por el SRI
-        if (facturaEntity.getFormaPagoFacturas() != null && !facturaEntity.getFormaPagoFacturas().isEmpty()) {
-            for (FormaPagoFactura fpf : facturaEntity.getFormaPagoFacturas()) {
-                PagoSRI pagoSri = new PagoSRI();
+        if (facturaEntity.getFormaPagoFacturas() != null && !facturaEntity.getFormaPagoFacturas().isEmpty()) {        	
+            for (FormaPagoFactura fpf : facturaEntity.getFormaPagoFacturas()) {            	
+                PagoSRI pagoSri = new PagoSRI();                
                 pagoSri.setFormaPago(fpf.getSriformapagos().getSrfpCodigoSri());
                 pagoSri.setTotal(fpf.getValor().setScale(2, RoundingMode.HALF_UP));
-                infoFact.getPagosList().add(pagoSri);
+                infoFact.getPagosList().add(pagoSri);                
             }
         } else {
             PagoSRI pagoDefecto = new PagoSRI();
@@ -268,16 +270,16 @@ public class IntegracionSriService {
                 if ("AUTORIZADO".equals(aut.getEstado())) {
                     docElec.setXmlAutorizadoSri(xmlFirmado); // Idealmente el XML del SRI
                     URL resourceUrl = getClass().getResource("/reportes/factura.jrxml");
-                    System.out.println("=== RUTA REAL DEL JRXML ===");
-                    System.out.println(resourceUrl != null ? resourceUrl.getPath() : "NULL - no encontrado");
-                    System.out.println("===========================");
+//                    System.out.println("=== RUTA REAL DEL JRXML ===");
+//                    System.out.println(resourceUrl != null ? resourceUrl.getPath() : "NULL - no encontrado");
+//                    System.out.println("===========================");
                     
                     // 6. Generar RIDE (PDF)
                     InputStream jrxmlStream = getClass().getResourceAsStream("/reportes/factura.jrxml");
                     InputStream logoStream = (empresa.getEmpmLogo() != null) ? new ByteArrayInputStream(empresa.getEmpmLogo()) : null;
                     
                     if (jrxmlStream != null) {
-                        byte[] pdfContent = rideGeneratorService.generarRidePdf(facturaSri, logoStream, jrxmlStream);
+                        byte[] pdfContent = rideGeneratorService.generarRidePdf(facturaSri, logoStream, jrxmlStream,facturaEntity.getFormaPagoFacturas());
                         docElec.setPdfRide(pdfContent);
                         facturaDao.actualizarFactura(facturaEntity);
                         // 7. Enviar Notificación

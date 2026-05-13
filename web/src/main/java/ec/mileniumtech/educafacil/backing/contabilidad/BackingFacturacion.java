@@ -130,6 +130,14 @@ public class BackingFacturacion implements Serializable {
 
             getBeanFacturacion().setMostrarFormularioNuevoCliente(false);
             
+            // Validación de Cédula (si tiene 10 dígitos)
+            if (id != null && id.length() == 10) {
+                if (!ec.mileniumtech.educafacil.utilitarios.ValidacionUtil.validarCedula(id)) {
+                    Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error de Validación", "La cédula ingresada no es válida.");
+                    getBeanFacturacion().setClienteSeleccionado(null);
+                    return;
+                }
+            }
             // 1. Buscar en Cliente (Directo)
             Cliente c = clienteDao.buscarPorIdentificacion(id);
             if (c != null) {
@@ -181,6 +189,14 @@ public class BackingFacturacion implements Serializable {
         
         getBeanFacturacion().setClienteSeleccionado(nuevo);
         getBeanFacturacion().setMostrarFormularioNuevoCliente(true); // Permitir revisar/completar datos
+    }
+    
+    /**
+     * Activa el formulario para editar la información del cliente seleccionado.
+     */
+    public void activarEdicionCliente() {
+        getBeanFacturacion().setMostrarFormularioNuevoCliente(true);
+        Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Edición", "Puede modificar los datos del cliente.");
     }
 
     /**
@@ -275,6 +291,7 @@ public class BackingFacturacion implements Serializable {
         getBeanFacturacion().getNuevaFactura().setDescuentoTotal(descuentoTotal);
         getBeanFacturacion().getNuevaFactura().setTotalImpuestos(totalImpuestos);
         getBeanFacturacion().getNuevaFactura().setTotal(subtotal.subtract(descuentoTotal).add(totalImpuestos));
+        getBeanFacturacion().getNuevaFormaPago().setValor(getBeanFacturacion().getNuevaFactura().getTotal());
     }
     
     public void removerDetalle(DetalleFactura det) {
@@ -321,6 +338,14 @@ public class BackingFacturacion implements Serializable {
             if (getBeanFacturacion().getClienteSeleccionado() == null) {
                 throw new Exception("Debe seleccionar un cliente.");
             }
+            
+            // Validación de Cédula (si tiene 10 dígitos)
+            String identificacion = getBeanFacturacion().getClienteSeleccionado().getNumeroIdentificacion();
+            if (identificacion != null && identificacion.length() == 10) {
+                if (!ec.mileniumtech.educafacil.utilitarios.ValidacionUtil.validarCedula(identificacion)) {
+                    throw new Exception("La cédula del cliente (" + identificacion + ") no es válida. Corríjala para continuar.");
+                }
+            }
             if (getBeanFacturacion().getListaDetallesNueva().isEmpty()) {
                 throw new Exception("Debe agregar al menos un detalle.");
             }
@@ -346,6 +371,8 @@ public class BackingFacturacion implements Serializable {
             // Si el cliente no existe en la base de datos (ID nulo), lo guardamos primero
             if (c.getId() == null) {
                 clienteDao.guardar(c);
+            } else {
+                clienteDao.actualizar(c);
             }
             
             f.setCliente(c);
