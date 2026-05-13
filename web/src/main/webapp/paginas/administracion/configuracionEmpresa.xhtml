@@ -209,10 +209,12 @@
                     </p:panel>
                 </div>
             </div>
+        </h:form>
 
-            <p:dialog id="dlgEstablecimiento" header="Datos de Establecimiento" widgetVar="wvEstablecimiento" 
-                      modal="true" responsive="true" width="450" fitViewport="true" closeOnEscape="true" draggable="false" resizable="false">
-                <h:panelGroup id="formEstablecimiento" layout="block" styleClass="ui-fluid">
+        <p:dialog id="dlgEstablecimiento" header="Datos de Establecimiento" widgetVar="wvEstablecimiento" 
+                  modal="true" responsive="true" width="450" fitViewport="true" closeOnEscape="true" draggable="false" resizable="false" appendTo="@(body)">
+            <h:form id="formEstablecimiento">
+                <div class="ui-fluid">
                     <div class="field mb-3">
                         <p:outputLabel for="estCodigo" value="Código (3 dígitos):" />
                         <p:inputText id="estCodigo" value="#{backingEmpresa.beanEmpresa.establecimientoSelect.estaCodigo}" maxlength="3" required="true" />
@@ -231,15 +233,16 @@
                     </div>
                     <div class="flex justify-content-end gap-2 mt-4">
                         <p:commandButton value="Cancelar" icon="pi pi-times" onclick="PF('wvEstablecimiento').hide()" type="button" styleClass="ui-button-secondary ui-button-flat" />
-                        <p:commandButton value="Guardar" icon="pi pi-check" actionListener="#{backingEmpresa.guardarEstablecimiento()}" process="@this formEstablecimiento"
-                                         update=":selEstablecimiento :pnlPuntosDetails :growl" oncomplete="if (!args.validationFailed) PF('wvEstablecimiento').hide()" />
+                        <p:commandButton value="Guardar" icon="pi pi-check" actionListener="#{backingEmpresa.guardarEstablecimiento()}" process="@form"
+                                         update=":formEmpresa:selEstablecimiento :formEmpresa:pnlPuntosDetails :formEmpresa:growl" oncomplete="if (!args.validationFailed) PF('wvEstablecimiento').hide()" />
                     </div>
-                </h:panelGroup>
-            </p:dialog>
+                </div>
+            </h:form>
+        </p:dialog>
 
-            <p:dialog id="dlgPunto" header="Datos de Punto de Emisión" widgetVar="wvPunto" 
-                      modal="true" responsive="true" width="600" fitViewport="true" closeOnEscape="true" draggable="false" resizable="false">
-                <h:panelGroup id="formPunto" layout="block" styleClass="ui-fluid">
+        <p:dialog id="dlgPunto" header="Datos de Punto de Emisión" widgetVar="wvPunto" 
+                  modal="true" responsive="true" width="600" fitViewport="true" closeOnEscape="true" draggable="false" resizable="false" appendTo="@(body)">
+            <h:form id="formPunto">
                     <div class="grid">
                         <div class="col-12 md:col-6">
                             <div class="field mb-3">
@@ -305,11 +308,10 @@
                     <div class="flex justify-content-end gap-2 mt-4">
                         <p:commandButton value="Cancelar" icon="pi pi-times" onclick="PF('wvPunto').hide()" type="button" styleClass="ui-button-secondary ui-button-flat" />
                         <p:commandButton value="Guardar" icon="pi pi-check" actionListener="#{backingEmpresa.guardarPuntoEmision()}" 
-                                         update=":pnlPuntosDetails :growl" oncomplete="if (!args.validationFailed) PF('wvPunto').hide()" />
+                                         process="@form" update=":formEmpresa:pnlPuntosDetails :formEmpresa:growl" oncomplete="if (!args.validationFailed) PF('wvPunto').hide()" />
                     </div>
-                </h:panelGroup>
-            </p:dialog>
-		</h:form>
+            </h:form>
+        </p:dialog>
 	</ui:define>
 
 </ui:composition>

@@ -67,7 +67,7 @@
 			<br />
 			
 			<p:commandButton value="Nueva Factura" icon="pi pi-plus" 
-							 actionListener="#{backingFacturacion.prepararNuevaFactura()}"
+							 actionListener="#{backingFacturacion.prepararNuevaFactura()}" process="@this"
 							 oncomplete="PF('dlgNuevaFactura').show()"
 							 update="dlgNuevaFactura" />
 							 
@@ -81,21 +81,34 @@
 							<!-- Datos del Cliente -->
 							<p:panel header="Datos del Cliente" styleClass="invoice-panel">
 								<div class="p-grid p-formgrid">
-									<div class="p-col-12 p-md-4 p-field">
+									<h:panelGroup layout="block" id="divBusqueda" styleClass="p-col-12 p-md-4 p-field">
+										<p:defaultCommand target="btnBuscarCliente" scope="divBusqueda" />
 										<p:outputLabel value="Identificación:" for="txtIdentificacion" />
 										<div class="ui-inputgroup">
 											<p:inputText id="txtIdentificacion" value="#{beanFacturacion.identificacionBusqueda}" placeholder="Cédula/RUC" />
-											<p:commandButton icon="pi pi-search" actionListener="#{backingFacturacion.buscarCliente()}" 
+											<p:commandButton id="btnBuscarCliente" icon="pi pi-search" actionListener="#{backingFacturacion.buscarCliente()}"  
 															 process="@this txtIdentificacion"
-															 update="pnlDatosCliente pnlFormularioCliente" 
+															 update="pnlDatosCliente pnlFormularioCliente growl" 
 															 styleClass="ui-button-primary"/>
 										</div>
-									</div>
+									</h:panelGroup>
 									<div class="p-col-12 p-md-8 p-field p-d-flex p-ai-center" style="padding-top: 1.5rem;">
 										<p:outputPanel id="pnlDatosCliente">
-											<h:outputText value="#{beanFacturacion.clienteSeleccionado.nombresCompletos}" 
-														  style="font-weight: 700; color: var(--primary-color); font-size: 1.25rem;" 
-														  rendered="#{beanFacturacion.clienteSeleccionado != null and !beanFacturacion.mostrarFormularioNuevoCliente}" />
+											<div class="p-d-flex p-ai-center">
+												<h:outputText value="#{beanFacturacion.clienteSeleccionado.nombresCompletos}" 
+															  style="font-weight: 700; color: var(--primary-color); font-size: 1.25rem;" 
+															  rendered="#{beanFacturacion.clienteSeleccionado != null and !beanFacturacion.mostrarFormularioNuevoCliente}" />
+												
+												<p:commandButton icon="pi pi-user-edit" 
+																 actionListener="#{backingFacturacion.activarEdicionCliente()}"
+																 rendered="#{beanFacturacion.clienteSeleccionado != null and !beanFacturacion.mostrarFormularioNuevoCliente}"
+																 update="pnlDatosCliente pnlFormularioCliente"
+																 styleClass="ui-button-flat p-ml-2"
+																 title="Editar datos del cliente"
+																 process="@this" />
+											</div>
+																						
+											
 											<h:panelGroup rendered="#{beanFacturacion.clienteSeleccionado == null}" styleClass="p-d-flex p-ai-center" style="color: var(--danger-color);">
 												<i class="pi pi-exclamation-circle p-mr-2"></i>
 												<h:outputText value="Seleccione un cliente para continuar" />
@@ -165,7 +178,7 @@
 										<p:commandButton value="Agregar" icon="pi pi-plus" 
 														 actionListener="#{backingFacturacion.agregarDetalle()}" 
 														 process="@this selItem txtCantidad"
-														 update="tblDetalles pnlTotales" 
+														 update="tblDetalles pnlTotales txtValorPago"  
 														 styleClass="ui-button-success"/>
 									</div>
 								</div>
@@ -180,12 +193,12 @@
 									</p:column>
 									<p:column headerText="Precio Unit." style="text-align: right; width: 120px;">
 										<p:inputNumber value="#{det.precioUnitario}" decimalPlaces="2" style="width: 100%;">
-											<p:ajax listener="#{backingFacturacion.calcularTotales()}" update="tblDetalles :formFacturacion:pnlTotales" />
+											<p:ajax listener="#{backingFacturacion.calcularTotales()}" update="tblDetalles :formFacturacion:pnlTotales :formFacturacion:txtValorPago" />
 										</p:inputNumber>
 									</p:column>
 									<p:column headerText="Descuento" style="text-align: right; width: 120px;">
 										<p:inputNumber value="#{det.descuento}" decimalPlaces="2" style="width: 100%;">
-											<p:ajax listener="#{backingFacturacion.calcularTotales()}" update="tblDetalles :formFacturacion:pnlTotales" />
+											<p:ajax listener="#{backingFacturacion.calcularTotales()}" update="tblDetalles :formFacturacion:pnlTotales :formFacturacion:txtValorPago" />
 										</p:inputNumber>
 									</p:column>
 									<p:column headerText="IVA (%)" style="text-align: center; width: 80px;">
@@ -199,7 +212,7 @@
 									<p:column headerText="Acción" style="text-align: center; width: 60px;">
 										<p:commandButton icon="pi pi-trash" styleClass="ui-button-danger rounded-button" 
 														 actionListener="#{backingFacturacion.removerDetalle(det)}"
-														 process="@this" update="tblDetalles :formFacturacion:pnlTotales" title="Eliminar" />
+														 process="@this" update="tblDetalles :formFacturacion:pnlTotales :formFacturacion:txtValorPago" title="Eliminar" />
 									</p:column>
 								</p:dataTable>
 								
@@ -307,7 +320,7 @@
 				<f:facet name="footer">
 					<div class="p-d-flex p-jc-end p-ai-center" style="gap: 1rem; padding: 0.5rem 1rem;">
 						<p:commandButton value="Cancelar" icon="pi pi-times" 
-										 onclick="PF('dlgNuevaFactura').hide()" 
+										 onclick="PF('dlgNuevaFactura').hide()" resetValues="true" process="@this"
 										 styleClass="ui-button-secondary ui-button-outlined" />
 						<p:commandButton value="Guardar y Emitir Factura" icon="pi pi-check" 
 										 actionListener="#{backingFacturacion.guardarFactura()}" 

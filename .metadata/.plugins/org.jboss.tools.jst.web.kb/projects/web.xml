@@ -14,6 +14,7 @@
   <path value="C:/Users/christian/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.8.0/kotlin-stdlib-jdk7-1.8.0.jar"/>
   <path value="C:/Users/christian/.m2/repository/jakarta/authentication/jakarta.authentication-api/3.0.0/jakarta.authentication-api-3.0.0.jar"/>
   <path value="C:/Users/christian/.m2/repository/com/github/jai-imageio/jai-imageio-core/1.3.1/jai-imageio-core-1.3.1.jar"/>
+  <path value="C:/Users/christian/.m2/repository/org/apache/xmlgraphics/batik-awt-util/1.17/batik-awt-util-1.17.jar"/>
   <path value="C:/Users/christian/.m2/repository/jakarta/annotation/jakarta.annotation-api/2.1.1/jakarta.annotation-api-2.1.1.jar"/>
   <path value="C:/Users/christian/.m2/repository/com/sun/istack/istack-commons-runtime/4.1.2/istack-commons-runtime-4.1.2.jar"/>
   <path value="C:/Users/christian/.m2/repository/org/bouncycastle/bcutil-jdk18on/1.78.1/bcutil-jdk18on-1.78.1.jar"/>
@@ -26,6 +27,8 @@
   <path value="C:/Users/christian/.m2/repository/jakarta/servlet/jakarta.servlet-api/6.0.0/jakarta.servlet-api-6.0.0.jar"/>
   <path value="C:/Users/christian/.m2/repository/org/jboss/arquillian/junit5/arquillian-junit5-core/1.7.2.Final/arquillian-junit5-core-1.7.2.Final.jar"/>
   <path value="C:/Users/christian/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.15.4/jackson-annotations-2.15.4.jar"/>
+  <path value="C:/Users/christian/.m2/repository/org/apache/xmlgraphics/batik-util/1.17/batik-util-1.17.jar"/>
+  <path value="C:/Users/christian/.m2/repository/org/apache/xmlgraphics/batik-svg-dom/1.17/batik-svg-dom-1.17.jar"/>
   <path value="C:/Users/christian/.m2/repository/jakarta/servlet/jsp/jstl/jakarta.servlet.jsp.jstl-api/3.0.0/jakarta.servlet.jsp.jstl-api-3.0.0.jar"/>
   <path value="C:/Users/christian/.m2/repository/jakarta/faces/jakarta.faces-api/4.1.0/jakarta.faces-api-4.1.0.jar"/>
   <path value="C:/Users/christian/.m2/repository/org/jboss/arquillian/config/arquillian-config-api/1.7.2.Final/arquillian-config-api-1.7.2.Final.jar"/>
@@ -34,6 +37,7 @@
   <path value="C:/Users/christian/.m2/repository/jakarta/json/jakarta.json-api/2.1.3/jakarta.json-api-2.1.3.jar"/>
   <path value="C:/Users/christian/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib/1.8.0/kotlin-stdlib-1.8.0.jar"/>
   <path value="C:/Users/christian/.m2/repository/io/jsonwebtoken/jjwt/0.9.1/jjwt-0.9.1.jar"/>
+  <path value="C:/Users/christian/.m2/repository/org/apache/xmlgraphics/batik-bridge/1.17/batik-bridge-1.17.jar"/>
   <path value="C:/Users/christian/.m2/repository/com/google/inject/guice/7.0.0/guice-7.0.0.jar"/>
   <path value="C:/Users/christian/.m2/repository/org/apache/ant/ant-launcher/1.7.1/ant-launcher-1.7.1.jar"/>
   <path value="C:/Users/christian/.m2/repository/javax/activation/javax.activation-api/1.2.0/javax.activation-api-1.2.0.jar"/>
@@ -57,6 +61,7 @@
   <path value="C:/Users/christian/.m2/repository/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar"/>
   <path value="C:/Users/christian/.m2/repository/com/itextpdf/itextpdf/5.5.0/itextpdf-5.5.0.jar"/>
   <path value="C:/Users/christian/.m2/repository/jakarta/json/bind/jakarta.json.bind-api/3.0.0/jakarta.json.bind-api-3.0.0.jar"/>
+  <path value="C:/Users/christian/.m2/repository/org/apache/xmlgraphics/batik-constants/1.17/batik-constants-1.17.jar"/>
   <path value="C:/Users/christian/.m2/repository/org/hibernate/orm/hibernate-core/6.4.4.Final/hibernate-core-6.4.4.Final.jar"/>
   <path value="C:/Users/christian/.m2/repository/org/apache/ant/ant/1.7.1/ant-1.7.1.jar"/>
   <path value="C:/Users/christian/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib-jdk8/1.8.0/kotlin-stdlib-jdk8-1.8.0.jar"/>
@@ -79,6 +84,7 @@
   <path value="C:/Users/christian/.m2/repository/com/lowagie/itext/2.1.7.js10/itext-2.1.7.js10.jar"/>
   <path value="C:/Users/christian/.m2/repository/org/bouncycastle/bcprov-jdk18on/1.78.1/bcprov-jdk18on-1.78.1.jar"/>
   <path value="C:/Users/christian/.m2/repository/net/sf/barcode4j/barcode4j/2.1/barcode4j-2.1.jar"/>
+  <path value="C:/Users/christian/.m2/repository/org/apache/xmlgraphics/batik-anim/1.17/batik-anim-1.17.jar"/>
   <path value="C:/Users/christian/.m2/repository/org/glassfish/jaxb/jaxb-runtime/3.0.2/jaxb-runtime-3.0.2.jar"/>
   <path value="C:/Users/christian/.m2/repository/jakarta/batch/jakarta.batch-api/2.1.1/jakarta.batch-api-2.1.1.jar"/>
   <path value="C:/Users/christian/.m2/repository/jakarta/el/jakarta.el-api/6.0.1/jakarta.el-api-6.0.1.jar"/>
@@ -90,6 +96,7 @@
   <path value="C:/Users/christian/.m2/repository/com/beust/jcommander/1.48/jcommander-1.48.jar"/>
   <path value="C:/Users/christian/.m2/repository/jakarta/ws/rs/jakarta.ws.rs-api/3.1.0/jakarta.ws.rs-api-3.1.0.jar"/>
   <path value="C:/Users/christian/.m2/repository/com/fasterxml/classmate/1.5.1/classmate-1.5.1.jar"/>
+  <path value="C:/Users/christian/.m2/repository/xml-apis/xml-apis-ext/1.3.04/xml-apis-ext-1.3.04.jar"/>
   <path value="C:/Users/christian/.m2/repository/jakarta/interceptor/jakarta.interceptor-api/2.1.0/jakarta.interceptor-api-2.1.0.jar"/>
   <path value="C:/Users/christian/.m2/repository/net/sf/jasperreports/jasperreports-fonts/6.20.6/jasperreports-fonts-6.20.6.jar"/>
   <path value="C:/Users/christian/.m2/repository/com/squareup/okhttp3/okhttp/3.9.1/okhttp-3.9.1.jar"/>
@@ -99,6 +106,7 @@
   <path value="C:/Users/christian/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.10.1/junit-jupiter-params-5.10.1.jar"/>
   <path value="C:/Users/christian/.m2/repository/org/apache/commons/commons-collections4/4.4/commons-collections4-4.4.jar"/>
   <path value="C:/Users/christian/.m2/repository/com/google/zxing/javase/3.3.0/javase-3.3.0.jar"/>
+  <path value="C:/Users/christian/.m2/repository/org/apache/xmlgraphics/batik-gvt/1.17/batik-gvt-1.17.jar"/>
   <path value="C:/Users/christian/.m2/repository/org/apache/xmlbeans/xmlbeans/3.1.0/xmlbeans-3.1.0.jar"/>
   <path value="C:/Users/christian/.m2/repository/com/squareup/okio/okio-jvm/3.4.0/okio-jvm-3.4.0.jar"/>
   <path value="C:/Users/christian/.m2/repository/jakarta/websocket/jakarta.websocket-client-api/2.1.0-jbossorg-2/jakarta.websocket-client-api-2.1.0-jbossorg-2.jar"/>
@@ -113,6 +121,7 @@
   <path value="C:/Users/christian/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib-common/1.8.0/kotlin-stdlib-common-1.8.0.jar"/>
   <path value="C:/Users/christian/.m2/repository/jakarta/servlet/jsp/jakarta.servlet.jsp-api/3.1.1/jakarta.servlet.jsp-api-3.1.1.jar"/>
   <path value="C:/Users/christian/.m2/repository/org/jboss/shrinkwrap/shrinkwrap-api/1.2.6/shrinkwrap-api-1.2.6.jar"/>
+  <path value="C:/Users/christian/.m2/repository/org/apache/xmlgraphics/batik-i18n/1.17/batik-i18n-1.17.jar"/>
   <path value="C:/Users/christian/.m2/repository/org/apache/commons/commons-text/1.11.0/commons-text-1.11.0.jar"/>
   <path value="C:/Users/christian/.m2/repository/com/itextpdf/forms/7.1.9/forms-7.1.9.jar"/>
   <path value="C:/Users/christian/.m2/repository/com/itextpdf/io/7.1.9/io-7.1.9.jar"/>
@@ -120,6 +129,9 @@
   <path value="C:/Users/christian/.m2/repository/org/eclipse/jdt/ecj/3.21.0/ecj-3.21.0.jar"/>
   <path value="C:/Users/christian/.m2/repository/net/bytebuddy/byte-buddy/1.14.11/byte-buddy-1.14.11.jar"/>
   <path value="C:/Users/christian/.m2/repository/jakarta/mail/jakarta.mail-api/2.1.3/jakarta.mail-api-2.1.3.jar"/>
+  <path value="C:/Users/christian/.m2/repository/org/apache/xmlgraphics/batik-css/1.17/batik-css-1.17.jar"/>
+  <path value="C:/Users/christian/.m2/repository/org/apache/xmlgraphics/batik-ext/1.17/batik-ext-1.17.jar"/>
+  <path value="C:/Users/christian/.m2/repository/org/apache/xmlgraphics/batik-dom/1.17/batik-dom-1.17.jar"/>
   <path value="C:/Users/christian/.m2/repository/org/jboss/arquillian/test/arquillian-test-impl-base/1.7.2.Final/arquillian-test-impl-base-1.7.2.Final.jar"/>
   <path value="C:/Users/christian/.m2/repository/org/bouncycastle/bcutil-jdk15on/1.70/bcutil-jdk15on-1.70.jar"/>
   <path value="C:/Users/christian/.m2/repository/org/jboss/arquillian/junit5/arquillian-junit5-container/1.7.2.Final/arquillian-junit5-container-1.7.2.Final.jar"/>
@@ -128,6 +140,7 @@
   <path value="C:/Users/christian/.m2/repository/org/junit/platform/junit-platform-engine/1.10.1/junit-platform-engine-1.10.1.jar"/>
   <path value="C:/Users/christian/.m2/repository/org/jboss/arquillian/container/arquillian-container-impl-base/1.7.2.Final/arquillian-container-impl-base-1.7.2.Final.jar"/>
   <path value="C:/Users/christian/.m2/repository/com/itextpdf/kernel/7.1.9/kernel-7.1.9.jar"/>
+  <path value="C:/Users/christian/.m2/repository/org/apache/xmlgraphics/batik-script/1.17/batik-script-1.17.jar"/>
   <path value="C:/Users/christian/.m2/repository/commons-cli/commons-cli/1.0/commons-cli-1.0.jar"/>
   <path value="C:/Users/christian/.m2/repository/org/apache/santuario/xmlsec/3.0.3/xmlsec-3.0.3.jar"/>
   <path value="C:/Users/christian/.m2/repository/org/jboss/arquillian/container/arquillian-container-test-impl-base/1.7.2.Final/arquillian-container-test-impl-base-1.7.2.Final.jar"/>
@@ -139,10 +152,12 @@
   <path value="C:/Users/christian/.m2/repository/jakarta/ejb/jakarta.ejb-api/4.0.1/jakarta.ejb-api-4.0.1.jar"/>
   <path value="C:/Users/christian/.m2/repository/org/glassfish/jaxb/jaxb-core/4.0.4/jaxb-core-4.0.4.jar"/>
   <path value="C:/Users/christian/.m2/repository/commons-beanutils/commons-beanutils/1.8.3/commons-beanutils-1.8.3.jar"/>
+  <path value="C:/Users/christian/.m2/repository/org/apache/xmlgraphics/batik-parser/1.17/batik-parser-1.17.jar"/>
   <path value="C:/Users/christian/.m2/repository/org/jboss/arquillian/config/arquillian-config-spi/1.7.2.Final/arquillian-config-spi-1.7.2.Final.jar"/>
   <path value="C:/Users/christian/.m2/repository/jakarta/platform/jakarta.jakartaee-api/10.0.0/jakarta.jakartaee-api-10.0.0.jar"/>
   <path value="C:/Users/christian/.m2/repository/org/antlr/antlr4-runtime/4.13.0/antlr4-runtime-4.13.0.jar"/>
   <path value="C:/Users/christian/.m2/repository/org/codehaus/woodstox/stax2-api/4.2.1/stax2-api-4.2.1.jar"/>
+  <path value="C:/Users/christian/.m2/repository/org/apache/xmlgraphics/xmlgraphics-commons/2.9/xmlgraphics-commons-2.9.jar"/>
   <path value="C:/Users/christian/.m2/repository/com/zaxxer/SparseBitSet/1.2/SparseBitSet-1.2.jar"/>
   <path value="C:/Users/christian/.m2/repository/avalon-framework/avalon-framework-impl/4.2.0/avalon-framework-impl-4.2.0.jar"/>
   <path value="C:/Users/christian/.m2/repository/jakarta/enterprise/jakarta.enterprise.cdi-api/4.0.1/jakarta.enterprise.cdi-api-4.0.1.jar"/>
@@ -150,6 +165,7 @@
   <path value="C:/Users/christian/.m2/repository/org/jboss/arquillian/test/arquillian-test-spi/1.7.2.Final/arquillian-test-spi-1.7.2.Final.jar"/>
   <path value="C:/Users/christian/.m2/repository/org/junit/jupiter/junit-jupiter/5.10.1/junit-jupiter-5.10.1.jar"/>
   <path value="C:/Users/christian/.m2/repository/com/itextpdf/svg/7.1.9/svg-7.1.9.jar"/>
+  <path value="C:/Users/christian/.m2/repository/org/apache/xmlgraphics/batik-xml/1.17/batik-xml-1.17.jar"/>
   <path value="C:/Users/christian/.m2/repository/com/google/zxing/core/3.3.0/core-3.3.0.jar"/>
   <path value="C:/Users/christian/.m2/repository/org/jboss/arquillian/container/arquillian-container-spi/1.7.2.Final/arquillian-container-spi-1.7.2.Final.jar"/>
   <path value="C:/Users/christian/.m2/repository/org/junit/platform/junit-platform-commons/1.10.1/junit-platform-commons-1.10.1.jar"/>
@@ -158,24 +174,408 @@
   <path value="C:/Users/christian/.m2/repository/log4j/log4j/1.2.17/log4j-1.2.17.jar"/>
   <path value="C:/Users/christian/.m2/repository/org/eclipse/angus/angus-activation/2.0.2/angus-activation-2.0.2.jar"/>
   <path value="C:/Users/christian/.m2/repository/jakarta/activation/jakarta.activation-api/2.1.3/jakarta.activation-api-2.1.3.jar"/>
+  <path value="C:/Users/christian/.m2/repository/org/apache/xmlgraphics/batik-shared-resources/1.17/batik-shared-resources-1.17.jar"/>
  </paths>
  <validation>
-  <core validator-id="jboss.cdi.core"/>
+  <core validator-id="jboss.cdi.core">
+   <linked-resource declaration="true" name="%1;" path="%0"/>
+  </core>
   <el>
-   <linked-el length="21" name="%0" offset="7560" path="%1"/>
-   <linked-el length="21" name="%2" offset="7171" path="%1"/>
-   <linked-el length="21" name="%3" offset="7171" path="%1"/>
-   <linked-el length="21" name="%4" offset="7560" path="%1"/>
-   <linked-el length="21" name="%5" offset="7560" path="%1"/>
+   <linked-el length="21" name="%2" offset="9299" path="%3"/>
+   <linked-el length="21" name="%4" offset="8910" path="%3"/>
+   <linked-el length="14" name="%5" offset="1547" path="%6"/>
+   <linked-el length="213" name="%5" offset="1835" path="%6"/>
+   <linked-el length="100" name="%5" offset="2315" path="%6"/>
+   <linked-el length="22" name="%5" offset="1132" path="%6"/>
+   <linked-el length="94" name="%5" offset="2630" path="%6"/>
+   <linked-el length="42" name="%5" offset="16038" path="%6"/>
+   <linked-el length="16" name="%5" offset="1224" path="%6"/>
+   <linked-el length="97" name="%5" offset="1729" path="%6"/>
+   <linked-el length="48" name="%5" offset="16704" path="%6"/>
+   <linked-el length="40" name="%5" offset="17120" path="%6"/>
+   <linked-el length="21" name="%5" offset="1083" path="%6"/>
+   <linked-el length="34" name="%5" offset="1399" path="%6"/>
+   <linked-el length="16" name="%5" offset="1294" path="%6"/>
+   <linked-el length="48" name="%5" offset="16368" path="%6"/>
+   <linked-el length="103" name="%7" offset="7022" path="%8"/>
+   <linked-el length="54" name="%7" offset="6381" path="%8"/>
+   <linked-el length="49" name="%7" offset="4456" path="%8"/>
+   <linked-el length="58" name="%7" offset="18152" path="%8"/>
+   <linked-el length="46" name="%7" offset="4585" path="%8"/>
+   <linked-el length="36" name="%7" offset="8932" path="%8"/>
+   <linked-el length="38" name="%7" offset="9700" path="%8"/>
+   <linked-el length="111" name="%7" offset="4325" path="%8"/>
+   <linked-el length="72" name="%7" offset="21600" path="%8"/>
+   <linked-el length="31" name="%7" offset="9180" path="%8"/>
+   <linked-el length="56" name="%7" offset="2136" path="%8"/>
+   <linked-el length="74" name="%7" offset="5718" path="%8"/>
+   <linked-el length="29" name="%7" offset="9431" path="%8"/>
+   <linked-el length="74" name="%7" offset="16082" path="%8"/>
+   <linked-el length="74" name="%7" offset="21203" path="%8"/>
+   <linked-el length="15" name="%7" offset="7759" path="%8"/>
+   <linked-el length="49" name="%7" offset="2764" path="%8"/>
+   <linked-el length="51" name="%7" offset="7371" path="%8"/>
+   <linked-el length="64" name="%7" offset="13768" path="%8"/>
+   <linked-el length="108" name="%7" offset="10438" path="%8"/>
+   <linked-el length="65" name="%7" offset="16711" path="%8"/>
+   <linked-el length="98" name="%7" offset="4803" path="%8"/>
+   <linked-el length="79" name="%7" offset="20798" path="%8"/>
+   <linked-el length="129" name="%7" offset="5308" path="%8"/>
+   <linked-el length="99" name="%7" offset="14266" path="%8"/>
+   <linked-el length="71" name="%7" offset="20403" path="%8"/>
+   <linked-el length="54" name="%7" offset="6320" path="%8"/>
+   <linked-el length="26" name="%7" offset="7980" path="%8"/>
+   <linked-el length="60" name="%7" offset="2472" path="%8"/>
+   <linked-el length="72" name="%7" offset="20009" path="%8"/>
+   <linked-el length="64" name="%7" offset="12966" path="%8"/>
+   <linked-el length="107" name="%7" offset="5927" path="%8"/>
+   <linked-el length="45" name="%7" offset="17191" path="%8"/>
+   <linked-el length="89" name="%7" offset="14756" path="%8"/>
+   <linked-el length="9" name="%7" offset="4515" path="%8"/>
+   <linked-el length="55" name="%7" offset="11935" path="%8"/>
+   <linked-el length="64" name="%7" offset="13596" path="%8"/>
+   <linked-el length="73" name="%7" offset="19612" path="%8"/>
+   <linked-el length="96" name="%7" offset="13208" path="%8"/>
+   <linked-el length="30" name="%7" offset="8217" path="%8"/>
+   <linked-el length="65" name="%7" offset="15766" path="%8"/>
+   <linked-el length="68" name="%7" offset="16406" path="%8"/>
+   <linked-el length="58" name="%7" offset="18580" path="%8"/>
+   <linked-el length="69" name="%7" offset="19218" path="%8"/>
+   <linked-el length="39" name="%7" offset="9744" path="%8"/>
+   <linked-el length="54" name="%7" offset="3342" path="%8"/>
+   <linked-el length="48" name="%7" offset="1805" path="%8"/>
+   <linked-el length="29" name="%7" offset="8457" path="%8"/>
+   <linked-el length="109" name="%7" offset="3973" path="%8"/>
+   <linked-el length="52" name="%7" offset="11397" path="%8"/>
+   <linked-el length="75" name="%7" offset="1278" path="%8"/>
+   <linked-el length="28" name="%7" offset="8694" path="%8"/>
+   <linked-el length="106" name="%7" offset="14452" path="%8"/>
+   <linked-el length="65" name="%7" offset="12402" path="%8"/>
+   <linked-el length="85" name="%7" offset="22130" path="%8"/>
+   <linked-el length="76" name="%9" offset="14538" path="%6"/>
+   <linked-el length="18" name="%9" offset="12510" path="%6"/>
+   <linked-el length="52" name="%9" offset="12448" path="%6"/>
+   <linked-el length="213" name="%10" offset="1835" path="%6"/>
+   <linked-el length="100" name="%10" offset="2315" path="%6"/>
+   <linked-el length="94" name="%10" offset="2630" path="%6"/>
+   <linked-el length="97" name="%10" offset="1729" path="%6"/>
+   <linked-el length="42" name="%1" offset="10635" path="%6"/>
+   <linked-el length="54" name="%1" offset="2252" path="%6"/>
+   <linked-el length="54" name="%1" offset="20780" path="%6"/>
+   <linked-el length="60" name="%1" offset="11465" path="%6"/>
+   <linked-el length="61" name="%1" offset="8611" path="%6"/>
+   <linked-el length="43" name="%1" offset="2785" path="%6"/>
+   <linked-el length="63" name="%1" offset="13850" path="%6"/>
+   <linked-el length="47" name="%1" offset="3005" path="%6"/>
+   <linked-el length="54" name="%1" offset="17943" path="%6"/>
+   <linked-el length="66" name="%1" offset="5139" path="%6"/>
+   <linked-el length="58" name="%1" offset="9327" path="%6"/>
+   <linked-el length="59" name="%1" offset="4272" path="%6"/>
+   <linked-el length="42" name="%1" offset="10256" path="%6"/>
+   <linked-el length="65" name="%1" offset="15440" path="%6"/>
+   <linked-el length="38" name="%11" offset="448" path="%8"/>
+   <linked-el length="34" name="%11" offset="449" path="%6"/>
+   <linked-el length="15" name="%12" offset="15019" path="%6"/>
+   <linked-el length="76" name="%12" offset="14538" path="%6"/>
+   <linked-el length="42" name="%12" offset="13037" path="%6"/>
+   <linked-el length="16" name="%12" offset="15181" path="%6"/>
+   <linked-el length="43" name="%12" offset="13319" path="%6"/>
+   <linked-el length="14" name="%12" offset="14760" path="%6"/>
+   <linked-el length="42" name="%12" offset="12754" path="%6"/>
+   <linked-el length="35" name="%13" offset="19516" path="%6"/>
+   <linked-el length="38" name="%13" offset="19219" path="%6"/>
+   <linked-el length="43" name="%13" offset="19939" path="%6"/>
+   <linked-el length="15" name="%13" offset="8482" path="%6"/>
+   <linked-el length="38" name="%13" offset="20242" path="%6"/>
+   <linked-el length="21" name="%13" offset="9839" path="%6"/>
+   <linked-el length="38" name="%13" offset="18927" path="%6"/>
+   <linked-el length="54" name="%14" offset="6320" path="%8"/>
+   <linked-el length="103" name="%14" offset="7022" path="%8"/>
+   <linked-el length="54" name="%14" offset="6381" path="%8"/>
+   <linked-el length="60" name="%14" offset="2472" path="%8"/>
+   <linked-el length="58" name="%14" offset="18152" path="%8"/>
+   <linked-el length="46" name="%14" offset="4585" path="%8"/>
+   <linked-el length="72" name="%14" offset="20009" path="%8"/>
+   <linked-el length="64" name="%14" offset="12966" path="%8"/>
+   <linked-el length="107" name="%14" offset="5927" path="%8"/>
+   <linked-el length="45" name="%14" offset="17191" path="%8"/>
+   <linked-el length="89" name="%14" offset="14756" path="%8"/>
+   <linked-el length="111" name="%14" offset="4325" path="%8"/>
+   <linked-el length="72" name="%14" offset="21600" path="%8"/>
+   <linked-el length="55" name="%14" offset="11935" path="%8"/>
+   <linked-el length="64" name="%14" offset="13596" path="%8"/>
+   <linked-el length="73" name="%14" offset="19612" path="%8"/>
+   <linked-el length="56" name="%14" offset="2136" path="%8"/>
+   <linked-el length="96" name="%14" offset="13208" path="%8"/>
+   <linked-el length="74" name="%14" offset="5718" path="%8"/>
+   <linked-el length="65" name="%14" offset="15766" path="%8"/>
+   <linked-el length="68" name="%14" offset="16406" path="%8"/>
+   <linked-el length="58" name="%14" offset="18580" path="%8"/>
+   <linked-el length="74" name="%14" offset="16082" path="%8"/>
+   <linked-el length="69" name="%14" offset="19218" path="%8"/>
+   <linked-el length="74" name="%14" offset="21203" path="%8"/>
+   <linked-el length="54" name="%14" offset="3342" path="%8"/>
+   <linked-el length="49" name="%14" offset="2764" path="%8"/>
+   <linked-el length="48" name="%14" offset="1805" path="%8"/>
+   <linked-el length="51" name="%14" offset="7371" path="%8"/>
+   <linked-el length="64" name="%14" offset="13768" path="%8"/>
+   <linked-el length="108" name="%14" offset="10438" path="%8"/>
+   <linked-el length="65" name="%14" offset="16711" path="%8"/>
+   <linked-el length="109" name="%14" offset="3973" path="%8"/>
+   <linked-el length="52" name="%14" offset="11397" path="%8"/>
+   <linked-el length="98" name="%14" offset="4803" path="%8"/>
+   <linked-el length="75" name="%14" offset="1278" path="%8"/>
+   <linked-el length="79" name="%14" offset="20798" path="%8"/>
+   <linked-el length="129" name="%14" offset="5308" path="%8"/>
+   <linked-el length="99" name="%14" offset="14266" path="%8"/>
+   <linked-el length="106" name="%14" offset="14452" path="%8"/>
+   <linked-el length="65" name="%14" offset="12402" path="%8"/>
+   <linked-el length="85" name="%14" offset="22130" path="%8"/>
+   <linked-el length="71" name="%14" offset="20403" path="%8"/>
+   <linked-el length="21" name="%15" offset="9299" path="%3"/>
+   <linked-el length="21" name="%16" offset="8910" path="%3"/>
+   <linked-el length="54" name="%17" offset="3342" path="%8"/>
+   <linked-el length="49" name="%17" offset="2764" path="%8"/>
+   <linked-el length="48" name="%17" offset="1805" path="%8"/>
+   <linked-el length="60" name="%17" offset="2472" path="%8"/>
+   <linked-el length="64" name="%17" offset="13768" path="%8"/>
+   <linked-el length="64" name="%17" offset="12966" path="%8"/>
+   <linked-el length="52" name="%17" offset="11397" path="%8"/>
+   <linked-el length="55" name="%17" offset="11935" path="%8"/>
+   <linked-el length="64" name="%17" offset="13596" path="%8"/>
+   <linked-el length="99" name="%17" offset="14266" path="%8"/>
+   <linked-el length="56" name="%17" offset="2136" path="%8"/>
+   <linked-el length="106" name="%17" offset="14452" path="%8"/>
+   <linked-el length="65" name="%17" offset="12402" path="%8"/>
+   <linked-el length="21" name="%18" offset="9299" path="%3"/>
+   <linked-el length="38" name="%19" offset="448" path="%8"/>
+   <linked-el length="34" name="%19" offset="449" path="%6"/>
+   <linked-el length="129" name="%20" offset="5308" path="%8"/>
+   <linked-el length="49" name="%20" offset="4456" path="%8"/>
+   <linked-el length="74" name="%20" offset="5718" path="%8"/>
+   <linked-el length="65" name="%20" offset="15766" path="%8"/>
+   <linked-el length="68" name="%20" offset="16406" path="%8"/>
+   <linked-el length="65" name="%20" offset="16711" path="%8"/>
+   <linked-el length="74" name="%20" offset="16082" path="%8"/>
+   <linked-el length="39" name="%21" offset="9744" path="%8"/>
+   <linked-el length="15" name="%21" offset="7759" path="%8"/>
+   <linked-el length="26" name="%21" offset="7980" path="%8"/>
+   <linked-el length="58" name="%21" offset="18152" path="%8"/>
+   <linked-el length="29" name="%21" offset="8457" path="%8"/>
+   <linked-el length="72" name="%21" offset="20009" path="%8"/>
+   <linked-el length="36" name="%21" offset="8932" path="%8"/>
+   <linked-el length="38" name="%21" offset="9700" path="%8"/>
+   <linked-el length="72" name="%21" offset="21600" path="%8"/>
+   <linked-el length="79" name="%21" offset="20798" path="%8"/>
+   <linked-el length="31" name="%21" offset="9180" path="%8"/>
+   <linked-el length="73" name="%21" offset="19612" path="%8"/>
+   <linked-el length="30" name="%21" offset="8217" path="%8"/>
+   <linked-el length="28" name="%21" offset="8694" path="%8"/>
+   <linked-el length="29" name="%21" offset="9431" path="%8"/>
+   <linked-el length="58" name="%21" offset="18580" path="%8"/>
+   <linked-el length="69" name="%21" offset="19218" path="%8"/>
+   <linked-el length="71" name="%21" offset="20403" path="%8"/>
+   <linked-el length="74" name="%21" offset="21203" path="%8"/>
+   <linked-el length="22" name="%22" offset="10923" path="%6"/>
+   <linked-el length="56" name="%22" offset="11085" path="%6"/>
+   <linked-el length="24" name="%22" offset="10163" path="%6"/>
+   <linked-el length="19" name="%22" offset="10547" path="%6"/>
+   <linked-el length="21" name="%22" offset="9839" path="%6"/>
+   <linked-el length="43" name="%22" offset="9104" path="%6"/>
+   <linked-el length="18" name="%22" offset="10000" path="%6"/>
+   <linked-el length="14" name="%23" offset="1547" path="%6"/>
+   <linked-el length="100" name="%23" offset="2315" path="%6"/>
+   <linked-el length="43" name="%23" offset="13319" path="%6"/>
+   <linked-el length="77" name="%23" offset="4755" path="%6"/>
+   <linked-el length="38" name="%23" offset="19219" path="%6"/>
+   <linked-el length="44" name="%23" offset="4114" path="%6"/>
+   <linked-el length="38" name="%23" offset="20242" path="%6"/>
+   <linked-el length="40" name="%23" offset="9621" path="%6"/>
+   <linked-el length="16" name="%23" offset="1294" path="%6"/>
+   <linked-el length="43" name="%23" offset="9104" path="%6"/>
+   <linked-el length="18" name="%23" offset="10000" path="%6"/>
+   <linked-el length="213" name="%23" offset="1835" path="%6"/>
+   <linked-el length="22" name="%23" offset="10923" path="%6"/>
+   <linked-el length="15" name="%23" offset="15019" path="%6"/>
+   <linked-el length="42" name="%23" offset="16038" path="%6"/>
+   <linked-el length="14" name="%23" offset="14760" path="%6"/>
+   <linked-el length="15" name="%23" offset="8482" path="%6"/>
+   <linked-el length="52" name="%23" offset="12448" path="%6"/>
+   <linked-el length="21" name="%23" offset="1083" path="%6"/>
+   <linked-el length="8" name="%23" offset="8507" path="%6"/>
+   <linked-el length="35" name="%23" offset="19516" path="%6"/>
+   <linked-el length="24" name="%23" offset="10163" path="%6"/>
+   <linked-el length="19" name="%23" offset="10547" path="%6"/>
+   <linked-el length="76" name="%23" offset="14538" path="%6"/>
+   <linked-el length="56" name="%23" offset="11085" path="%6"/>
+   <linked-el length="16" name="%23" offset="15181" path="%6"/>
+   <linked-el length="54" name="%23" offset="2252" path="%6"/>
+   <linked-el length="40" name="%23" offset="12364" path="%6"/>
+   <linked-el length="100" name="%23" offset="4935" path="%6"/>
+   <linked-el length="94" name="%23" offset="2630" path="%6"/>
+   <linked-el length="50" name="%23" offset="6089" path="%6"/>
+   <linked-el length="60" name="%23" offset="11465" path="%6"/>
+   <linked-el length="16" name="%23" offset="1224" path="%6"/>
+   <linked-el length="97" name="%23" offset="1729" path="%6"/>
+   <linked-el length="48" name="%23" offset="16704" path="%6"/>
+   <linked-el length="32" name="%23" offset="8411" path="%6"/>
+   <linked-el length="58" name="%23" offset="6364" path="%6"/>
+   <linked-el length="48" name="%23" offset="6620" path="%6"/>
+   <linked-el length="51" name="%23" offset="7129" path="%6"/>
+   <linked-el length="46" name="%23" offset="14297" path="%6"/>
+   <linked-el length="50" name="%23" offset="6872" path="%6"/>
+   <linked-el length="42" name="%23" offset="12754" path="%6"/>
+   <linked-el length="65" name="%23" offset="15440" path="%6"/>
+   <linked-el length="49" name="%23" offset="5610" path="%6"/>
+   <linked-el length="42" name="%23" offset="13037" path="%6"/>
+   <linked-el length="22" name="%23" offset="1132" path="%6"/>
+   <linked-el length="59" name="%23" offset="7395" path="%6"/>
+   <linked-el length="43" name="%23" offset="19939" path="%6"/>
+   <linked-el length="118" name="%23" offset="5214" path="%6"/>
+   <linked-el length="18" name="%23" offset="12510" path="%6"/>
+   <linked-el length="35" name="%23" offset="865" path="%6"/>
+   <linked-el length="43" name="%23" offset="2785" path="%6"/>
+   <linked-el length="40" name="%23" offset="17120" path="%6"/>
+   <linked-el length="34" name="%23" offset="1399" path="%6"/>
+   <linked-el length="38" name="%23" offset="8178" path="%6"/>
+   <linked-el length="21" name="%23" offset="9839" path="%6"/>
+   <linked-el length="38" name="%23" offset="18927" path="%6"/>
+   <linked-el length="45" name="%23" offset="12142" path="%6"/>
+   <linked-el length="48" name="%23" offset="16368" path="%6"/>
+   <linked-el length="54" name="%24" offset="6320" path="%8"/>
+   <linked-el length="54" name="%24" offset="6381" path="%8"/>
+   <linked-el length="60" name="%24" offset="2472" path="%8"/>
+   <linked-el length="58" name="%24" offset="18152" path="%8"/>
+   <linked-el length="72" name="%24" offset="20009" path="%8"/>
+   <linked-el length="64" name="%24" offset="12966" path="%8"/>
+   <linked-el length="111" name="%24" offset="4325" path="%8"/>
+   <linked-el length="72" name="%24" offset="21600" path="%8"/>
+   <linked-el length="55" name="%24" offset="11935" path="%8"/>
+   <linked-el length="64" name="%24" offset="13596" path="%8"/>
+   <linked-el length="73" name="%24" offset="19612" path="%8"/>
+   <linked-el length="56" name="%24" offset="2136" path="%8"/>
+   <linked-el length="74" name="%24" offset="5718" path="%8"/>
+   <linked-el length="65" name="%24" offset="15766" path="%8"/>
+   <linked-el length="68" name="%24" offset="16406" path="%8"/>
+   <linked-el length="58" name="%24" offset="18580" path="%8"/>
+   <linked-el length="74" name="%24" offset="16082" path="%8"/>
+   <linked-el length="69" name="%24" offset="19218" path="%8"/>
+   <linked-el length="74" name="%24" offset="21203" path="%8"/>
+   <linked-el length="54" name="%24" offset="3342" path="%8"/>
+   <linked-el length="49" name="%24" offset="2764" path="%8"/>
+   <linked-el length="48" name="%24" offset="1805" path="%8"/>
+   <linked-el length="51" name="%24" offset="7371" path="%8"/>
+   <linked-el length="64" name="%24" offset="13768" path="%8"/>
+   <linked-el length="65" name="%24" offset="16711" path="%8"/>
+   <linked-el length="109" name="%24" offset="3973" path="%8"/>
+   <linked-el length="52" name="%24" offset="11397" path="%8"/>
+   <linked-el length="79" name="%24" offset="20798" path="%8"/>
+   <linked-el length="129" name="%24" offset="5308" path="%8"/>
+   <linked-el length="99" name="%24" offset="14266" path="%8"/>
+   <linked-el length="106" name="%24" offset="14452" path="%8"/>
+   <linked-el length="65" name="%24" offset="12402" path="%8"/>
+   <linked-el length="71" name="%24" offset="20403" path="%8"/>
+   <linked-el length="62" name="%25" offset="1113" path="%8"/>
+   <linked-el length="42" name="%0" offset="10635" path="%6"/>
+   <linked-el length="54" name="%0" offset="2252" path="%6"/>
+   <linked-el length="54" name="%0" offset="20780" path="%6"/>
+   <linked-el length="60" name="%0" offset="11465" path="%6"/>
+   <linked-el length="61" name="%0" offset="8611" path="%6"/>
+   <linked-el length="43" name="%0" offset="2785" path="%6"/>
+   <linked-el length="63" name="%0" offset="13850" path="%6"/>
+   <linked-el length="47" name="%0" offset="3005" path="%6"/>
+   <linked-el length="54" name="%0" offset="17943" path="%6"/>
+   <linked-el length="66" name="%0" offset="5139" path="%6"/>
+   <linked-el length="58" name="%0" offset="9327" path="%6"/>
+   <linked-el length="59" name="%0" offset="4272" path="%6"/>
+   <linked-el length="42" name="%0" offset="10256" path="%6"/>
+   <linked-el length="65" name="%0" offset="15440" path="%6"/>
+   <linked-el length="40" name="%26" offset="12364" path="%6"/>
+   <linked-el length="100" name="%26" offset="4935" path="%6"/>
+   <linked-el length="43" name="%26" offset="13319" path="%6"/>
+   <linked-el length="50" name="%26" offset="6089" path="%6"/>
+   <linked-el length="48" name="%26" offset="16704" path="%6"/>
+   <linked-el length="32" name="%26" offset="8411" path="%6"/>
+   <linked-el length="58" name="%26" offset="6364" path="%6"/>
+   <linked-el length="48" name="%26" offset="6620" path="%6"/>
+   <linked-el length="51" name="%26" offset="7129" path="%6"/>
+   <linked-el length="46" name="%26" offset="14297" path="%6"/>
+   <linked-el length="50" name="%26" offset="6872" path="%6"/>
+   <linked-el length="77" name="%26" offset="4755" path="%6"/>
+   <linked-el length="38" name="%26" offset="19219" path="%6"/>
+   <linked-el length="44" name="%26" offset="4114" path="%6"/>
+   <linked-el length="42" name="%26" offset="12754" path="%6"/>
+   <linked-el length="38" name="%26" offset="20242" path="%6"/>
+   <linked-el length="40" name="%26" offset="9621" path="%6"/>
+   <linked-el length="43" name="%26" offset="9104" path="%6"/>
+   <linked-el length="49" name="%26" offset="5610" path="%6"/>
+   <linked-el length="42" name="%26" offset="13037" path="%6"/>
+   <linked-el length="42" name="%26" offset="16038" path="%6"/>
+   <linked-el length="59" name="%26" offset="7395" path="%6"/>
+   <linked-el length="43" name="%26" offset="19939" path="%6"/>
+   <linked-el length="118" name="%26" offset="5214" path="%6"/>
+   <linked-el length="35" name="%26" offset="865" path="%6"/>
+   <linked-el length="40" name="%26" offset="17120" path="%6"/>
+   <linked-el length="35" name="%26" offset="19516" path="%6"/>
+   <linked-el length="38" name="%26" offset="8178" path="%6"/>
+   <linked-el length="38" name="%26" offset="18927" path="%6"/>
+   <linked-el length="45" name="%26" offset="12142" path="%6"/>
+   <linked-el length="48" name="%26" offset="16368" path="%6"/>
+   <linked-el length="58" name="%27" offset="6364" path="%6"/>
+   <linked-el length="48" name="%27" offset="6620" path="%6"/>
+   <linked-el length="34" name="%27" offset="1399" path="%6"/>
+   <linked-el length="51" name="%27" offset="7129" path="%6"/>
+   <linked-el length="50" name="%27" offset="6872" path="%6"/>
+   <linked-el length="77" name="%27" offset="4755" path="%6"/>
+   <linked-el length="59" name="%27" offset="7395" path="%6"/>
   </el>
  </validation>
  <aliases>
-  <alias path="/ejb/pom.xml" value="%1"/>
-  <alias path="version.ejb" value="%4"/>
-  <alias path="project" value="%2"/>
-  <alias path="project.artifactId" value="%3"/>
-  <alias path="version" value="%0"/>
-  <alias path="version.ejb.plugin" value="%5"/>
+  <alias
+   path="/web/src/main/webapp/paginas/contabilidad/facturacion.xhtml" value="%6"/>
+  <alias path="version.ejb" value="%2"/>
+  <alias path="project" value="%4"/>
+  <alias
+   path="/ejb/src/main/java/ec/mileniumtech/educafacil/modelo/persistencia/entity/Factura.java" value="%5"/>
+  <alias path="backingEmpresa" value="%7"/>
+  <alias
+   path="/ejb/src/main/java/ec/mileniumtech/educafacil/modelo/persistencia/entity/Sriformapago.java" value="%9"/>
+  <alias
+   path="/ejb/src/main/java/ec/mileniumtech/educafacil/modelo/persistencia/entity/DocumentoElectronico.java" value="%10"/>
+  <alias
+   path="/web/src/main/webapp/paginas/administracion/configuracionEmpresa.xhtml" value="%8"/>
+  <alias path="backingFacturacion" value="%1"/>
+  <alias path="backingLogin" value="%11"/>
+  <alias
+   path="/ejb/src/main/java/ec/mileniumtech/educafacil/modelo/persistencia/entity/FormaPagoFactura.java" value="%12"/>
+  <alias
+   path="/ejb/src/main/java/ec/mileniumtech/educafacil/modelo/persistencia/entity/CatalogoItem.java" value="%13"/>
+  <alias
+   path="/web/src/main/java/ec/mileniumtech/educafacil/backing/administracion/BackingEmpresa.java" value="%14"/>
+  <alias path="version.ejb.plugin" value="%15"/>
+  <alias path="project.artifactId" value="%16"/>
+  <alias
+   path="/ejb/src/main/java/ec/mileniumtech/educafacil/modelo/persistencia/entity/EmpresaMatriz.java" value="%17"/>
+  <alias path="version" value="%18"/>
+  <alias
+   path="/web/src/main/java/ec/mileniumtech/educafacil/backing/usuarios/BackingLogin.java" value="%19"/>
+  <alias
+   path="/ejb/src/main/java/ec/mileniumtech/educafacil/modelo/persistencia/entity/Establecimiento.java" value="%20"/>
+  <alias
+   path="/ejb/src/main/java/ec/mileniumtech/educafacil/modelo/persistencia/entity/PuntoEmision.java" value="%21"/>
+  <alias
+   path="/ejb/src/main/java/ec/mileniumtech/educafacil/modelo/persistencia/entity/DetalleFactura.java" value="%22"/>
+  <alias path="beanFacturacion" value="%23"/>
+  <alias path="/ejb/pom.xml" value="%3"/>
+  <alias
+   path="/web/src/main/java/ec/mileniumtech/educafacil/bean/administracion/BeanEmpresa.java" value="%24"/>
+  <alias path="botones" value="%25"/>
+  <alias
+   path="/web/src/main/java/ec/mileniumtech/educafacil/backing/contabilidad/BackingFacturacion.java" value="%0"/>
+  <alias
+   path="/web/src/main/java/ec/mileniumtech/educafacil/bean/contabilidad/BeanFacturacion.java" value="%26"/>
+  <alias
+   path="/ejb/src/main/java/ec/mileniumtech/educafacil/modelo/persistencia/entity/Cliente.java" value="%27"/>
  </aliases>
  <includes/>
  <uris/>
