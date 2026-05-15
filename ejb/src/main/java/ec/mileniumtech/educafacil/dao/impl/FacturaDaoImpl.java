@@ -72,6 +72,24 @@ public class FacturaDaoImpl extends GenericoDaoImpl<Factura, Integer> {
             throw new SystemException("Error al listar facturas", "FACTURA-LIST-ERR", e);
         }
     }
+    
+    /**
+     * Lista todas las facturas cargando el cliente y documento electronico para la UI del día.
+     * @return Lista de facturas
+     */
+    public java.util.List<Factura> listarTodasLasFacturasDelDia() {
+        try {
+            TypedQuery<Factura> query = getEntityManager().createQuery(
+                "SELECT f FROM Factura f " +
+                "JOIN FETCH f.cliente " +
+                "LEFT JOIN FETCH f.documentoElectronico " +
+                "WHERE f.fechaEmision=CURRENT_DATE " +
+                "ORDER BY f.id DESC", Factura.class);
+            return query.getResultList();
+        } catch (PersistenceException e) {
+            throw new SystemException("Error al listar facturas", "FACTURA-LIST-ERR", e);
+        }
+    }
 
 
     /**
@@ -82,12 +100,12 @@ public class FacturaDaoImpl extends GenericoDaoImpl<Factura, Integer> {
      * @param numeroAutorizacion Clave de acceso o número de autorización.
      * @return Lista de facturas que coinciden con los criterios.
      */
-    public java.util.List<Factura> buscarFacturasPorFiltros(java.time.LocalDate fechaInicio, java.time.LocalDate fechaFin, String identificacion, String numeroAutorizacion) {
+    public java.util.List<Factura> buscarFacturasPorFiltros(java.time.LocalDate fechaInicio, java.time.LocalDate fechaFin, String identificacion, String numeroAutorizacion,String estadoAutorizacion) {
         try {
             StringBuilder jpql = new StringBuilder("SELECT f FROM Factura f ");
             jpql.append("JOIN FETCH f.cliente ");
             jpql.append("JOIN FETCH f.documentoElectronico ");
-            jpql.append("WHERE f.documentoElectronico.estado = 'AUTORIZADO' ");
+            jpql.append("WHERE f.documentoElectronico.estado = :estadoAutorizacion ");
 
             if (fechaInicio != null) {
                 jpql.append("AND f.fechaEmision >= :fechaInicio ");
@@ -118,6 +136,10 @@ public class FacturaDaoImpl extends GenericoDaoImpl<Factura, Integer> {
             if (numeroAutorizacion != null && !numeroAutorizacion.trim().isEmpty()) {
                 query.setParameter("numeroAutorizacion", numeroAutorizacion);
             }
+            if (estadoAutorizacion != null && !estadoAutorizacion.trim().isEmpty()){
+            	query.setParameter("estadoAutorizacion", estadoAutorizacion);            	
+            }
+            
 
             return query.getResultList();
         } catch (PersistenceException e) {

@@ -29,6 +29,7 @@ import ec.mileniumtech.educafacil.modelo.sri.Factura.TotalImpuesto;
 import ec.mileniumtech.educafacil.service.sri.autorizacion.Autorizacion;
 import ec.mileniumtech.educafacil.service.sri.autorizacion.RespuestaComprobante;
 import ec.mileniumtech.educafacil.service.sri.recepcion.RespuestaSolicitud;
+import ec.mileniumtech.educafacil.utilitarios.ValidacionUtil;
 import ec.mileniumtech.educafacil.utilitarios.encriptacion.CriptografiaUtil;
 import ec.mileniumtech.educafacil.utilitarios.sri.ClaveAccesoGenerator;
 import jakarta.ejb.EJB;
@@ -112,10 +113,10 @@ public class IntegracionSriService {
         infoTrib.setTipoEmision(empresa.getEmpmTipoEmision().toString());
         String razonSocial = (empresa.getEmpmRazonSocial() != null && !empresa.getEmpmRazonSocial().isEmpty()) ? empresa.getEmpmRazonSocial() : empresa.getEmpmNombreComercial();
         // Limpiar caracteres especiales que suelen dar problemas con la firma
-        razonSocial = razonSocial.replaceAll("[^\\x20-\\x7e]", ""); 
+//        razonSocial = razonSocial.replaceAll("[^\\x20-\\x7e]", ""); 
         infoTrib.setRazonSocial(razonSocial);
         
-        String nombreComercial = empresa.getEmpmNombreComercial().replaceAll("[^\\x20-\\x7e]", "");
+        String nombreComercial = empresa.getEmpmNombreComercial();
         infoTrib.setNombreComercial(nombreComercial);
         infoTrib.setRuc(empresa.getEmpmRuc());
         infoTrib.setClaveAcceso(claveAcceso);
@@ -123,14 +124,14 @@ public class IntegracionSriService {
         infoTrib.setEstab(estab);
         infoTrib.setPtoEmi(ptoEmi);
         infoTrib.setSecuencial(secuencial);
-        String dirMatriz = empresa.getEmpmDireccion().replaceAll("[^\\x20-\\x7e]", "");
+        String dirMatriz = empresa.getEmpmDireccion();
         infoTrib.setDirMatriz(dirMatriz);
         facturaSri.setInfoTributaria(infoTrib);
 
         // Info Factura
         InfoFactura infoFact = new InfoFactura();
         infoFact.setFechaEmision(fechaEmisionStr);
-        String dirEst = facturaEntity.getPuntoEmision().getEstablecimientos().getEstaUbicacion().replaceAll("[^\\x20-\\x7e]", "");
+        String dirEst = facturaEntity.getPuntoEmision().getEstablecimientos().getEstaUbicacion();
         infoFact.setDirEstablecimiento(dirEst);
         infoFact.setObligadoContabilidad(empresa.isEmpmObligadoContabilidad() ? "SI" : "NO");
         
@@ -158,7 +159,7 @@ public class IntegracionSriService {
             for (DetalleFactura df : facturaEntity.getDetalles()) {
                 Detalle det = new Detalle();
                 det.setCodigoPrincipal(df.getItem() != null ? df.getItem().getId().toString() : "SERV");
-                String descripcion = df.getDescripcion().replaceAll("[^\\x20-\\x7e]", "");
+                String descripcion = df.getDescripcion();
                 det.setDescripcion(descripcion);
                 BigDecimal cantidadBd = BigDecimal.valueOf(df.getCantidad());
                 det.setCantidad(cantidadBd.setScale(2, RoundingMode.HALF_UP));
@@ -254,10 +255,20 @@ public class IntegracionSriService {
         byte[] xmlFirmado = xadesSignatureService.firmarDocumento(xmlString.getBytes("UTF-8"), pkcs12, password);
         docElec.setXmlFirmado(xmlFirmado);
         
-        // 5. Envío al SRI
+        // 5. Envío al SRI con validación de conexión previa
         boolean esProduccion = empresa.getEmpmAmbiente() == 2;
-        RespuestaSolicitud respuestaEnvio = sriWebServiceService.enviarComprobante(xmlFirmado, esProduccion,configuraciones);
+        String urlWsdl = esProduccion ? configuraciones.getConfWsRecepcionProduccion() : configuraciones.getConf_wsRecepcionPruebas();
         
+        if (!ValidacionUtil.verificarConexion(urlWsdl, 5000)) {
+            throw new Exception("No se pudo establecer comunicación con los servidores del SRI. Verifique su conexión a internet.");
+        }
+
+        RespuestaSolicitud respuestaEnvio;
+        try {
+            respuestaEnvio = sriWebServiceService.enviarComprobante(xmlFirmado, esProduccion, configuraciones);
+        } catch (Exception e) {
+            throw new Exception("Error al comunicar con el SRI: " + e.getMessage());
+        }        
         if ("RECIBIDA".equals(respuestaEnvio.getEstado())) {
             Thread.sleep(3000);
             RespuestaComprobante respuestaAut = sriWebServiceService.autorizarComprobante(claveAcceso, esProduccion,configuraciones);

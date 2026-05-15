@@ -53,6 +53,7 @@ public class RideGeneratorService {
         parametros.put("AMBIENTE", factura.getInfoTributaria().getAmbiente().equals("1") ? "PRUEBAS" : "PRODUCCIÓN");
         parametros.put("EMISION", "NORMAL");
         parametros.put("LOGO", logoStream);
+        parametros.put("NOMBRE_COMERCIAL",factura.getInfoTributaria().getNombreComercial());
         
         // Datos del comprador
         parametros.put("CLIENTE", factura.getInfoFactura().getRazonSocialComprador());

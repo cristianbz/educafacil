@@ -20,7 +20,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name = "establecimiento")
+@Table(name = "establecimiento", schema = "cap")
 public class Establecimiento implements Serializable{
 	/**
 	 * 

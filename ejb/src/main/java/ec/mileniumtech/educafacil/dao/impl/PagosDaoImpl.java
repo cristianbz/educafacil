@@ -77,7 +77,7 @@ public class PagosDaoImpl extends GenericoDaoImpl<Pagos, Long>{
 			query.setParameter("codigoMatricula", codigoMatricula);					
 			return query.getResultList();
 		}catch(NoResultException e) {
-			return null;
+			return new ArrayList<>();
 		}catch(Exception e) {
 			throw new SystemException("Error al cargar  lista detalle pagos por matricula", "DETPAGO-LIST-ERR", e);
 		}

@@ -432,13 +432,14 @@ public class BackingFacturacion implements Serializable {
             Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage());
         }
     }
+    
 
     /**
      * Carga la lista de facturas desde la base de datos.
      */
     public void cargarFacturas() {
         try {
-            getBeanFacturacion().setListaFacturas(facturaDao.listarTodasLasFacturas());
+            getBeanFacturacion().setListaFacturas(facturaDao.listarTodasLasFacturasDelDia());
         } catch (Exception e) {
             log.error("Error al cargar facturas", e);
             Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "No se pudieron cargar las facturas.");
