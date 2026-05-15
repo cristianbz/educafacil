@@ -22,7 +22,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name = "puntoemision")
+@Table(name = "puntoemision", schema = "cap")
 public class PuntoEmision implements Serializable {
 
     private static final long serialVersionUID = 1L;

@@ -49,7 +49,8 @@ public class BackingReporteFacturas implements Serializable {
                 beanReporteFacturas.getFechaInicio(),
                 beanReporteFacturas.getFechaFin(),
                 beanReporteFacturas.getIdentificacion(),
-                beanReporteFacturas.getNumeroAutorizacion()
+                beanReporteFacturas.getNumeroAutorizacion(),
+                beanReporteFacturas.getEstadoAutorizacion()
             ));
             
             if (beanReporteFacturas.getListaFacturas().isEmpty()) {
@@ -108,6 +109,8 @@ public class BackingReporteFacturas implements Serializable {
     public void anularFactura(Factura factura) {
         try {
             // Implementación de anulación (ej. cambiar estado en DocumentoElectronico o Factura)
+        	factura.getDocumentoElectronico().setEstado("ANULADA");
+        	facturaServicio.actualizar(factura);
             Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Info", "Proceso de anulación iniciado para: " + factura.getNumero());
         } catch (Exception e) {
             log.error("Error al anular factura", e);

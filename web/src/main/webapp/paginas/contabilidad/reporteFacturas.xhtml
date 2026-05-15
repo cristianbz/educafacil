@@ -115,10 +115,16 @@
                     <div class="p-col-12 p-md-3 p-field">
                         <p:outputLabel value="Comprobante:" for="comprobante" style="font-weight: bold;"/>
                         <p:selectOneMenu id="comprobante" value="#{beanReporteFacturas.comprobanteTipo}">
-                            <f:selectItem itemLabel="Factura" itemValue="Factura" />
+                            <f:selectItem itemLabel="Factura" itemValue="Factura" />                            
                         </p:selectOneMenu>
                     </div>
-                    
+                    <div class="p-col-12 p-md-3 p-field">
+                        <p:outputLabel value="Estado comprobante:" for="estado_comprobante" style="font-weight: bold;"/>
+                        <p:selectOneMenu id="estado_comprobante" value="#{beanReporteFacturas.estadoAutorizacion}">
+                            <f:selectItem itemLabel="Autorizado" itemValue="AUTORIZADO" /> 
+                            <f:selectItem itemLabel="Anulado" itemValue="ANULADA" />                                                   
+                        </p:selectOneMenu>
+                    </div>
                     <div class="p-col-12 p-md-9 p-field">
                          <p:outputLabel value="Clave de acceso/ Nro. Autorización:" for="numAuth" style="font-weight: bold;"/>
                          <p:inputText id="numAuth" value="#{beanReporteFacturas.numeroAutorizacion}" placeholder="Ingrese el número de autorización" />
@@ -127,6 +133,7 @@
                     <div class="p-col-12 p-md-3 p-field p-d-flex p-ai-end p-jc-end">
                         <p:commandButton value="Buscar" icon="pi pi-search" 
                                          actionListener="#{backingReporteFacturas.buscarFacturas()}" 
+                                         process="estado_comprobante @this"
                                          update="tblFacturas growl" 
                                          style="background-color: #003366; border-color: #003366; width: 150px;"/>
                     </div>
@@ -183,8 +190,10 @@
                             <p:fileDownload value="#{backingReporteFacturas.descargarRide(fac)}" />
                         </p:menuitem>
                         <p:menuitem value="Anular" actionListener="#{backingReporteFacturas.anularFactura(fac)}" 
+                        			disabled="#{fac.documentoElectronico.estado == 'ANULADA'}"
                                     update=":formReporte:growl" icon="pi pi-times-circle" />
                         <p:menuitem value="Envío por correo" actionListener="#{backingReporteFacturas.enviarCorreo(fac)}" 
+                                    disabled="#{fac.documentoElectronico.estado == 'ANULADA'}"
                                     update=":formReporte:growl" icon="pi pi-envelope" />
                     </p:menuButton>
                 </p:column>

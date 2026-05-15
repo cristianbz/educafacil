@@ -4,6 +4,7 @@
 package ec.mileniumtech.educafacil.bean.administracion;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.EmpresaMatriz;
@@ -53,7 +54,10 @@ public class BeanEmpresa implements Serializable {
     @PostConstruct
     public void init() {
         setEmpresa(new EmpresaMatriz());
+        setListaEmpresas(new ArrayList<>());
         setEstablecimientoSelect(new Establecimiento());
+        setListaEstablecimientos(new ArrayList<>());
         setPuntoEmisionSelect(new PuntoEmision());
+        setListaPuntosEmision(new ArrayList<>());
     }
 }

@@ -1,5 +1,7 @@
 package ec.mileniumtech.educafacil.utilitarios;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
 /**
  * Utilidad para validaciones comunes (Cédula, RUC, etc.)
  */
@@ -54,4 +56,36 @@ public class ValidacionUtil {
 
         return digitoValidado == verificador;
     }
+    /**
+     * Verifica si una URL es alcanzable (útil para comprobar conexión al SRI).
+     * @param urlStr La URL a verificar.
+     * @param timeoutMs Tiempo de espera en milisegundos.
+     * @return true si la conexión fue exitosa (código 200), false en caso contrario.
+     */
+    public static boolean verificarConexion(String urlStr, int timeoutMs) {
+        try {
+            URL url = new URL(urlStr);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setConnectTimeout(timeoutMs);
+            connection.setReadTimeout(timeoutMs);
+            connection.setRequestMethod("GET");
+            // Agregamos un User-Agent para que el SRI no bloquee la petición por parecer un bot básico
+            connection.setRequestProperty("User-Agent", "Mozilla/5.0");
+            
+            // Intentamos obtener el código de respuesta. 
+            // Si llegamos aquí sin excepciones, significa que el servidor RESPONDIÓ, 
+            // por lo tanto hay internet y el servidor está vivo.
+            int responseCode = connection.getResponseCode();
+            return true; 
+        } catch (java.net.SocketTimeoutException e) {
+            // El servidor existe pero está muy lento o saturado
+            return false;
+        } catch (java.io.IOException e) {
+            // Error de red (No hay internet, DNS falló, conexión rechazada)
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 }

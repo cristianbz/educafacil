@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.PrivateKey;
+import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 import org.primefaces.event.FileUploadEvent;
@@ -81,7 +82,7 @@ public class BackingEmpresa implements Serializable{
         if (getBeanEmpresa().getEstablecimientoSelect() != null && getBeanEmpresa().getEstablecimientoSelect().getEstaId() != null) {
             getBeanEmpresa().setListaPuntosEmision(administracionService.listarPuntosEmisionPorEstablecimiento(getBeanEmpresa().getEstablecimientoSelect().getEstaId()));
         } else {
-            getBeanEmpresa().setListaPuntosEmision(null);
+            getBeanEmpresa().setListaPuntosEmision(new ArrayList<>());
         }
     }
 
@@ -89,9 +90,14 @@ public class BackingEmpresa implements Serializable{
      * Prepara un nuevo establecimiento para ser creado.
      */
     public void nuevoEstablecimiento() {
-        getBeanEmpresa().setEstablecimientoSelect(new Establecimiento());
-        getBeanEmpresa().getEstablecimientoSelect().setEmpresaMatriz(getBeanEmpresa().getEmpresa());
-        getBeanEmpresa().getEstablecimientoSelect().setEstaEstado(true);
+    	if(getBeanEmpresa().getEmpresa().getEmpmId()!=null) {
+    		getBeanEmpresa().setEstablecimientoSelect(new Establecimiento());
+    		getBeanEmpresa().getEstablecimientoSelect().setEmpresaMatriz(getBeanEmpresa().getEmpresa());
+    		getBeanEmpresa().getEstablecimientoSelect().setEstaEstado(true);
+    		Mensaje.verDialogo("wvEstablecimiento");
+    	}else {
+    		Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.grabarEmpresa"));
+    	}
     }
     /**
      * Edita la informacion del establecimiento seleccionado
@@ -105,9 +111,10 @@ public class BackingEmpresa implements Serializable{
      */
     public void guardarEstablecimiento() {
         try {
-            administracionService.guardarEstablecimiento(getBeanEmpresa().getEstablecimientoSelect());
-            cargarEstablecimientos();
-            Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.grabar"));
+        	getBeanEmpresa().getEstablecimientoSelect().setEmpresaMatriz(getBeanEmpresa().getEmpresa());
+        	administracionService.guardarEstablecimiento(getBeanEmpresa().getEstablecimientoSelect());
+        	cargarEstablecimientos();
+        	Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.grabar"));
         } catch (Exception e) {
             log.error("Error al guardar establecimiento", e);
             Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), e.getMessage());
@@ -141,6 +148,8 @@ public class BackingEmpresa implements Serializable{
      */
     public void guardarPuntoEmision() {
         try {
+        	if(getBeanEmpresa().getEstablecimientoSelect().getEstaId()==null)
+        		administracionService.guardarEstablecimiento(getBeanEmpresa().getEstablecimientoSelect());
             administracionService.guardarPuntoEmision(getBeanEmpresa().getPuntoEmisionSelect());
             onEstablecimientoChange();
             Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.grabar"));

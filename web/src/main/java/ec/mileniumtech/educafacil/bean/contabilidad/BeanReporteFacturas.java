@@ -28,6 +28,7 @@ public class BeanReporteFacturas implements Serializable {
     private String identificacion;
     private String comprobanteTipo; // "Factura" por defecto en la imagen
     private String numeroAutorizacion;
+    private String estadoAutorizacion;
     
     private List<Factura> listaFacturas;
     

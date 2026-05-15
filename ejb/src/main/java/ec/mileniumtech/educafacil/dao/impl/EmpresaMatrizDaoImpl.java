@@ -1,5 +1,6 @@
 package ec.mileniumtech.educafacil.dao.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
@@ -37,7 +38,7 @@ public class EmpresaMatrizDaoImpl extends GenericoDaoImpl<EmpresaMatriz, Long>{
 			Query query=getEntityManager().createNamedQuery(EmpresaMatriz.EMPRESAMATRIZ_ACTIVAS);
 			return query.getResultList();
 		}catch(NoResultException e) {
-			return null;
+			return new ArrayList<>();
 		}catch(Exception e) {
 			throw new SystemException("Error al listar empresa matriz", "EMPMATRIZ-LIST-ERR", e);
 		}
@@ -50,7 +51,7 @@ public class EmpresaMatrizDaoImpl extends GenericoDaoImpl<EmpresaMatriz, Long>{
 	 */
 	public void agregarEmpresa(EmpresaMatriz empresa)  {
 		try{
-			if (empresa.getEmpmId()==0)
+			if (empresa.getEmpmId()==null)
 				getEntityManager().persist(empresa);
 			else
 				getEntityManager().merge(empresa);

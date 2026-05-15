@@ -77,7 +77,7 @@
                                         <p:ajax listener="#{backingEmpresa.onEstablecimientoChange()}" update="pnlPuntosDetails" />
                                     </p:selectOneMenu>
                                     <p:commandButton icon="pi pi-plus" actionListener="#{backingEmpresa.nuevoEstablecimiento()}" 
-                                                     update=":formEstablecimiento" oncomplete="PF('wvEstablecimiento').show()" 
+                                                     update=":formEstablecimiento growl"  
                                                      process="@this" styleClass="ui-button-success" />
                                 </div>
                             </div>
@@ -240,76 +240,92 @@
             </h:form>
         </p:dialog>
 
-        <p:dialog id="dlgPunto" header="Datos de Punto de Emisión" widgetVar="wvPunto" 
-                  modal="true" responsive="true" width="600" fitViewport="true" closeOnEscape="true" draggable="false" resizable="false" appendTo="@(body)">
+         <p:dialog id="dlgPunto" header="Datos de Punto de Emisión" widgetVar="wvPunto" 
+                  modal="true" responsive="true" width="600" fitViewport="true"
+                  appendTo="@(body)" closeOnEscape="true" draggable="false" resizable="false">
             <h:form id="formPunto">
-                    <div class="grid">
-                        <div class="col-12 md:col-6">
-                            <div class="field mb-3">
-                                <p:outputLabel for="pueCodigo" value="Código (3 dígitos):" />
-                                <p:inputText id="pueCodigo" value="#{backingEmpresa.beanEmpresa.puntoEmisionSelect.codigo}" maxlength="3" required="true" />
+                <p:messages id="msgsPunto" closable="true" showDetail="true">
+                    <p:autoUpdate />
+                </p:messages>
+
+                <p:scrollPanel mode="native" style="max-height: 70vh; border:none;">
+                    <p:outputPanel id="pnlPunto" styleClass="ui-fluid" style="padding: 1rem;">
+                        <div class="grid">
+                            <div class="col-12 md:col-6">
+                                <div class="field mb-3">
+                                    <p:outputLabel for="pueCodigo" value="Código (3 dígitos):" styleClass="font-bold mb-1 block" />
+                                    <p:inputText id="pueCodigo" value="#{backingEmpresa.beanEmpresa.puntoEmisionSelect.codigo}" maxlength="3" required="true" />
+                                </div>
+                            </div>
+                            <div class="col-12 md:col-6">
+                                <div class="field mb-3">
+                                    <p:outputLabel for="pueEstado" value="Estado:" styleClass="font-bold mb-1 block" />
+                                    <p:selectBooleanButton id="pueEstado" value="#{backingEmpresa.beanEmpresa.puntoEmisionSelect.estado}" onLabel="Activo" offLabel="Inactivo" style="width: 100%" />
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <p:divider align="left" styleClass="mt-4 mb-3">
+                                    <div class="inline-flex align-items-center">
+                                        <i class="pi pi-list mr-2"></i>
+                                        <b>Secuenciales Iniciales</b>
+                                    </div>
+                                </p:divider>
+                            </div>
+                            
+                            <div class="col-12 md:col-6">
+                                <div class="field mb-3">
+                                    <p:outputLabel value="Factura:" styleClass="mb-1 block" />
+                                    <p:inputNumber value="#{backingEmpresa.beanEmpresa.puntoEmisionSelect.secuencialFactura}" decimalPlaces="0" />
+                                </div>
+                            </div>
+                            <div class="col-12 md:col-6">
+                                <div class="field mb-3">
+                                    <p:outputLabel value="Nota Crédito:" styleClass="mb-1 block" />
+                                    <p:inputNumber value="#{backingEmpresa.beanEmpresa.puntoEmisionSelect.secuencialNotaCredito}" decimalPlaces="0" />
+                                </div>
+                            </div>
+                            <div class="col-12 md:col-6">
+                                <div class="field mb-3">
+                                    <p:outputLabel value="Nota Débito:" styleClass="mb-1 block" />
+                                    <p:inputNumber value="#{backingEmpresa.beanEmpresa.puntoEmisionSelect.secuencialNotaDebito}" decimalPlaces="0" />
+                                </div>
+                            </div>
+                            <div class="col-12 md:col-6">
+                                <div class="field mb-3">
+                                    <p:outputLabel value="Retención:" styleClass="mb-1 block" />
+                                    <p:inputNumber value="#{backingEmpresa.beanEmpresa.puntoEmisionSelect.secuencialRetencion}" decimalPlaces="0" />
+                                </div>
+                            </div>
+                            <div class="col-12 md:col-6">
+                                <div class="field mb-3">
+                                    <p:outputLabel value="Liq. Compra:" styleClass="mb-1 block" />
+                                    <p:inputNumber value="#{backingEmpresa.beanEmpresa.puntoEmisionSelect.secuencialLiquidacionCompra}" decimalPlaces="0" />
+                                </div>
+                            </div>
+                            <div class="col-12 md:col-6">
+                                <div class="field mb-3">
+                                    <p:outputLabel value="Guía Remisión:" styleClass="mb-1 block" />
+                                    <p:inputNumber value="#{backingEmpresa.beanEmpresa.puntoEmisionSelect.secuencialGuiaRemision}" decimalPlaces="0" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="field mb-3">
+                                    <p:outputLabel value="Información Adicional:" styleClass="mb-1 block" />
+                                    <p:inputText value="#{backingEmpresa.beanEmpresa.puntoEmisionSelect.informacionAdicional}" />
+                                </div>
                             </div>
                         </div>
-                        <div class="col-12 md:col-6">
-                            <div class="field mb-3">
-                                <p:outputLabel for="pueEstado" value="Estado:" />
-                                <p:selectBooleanButton id="pueEstado" value="#{backingEmpresa.beanEmpresa.puntoEmisionSelect.estado}" onLabel="Activo" offLabel="Inactivo" />
-                            </div>
-                        </div>
-                        
-                        <div class="col-12">
-                            <h:outputText value="Secuenciales Iniciales" styleClass="font-bold block mb-2" />
-                        </div>
-                        
-                        <div class="col-12 md:col-6">
-                            <div class="field mb-3">
-                                <p:outputLabel value="Factura:" />
-                                <p:inputNumber value="#{backingEmpresa.beanEmpresa.puntoEmisionSelect.secuencialFactura}" decimalPlaces="0" />
-                            </div>
-                        </div>
-                        <div class="col-12 md:col-6">
-                            <div class="field mb-3">
-                                <p:outputLabel value="Nota Crédito:" />
-                                <p:inputNumber value="#{backingEmpresa.beanEmpresa.puntoEmisionSelect.secuencialNotaCredito}" decimalPlaces="0" />
-                            </div>
-                        </div>
-                        <div class="col-12 md:col-6">
-                            <div class="field mb-3">
-                                <p:outputLabel value="Nota Débito:" />
-                                <p:inputNumber value="#{backingEmpresa.beanEmpresa.puntoEmisionSelect.secuencialNotaDebito}" decimalPlaces="0" />
-                            </div>
-                        </div>
-                        <div class="col-12 md:col-6">
-                            <div class="field mb-3">
-                                <p:outputLabel value="Retención:" />
-                                <p:inputNumber value="#{backingEmpresa.beanEmpresa.puntoEmisionSelect.secuencialRetencion}" decimalPlaces="0" />
-                            </div>
-                        </div>
-                        <div class="col-12 md:col-6">
-                            <div class="field mb-3">
-                                <p:outputLabel value="Liq. Compra:" />
-                                <p:inputNumber value="#{backingEmpresa.beanEmpresa.puntoEmisionSelect.secuencialLiquidacionCompra}" decimalPlaces="0" />
-                            </div>
-                        </div>
-                        <div class="col-12 md:col-6">
-                            <div class="field mb-3">
-                                <p:outputLabel value="Guía Remisión:" />
-                                <p:inputNumber value="#{backingEmpresa.beanEmpresa.puntoEmisionSelect.secuencialGuiaRemision}" decimalPlaces="0" />
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="field mb-3">
-                                <p:outputLabel value="Información Adicional:" />
-                                <p:inputText value="#{backingEmpresa.beanEmpresa.puntoEmisionSelect.informacionAdicional}" />
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="flex justify-content-end gap-2 mt-4">
-                        <p:commandButton value="Cancelar" icon="pi pi-times" onclick="PF('wvPunto').hide()" type="button" styleClass="ui-button-secondary ui-button-flat" />
-                        <p:commandButton value="Guardar" icon="pi pi-check" actionListener="#{backingEmpresa.guardarPuntoEmision()}" 
-                                         process="@form" update=":formEmpresa:pnlPuntosDetails :formEmpresa:growl" oncomplete="if (!args.validationFailed) PF('wvPunto').hide()" />
-                    </div>
+                    </p:outputPanel>
+                </p:scrollPanel>
+                
+                <div class="flex justify-content-end gap-2 p-3 mt-2" style="border-top: 1px solid var(--surface-border)">
+                    <p:commandButton value="Cancelar" icon="pi pi-times" onclick="PF('wvPunto').hide()" 
+                                     styleClass="ui-button-secondary ui-button-flat" type="button" />
+                    <p:commandButton value="Guardar" icon="pi pi-check" actionListener="#{backingEmpresa.guardarPuntoEmision()}" 
+                                     process="@form" update=":formEmpresa:pnlPuntosDetails :formEmpresa:growl" 
+                                     oncomplete="if (!args.validationFailed) PF('wvPunto').hide()" styleClass="ui-button-success" />
+                </div>
             </h:form>
         </p:dialog>
 	</ui:define>

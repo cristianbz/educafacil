@@ -18,9 +18,38 @@
 				<p:menuitem value="Contabilidad" url="#" />
 				<p:menuitem value="Gestión de Facturación" />
 			</p:breadCrumb>
-			
-			<br />
-			
+			<div class="page-header">
+
+				<div class="page-title">
+					<h2>Facturación electrónica</h2>
+					<small>Gestión y control de facturación electrónica</small>
+				</div>
+
+				<div class="page-actions">
+
+					<!-- Acción primaria -->					
+					<p:commandButton value="Nueva Factura" icon="pi pi-plus"
+							styleClass="ui-button-success" 
+							 actionListener="#{backingFacturacion.prepararNuevaFactura()}" process="@this"
+							 oncomplete="PF('dlgNuevaFactura').show()"
+							 update="dlgNuevaFactura" />	
+
+					<!-- Acciones secundarias -->
+					<p:menuButton value="Más acciones" icon="pi pi-ellipsis-v">
+
+						<p:menuitem value="Cargar facturas"
+							process="@this " partialSubmit="true" icon="pi pi-cloud-upload"
+							update="tblFacturas"
+							actionListener="#{backingFacturacion.cargarFacturas()}">
+							 
+						</p:menuitem>
+
+
+					</p:menuButton>
+
+				</div>
+
+			</div>			
 			<p:dataTable id="tblFacturas" value="#{beanFacturacion.listaFacturas}" var="fac" 
 						 paginator="true" rows="10" responsiveLayout="scroll"
 						 emptyMessage="No se encontraron facturas registradas.">
@@ -52,6 +81,7 @@
 					<p:commandButton icon="pi pi-cloud-upload" title="Emitir al SRI" 
 									 actionListener="#{backingFacturacion.emitirFactura(fac)}"
 									 rendered="#{fac.documentoElectronico == null or fac.documentoElectronico.estado != 'AUTORIZADO'}"
+									 disabled="#{fac.documentoElectronico.estado == 'ANULADA'}"
 									 update=":formFacturacion:growl :formFacturacion:tblFacturas" 
 									 styleClass="ui-button-warning" />
 					
@@ -63,14 +93,7 @@
 				</p:column>
 				
 			</p:dataTable>
-			
-			<br />
-			
-			<p:commandButton value="Nueva Factura" icon="pi pi-plus" 
-							 actionListener="#{backingFacturacion.prepararNuevaFactura()}" process="@this"
-							 oncomplete="PF('dlgNuevaFactura').show()"
-							 update="dlgNuevaFactura" />
-							 
+										 
 			<p:dialog id="dlgNuevaFactura" widgetVar="dlgNuevaFactura" header="Crear Nueva Factura" 
 					  modal="true" width="95%" height="85vh" responsive="true" fitViewport="true"
 					  styleClass="invoice-dialog" closeOnEscape="true" draggable="false" resizable="false">

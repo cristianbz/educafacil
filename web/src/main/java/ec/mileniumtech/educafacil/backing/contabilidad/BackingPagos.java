@@ -7,6 +7,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -214,6 +215,8 @@ public class BackingPagos implements Serializable{
 	
 	}
 	public void mostrarDialogoRegPago() {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+		getBeanPagos().getPago().setPagoNumeroFactura(sdf.format(new Date()));
 		Mensaje.verDialogo("dlgRegistroPago");
 		
 	}

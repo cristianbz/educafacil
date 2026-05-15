@@ -3,6 +3,7 @@ package ec.mileniumtech.educafacil.modelo.persistencia.entity;
 import java.io.Serializable;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -20,7 +21,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name = "empresamatriz")
+@Table(name = "empresamatriz", schema = "cap")
 @NamedQueries({
 	@NamedQuery(name =EmpresaMatriz.EMPRESAMATRIZ_ACTIVAS,query = "SELECT E FROM EmpresaMatriz E WHERE E.empmEstado=true" )
 })
@@ -33,7 +34,7 @@ public class EmpresaMatriz implements Serializable{
 	@SequenceGenerator(name="empresaMatrizSeq", sequenceName="empresamatriz_empm_id_seq", allocationSize = 1)
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="empresaMatrizSeq")
 	@Column(name="empm_id")
-	private int empmId;
+	private Integer empmId;
    
 	@Column(name="empm_ruc")
 	private String empmRuc;
