@@ -36,4 +36,5 @@
     <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.service.PagosService"/>
     <fullyQualifiedTypeName name="java.util.ArrayList"/>
     <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.modelo.sri.Factura.PagoSRI"/>
+    <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleRetencion"/>
 </qualifiedTypeNameHistroy>

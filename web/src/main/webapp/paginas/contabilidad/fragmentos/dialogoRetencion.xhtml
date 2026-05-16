@@ -1,0 +1,140 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog id="dlgNuevaRetencion" widgetVar="dlgNuevaRetencion" header="Emitir Comprobante de Retención" 
+              modal="true" width="95%" height="85vh" responsive="true" fitViewport="true"
+              styleClass="invoice-dialog" closeOnEscape="true" draggable="false" resizable="false"
+              appendTo="@(body)">
+        
+        <p:scrollPanel mode="native" style="height:calc(85vh - 120px); border:none;">
+            <p:outputPanel id="pnlNuevaRetencion" styleClass="pnl-nueva-retencion" style="padding: 1.5rem;">
+                <div class="ui-fluid">
+                    <!-- Información del Egreso Sustento -->
+                    <p:panel header="Información del Comprobante Sustento" styleClass="invoice-panel">
+                        <div class="p-grid p-formgrid">
+                            <div class="p-col-12 p-md-4 p-field">
+                                <p:outputLabel value="Proveedor:" style="font-weight: bold;"/>
+                                <div class="p-d-flex p-ai-center">
+                                    <i class="pi pi-user p-mr-2" style="color: var(--primary-color);"></i>
+                                    <h:outputText value="#{beanRetencion.egresoSustento.proveedor.provNombre}" style="font-weight: 600; font-size: 1.1rem;"/>
+                                </div>
+                            </div>
+                            <div class="p-col-12 p-md-4 p-field">
+                                <p:outputLabel value="Factura Sustento:" style="font-weight: bold;"/>
+                                <div class="p-d-flex p-ai-center">
+                                    <i class="pi pi-file p-mr-2" style="color: var(--primary-color);"></i>
+                                    <h:outputText value="#{beanRetencion.egresoSustento.egreNumFactura}" style="font-weight: 600; font-size: 1.1rem;"/>
+                                </div>
+                            </div>
+                            <div class="p-col-12 p-md-4 p-field">
+                                <p:outputLabel value="Total Factura:" style="font-weight: bold;"/>
+                                <div class="p-d-flex p-ai-center">
+                                    <h:outputText value="#{beanRetencion.egresoSustento.egreValor}" style="font-weight: 700; color: var(--success-color); font-size: 1.25rem;">
+                                        <f:convertNumber type="currency" currencySymbol="$" />
+                                    </h:outputText>
+                                </div>
+                            </div>
+                        </div>
+                    </p:panel>
+
+                    <!-- Sección para agregar impuestos -->
+                    <p:panel header="Detalle de Impuestos a Retener" styleClass="invoice-panel p-mt-3">
+                        <div class="p-grid p-formgrid p-ai-end">
+                            <div class="p-col-12 p-md-3 p-field">
+                                <p:outputLabel value="Tipo de Impuesto:" for="selTipoImp" />
+                                <p:selectOneMenu id="selTipoImp" value="#{beanRetencion.detalleNuevo.codigoImpuesto}">
+                                    <f:selectItem itemLabel="RENTA (Código 1)" itemValue="1" />
+                                    <f:selectItem itemLabel="IVA (Código 2)" itemValue="2" />
+                                    <f:selectItem itemLabel="ISD (Código 6)" itemValue="6" />
+                                    <p:ajax process="@this" listener="#{backingRetencion.valoresPrueba()}" partialSubmit="true"/>
+                                </p:selectOneMenu>
+                            </div>
+                            <div class="p-col-12 p-md-2 p-field">
+                                <p:outputLabel value="Cód. SRI Retención:" for="txtCodRet" />
+                                <p:inputText id="txtCodRet" value="#{beanRetencion.detalleNuevo.codigoRetencion}" placeholder="Ej: 312" />
+                            </div>
+                            <div class="p-col-12 p-md-2 p-field">
+                                <p:outputLabel value="Base Imponible:" for="txtBase" />
+                                <p:inputNumber id="txtBase" value="#{beanRetencion.detalleNuevo.baseImponible}" symbol="$" decimalPlaces="2">
+                                    
+                                    <p:ajax event="change" process="@this" listener="#{backingRetencion.calcularValorRetenido()}" update="txtValRet" />
+                                </p:inputNumber>
+                            </div>
+                            <div class="p-col-12 p-md-2 p-field">
+                                <p:outputLabel value="% a Retener:" for="txtPorc" />
+                                <p:inputNumber id="txtPorc" value="#{beanRetencion.detalleNuevo.porcentaje}" symbol="%" symbolPosition="s" decimalPlaces="2">
+                                    
+                                    <p:ajax event="change" process="@this" listener="#{backingRetencion.calcularValorRetenido()}" partialSubmit="true" update="txtValRet" />
+                                </p:inputNumber>
+                            </div>
+                            <div class="p-col-12 p-md-2 p-field">
+                                <p:outputLabel value="Valor Retenido:" for="txtValRet" />
+                                <p:inputNumber id="txtValRet" value="#{beanRetencion.detalleNuevo.valorRetenido}" symbol="$" readonly="true" 
+                                               decimalPlaces="2" style="font-weight: bold;" inputStyle="color: var(--primary-color);"/>
+                            </div>
+                            <div class="p-col-12 p-md-1 p-field">
+                                <p:commandButton icon="pi pi-plus" actionListener="#{backingRetencion.agregarDetalle()}" 
+                                                 title="Agregar rubro"
+                                                 update="@(.pnl-tabla-retencion)" 
+                                                 process="@this selTipoImp txtCodRet txtBase txtPorc" 
+                                                 styleClass="ui-button-info" />
+                            </div>
+                        </div>
+
+                        <div class="p-mt-4">
+                        <p:outputPanel id="pnlTablaRetencion" style="width: 100%;" styleClass="pnl-tabla-retencion">
+                            <p:dataTable value="#{beanRetencion.nuevaRetencion.detalles}" var="det" 
+                                         emptyMessage="No se han agregado impuestos para retener."
+                                         size="small" responsiveLayout="scroll">
+                                <p:column headerText="Impuesto" width="120">
+                                    <p:tag value="#{det.codigoImpuesto == '1' ? 'RENTA' : (det.codigoImpuesto == '2' ? 'IVA' : 'ISD')}" 
+                                           severity="#{det.codigoImpuesto == '1' ? 'primary' : 'warning'}" />
+                                </p:column>
+                                <p:column headerText="Cód. SRI" width="100">#{det.codigoRetencion}</p:column>
+                                <p:column headerText="Base Imponible" style="text-align: right;">
+                                    <h:outputText value="#{det.baseImponible}"><f:convertNumber type="currency" currencySymbol="$" /></h:outputText>
+                                </p:column>
+                                <p:column headerText="%" width="80" style="text-align: center;">#{det.porcentaje}%</p:column>
+                                <p:column headerText="Valor Retenido" style="text-align: right; font-weight: bold; color: var(--primary-color);">
+                                    <h:outputText value="#{det.valorRetenido}"><f:convertNumber type="currency" currencySymbol="$" /></h:outputText>
+                                </p:column>
+                                <p:column width="50" style="text-align: center;">
+                                    <p:commandButton icon="pi pi-trash" actionListener="#{backingRetencion.eliminarDetalle(det)}" 
+                                                     update="@(.pnl-nueva-retencion) @(.pnl-footer-retencion)" process="@this" 
+                                                     styleClass="ui-button-danger ui-button-flat rounded-button" />
+                                </p:column>
+                            </p:dataTable>
+                            </p:outputPanel>
+                        </div>
+                    </p:panel>
+                </div>
+            </p:outputPanel>
+        </p:scrollPanel>
+        
+        <f:facet name="footer">
+            <p:outputPanel id="pnlFooterRetencion" styleClass="pnl-footer-retencion" style="width: 100%;">
+                <div class="p-d-flex p-jc-between p-ai-center">
+                    <div class="p-d-flex p-ai-center">
+                        <h:outputText value="Total a Retener: " styleClass="p-mr-3" style="font-size: 1.1rem; font-weight: 600; color: var(--text-muted);"/>
+                        <h:outputText value="#{beanRetencion.nuevaRetencion.detalles.stream().map(d -> d.valorRetenido).sum()}" 
+                                      style="font-size: 1.8rem; font-weight: 800; color: var(--primary-color);">
+                            <f:convertNumber type="currency" currencySymbol="$" />
+                        </h:outputText>
+                    </div>
+                    <div class="p-d-flex" style="gap: 0.5rem;">
+                        <p:commandButton value="Cerrar" onclick="PF('dlgNuevaRetencion').hide()" type="button" 
+                                         styleClass="ui-button-secondary ui-button-flat" icon="pi pi-times" />
+                        <p:commandButton value="Guardar y Emitir al SRI" icon="pi pi-send" 
+                                         actionListener="#{backingRetencion.guardarRetencion()}" 
+                                         update="@form :formRetenciones:growl @(.retenciones-table) @(.pnl-footer-retencion)" 
+                                         oncomplete="if (!args.validationFailed) PF('dlgNuevaRetencion').hide()"
+                                         styleClass="ui-button-success" style="padding: 0.75rem 2rem;"/>
+                    </div>
+                </div>
+            </p:outputPanel>
+        </f:facet>
+    </p:dialog>
+</ui:composition>

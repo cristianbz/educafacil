@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
+    <ui:define name="contenido">
+        <f:event listener="#{backingLogin.validarSesion()}" type="preRenderView" />
+        
+        <h:form id="formRetenciones">
+            <p:growl id="growl" life="3000" showDetail="true" />
+            
+            <p:breadCrumb>
+                <p:menuitem value="Inicio" url="/paginas/inicio.xhtml" />
+                <p:menuitem value="Contabilidad" url="#" />
+                <p:menuitem value="Comprobantes de Retención" />
+            </p:breadCrumb>
+
+            <div class="page-header">
+                <div class="page-title">
+                    <h2>Comprobantes de Retención</h2>
+                    <small>Gestión de retenciones emitidas al SRI</small>
+                </div>
+            </div>
+
+            <p:dataTable id="tblRetenciones" value="#{beanRetencion.listaRetenciones}" var="ret" 
+                         paginator="true" rows="10" responsiveLayout="scroll"
+                         styleClass="retenciones-table"
+                         emptyMessage="No se encontraron retenciones emitidas.">
+                
+                <p:column headerText="Fecha Emisión" width="120">
+                    <h:outputText value="#{ret.fechaEmision}">
+                        <f:convertDateTime pattern="dd/MM/yyyy" />
+                    </h:outputText>
+                </p:column>
+                
+                <p:column headerText="Número" filterBy="#{ret.numero}" filterMatchMode="contains" width="180">
+                    <h:outputText value="#{ret.numero}" />
+                </p:column>
+                
+                <p:column headerText="Proveedor">
+                    <h:outputText value="#{ret.egreso.proveedor.provNombre}" />
+                </p:column>
+                
+                <p:column headerText="Factura Sustento" width="180">
+                    <h:outputText value="#{ret.egreso.egreNumFactura}" />
+                </p:column>
+                
+                <p:column headerText="Estado SRI" width="150">
+                    <p:tag value="#{ret.estado}" 
+                           severity="#{ret.estado == 'AUTORIZADO' ? 'success' : (ret.estado == 'RECHAZADO' ? 'danger' : 'warning')}" />
+                </p:column>
+                
+                <p:column headerText="Acciones" style="width: 140px; text-align: center;">
+                    <p:commandButton icon="pi pi-refresh" title="Re-emitir" 
+                                     actionListener="#{backingRetencion.reemitir(ret)}"
+                                     rendered="#{ret.estado != 'AUTORIZADO'}"
+                                     update=":formRetenciones:growl :formRetenciones:tblRetenciones" 
+                                     styleClass="ui-button-warning rounded-button ui-button-flat" />
+                    
+                    <p:commandButton icon="pi pi-file-pdf" title="Descargar RIDE" 
+                                     rendered="#{ret.pdfRide != null}"
+                                     ajax="false"
+                                     styleClass="ui-button-success rounded-button ui-button-flat p-ml-1">
+                        <p:fileDownload value="#{backingRetencion.descargarRide(ret)}" />
+                    </p:commandButton>
+
+                    <p:commandButton icon="pi pi-code" title="Descargar XML" 
+                                     rendered="#{ret.xmlAutorizado != null}"
+                                     ajax="false"
+                                     styleClass="ui-button-info rounded-button ui-button-flat p-ml-1">
+                        <p:fileDownload value="#{backingRetencion.descargarXml(ret)}" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+
+            <ui:include src="/paginas/contabilidad/fragmentos/dialogoRetencion.xhtml" />
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>
