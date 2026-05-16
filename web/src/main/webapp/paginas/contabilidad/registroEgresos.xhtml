@@ -216,14 +216,34 @@
 				<h:panelGrid columns="2">
 					<p:commandButton value="#{botones['aceptar']}" tabindex="6"
 						update="growl tblegresos registroEgresos" actionListener="#{backingEgresos.registrarEgreso()}"
-						process="@this registroEgresos tblegresos " onstart="PF('dlgEnProc').show()" oncomplete="PF('dlgEnProc').hide()"
+						process="@this registroEgresos tblegresos " onstart="PF('dlgEnProc').show()" 
+						oncomplete="PF('dlgEnProc').hide(); if (!args.validationFailed) PF('confirmEmitirRetencion').show();"
 						icon="#{botones['icono.select']}" partialSubmit="true"/>
 					<p:commandButton value="#{botones['cancelar']}" tabindex="7"
 						icon="#{botones['icono.cancelar']}" process="@this"
 						partialSubmit="true" oncomplete="PF('dlgRegEgreso').hide()" />
 				</h:panelGrid>
 				</center>
-			</p:dialog>
+            </p:dialog>
+
+            <!-- Diálogo de Confirmación para Emitir Retención -->
+            <p:confirmDialog widgetVar="confirmEmitirRetencion" showEffect="fade" width="450"
+                             header="Egreso Registrado" 
+                             message="El egreso ha sido guardado exitosamente. ¿Desea emitir el comprobante de retención ahora?" 
+                             severity="info" appendTo="@(body)">
+                <div class="p-d-flex p-jc-end" style="gap: 0.5rem;">
+                    <p:commandButton value="Sí, Emitir Ahora" icon="pi pi-send" 
+                                     actionListener="#{backingRetencion.prepararNuevaRetencion(backingEgresos.beanEgresos.egreso)}"
+                                     process="@this"
+                                     oncomplete="PF('confirmEmitirRetencion').hide(); PF('dlgNuevaRetencion').show();"
+                                     update=":formRetenciones"
+                                     styleClass="ui-button-success" />
+                    <p:commandButton value="No, Después" type="button" 
+                                     styleClass="ui-button-secondary ui-button-flat" 
+                                     onclick="PF('confirmEmitirRetencion').hide()" />
+                </div>
+            </p:confirmDialog>
+
 			<p:breadCrumb styleClass="mb-3">
 				<p:menuitem value="Categorias" icon="pi pi-home" outcome="/paginas/index?faces-redirect=true" />
 				<p:menuitem value="Contabilidad" />
@@ -291,6 +311,12 @@
 									<f:convertDateTime for="tblfechaegr" pattern="yyyy-MM-dd"/>
 								</p:outputLabel>
 							</p:column>
+							<p:column headerText="Acciones" width="80" style="text-align:center">
+								<p:commandButton icon="pi pi-percentage" title="Emitir Retención" 
+												 actionListener="#{backingRetencion.prepararNuevaRetencion(egreso)}"
+												 process="@this" update=":formRetenciones:dlgNuevaRetencion"
+												 styleClass="ui-button-help rounded-button" />
+							</p:column>
 							<f:facet name="footer" >
 					            <span class="p-text-bold" style="text-align:right">Total egresos: #{backingEgresos.beanEgresos.listaEgresosRegistrados.stream().map(c->c.egreValor).sum()}</span>
 					        </f:facet>
@@ -298,7 +324,13 @@
 						</p:outputPanel>
 					</div>
 				</div>
-		</h:form>
+        </h:form>
+
+        <h:form id="formRetenciones">
+            <p:growl id="growl" life="3000" showDetail="true" />
+            <ui:include src="/paginas/contabilidad/fragmentos/dialogoRetencion.xhtml" />
+        </h:form>
+
 	</ui:define>
 </ui:composition>
 

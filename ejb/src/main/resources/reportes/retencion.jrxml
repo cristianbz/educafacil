@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="retencion" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="b65996b5-0c7f-4b0d-9b51-78972e3914a2">
+	<parameter name="RUC" class="java.lang.String"/>
+	<parameter name="NUM_COMPROBANTE" class="java.lang.String"/>
+	<parameter name="CLAVE_ACCESO" class="java.lang.String"/>
+	<parameter name="RAZON_SOCIAL" class="java.lang.String"/>
+	<parameter name="DIR_MATRIZ" class="java.lang.String"/>
+	<parameter name="AMBIENTE" class="java.lang.String"/>
+	<parameter name="EMISION" class="java.lang.String"/>
+	<parameter name="SUJETO_RETENIDO" class="java.lang.String"/>
+	<parameter name="IDENTIFICACION_SUJETO" class="java.lang.String"/>
+	<parameter name="FECHA_EMISION" class="java.lang.String"/>
+	<parameter name="EJERCICIO_FISCAL" class="java.lang.String"/>
+	<parameter name="LOGO" class="java.io.InputStream"/>
+	<parameter name="NUM_AUTORIZACION" class="java.lang.String"/>
+	<parameter name="FECHA_AUTORIZACION" class="java.lang.String"/>
+	<field name="codigo" class="java.lang.String"/>
+	<field name="codigoRetencion" class="java.lang.String"/>
+	<field name="baseImponible" class="java.math.BigDecimal"/>
+	<field name="porcentajeRetener" class="java.math.BigDecimal"/>
+	<field name="valorRetenido" class="java.math.BigDecimal"/>
+	<field name="numDocSustento" class="java.lang.String"/>
+	<field name="fechaEmisionDocSustento" class="java.lang.String"/>
+	<title>
+		<band height="200">
+			<rectangle radius="10">
+				<reportElement x="0" y="80" width="270" height="110" uuid="e04c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+			</rectangle>
+			<image>
+				<reportElement x="10" y="10" width="250" height="60" uuid="d04c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+				<imageExpression><![CDATA[$P{LOGO}]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="10" y="90" width="250" height="20" uuid="f04c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{RAZON_SOCIAL}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="10" y="115" width="250" height="35" uuid="014c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Dirección Matriz: " + $P{DIR_MATRIZ}]]></textFieldExpression>
+			</textField>
+			<rectangle radius="10">
+				<reportElement x="285" y="0" width="270" height="190" uuid="114c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="295" y="10" width="50" height="20" uuid="214c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[R.U.C.:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="350" y="10" width="195" height="20" uuid="314c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{RUC}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="295" y="35" width="250" height="20" uuid="414c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[COMPROBANTE DE RETENCIÓN]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="295" y="55" width="250" height="20" uuid="514c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA["No. " + $P{NUM_COMPROBANTE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="295" y="80" width="250" height="15" uuid="614c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[NÚMERO DE AUTORIZACIÓN]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="295" y="95" width="250" height="25" uuid="714c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{NUM_AUTORIZACION} != null ? $P{NUM_AUTORIZACION} : $P{CLAVE_ACCESO}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="295" y="125" width="130" height="15" uuid="814c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["AMBIENTE: " + $P{AMBIENTE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="295" y="140" width="130" height="15" uuid="914c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["EMISIÓN: " + $P{EMISION}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="295" y="155" width="250" height="10" uuid="a14c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CLAVE DE ACCESO]]></text>
+			</staticText>
+			<componentElement>
+				<reportElement x="295" y="165" width="250" height="20" uuid="b14c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+				<jr:Code128 xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<jr:codeExpression><![CDATA[$P{CLAVE_ACCESO}]]></jr:codeExpression>
+				</jr:Code128>
+			</componentElement>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="70">
+			<rectangle>
+				<reportElement x="0" y="5" width="555" height="60" uuid="c14c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+			</rectangle>
+			<textField>
+				<reportElement x="10" y="10" width="535" height="15" uuid="d14c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Razón Social / Nombres y Apellidos: " + $P{SUJETO_RETENIDO}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="10" y="25" width="250" height="15" uuid="e14c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Identificación: " + $P{IDENTIFICACION_SUJETO}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="10" y="40" width="250" height="15" uuid="f14c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Fecha Emisión: " + $P{FECHA_EMISION}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="25">
+			<rectangle>
+				<reportElement x="0" y="0" width="555" height="25" backcolor="#F0F0F0" uuid="024c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="25" uuid="124c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Comprobante]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="100" y="0" width="100" height="25" uuid="224c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Número]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="200" y="0" width="60" height="25" uuid="324c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha Emisión]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="260" y="0" width="50" height="25" uuid="424c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Ejercicio Fiscal]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="310" y="0" width="80" height="25" uuid="524c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Base Imponible]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="390" y="0" width="80" height="25" uuid="624c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Impuesto]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="470" y="0" width="40" height="25" uuid="724c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[% Retención]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="510" y="0" width="45" height="25" uuid="824c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Valor Retenido]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20">
+			<textField>
+				<reportElement x="0" y="0" width="100" height="20" uuid="924c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA["FACTURA"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="100" y="0" width="100" height="20" uuid="a24c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{numDocSustento}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="200" y="0" width="60" height="20" uuid="b24c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fechaEmisionDocSustento}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="260" y="0" width="50" height="20" uuid="c24c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{EJERCICIO_FISCAL}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="310" y="0" width="80" height="20" uuid="d24c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{baseImponible}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="390" y="0" width="80" height="20" uuid="e24c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{codigo}.equals("1") ? "RENTA" : "IVA"]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="470" y="0" width="40" height="20" uuid="f24c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{porcentajeRetener}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="510" y="0" width="45" height="20" uuid="034c5e31-50e5-4e3d-8e5c-7b4c4e5d6e7f"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valorRetenido}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>
