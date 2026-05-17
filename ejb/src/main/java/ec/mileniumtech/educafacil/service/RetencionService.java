@@ -2,8 +2,10 @@ package ec.mileniumtech.educafacil.service;
 
 import java.util.List;
 
+import ec.mileniumtech.educafacil.dao.impl.CodigoSriRetencionDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.PuntoEmisionDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.RetencionDaoImpl;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.CodigoSriRetencion;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.PuntoEmision;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Retencion;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleRetencion;
@@ -24,6 +26,9 @@ public class RetencionService {
 
     @EJB
     private PuntoEmisionDaoImpl puntoEmisionDao;
+
+    @EJB
+    private CodigoSriRetencionDaoImpl codigoSriRetencionDao;
 
     @EJB
     private RetencionIntegracionService retencionIntegracionService;
@@ -94,5 +99,37 @@ public class RetencionService {
      */
     public List<Retencion> listarRetenciones() {
         return retencionDao.listarTodas();
+    }
+
+    /**
+     * Lista los códigos SRI activos para un tipo de impuesto.
+     * Se invoca al cambiar el selector de tipo de impuesto en el diálogo.
+     *
+     * @param tipoImpuesto "1" (Renta), "2" (IVA) o "6" (ISD)
+     * @return Lista de CodigoSriRetencion activos.
+     */
+    public List<CodigoSriRetencion> listarCodigosPorTipoImpuesto(String tipoImpuesto) {
+        return codigoSriRetencionDao.listarPorTipoImpuesto(tipoImpuesto);
+    }
+
+    /**
+     * Busca códigos SRI por tipo de impuesto y texto libre (para p:autoComplete).
+     *
+     * @param tipoImpuesto Tipo de impuesto seleccionado.
+     * @param query        Texto escrito por el usuario.
+     * @return Lista filtrada.
+     */
+    public List<CodigoSriRetencion> buscarCodigosSri(String tipoImpuesto, String query) {
+        return codigoSriRetencionDao.buscarPorTipoYTexto(tipoImpuesto, query);
+    }
+
+    /**
+     * Busca un código SRI por su ID (usado por el Converter del autoComplete).
+     *
+     * @param id ID del código SRI.
+     * @return CodigoSriRetencion encontrado, o null si no existe.
+     */
+    public CodigoSriRetencion buscarCodigoSriPorId(Integer id) {
+        return codigoSriRetencionDao.findById(id).orElse(null);
     }
 }

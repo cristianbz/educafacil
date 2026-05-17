@@ -19,7 +19,7 @@ import lombok.Setter;
  */
 @XmlRootElement(name = "comprobanteRetencion")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder = { "infoTributaria", "infoRetencion", "impuestos", "infoAdicional" })
+@XmlType(propOrder = { "infoTributaria", "infoCompRetencion", "impuestos", "infoAdicional" })
 @Getter
 @Setter
 public class ComprobanteRetencion {
@@ -33,8 +33,8 @@ public class ComprobanteRetencion {
     @XmlElement(name = "infoTributaria")
     private InfoTributaria infoTributaria;
 
-    @XmlElement(name = "infoRetencion")
-    private InfoRetencion infoRetencion;
+    @XmlElement(name = "infoCompRetencion")
+    private InfoCompRetencion infoCompRetencion;
 
     @XmlElement(name = "impuestos")
     private ImpuestosWrapper impuestos = new ImpuestosWrapper();
@@ -107,7 +107,7 @@ public class ComprobanteRetencion {
         "razonSocialSujetoRetenido", "identificacionSujetoRetenido",
         "periodoFiscal"
     })
-    public static class InfoRetencion {
+    public static class InfoCompRetencion {
         private String fechaEmision;
         private String dirEstablecimiento;
         private String contribuyenteEspecial;

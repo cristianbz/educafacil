@@ -2,10 +2,8 @@ package ec.mileniumtech.educafacil.service;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.concurrent.ThreadLocalRandom;
 
 import ec.mileniumtech.educafacil.dao.impl.ConfiguracionesDaoImpl;
@@ -16,7 +14,7 @@ import ec.mileniumtech.educafacil.modelo.persistencia.entity.EmpresaMatriz;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Retencion;
 import ec.mileniumtech.educafacil.modelo.sri.ComprobanteRetencion;
 import ec.mileniumtech.educafacil.modelo.sri.ComprobanteRetencion.Impuesto;
-import ec.mileniumtech.educafacil.modelo.sri.ComprobanteRetencion.InfoRetencion;
+import ec.mileniumtech.educafacil.modelo.sri.ComprobanteRetencion.InfoCompRetencion;
 import ec.mileniumtech.educafacil.modelo.sri.ComprobanteRetencion.InfoTributaria;
 import ec.mileniumtech.educafacil.service.sri.autorizacion.Autorizacion;
 import ec.mileniumtech.educafacil.service.sri.autorizacion.RespuestaComprobante;
@@ -102,19 +100,19 @@ public class RetencionIntegracionService {
         retSri.setInfoTributaria(infoTrib);
 
         // Info Retencion
-        InfoRetencion infoRet = new InfoRetencion();
+        InfoCompRetencion infoRet = new InfoCompRetencion();
         infoRet.setFechaEmision(fechaEmisionStr);
         infoRet.setDirEstablecimiento(retencionEntity.getPuntoEmision().getEstablecimientos().getEstaUbicacion());
         infoRet.setObligadoContabilidad(empresa.isEmpmObligadoContabilidad() ? "SI" : "NO");
         
         // Sujeto Retenido (Proveedor)
-        String rucProv = retencionEntity.getEgreso().getProveedor().getProvRuc();
+        String rucProv = retencionEntity.getEgreso().getProveedor().getProvRuc().trim();
         String tipoIdSujeto = rucProv.length() == 13 ? "04" : (rucProv.length() == 10 ? "05" : "06");
         infoRet.setTipoIdentificacionSujetoRetenido(tipoIdSujeto);
         infoRet.setRazonSocialSujetoRetenido(retencionEntity.getEgreso().getProveedor().getProvNombre());
         infoRet.setIdentificacionSujetoRetenido(rucProv);
         infoRet.setPeriodoFiscal(retencionEntity.getEjercicioFiscal());
-        retSri.setInfoRetencion(infoRet);
+        retSri.setInfoCompRetencion(infoRet);
 
         // Detalle de Impuestos
         if (retencionEntity.getDetalles() != null) {
@@ -136,10 +134,11 @@ public class RetencionIntegracionService {
 
         // 2. Generación y Firma
         String xmlString = retencionXmlService.generarXml(retSri);
+        System.out.println(xmlString);
         byte[] pkcs12 = empresa.getEmpmCertificado();
         String password = CriptografiaUtil.desencriptar(empresa.getEmpmPasswordCertificado());
             
-        byte[] xmlFirmado = xadesSignatureService.firmarDocumento(xmlString.getBytes("UTF-8"), pkcs12, password);
+        byte[] xmlFirmado = xadesSignatureService.firmarDocumento(xmlString.getBytes("UTF-8"), pkcs12, password);        
         retencionEntity.setXmlFirmado(xmlFirmado);
         
         // 3. Envío al SRI
