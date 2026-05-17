@@ -143,7 +143,6 @@ INDEX VERSION 1.134+C:\Users\christian\eclipse-workspace\educafacil\.metadata\.p
 2022924976.index
 3822837990.index
 1248464268.index
-1243057733.index
 3483212549.index
 707265949.index
 4110997575.index

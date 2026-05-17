@@ -28,7 +28,7 @@
       <class>ec.mileniumtech.educafacil.modelo.persistencia.entity.Producto</class>
        <class>ec.mileniumtech.educafacil.modelo.persistencia.entity.Retencion</class>
       <class>ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleRetencion</class>
-      
+      <class>ec.mileniumtech.educafacil.modelo.persistencia.entity.CodigoSriRetencion</class>
       <properties>
          <!--The database schema is auto created on deployment and dropped before redeploy.
              Note: the following configuration does not drop the tables on undeploy. If you prefer this, use this

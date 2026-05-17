@@ -32,6 +32,9 @@ public class BeanLogin implements Serializable {
 	private boolean panelCambiaClave;
 	@Getter
 	@Setter
+	private boolean mostrarDialogoModulos;
+	@Getter
+	@Setter
 	private String documentoIdentidad;
 	@Getter
 	@Setter

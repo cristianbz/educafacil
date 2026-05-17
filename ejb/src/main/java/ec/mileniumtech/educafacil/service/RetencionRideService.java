@@ -53,10 +53,10 @@ public class RetencionRideService {
         parametros.put("NOM_COMERCIAL", retencion.getInfoTributaria().getNombreComercial());
         
         // Info Retención
-        parametros.put("SUJETO_RETENIDO", retencion.getInfoRetencion().getRazonSocialSujetoRetenido());
-        parametros.put("IDENTIFICACION_SUJETO", retencion.getInfoRetencion().getIdentificacionSujetoRetenido());
-        parametros.put("FECHA_EMISION", retencion.getInfoRetencion().getFechaEmision());
-        parametros.put("EJERCICIO_FISCAL", retencion.getInfoRetencion().getPeriodoFiscal());
+        parametros.put("SUJETO_RETENIDO", retencion.getInfoCompRetencion().getRazonSocialSujetoRetenido());
+        parametros.put("IDENTIFICACION_SUJETO", retencion.getInfoCompRetencion().getIdentificacionSujetoRetenido());
+        parametros.put("FECHA_EMISION", retencion.getInfoCompRetencion().getFechaEmision());
+        parametros.put("EJERCICIO_FISCAL", retencion.getInfoCompRetencion().getPeriodoFiscal());
         
         // DataSource para los impuestos retenidos
         JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource(retencion.getImpuestosList());
