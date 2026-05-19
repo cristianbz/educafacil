@@ -30,7 +30,9 @@ import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetallePagos;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Matricula;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.OfertaCursos;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Pagos;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.EmpresaMatriz;
 import ec.mileniumtech.educafacil.service.PagosService;
+import ec.mileniumtech.educafacil.service.AdministracionService;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumFormaPago;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumTipoCatalogo;
@@ -41,6 +43,9 @@ import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import lombok.Getter;
+import lombok.Setter;
+import java.util.List;
+import org.primefaces.PrimeFaces;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -75,6 +80,44 @@ public class BackingPagos implements Serializable{
 
 	@EJB
 	private PagosService pagosService;
+
+	@EJB
+	private AdministracionService administracionService;
+
+	@Getter
+	@Setter
+	private String ticketEmpresa;
+	@Getter
+	@Setter
+	private String ticketDireccion;
+	@Getter
+	@Setter
+	private String ticketRuc;
+	@Getter
+	@Setter
+	private String ticketCliente;
+	@Getter
+	@Setter
+	private String ticketFecha;
+	@Getter
+	@Setter
+	private String ticketNumero;
+	@Getter
+	@Setter
+	private String ticketServicio;
+	@Getter
+	@Setter
+	private String ticketFormaPago;
+	@Getter
+	@Setter
+	private String ticketValor;
+	@Getter
+	@Setter
+	private String ticketObservacion;
+
+	@Getter
+	@Setter
+	private List<DetallePagos> ticketDetalles;
 
 	@EJB
 	@Getter
@@ -162,6 +205,14 @@ public class BackingPagos implements Serializable{
 			
 			Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.grabar"));
 			
+			// --- IMPRESION TICKET TERMICO AUTOMATICO ---
+			if (getBeanPagos().getPago().getDetallePagos() != null && !getBeanPagos().getPago().getDetallePagos().isEmpty()) {
+				imprimirTicketTermicoPorPago(getBeanPagos().getPago());
+				Mensaje.actualizarComponente("form:ticketTermicoPanel");
+				PrimeFaces.current().executeScript("imprimirTicket()");
+			}
+			// ------------------------------------------
+
 			Mensaje.ocultarDialogo("dlgGrabar");
 			Mensaje.ocultarDialogo("dlgRegistroPago");
 			getBeanPagos().setListaDetallePagos(new ArrayList<>());
@@ -170,6 +221,96 @@ public class BackingPagos implements Serializable{
 			log.error("Error al registrar pago y factura", e);
 			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), "Error en facturación: " + e.getMessage());
 		}
+	}
+
+	/**
+	 * Prepara la informacion para imprimir un ticket en impresora termica.
+	 * 
+	 * @param detalle El detalle de pago a imprimir
+	 */
+	public void imprimirTicketTermico(DetallePagos detalle) {
+		if (detalle != null) {
+			imprimirTicketTermicoPorPago(detalle.getPagos());
+		}
+	}
+
+	/**
+	 * Prepara la informacion para imprimir un ticket en impresora termica por objeto Pago.
+	 * 
+	 * @param pago El objeto Pago a imprimir
+	 */
+	public void imprimirTicketTermicoPorPago(Pagos pago) {
+		try {
+			// 1. Obtener la empresa matriz activa
+			List<EmpresaMatriz> empresas = administracionService.listarEmpresas();
+			if (empresas != null && !empresas.isEmpty()) {
+				EmpresaMatriz emp = empresas.get(0);
+				this.ticketEmpresa = emp.getEmpmNombreComercial() != null ? emp.getEmpmNombreComercial() : emp.getEmpmRazonSocial();
+				this.ticketDireccion = emp.getEmpmDireccion();
+				this.ticketRuc = emp.getEmpmRuc();
+			} else {
+				this.ticketEmpresa = "EDUCACIONAL";
+				this.ticketDireccion = "Dirección General";
+				this.ticketRuc = "9999999999999";
+			}
+
+			// 2. Datos del pago y cliente
+			if (pago != null) {
+				this.ticketNumero = pago.getPagoNumeroFactura();
+				if (pago.getPagoFecha() != null) {
+					SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+					this.ticketFecha = sdf.format(pago.getPagoFecha());
+				} else {
+					this.ticketFecha = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date());
+				}
+				
+				if (pago.getMatricula() != null && pago.getMatricula().getEstudiante() != null && pago.getMatricula().getEstudiante().getPersona() != null) {
+					this.ticketCliente = pago.getMatricula().getEstudiante().getPersona().getPersApellidos() + " " + pago.getMatricula().getEstudiante().getPersona().getPersNombres();
+				} else {
+					this.ticketCliente = "Consumidor Final";
+				}
+
+				// 3. Obtener todos los detalles de este pago especifico
+				if (getBeanPagos().getListaDetallePagosRealizados() != null && !getBeanPagos().getListaDetallePagosRealizados().isEmpty()) {
+					this.ticketDetalles = getBeanPagos().getListaDetallePagosRealizados().stream()
+							.filter(d -> d.getPagos() != null && d.getPagos().getPagoId() != null && d.getPagos().getPagoId().equals(pago.getPagoId()))
+							.collect(Collectors.toList());
+				}
+				
+				// Si la lista sigue vacia (por ejemplo, recien insertado en registrarPago), usamos los detalles adjuntos al pago
+				if (this.ticketDetalles == null || this.ticketDetalles.isEmpty()) {
+					this.ticketDetalles = pago.getDetallePagos();
+				}
+				
+				// Calcular el total cancelado de todos los servicios incluidos en el pago
+				double total = 0.0;
+				if (this.ticketDetalles != null) {
+					total = this.ticketDetalles.stream().mapToDouble(DetallePagos::getDepaValor).sum();
+				}
+				this.ticketValor = String.format(java.util.Locale.US, "%.2f", total);
+				
+			} else {
+				this.ticketNumero = "";
+				this.ticketFecha = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date());
+				this.ticketCliente = "Consumidor Final";
+				this.ticketDetalles = new ArrayList<>();
+				this.ticketValor = "0.00";
+			}
+
+		} catch (Exception e) {
+			log.error("Error al preparar ticket de impresion", e);
+			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), "Error al preparar ticket: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * Formatea un valor decimal para su correcta presentacion en el ticket termico
+	 */
+	public String formatearValor(Double valor) {
+		if (valor == null) {
+			return "0.00";
+		}
+		return String.format(java.util.Locale.US, "%.2f", valor);
 	}
 	public void mostrarDialogoGrabar() {
 		if(getBeanPagos().getListaDetallePagos().size()>0 && getBeanPagos().getMatricula().getEstudiante()!=null) {

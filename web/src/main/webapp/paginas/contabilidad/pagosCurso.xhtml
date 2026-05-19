@@ -64,6 +64,11 @@
 										<p:column headerText="#{etiquetas['valor']}" style="width:90px;">
 											<p:outputLabel value="#{det.depaValor}" />
 										</p:column>
+										<p:column headerText="Ticket" style="width:70px; text-align: center;">
+											<p:commandLink process="@this" action="#{backingPagos.imprimirTicketTermico(det)}" update=":form:ticketTermicoPanel" oncomplete="imprimirTicket()">
+												<i class="pi pi-print" style="font-size: 1.2em; color: #3b82f6;"></i>
+											</p:commandLink>
+										</p:column>
 										<f:facet name="footer">
 									            <span class="font-bold">Total cancelado #{backingPagos.beanPagos.listaDetallePagosRealizados.stream().map(c->c.depaValor).sum()} </span>
 									        </f:facet>
@@ -154,6 +159,98 @@
 					</p:column>					
 				</p:dataTable>
 				</p:outputPanel>
+
+				<!-- Panel oculto para el ticket termico -->
+				<h:panelGroup id="ticketTermicoPanel">
+					<div id="ticketTermico" style="display:none;">
+						<div style="text-align: center; font-family: 'Courier New', Courier, monospace; font-size: 12px; width: 72mm; margin: 0 auto; color: #000;">
+							<span style="font-size: 14px; font-weight: bold;">#{backingPagos.ticketEmpresa}</span><br/>
+							<span>RUC: #{backingPagos.ticketRuc}</span><br/>
+							<span>#{backingPagos.ticketDireccion}</span><br/>
+							<span>--------------------------------</span><br/>
+							<div style="text-align: left; margin: 5px 0;">
+								<div><strong>FECHA:</strong> #{backingPagos.ticketFecha}</div>
+								<div><strong>TICKET:</strong> #{backingPagos.ticketNumero}</div>
+								<div><strong>CLIENTE:</strong> #{backingPagos.ticketCliente}</div>
+							</div>
+							<span>--------------------------------</span><br/>
+							<div style="text-align: left; margin: 5px 0;">
+								<!-- Tabla de detalles del pago -->
+								<table style="width: 100%; border-collapse: collapse; font-size: 10px; margin-top: 5px; font-family: 'Courier New', Courier, monospace;">
+									<thead>
+										<tr style="border-bottom: 1px dashed #000;">
+											<th style="text-align: left; padding: 2px 0;">SERVICIO</th>
+											<th style="text-align: left; padding: 2px 0;">F. PAGO</th>
+											<th style="text-align: left; padding: 2px 0;">OBS.</th>
+											<th style="text-align: right; padding: 2px 0;">VALOR</th>
+										</tr>
+									</thead>
+									<tbody>
+										<ui:repeat var="item" value="#{backingPagos.ticketDetalles}">
+											<tr style="border-bottom: 1px dotted #ccc;">
+												<td style="padding: 4px 0; vertical-align: top; text-align: left; word-break: break-all; max-width: 90px;">#{item.catalogo.cataDescripcion}</td>
+												<td style="padding: 4px 0; vertical-align: top; text-align: left;">
+													#{item.depaFormaPago.equals('FORMP01') ? 'EFECTIVO' : item.depaFormaPago.equals('FORMP02') ? 'TRANSF' : 'TARJETA'}
+												</td>
+												<td style="padding: 4px 0; vertical-align: top; text-align: left; word-break: break-all; max-width: 80px;">#{item.depaObservacion}</td>
+												<td style="padding: 4px 0; vertical-align: top; text-align: right;">$#{backingPagos.formatearValor(item.depaValor)}</td>
+											</tr>
+										</ui:repeat>
+									</tbody>
+								</table>
+								
+								<div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: bold; margin-top: 8px; border-top: 1px dashed #000; padding-top: 5px;">
+									<span>TOTAL PAGADO:</span>
+									<span>$#{backingPagos.ticketValor}</span>
+								</div>
+							</div>
+							<span>--------------------------------</span><br/>
+							<div style="margin-top: 10px; font-size: 10px;">
+								¡Gracias por su pago!<br/>
+								*** TICKET SIN VALOR TRIBUTARIO ***
+							</div>
+						</div>
+					</div>
+				</h:panelGroup>
+
+				<script type="text/javascript">
+					//<![CDATA[
+					function imprimirTicket() {
+						var ticketDiv = document.getElementById('ticketTermico');
+						if (!ticketDiv) {
+							console.error("El elemento ticketTermico no existe.");
+							return;
+						}
+						var printContents = ticketDiv.innerHTML;
+						
+						var iframe = document.createElement('iframe');
+						iframe.name = "printFrame";
+						iframe.style.position = "absolute";
+						iframe.style.top = "-1000px";
+						iframe.style.left = "-1000px";
+						document.body.appendChild(iframe);
+						
+						var doc = iframe.contentWindow.document;
+						doc.open();
+						doc.write('<html><head><title>Imprimir Ticket</title>');
+						doc.write('<style>');
+						doc.write('@page { size: auto; margin: 0mm; }');
+						doc.write('body { font-family: "Courier New", Courier, monospace; font-size: 12px; margin: 10px; padding: 0; color: #000; -webkit-print-color-adjust: exact; print-color-adjust: exact; }');
+						doc.write('</style></head><body>');
+						doc.write(printContents);
+						doc.write('</body></html>');
+						doc.close();
+						
+						setTimeout(function() {
+							iframe.contentWindow.focus();
+							iframe.contentWindow.print();
+							setTimeout(function() {
+								document.body.removeChild(iframe);
+							}, 1000);
+						}, 200);
+					}
+					//]]>
+				</script>
 			
 		</h:form>
 	</ui:define>

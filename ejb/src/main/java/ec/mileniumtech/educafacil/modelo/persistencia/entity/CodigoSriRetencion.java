@@ -21,7 +21,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name = "codigo_sri_retencion", schema = "cap")
+@Table(name = "codigo_sri_retencion")
 public class CodigoSriRetencion implements Serializable {
 
     private static final long serialVersionUID = 1L;

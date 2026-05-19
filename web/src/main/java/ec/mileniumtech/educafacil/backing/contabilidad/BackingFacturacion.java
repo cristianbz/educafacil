@@ -209,26 +209,63 @@ public class BackingFacturacion implements Serializable {
     }
 
     /**
-     * Guarda el nuevo ítem en la base de datos.
+     * Prepara el objeto para editar el ítem seleccionado.
+     */
+    public void prepararEditarItem() {
+        CatalogoItem selected = getBeanFacturacion().getItemSeleccionado();
+        if (selected != null) {
+            CatalogoItem editItem = new CatalogoItem();
+            editItem.setId(selected.getId());
+            editItem.setCodigo(selected.getCodigo());
+            editItem.setNombre(selected.getNombre());
+            editItem.setTipo(selected.getTipo());
+            editItem.setDescripcion(selected.getDescripcion());
+            editItem.setPrecio(selected.getPrecio());
+            getBeanFacturacion().setNuevoItem(editItem);
+        } else {
+            prepararNuevoItem();
+        }
+    }
+
+    /**
+     * Guarda el nuevo o editado ítem en la base de datos.
      */
     public void guardarNuevoItem() {
         try {
-            log.info("Iniciando guardado de nuevo ítem...");
+            log.info("Iniciando guardado de ítem...");
             CatalogoItem item = getBeanFacturacion().getNuevoItem();
             if (item.getCodigo() == null || item.getCodigo().isEmpty()) throw new Exception("El código es obligatorio.");
             if (item.getNombre() == null || item.getNombre().isEmpty()) throw new Exception("El nombre es obligatorio.");
             
-            catalogoItemDao.guardar(item);
+            boolean esNuevo = (item.getId() == null);
+            if (esNuevo) {
+                catalogoItemDao.guardar(item);
+                Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Éxito", "Ítem creado correctamente.");
+            } else {
+                catalogoItemDao.actualizar(item);
+                Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Éxito", "Ítem modificado correctamente.");
+            }
             
-            // Actualizar lista y seleccionar el nuevo ítem
-            getBeanFacturacion().setListaItems(catalogoItemDao.findAll());
-            getBeanFacturacion().setItemSeleccionado(item);
+            // Actualizar lista y seleccionar el ítem correcto
+            List<CatalogoItem> items = catalogoItemDao.findAll();
+            getBeanFacturacion().setListaItems(items);
             
-            Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Éxito", "Ítem creado correctamente.");
+            // Seleccionar el ítem correcto por referencia de la nueva lista
+            if (item.getId() != null) {
+                for (CatalogoItem it : items) {
+                    if (it.getId().equals(item.getId())) {
+                        getBeanFacturacion().setItemSeleccionado(it);
+                        break;
+                    }
+                }
+            } else {
+                getBeanFacturacion().setItemSeleccionado(item);
+            }
+            
             Mensaje.ocultarDialogo("dlgNuevoItem");
             
         } catch (Exception e) {
-            log.error("Error al guardar nuevo ítem", e);
+            log.error("Error al guardar ítem", e);
             Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage());
         }
     }

@@ -26,7 +26,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name="persona",schema = "cap")
+@Table(name="persona")
 @NamedQueries({
 	@NamedQuery(name=Persona.BUSCAR_POR_CEDULA,query="SELECT p FROM Persona p WHERE p.persDocumentoIdentidad=:cedula"),
 	@NamedQuery(name=Persona.BUSCAR_POR_CEDULA_CORREO,query="SELECT p FROM Persona p WHERE p.persDocumentoIdentidad=:cedula AND p.persCorreoElectronico = :correo"),

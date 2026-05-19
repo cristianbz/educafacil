@@ -267,15 +267,14 @@
 							value="#{instructor.instActivo==true?'Activo':'Inactivo'}" />
 					</p:column>
 					<p:column style="width:50px">
-						<p:commandLink icon="#{botones['icono.seleccion']}" title="#{tooltip['editar']}"
+						<p:commandButton icon="pi pi-pencil" title="#{tooltip['editar']}"
 							action="#{backingAdminInstructor.mostrarInstructor()}"
 							process="@this " update="panelInstructor">
 							<f:setPropertyActionListener value="#{instructor}"
 								target="#{backingAdminInstructor.beanAdminInstructor.instructor}" />
 							<f:setPropertyActionListener value="true"
-								target="#{backingAdminInstructor.beanAdminInstructor.mostrarDatosInstructor}" />
-							<i class="pi pi-chevron-circle-down" style="font-size: 1em; color: green;"></i>		
-						</p:commandLink>
+								target="#{backingAdminInstructor.beanAdminInstructor.mostrarDatosInstructor}" />								
+						</p:commandButton>
 					</p:column>
 				</p:dataTable>
 			</p:outputPanel>
