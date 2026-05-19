@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 @Entity
-@Table(name = "catalogoitems", schema = "cap")
+@Table(name = "catalogoitems")
 @Data // Genera getters, setters, toString, etc. (requiere Lombok)
 @NoArgsConstructor
 @AllArgsConstructor

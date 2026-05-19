@@ -21,7 +21,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name = "empresamatriz", schema = "cap")
+@Table(name = "empresamatriz")
 @NamedQueries({
 	@NamedQuery(name =EmpresaMatriz.EMPRESAMATRIZ_ACTIVAS,query = "SELECT E FROM EmpresaMatriz E WHERE E.empmEstado=true" )
 })

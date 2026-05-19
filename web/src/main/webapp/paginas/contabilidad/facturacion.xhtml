@@ -185,10 +185,17 @@
 												<f:selectItem itemLabel="Seleccione un ítem..." itemValue="#{null}" />
 												<f:selectItems value="#{beanFacturacion.listaItems}" var="it" 
 															   itemLabel="#{it.nombre}" itemValue="#{it}" />
+												<p:ajax update="btnEditarItem" process="@this" />
 											</p:selectOneMenu>
 											<p:commandButton icon="pi pi-plus" actionListener="#{backingFacturacion.prepararNuevoItem()}"
-															 oncomplete="PF('dlgNuevoItem').show()" update=":formNuevoItem"
+															 oncomplete="PF('dlgNuevoItem').show()" update="dlgNuevoItem :formNuevoItem"
 															 styleClass="ui-button-info" process="@this" title="Crear nuevo ítem">
+												<p:resetInput target=":formNuevoItem" />
+											</p:commandButton>
+											<p:commandButton id="btnEditarItem" icon="pi pi-pencil" actionListener="#{backingFacturacion.prepararEditarItem()}"
+															 oncomplete="PF('dlgNuevoItem').show()" update="dlgNuevoItem :formNuevoItem"
+															 disabled="#{beanFacturacion.itemSeleccionado == null}"
+															 styleClass="ui-button-warning" process="@this" title="Editar ítem seleccionado">
 												<p:resetInput target=":formNuevoItem" />
 											</p:commandButton>
 										</div>
@@ -356,7 +363,7 @@
 			</p:dialog>
 		</h:form>
 
-		<p:dialog id="dlgNuevoItem" widgetVar="dlgNuevoItem" header="Registrar Nuevo Ítem" 
+		<p:dialog id="dlgNuevoItem" widgetVar="dlgNuevoItem" header="#{beanFacturacion.nuevoItem.id != null ? 'Editar Ítem' : 'Registrar Nuevo Ítem'}" 
 				  modal="true" responsive="true" width="450px" fitViewport="true"
 				  appendTo="@(body)" closeOnEscape="true" draggable="false" resizable="false">
 			<h:form id="formNuevoItem">
@@ -401,7 +408,7 @@
 					<p:commandButton value="Cancelar" icon="pi pi-times" onclick="PF('dlgNuevoItem').hide()" 
 									 styleClass="ui-button-secondary ui-button-flat" type="button" />
 					<p:commandButton value="Guardar" icon="pi pi-check" actionListener="#{backingFacturacion.guardarNuevoItem()}"
-									 process="@form" update="@form :formFacturacion:growl :formFacturacion:selItem" 
+									 process="@form" update="@form :formFacturacion:growl :formFacturacion:selItem :formFacturacion:btnEditarItem" 
 									 styleClass="ui-button-success" />
 				</div>
 			</h:form>
