@@ -517,6 +517,7 @@ public class BackingFacturacion implements Serializable {
         }
     }
 
+
     /**
      * Genera la descarga del archivo XML de la factura.
      * @param factura Factura seleccionada.
@@ -535,4 +536,103 @@ public class BackingFacturacion implements Serializable {
             return null;
         }
     }
+
+    /**
+     * Devuelve la cantidad de facturas autorizadas en la lista actual.
+     */
+    public int getCantAutorizadas() {
+        int count = 0;
+        if (getBeanFacturacion().getListaFacturas() != null) {
+            for (Factura f : getBeanFacturacion().getListaFacturas()) {
+                if (f.getDocumentoElectronico() != null && "AUTORIZADO".equals(f.getDocumentoElectronico().getEstado())) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Devuelve la cantidad de facturas pendientes en la lista actual.
+     */
+    public int getCantPendientes() {
+        int count = 0;
+        if (getBeanFacturacion().getListaFacturas() != null) {
+            for (Factura f : getBeanFacturacion().getListaFacturas()) {
+                if (f.getDocumentoElectronico() == null || 
+                    (!"AUTORIZADO".equals(f.getDocumentoElectronico().getEstado()) && 
+                     !"RECHAZADO".equals(f.getDocumentoElectronico().getEstado()) &&
+                     !"ANULADA".equals(f.getDocumentoElectronico().getEstado()))) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Devuelve la cantidad de facturas rechazadas en la lista actual.
+     */
+    public int getCantRechazadas() {
+        int count = 0;
+        if (getBeanFacturacion().getListaFacturas() != null) {
+            for (Factura f : getBeanFacturacion().getListaFacturas()) {
+                if (f.getDocumentoElectronico() != null && "RECHAZADO".equals(f.getDocumentoElectronico().getEstado())) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Devuelve el monto total facturado en la lista actual.
+     */
+    public java.math.BigDecimal getTotalFacturado() {
+        java.math.BigDecimal total = java.math.BigDecimal.ZERO;
+        if (getBeanFacturacion().getListaFacturas() != null) {
+            for (Factura f : getBeanFacturacion().getListaFacturas()) {
+                if (f.getTotal() != null && (f.getDocumentoElectronico() == null || !"ANULADA".equals(f.getDocumentoElectronico().getEstado()))) {
+                    total = total.add(f.getTotal());
+                }
+            }
+        }
+        return total;
+    }
+
+    /**
+     * Devuelve el saldo restante por cubrir con las formas de pago.
+     */
+    public java.math.BigDecimal getSaldoRestante() {
+        java.math.BigDecimal totalFactura = getBeanFacturacion().getNuevaFactura().getTotal();
+        if (totalFactura == null) {
+            return java.math.BigDecimal.ZERO;
+        }
+        java.math.BigDecimal totalPagos = java.math.BigDecimal.ZERO;
+        if (getBeanFacturacion().getListaFormasPagoAgregadas() != null) {
+            for (ec.mileniumtech.educafacil.modelo.persistencia.entity.FormaPagoFactura fp : getBeanFacturacion().getListaFormasPagoAgregadas()) {
+                if (fp.getValor() != null) {
+                    totalPagos = totalPagos.add(fp.getValor());
+                }
+            }
+        }
+        return totalFactura.subtract(totalPagos);
+    }
+
+    public boolean isSaldoPendiente() {
+        return getSaldoRestante().compareTo(java.math.BigDecimal.ZERO) > 0;
+    }
+
+    public boolean isSaldoExcedido() {
+        return getSaldoRestante().compareTo(java.math.BigDecimal.ZERO) < 0;
+    }
+
+    public boolean isSaldoCero() {
+        return getSaldoRestante().compareTo(java.math.BigDecimal.ZERO) == 0;
+    }
+
+    public java.math.BigDecimal getSaldoAbsoluto() {
+        return getSaldoRestante().abs();
+    }
 }
+

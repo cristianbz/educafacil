@@ -80,6 +80,7 @@ import jakarta.inject.Named;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
+import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -135,7 +136,7 @@ public class BackingListadoEstudiantes implements Serializable {
 			getBeanListadoEstudiantes().getOfertaSeleccionada().setOcurFechaFin(new Date());
 			getBeanListadoEstudiantes().getOfertaSeleccionada().setOcurFechaInicio(new Date());
 			InputStream reportStream = getClass().getResourceAsStream("/reports/reporteMatriculadosCurso.jasper");
-	        jasperReport = (JasperReport) JRLoader.loadObject(reportStream);
+	        jasperReport = (JasperReport) JRLoader.loadObject(reportStream);		
 		}catch(Exception e) {
 			log.error("Error al generar reporte de pagos", e);
 			throw new RuntimeException(e);
@@ -160,7 +161,6 @@ public class BackingListadoEstudiantes implements Serializable {
 				Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.noHayDatos"));
 				Mensaje.actualizarComponente("growl");
 			}
-			Mensaje.ocultarDialogo("dlgBuscar");	
 			
 
 	}
@@ -416,9 +416,7 @@ public class BackingListadoEstudiantes implements Serializable {
 		GeneracionPdf.generarCertificado(getBeanListadoEstudiantes().getMatriculaSeleccionada(), getBeanLogin(), getMensajesBacking());
 	}
 	public void mostrarDialogoBuscar() {
-		
 		nuevaBusqueda();
-		Mensaje.verDialogo("dlgBuscar");
 	}
 	
 	public void cargarOfertaCursos() {
