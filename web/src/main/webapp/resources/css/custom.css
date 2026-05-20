@@ -444,6 +444,7 @@ body.sidebar-mobile-open {
     .seguimiento-motivos-checkbox .ui-selectmanycheckbox .ui-grid-responsive .ui-g-4 {
         width: 100% !important;
     }
+}
 /* Invoicing Dialog Enhancements */
 .invoice-dialog {
     max-width: 1200px !important;
@@ -492,5 +493,264 @@ body.sidebar-mobile-open {
 
 .ui-inputgroup .ui-button {
     margin-bottom: 0 !important;
+}
+
+/* Dashboard Invoices KPI Cards */
+.dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+    animation: fadeIn 0.4s ease-out;
+}
+
+.stats-card {
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.stats-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.stats-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+}
+
+.stats-card-primary::before { background: var(--primary-color); }
+.stats-card-success::before { background: var(--success-color); }
+.stats-card-warning::before { background: var(--warning-color); }
+.stats-card-danger::before { background: var(--danger-color); }
+
+.stats-card-primary .stats-icon-wrapper { background: rgba(37, 99, 235, 0.1); color: var(--primary-color); }
+.stats-card-success .stats-icon-wrapper { background: rgba(16, 185, 129, 0.1); color: var(--success-color); }
+.stats-card-warning .stats-icon-wrapper { background: rgba(245, 158, 11, 0.1); color: var(--warning-color); }
+.stats-card-danger .stats-icon-wrapper { background: rgba(239, 68, 68, 0.1); color: var(--danger-color); }
+
+.stats-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.stats-label {
+    font-size: 0.825rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.stats-value {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1.2;
+}
+
+.stats-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+    transition: transform 0.3s ease;
+}
+
+.stats-card:hover .stats-icon-wrapper {
+    transform: scale(1.1) rotate(5deg);
+}
+
+/* Invoicing Two-Column Builder & Sticky Summary */
+.invoice-dialog-content {
+    background: #f8fafc !important;
+}
+
+.invoice-summary-card {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 16px !important;
+    padding: 1.75rem !important;
+    box-shadow: var(--shadow-lg) !important;
+    position: sticky;
+    top: 1rem;
+}
+
+.invoice-summary-card .ui-panel-titlebar {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+    padding: 0 0 1rem 0 !important;
+    font-size: 1.15rem !important;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+    color: #94a3b8;
+}
+
+.summary-row-highlight {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #cbd5e1;
+}
+
+.summary-total-container {
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px dashed rgba(255, 255, 255, 0.15);
+}
+
+.summary-total-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #38bdf8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.summary-total-value {
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin-top: 0.25rem;
+}
+
+/* Balance widget for payment verification */
+.payment-balance-widget {
+    margin-top: 1.5rem;
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.payment-balance-widget.unbalanced {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+    border-color: rgba(245, 158, 11, 0.2);
+}
+
+.payment-balance-widget.balanced {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border-color: rgba(16, 185, 129, 0.2);
+}
+
+.payment-balance-widget.error {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.2);
+}
+
+.payment-balance-widget i {
+    font-size: 1.2rem;
+}
+
+/* Form Styles inside Invoice Panels */
+.invoice-section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+}
+
+.invoice-section-title i {
+    color: var(--primary-color);
+}
+
+.client-status-card {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.client-avatar-placeholder {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    color: white;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    margin-right: 0.75rem;
+}
+
+.client-info-details {
+    display: flex;
+    align-items: center;
+}
+
+/* Custom Tag Badges for SRI states */
+.sri-tag {
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.03em !important;
+    font-size: 0.75rem !important;
+    padding: 0.25rem 0.6rem !important;
+    border-radius: 6px !important;
+}
+
+.sri-tag-authorized {
+    background-color: #d1fae5 !important;
+    color: #065f46 !important;
+    border: 1px solid #a7f3d0 !important;
+}
+
+.sri-tag-pending {
+    background-color: #fef3c7 !important;
+    color: #92400e !important;
+    border: 1px solid #fde68a !important;
+}
+
+.sri-tag-rejected {
+    background-color: #fee2e2 !important;
+    color: #991b1b !important;
+    border: 1px solid #fca5a5 !important;
+}
+
+.sri-tag-annulled {
+    background-color: #f3f4f6 !important;
+    color: #374151 !important;
+    border: 1px solid #e5e7eb !important;
 }
 

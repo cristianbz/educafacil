@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reporteMatriculadosCurso" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="b5743e73-4f32-40f2-bec9-f8b8a9136787">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<parameter name="parametroCurso" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="estudiante" class="ec.mileniumtech.educafacil.modelo.persistencia.entity.Estudiante">
+		<fieldDescription><![CDATA[estudiante]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="58" splitType="Stretch">
+			<staticText>
+				<reportElement x="150" y="20" width="330" height="30" uuid="e10bfde3-324a-4f7c-9433-9ac6aba97cd7"/>
+				<textElement>
+					<font size="16"/>
+				</textElement>
+				<text><![CDATA[REPORTE DE ALUMNOS MATRICULADOS]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch">
+			<textField>
+				<reportElement x="77" y="7" width="300" height="20" uuid="783cbee6-051c-4726-ba36-3039fed69c69"/>
+				<textFieldExpression><![CDATA[$P{parametroCurso}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="17" y="7" width="60" height="20" uuid="308e3a70-c550-4656-9232-d4528906cc9f"/>
+				<textElement>
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CURSO:]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="25" splitType="Stretch">
+			<staticText>
+				<reportElement x="20" y="0" width="180" height="18" uuid="fad618c4-9eff-49f2-bdcd-29ca588c959b">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="c9b9b4c2-376b-4a70-8eeb-f57f70ec26dd"/>
+				</reportElement>
+				<textElement>
+					<font isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Apellidos y Nombres]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="370" y="0" width="60" height="18" uuid="762c5616-5e01-4550-a130-e67d791624fe">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="c9b9b4c2-376b-4a70-8eeb-f57f70ec26dd"/>
+				</reportElement>
+				<textElement>
+					<font isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Cédula]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="490" y="0" width="60" height="18" uuid="dcf21060-0948-47fa-a5a4-a7c1678016b6">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="c9b9b4c2-376b-4a70-8eeb-f57f70ec26dd"/>
+				</reportElement>
+				<textElement>
+					<font isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Teléfono]]></text>
+			</staticText>
+			<line>
+				<reportElement x="10" y="22" width="550" height="1" uuid="a192ad8f-eb08-4936-9a85-5d84b3f41b75"/>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="33" splitType="Stretch">
+			<textField>
+				<reportElement x="10" y="2" width="160" height="30" uuid="32be0962-4d08-4b9a-99fd-d5571018195c">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="c9b9b4c2-376b-4a70-8eeb-f57f70ec26dd"/>
+				</reportElement>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{estudiante}.getPersona().getPersApellidos()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="180" y="0" width="150" height="30" uuid="a5fdc6e7-4982-46bd-a0b0-8aa270c9af73">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="923df0be-1a46-43b4-8935-53f87c79343b"/>
+				</reportElement>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{estudiante}.getPersona().getPersNombres()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="350" y="0" width="100" height="30" uuid="12fec907-3574-400a-b2b9-a6d52498991e">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="923df0be-1a46-43b4-8935-53f87c79343b"/>
+				</reportElement>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{estudiante}.getPersona().getPersDocumentoIdentidad()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="470" y="2" width="100" height="30" uuid="ef511627-3e5c-41f3-83ed-ae41fdc51d0a">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="923df0be-1a46-43b4-8935-53f87c79343b"/>
+				</reportElement>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{estudiante}.getPersona().getPersTelefonoMobil()]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>
