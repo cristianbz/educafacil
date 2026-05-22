@@ -287,7 +287,7 @@ public class BackingFacturacion implements Serializable {
             if (empresas != null && !empresas.isEmpty()) {
                 df.setImpuestoIva(empresas.get(0).getEmpmPorcentajeIva());
             } else {
-                df.setImpuestoIva(0);
+                df.setImpuestoIva(BigDecimal.ZERO);
             }
             
             // Si el precio viene del ítem
@@ -318,8 +318,8 @@ public class BackingFacturacion implements Serializable {
             subtotal = subtotal.add(precio.multiply(cant));
             descuentoTotal = descuentoTotal.add(desc);
             
-            if (df.getImpuestoIva() != null && df.getImpuestoIva() > 0) {
-                BigDecimal iva = new BigDecimal(df.getImpuestoIva()).divide(new BigDecimal(100));
+            if (df.getImpuestoIva() != null && df.getImpuestoIva().compareTo(BigDecimal.ZERO) > 0) {
+                BigDecimal iva = df.getImpuestoIva().divide(new BigDecimal(100));
                 totalImpuestos = totalImpuestos.add(subtotalItem.multiply(iva));
             }
         }
@@ -398,7 +398,7 @@ public class BackingFacturacion implements Serializable {
                 totalPagos = totalPagos.add(fp.getValor());
             }
 
-            if (totalPagos.compareTo(totalFactura) != 0) {
+            if (totalPagos.compareTo(totalFactura.setScale(2,RoundingMode.HALF_UP)) != 0) {
                 throw new Exception("La suma de las formas de pago (" + totalPagos + ") no coincide con el total de la factura (" + totalFactura + ").");
             }
 
@@ -435,7 +435,7 @@ public class BackingFacturacion implements Serializable {
             puntoEmisionDao.actualizar(puem);
             
             for (DetalleFactura df : f.getDetalles()) {
-                BigDecimal tasaImpuesto = BigDecimal.valueOf(df.getImpuestoIva()).divide(
+                BigDecimal tasaImpuesto = df.getImpuestoIva().divide(
                         BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP
                     );
 
@@ -616,7 +616,7 @@ public class BackingFacturacion implements Serializable {
                 }
             }
         }
-        return totalFactura.subtract(totalPagos);
+        return totalFactura.setScale(2,RoundingMode.HALF_UP).subtract(totalPagos.setScale(2,RoundingMode.HALF_UP));
     }
 
     public boolean isSaldoPendiente() {

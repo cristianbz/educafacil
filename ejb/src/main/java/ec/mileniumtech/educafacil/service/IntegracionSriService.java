@@ -171,13 +171,13 @@ public class IntegracionSriService {
                 
                 ec.mileniumtech.educafacil.modelo.sri.Factura.Impuesto impDet = new ec.mileniumtech.educafacil.modelo.sri.Factura.Impuesto();
                 impDet.setCodigo("2"); // IVA
-                String codPorcDetalle = mapCodigoIva(empresa.getEmpmPorcentajeIva());
+                String codPorcDetalle = mapCodigoIva(empresa.getEmpmPorcentajeIva().intValueExact());
                 impDet.setCodigoPorcentaje(codPorcDetalle);
                 
                 // CORRECCIÓN 1: La base imponible es directamente el total sin impuesto del detalle
                 impDet.setBaseImponible(det.getPrecioTotalSinImpuesto());
                 
-                BigDecimal tarifaDetalle = BigDecimal.valueOf(empresa.getEmpmPorcentajeIva() != null ? empresa.getEmpmPorcentajeIva() : 0);
+                BigDecimal tarifaDetalle = empresa.getEmpmPorcentajeIva() != null ? empresa.getEmpmPorcentajeIva() : BigDecimal.ZERO;
                 impDet.setTarifa(tarifaDetalle.toPlainString());
                 
                 // CORRECCIÓN 2: El IVA se calcula directamente sobre la base (det.getPrecioTotalSinImpuesto())
@@ -196,7 +196,7 @@ public class IntegracionSriService {
         // SRI requiere totales con impuestos
         TotalImpuesto ti = new TotalImpuesto();
         ti.setCodigo("2"); // IVA
-        ti.setCodigoPorcentaje(mapCodigoIva(empresa.getEmpmPorcentajeIva()));
+        ti.setCodigoPorcentaje(mapCodigoIva(empresa.getEmpmPorcentajeIva().intValueExact()));
         ti.setBaseImponible(facturaEntity.getSubtotal().subtract(facturaEntity.getDescuentoTotal()).setScale(2, RoundingMode.HALF_UP));
         ti.setValor(facturaEntity.getTotalImpuestos().setScale(2, RoundingMode.HALF_UP));
         infoFact.getTotalConImpuestosList().add(ti);

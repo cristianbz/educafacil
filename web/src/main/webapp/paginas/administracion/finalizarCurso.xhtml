@@ -8,153 +8,368 @@
 <ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
 	
 	<ui:define name="contenido">
-			<f:event listener="#{backingLogin.validarSesion()}"
-		type="preRenderView" />
-	<h:form id="formFinCursos" prependId="false">
-		<p:dialog widgetVar="dlgEnProc" header="Por favor espere.."
-			draggable="false" modal="true" resizable="false" closable="false"
-			responsive="true" style="font-size: 10px;">
-			<h:graphicImage value="/resources/img/cargando.gif" width="250"
-				height="250" />
-		</p:dialog>
+		<f:event listener="#{backingLogin.validarSesion()}" type="preRenderView" />
 		
-		<p:dialog widgetVar="dlgFinCursoAlumno" showEffect="fade"
-			hideEffect="fade"  modal="true" header="#{titulos['finalizarMatricula']}"
-			appendTo="@(body)">
-			<p:scrollPanel mode="native"
-				style="max-height:450px; max-width:270px;">
-				<div class="ui-fluid p-formgrid p-grid">
-				<div class="p-field p-col-12 p-md-12">
-					<p:outputLabel value="Motivo de Desercion" />
-				</div>
-				<div class="p-field p-col-12 p-md-12">
-					<p:inputTextarea id="detalleAbandono" value="#{backingFinalizarCurso.beanFinalizarCurso.matriculaSeleccionada.matrMotivoAbandono}" 
-						tabindex="5" maxlength="50" required="true" requiredMessage="#{mensajes['campoRequerido']}" />
-				</div>
-				<div class="p-field p-col-12 p-md-12">
-					<p:message for="detalleAbandono" id="msgDetalle"/>
-				</div>
-				<div class="p-field p-col-12 p-md-6">
-					<p:commandButton process="@this detalleAbandono" update="growl msgDetalle panelAlumnos" value="#{botones['grabar']}" icon="#{botones['icono.grabar']}" 
-						actionListener="#{backingFinalizarCurso.grabarFinalizarCursoAlumno()}" partialSubmit="true"/>
-				</div>
-				<div class="p-field p-col-12 p-md-6">
-					<p:commandButton value="#{botones['cancelar']}" process="@this" icon="#{botones['icono.cancelar']}" oncomplete="PF('dlgFinCursoAlumno').hide();"/>
-				</div>
-				</div>
-			</p:scrollPanel>
-		</p:dialog>	
-		
-		<p:dialog widgetVar="dlgFinalCurso" showEffect="fade" closable="false" resizable="true"
-			hideEffect="fade"  modal="true" header="#{titulos['estudiantesCurso']}"
-			appendTo="@(body)">
-			<p:scrollPanel mode="native"
-				style="max-height:450px; max-width:1200px;">
-			<p:outputPanel id="panelAlumnos">				
-					<p:dataTable id="tblmatriculados" 
-						value="#{beanFinalizarCurso.listaMatriculadosCurso}"
-						paginator="true" rows="3" reflow="true"
-						emptyMessage="#{mensajes['noRegistros']}" var="alumno">
-						<p:column headerText="#{etiquetas['estudiante']}" filterBy="#{alumno.estudiante.persona.persApellidos}" filterMatchMode="contains">
-							#{alumno.estudiante.persona.persApellidos} #{alumno.estudiante.persona.persNombres}
-						</p:column>
-						<p:column headerText="#{etiquetas['estado']}" style="width:200px;">
-							<p:selectOneMenu value="#{alumno.matrEstado}">
-							    <f:selectItem itemLabel="Culminado" itemValue="INSMAT05" />
-							    <f:selectItem itemLabel="Desertado" itemValue="INSMAT03" />
-							</p:selectOneMenu>
-						</p:column>					
-						<p:column style="width:45px;">
-							<p:commandLink  process="@this tblmatriculados" 
-								title="Finalizar matricula alumno" update="growl"
-								action="#{backingFinalizarCurso.mostrarDialogoFinalizarAlumnoCurso()}" partialSubmit="true">
-								<f:setPropertyActionListener value="#{alumno}" target="#{beanFinalizarCurso.matriculaSeleccionada}"></f:setPropertyActionListener>
-								<i class="pi pi-chevron-circle-down" style="font-size: 1em; color: green;"></i>	
-							</p:commandLink>
-						</p:column>
-					</p:dataTable>
-					<br />
-					<br />
-					<h:panelGrid columns="2">
-						<p:commandButton value="#{botones['finalizarCurso']}"
-							process="@this tblmatriculados" update="growl"
-							icon="#{botones['icono.finalizar']}" partialSubmit="true"
-							actionListener="#{backingFinalizarCurso.mostrarDialogoGrabar()}" />
-						<p:commandButton value="#{botones['cancelar']}" process="@this"
-							icon="#{botones['icono.cancelar']}"
-							actionListener="#{backingFinalizarCurso.cancelarFinalizacion()}"
-							update="panelAlumnos" />
-					</h:panelGrid>
-			</p:outputPanel>
-			</p:scrollPanel>
-		</p:dialog>
-		
-		<p:growl id="growl" life="3000" showDetail="true" />
-		<p:dialog widgetVar="dlgFinalizar" showEffect="fade" hideEffect="fade"
-			modal="true" appendTo="@(body)" header="#{titulos['actualizar']}"
-			width="250" closable="true" resizable="false">
-			<h:panelGrid columns="2">
-				<p:commandButton value="#{botones['grabar']}"
-					actionListener="#{backingFinalizarCurso.procesaFinalizacionCurso()}"
-					oncomplete="PF('dlgFinalizar').hide();" partialSubmit="true"
-					process="@this panelAlumnos" icon="#{botones['icono.grabar']}"
-					update=" panelOfertaCursos panelAlumnos" />
-				<p:commandButton icon="#{botones['icono.cancelar']}"
-					value="#{botones['cancelar']}"
-					oncomplete="PF('dlgFinalizar').hide();" process="@this" />
-			</h:panelGrid>
-		</p:dialog>
-				<p:outputPanel id="panelOfertaCursos">
-					<p:breadCrumb styleClass="mb-3">
-					<p:menuitem value="Categorias" icon="pi pi-home" outcome="/paginas/index?faces-redirect=true" />
-					<p:menuitem value="Administración" />
-					<p:menuitem value="Finalizar cursos" />
-				</p:breadCrumb>
-					
+		<h:form id="formFinCursos" prependId="false">
+			<p:growl id="growl" life="3000" showDetail="true" />
 			
-
-				<p:dataTable sortBy="#{oferta.ofertaCapacitacion.area.areaNombre}" reflow="true"
-					emptyMessage="#{mensajes['noRegistros']}"
-					value="#{backingFinalizarCurso.beanFinalizarCurso.listaCursosAbiertos}"
-					paginator="true" rows="10" var="oferta" id="tablaOferta">
-					<p:column headerText="#{etiquetas['curso']}"
-						filterBy="#{oferta.ofertaCapacitacion.curso.cursNombre}"
-						filterMatchMode="contains">
-						#{oferta.ofertaCapacitacion.curso.cursNombre}
-					</p:column>
-					<p:column headerText="#{etiquetas['tipoCapacitacion']}" style="width:200px;">
-						<p:outputLabel
-							value="#{oferta.ocurTipo.equals('TCAPA01')?'Curso':oferta.ocurTipo.equals('TCAPA02')?'Taller':'Seminario'}" />
-					</p:column>
-					<p:column headerText="#{etiquetas['instructor']}" style="width:250px;">
-						<p:outputLabel
-							value="#{oferta.instructor.persona.persApellidos} #{oferta.instructor.persona.persNombres}" />
-					</p:column>
-					<p:column headerText="#{etiquetas['fechaInicioFin']}" style="width:250px;">
-						<p:outputLabel value="#{oferta.ocurFechaInicio}" id="fechaInicio">
-							<f:convertDateTime pattern="yyyy-MM-dd" for="fechaInicio" />
-						</p:outputLabel>
+			<!-- DIÁLOGO DE PROCESAMIENTO / CARGA -->
+			<p:dialog widgetVar="dlgEnProc" draggable="false" modal="true"
+				resizable="false" closable="false" responsive="true"
+				styleClass="ui-dialog shadow-md" style="font-size: 11px; text-align: center; border: none;">
+				<h:graphicImage value="/resources/img/cargando.gif" width="180" height="180" style="margin: 0 auto; display: block;" />
+				<div style="font-weight: 600; color: var(--text-muted); margin-top: 0.5rem;">Cargando datos, por favor espere...</div>
+			</p:dialog>
+			
+			<!-- DIÁLOGO DE DESERCION DE ALUMNO -->
+			<p:dialog widgetVar="dlgFinCursoAlumno" showEffect="fade" hideEffect="fade"
+				modal="true" header="#{titulos['finalizarMatricula']}" styleClass="ui-dialog shadow-lg"
+				width="420" resizable="false" appendTo="@(body)">
+				
+				<p:outputPanel id="panelFinAlumno" style="padding: 10px;">
+					<div class="ui-fluid">
+						<!-- Encabezado visual del diálogo -->
+						<div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">
+							<div style="width: 40px; height: 40px; border-radius: 8px; background: linear-gradient(135deg, #fef2f2, #fee2e2); border: 1px solid #fca5a5; display: flex; align-items: center; justify-content: center;">
+								<i class="pi pi-user-minus" style="color: var(--danger-color); font-size: 1.15rem;"></i>
+							</div>
+							<div>
+								<span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Cierre de Matrícula</span>
+								<div style="font-size: 0.9rem; font-weight: 700; color: var(--text-main);">Registrar Deserción</div>
+							</div>
+						</div>
 						
-						<p:outputLabel value="#{oferta.ocurFechaFin}" id="fechaFin">
-							<f:convertDateTime pattern="yyyy-MM-dd" for="fechaFin" />
-						</p:outputLabel>
+						<!-- Detalle del campo -->
+						<div style="margin-bottom: 1.25rem;">
+							<p:outputLabel value="Motivo de Deserción *" for="detalleAbandono"
+								style="display: block; font-weight: 600; color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.4rem;" />
+							<p:inputTextarea id="detalleAbandono" value="#{backingFinalizarCurso.beanFinalizarCurso.matriculaSeleccionada.matrMotivoAbandono}" 
+								placeholder="Escriba aquí la justificación detallada..."
+								tabindex="5" rows="4" maxlength="50" required="true" requiredMessage="#{mensajes['campoRequerido']}" />
+							<p:message for="detalleAbandono" id="msgDetalle" style="margin-top: 0.25rem;" />
+						</div>
+						
+						<!-- Botones de Acción -->
+						<div style="display: flex; gap: 0.5rem; justify-content: flex-end; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+							<p:commandButton value="#{botones['cancelar']}" process="@this" 
+								icon="#{botones['icono.cancelar']}" oncomplete="PF('dlgFinCursoAlumno').hide();"
+								styleClass="ui-button-outlined ui-button-secondary" style="padding: 0.4rem 1rem !important;" />
+							
+							<p:commandButton process="@this detalleAbandono" update="growl msgDetalle panelAlumnos" 
+								value="#{botones['grabar']}" icon="#{botones['icono.grabar']}" 
+								actionListener="#{backingFinalizarCurso.grabarFinalizarCursoAlumno()}" partialSubmit="true"
+								styleClass="ui-button-success" style="padding: 0.4rem 1rem !important;" />
+						</div>
+					</div>
+				</p:outputPanel>
+			</p:dialog>	
+			
+			<!-- DIÁLOGO ESTUDIANTES DEL CURSO -->
+			<p:dialog widgetVar="dlgFinalCurso" showEffect="fade" hideEffect="fade" 
+				modal="true" header="#{titulos['estudiantesCurso']}" styleClass="ui-dialog shadow-lg"
+				width="850" resizable="false" closable="false" appendTo="@(body)">
+				
+				<p:scrollPanel mode="native" style="max-height: 520px; border: none; padding-right: 8px;">
+					<p:outputPanel id="panelAlumnos">
+						<div class="ui-fluid" style="padding: 10px;">
+							
+							<!-- Encabezado de Estudiantes -->
+							<div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color);">
+								<div style="width: 42px; height: 42px; border-radius: 10px; background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 1px solid #a7f3d0; display: flex; align-items: center; justify-content: center;">
+									<i class="pi pi-users" style="color: var(--success-color); font-size: 1.25rem;"></i>
+								</div>
+								<div>
+									<span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Cierre Académico</span>
+									<div style="font-size: 0.95rem; font-weight: 700; color: var(--text-main); margin-top: 2px;">
+										#{backingFinalizarCurso.beanFinalizarCurso.ofertaCursosSeleccionado.ofertaCapacitacion.curso.cursNombre}
+									</div>
+								</div>
+							</div>
+							
+							<!-- Subtítulo / Info de la Oferta -->
+							<div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 10px; padding: 0.75rem 1rem; margin-bottom: 1.25rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+								<div style="display: flex; align-items: center; gap: 8px;">
+									<i class="pi pi-user" style="color: var(--primary-color); font-size: 1.1rem;"></i>
+									<div>
+										<span style="font-size: 0.75rem; color: var(--text-muted); display: block; font-weight: 600; text-transform: uppercase;">Instructor</span>
+										<span style="font-size: 0.85rem; color: var(--text-main); font-weight: 600;">
+											#{backingFinalizarCurso.beanFinalizarCurso.ofertaCursosSeleccionado.instructor.persona.persApellidos} #{backingFinalizarCurso.beanFinalizarCurso.ofertaCursosSeleccionado.instructor.persona.persNombres}
+										</span>
+									</div>
+								</div>
+								<div style="display: flex; align-items: center; gap: 8px;">
+									<i class="pi pi-clock" style="color: var(--secondary-color); font-size: 1.1rem;"></i>
+									<div>
+										<span style="font-size: 0.75rem; color: var(--text-muted); display: block; font-weight: 600; text-transform: uppercase;">Horario</span>
+										<span style="font-size: 0.85rem; color: var(--text-main); font-weight: 600;">
+											#{backingFinalizarCurso.beanFinalizarCurso.ofertaCursosSeleccionado.ocurHorario}
+										</span>
+									</div>
+								</div>
+							</div>
+
+							<!-- Tabla de Estudiantes Matriculados -->
+							<p:dataTable id="tblmatriculados" 
+								value="#{beanFinalizarCurso.listaMatriculadosCurso}"
+								paginator="true" rows="5" reflow="true"
+								styleClass="ui-datatable shadow-sm"
+								emptyMessage="#{mensajes['noRegistros']}" var="alumno">
+								
+								<p:column headerText="#{etiquetas['estudiante']}" filterBy="#{alumno.estudiante.persona.persApellidos}" filterMatchMode="contains" style="font-weight: 600; color: var(--text-main);">
+									<div style="display: flex; align-items: center; gap: 0.5rem;">
+										<div style="width: 28px; height: 28px; border-radius: 50%; background: #f8fafc; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.75rem;">
+											<i class="pi pi-user"></i>
+										</div>
+										<span>#{alumno.estudiante.persona.persApellidos} #{alumno.estudiante.persona.persNombres}</span>
+									</div>
+								</p:column>
+								
+								<p:column headerText="#{etiquetas['estado']}" style="width:200px;">
+									<p:selectOneMenu value="#{alumno.matrEstado}" style="width: 100%;">
+										<f:selectItem itemLabel="Culminado" itemValue="INSMAT05" />
+										<f:selectItem itemLabel="Desertado" itemValue="INSMAT03" />
+									</p:selectOneMenu>
+								</p:column>
+								
+								<p:column style="width:70px; text-align: center;" headerText="Matrícula">
+									<p:commandLink process="@this tblmatriculados" 
+										title="Confirmar o registrar deserción" update="growl"
+										action="#{backingFinalizarCurso.mostrarDialogoFinalizarAlumnoCurso()}" partialSubmit="true"
+										style="display: inline-block;">
+										<f:setPropertyActionListener value="#{alumno}" target="#{beanFinalizarCurso.matriculaSeleccionada}"></f:setPropertyActionListener>
+										<i class="pi pi-check-circle" 
+											style="font-size: 1.25rem; color: var(--success-color); transition: transform 0.2s;"
+											onmouseover="this.style.transform='scale(1.2)';"
+											onmouseout="this.style.transform='scale(1)';" />
+									</p:commandLink>
+								</p:column>
+							</p:dataTable>
+							
+							<!-- Botones de Acción al Final del Diálogo -->
+							<div style="display: flex; gap: 0.5rem; justify-content: flex-end; padding-top: 1rem; border-top: 1px solid var(--border-color); margin-top: 1.5rem;">
+								<p:commandButton value="#{botones['cancelar']}" process="@this"
+									icon="#{botones['icono.cancelar']}"
+									actionListener="#{backingFinalizarCurso.cancelarFinalizacion()}"
+									update="panelAlumnos"
+									styleClass="ui-button-outlined ui-button-secondary"
+									style="padding: 0.45rem 1.25rem !important;" />
+								
+								<p:commandButton value="#{botones['finalizarCurso']}"
+									process="@this tblmatriculados" update="growl"
+									icon="#{botones['icono.finalizar']}" partialSubmit="true"
+									actionListener="#{backingFinalizarCurso.mostrarDialogoGrabar()}"
+									styleClass="ui-button-success"
+									style="padding: 0.45rem 1.25rem !important;" />
+							</div>
+						</div>
+					</p:outputPanel>
+				</p:scrollPanel>
+			</p:dialog>
+			
+			<!-- DIÁLOGO CONFIRMACIÓN GRABAR / FINALIZAR -->
+			<p:dialog widgetVar="dlgFinalizar" showEffect="fade" hideEffect="fade"
+				modal="true" appendTo="@(body)" header="#{titulos['actualizar']}"
+				width="320" closable="true" resizable="false" styleClass="ui-dialog shadow-md">
+				<div style="text-align: center; padding: 1rem 0;">
+					<i class="pi pi-exclamation-triangle" style="font-size: 2.5rem; color: var(--warning-color); margin-bottom: 1rem;"></i>
+					<p style="color: var(--text-main); font-weight: 600; margin-bottom: 1.5rem;">¿Desea confirmar el cierre y finalización de este curso?</p>
+					<div style="display: flex; justify-content: center; gap: 0.5rem;">
+						<p:commandButton icon="#{botones['icono.cancelar']}" value="#{botones['cancelar']}" 
+							oncomplete="PF('dlgFinalizar').hide();" process="@this"
+							styleClass="ui-button-outlined ui-button-secondary" style="padding: 0.35rem 1rem !important;" />
+						<p:commandButton value="#{botones['grabar']}"
+							actionListener="#{backingFinalizarCurso.procesaFinalizacionCurso()}"
+							oncomplete="PF('dlgFinalizar').hide();" partialSubmit="true"
+							process="@this panelAlumnos" icon="#{botones['icono.grabar']}"
+							update="panelOfertaCursos panelAlumnos"
+							styleClass="ui-button-success" style="padding: 0.35rem 1rem !important;" />
+					</div>
+				</div>
+			</p:dialog>
+			
+			<!-- CONTENIDO PRINCIPAL DE LA PÁGINA -->
+			<p:outputPanel id="panelOfertaCursos">
+				
+				<!-- BREADCRUMB REDISEÑADO -->
+				<p:breadCrumb styleClass="ui-breadcrumb p-mb-3" style="border: none; background: transparent; padding-left: 0;">
+					<p:menuitem value="Categorias" icon="pi pi-home" outcome="/paginas/index?faces-redirect=true" />
+					<p:menuitem value="Administración" url="#" />
+					<p:menuitem value="Finalizar cursos" url="#" />
+				</p:breadCrumb>
+				
+				<!-- ENCABEZADO DE LA PÁGINA -->
+				<div class="page-header" style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+					<div class="page-title">
+						<h2 style="font-weight: 800; color: var(--text-main); margin: 0; font-size: 1.875rem;">Finalización de Cursos</h2>
+						<small style="color: var(--text-muted); font-size: 0.9rem;">Gestión de actas, cierre académico y registro de culminación o deserción de estudiantes</small>
+					</div>
+				</div>
+				
+				<!-- KPI / RESUMEN DASHBOARD DE CURSOS ABIERTOS -->
+				<div class="dashboard-stats" style="margin-bottom: 1.5rem;">
+					<!-- Total Cursos Abiertos -->
+					<div class="stats-card stats-card-primary shadow-sm">
+						<div class="stats-content">
+							<span class="stats-label">Cursos Abiertos</span>
+							<span class="stats-value">#{backingFinalizarCurso.beanFinalizarCurso.listaCursosAbiertos.size()}</span>
+						</div>
+						<div class="stats-icon-wrapper">
+							<i class="pi pi-calendar"></i>
+						</div>
+					</div>
+
+					<!-- Cursos -->
+					<div class="stats-card stats-card-success shadow-sm">
+						<div class="stats-content">
+							<span class="stats-label">Cursos</span>
+							<span class="stats-value" style="color: var(--success-color);">
+								#{backingFinalizarCurso.beanFinalizarCurso.listaCursosAbiertos.stream().filter(o -> 'TCAPA01'.equals(o.ocurTipo)).count()}
+							</span>
+						</div>
+						<div class="stats-icon-wrapper">
+							<i class="pi pi-bookmark"></i>
+						</div>
+					</div>
+
+					<!-- Talleres -->
+					<div class="stats-card stats-card-warning shadow-sm">
+						<div class="stats-content">
+							<span class="stats-label">Talleres</span>
+							<span class="stats-value" style="color: var(--warning-color);">
+								#{backingFinalizarCurso.beanFinalizarCurso.listaCursosAbiertos.stream().filter(o -> 'TCAPA02'.equals(o.ocurTipo)).count()}
+							</span>
+						</div>
+						<div class="stats-icon-wrapper">
+							<i class="pi pi-sliders-h"></i>
+						</div>
+					</div>
+					
+					<!-- Seminarios -->
+					<div class="stats-card stats-card-danger shadow-sm">
+						<div class="stats-content">
+							<span class="stats-label">Seminarios</span>
+							<span class="stats-value" style="color: var(--danger-color);">
+								#{backingFinalizarCurso.beanFinalizarCurso.listaCursosAbiertos.stream().filter(o -> !'TCAPA01'.equals(o.ocurTipo) and !'TCAPA02'.equals(o.ocurTipo)).count()}
+							</span>
+						</div>
+						<div class="stats-icon-wrapper">
+							<i class="pi pi-bell"></i>
+						</div>
+					</div>
+				</div>
+				
+				<!-- TABLA DE CURSOS ABIERTOS -->
+				<p:dataTable sortBy="#{oferta.ofertaCapacitacion.area.areaNombre}"
+					value="#{backingFinalizarCurso.beanFinalizarCurso.listaCursosAbiertos}"
+					reflow="true" rows="10" paginator="true"
+					widgetVar="tblOfertas"
+					rowKey="#{oferta.ocurId}"
+					id="tablaOferta"
+					var="oferta"
+					styleClass="ui-datatable shadow-sm"
+					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+					emptyMessage="No se encontraron cursos abiertos listos para finalización.">
+
+					<!-- Columna: Área (Agrupada) -->
+					<p:column headerText="#{etiquetas['area']}" groupRow="true" style="width: 180px; font-weight: 600; color: var(--text-main); vertical-align: middle;">
+						<div class="area-group-label" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+							<i class="pi pi-folder" style="color: var(--primary-color); font-size: 1rem;"></i>
+							<h:outputText value="#{oferta.ofertaCapacitacion.area.areaNombre}" />
+						</div>
 					</p:column>
-					<p:column style="width:50px;" >
+
+					<!-- Columna: Curso / Clasificación -->
+					<p:column headerText="#{etiquetas['curso']}" filterBy="#{oferta.ofertaCapacitacion.curso.cursNombre}" filterMatchMode="contains" style="min-width: 260px;">
+						<div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+							<!-- Icon with a dynamic gradient depending on ocurTipo -->
+							<div style="width: 42px; height: 42px; border-radius: 10px; background: #{oferta.ocurTipo.equals('TCAPA02') ? 'linear-gradient(135deg, #fef3c7, #fde68a)' : oferta.ocurTipo.equals('TCAPA01') ? 'linear-gradient(135deg, #eff6ff, #dbeafe)' : 'linear-gradient(135deg, #f3e8ff, #e9d5ff)'}; border: 1px solid #{oferta.ocurTipo.equals('TCAPA02') ? '#fde68a' : oferta.ocurTipo.equals('TCAPA01') ? '#bfdbfe' : '#ddd6fe'}; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">
+								<i class="pi #{oferta.ocurTipo.equals('TCAPA02') ? 'pi-sliders-h' : oferta.ocurTipo.equals('TCAPA01') ? 'pi-book' : 'pi-megaphone'}" 
+									style="color: #{oferta.ocurTipo.equals('TCAPA02') ? '#b45309' : oferta.ocurTipo.equals('TCAPA01') ? 'var(--primary-color)' : '#6b21a8'}; font-size: 1.1rem;"></i>
+							</div>
+							<div>
+								<div style="font-weight: 700; color: var(--text-main); font-size: 0.95rem; margin-bottom: 0.25rem;">
+									<h:outputText value="#{oferta.ofertaCapacitacion.curso.cursNombre}" />
+								</div>
+								<div style="display: flex; flex-wrap: wrap; gap: 0.4rem;">
+									<span style="font-size: 0.72rem; background: #fefce8; color: #92400e; border-radius: 6px; padding: 0.15rem 0.5rem; font-weight: 600; border: 1px solid #fde68a; display: inline-flex; align-items: center; gap: 3px;">
+										<i class="pi pi-star" style="font-size: 0.7rem;"></i>
+										<h:outputText value="#{oferta.ofertaCapacitacion.especialidad.espeNombre}" />
+									</span>
+									<span style="font-size: 0.72rem; background: #{oferta.ocurTipo.equals('TCAPA01') ? '#e0f2fe' : oferta.ocurTipo.equals('TCAPA02') ? '#fef3c7' : '#f3e8ff'}; color: #{oferta.ocurTipo.equals('TCAPA01') ? '#0369a1' : oferta.ocurTipo.equals('TCAPA02') ? '#b45309' : '#6b21a8'}; border-radius: 6px; padding: 0.15rem 0.5rem; font-weight: 700; border: 1px solid #{oferta.ocurTipo.equals('TCAPA01') ? '#bae6fd' : oferta.ocurTipo.equals('TCAPA02') ? '#fde68a' : '#e9d5ff'}; display: inline-flex; align-items: center; gap: 3px;">
+										<i class="pi #{oferta.ocurTipo.equals('TCAPA01') ? 'pi-bookmark' : oferta.ocurTipo.equals('TCAPA02') ? 'pi-sliders-h' : 'pi-bell'}" style="font-size: 0.7rem;"></i>
+										<h:outputText value="#{oferta.ocurTipo.equals('TCAPA01') ? 'Curso' : oferta.ocurTipo.equals('TCAPA02') ? 'Taller' : 'Seminario'}" />
+									</span>
+								</div>
+							</div>
+						</div>
+					</p:column>
+					
+					<!-- Columna: Tipo Capacitación -->
+					<p:column headerText="#{etiquetas['tipoCapacitacion']}" filterBy="#{oferta.ocurTipo}" filterMatchMode="exact" style="width: 160px; font-weight: 500;">
+						<span style="font-size: 0.85rem; background: #{oferta.ocurTipo.equals('TCAPA01') ? '#e0f2fe' : oferta.ocurTipo.equals('TCAPA02') ? '#fef3c7' : '#f3e8ff'}; color: #{oferta.ocurTipo.equals('TCAPA01') ? '#0369a1' : oferta.ocurTipo.equals('TCAPA02') ? '#b45309' : '#6b21a8'}; border-radius: 6px; padding: 0.25rem 0.6rem; font-weight: 700; border: 1px solid #{oferta.ocurTipo.equals('TCAPA01') ? '#bae6fd' : oferta.ocurTipo.equals('TCAPA02') ? '#fde68a' : '#e9d5ff'}; display: inline-flex; align-items: center; gap: 4px;">
+							<i class="pi #{oferta.ocurTipo.equals('TCAPA01') ? 'pi-bookmark' : oferta.ocurTipo.equals('TCAPA02') ? 'pi-sliders-h' : 'pi-bell'}" style="font-size: 0.75rem;"></i>
+							<h:outputText value="#{oferta.ocurTipo.equals('TCAPA01') ? 'Curso' : oferta.ocurTipo.equals('TCAPA02') ? 'Taller' : 'Seminario'}" />
+						</span>
+					</p:column>
+					
+					<!-- Columna: Instructor -->
+					<p:column headerText="#{etiquetas['instructor']}" filterBy="#{oferta.instructor.persona.persApellidos}" filterMatchMode="contains" style="min-width: 180px;">
+						<div style="display: flex; align-items: center; gap: 0.6rem;">
+							<div style="width: 32px; height: 32px; border-radius: 50%; background: #f1f5f9; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; color: var(--primary-color); font-weight: 700; font-size: 0.85rem;">
+								<i class="pi pi-user" style="font-size: 0.9rem;"></i>
+							</div>
+							<div>
+								<span style="font-weight: 600; color: var(--text-main); display: block; font-size: 0.9rem;">
+									#{oferta.instructor.persona.persApellidos} #{oferta.instructor.persona.persNombres}
+								</span>
+							</div>
+						</div>
+					</p:column>
+					
+					<!-- Columna: Fecha Inicio Fin -->
+					<p:column headerText="#{etiquetas['fechaInicioFin']}" style="width: 220px;">
+						<div style="display: flex; flex-direction: column; gap: 6px;">
+							<div style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem;">
+								<i class="pi pi-calendar-plus" style="color: var(--primary-color); font-size: 0.9rem;"></i>
+								<span style="color: var(--text-muted); font-weight: 500;">Inicio:</span>
+								<span style="color: var(--text-main); font-weight: 600;">
+									<p:outputLabel value="#{oferta.ocurFechaInicio}" id="fechaInicio">
+										<f:convertDateTime pattern="yyyy-MM-dd" for="fechaInicio" />
+									</p:outputLabel>
+								</span>
+							</div>
+							<div style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem;">
+								<i class="pi pi-calendar-minus" style="color: var(--danger-color); font-size: 0.9rem;"></i>
+								<span style="color: var(--text-muted); font-weight: 500;">Fin:</span>
+								<span style="color: var(--text-main); font-weight: 600;">
+									<p:outputLabel value="#{oferta.ocurFechaFin}" id="fechaFin">
+										<f:convertDateTime pattern="yyyy-MM-dd" for="fechaFin" />
+									</p:outputLabel>
+								</span>
+							</div>
+						</div>
+					</p:column>
+					
+					<!-- Columna: Acciones -->
+					<p:column style="width: 100px; text-align: center;" headerText="Alumnos">
 						<p:commandLink process="@this panelAlumnos" title="#{tooltip['estudiantes']}"
-							 update="panelAlumnos"
+							update="panelAlumnos"
 							onstart="PF('dlgEnProc').show();"
 							oncomplete="PF('dlgEnProc').hide();" ajax="true"
-							action="#{backingFinalizarCurso.cargarAlumnosCurso()}">
+							action="#{backingFinalizarCurso.cargarAlumnosCurso()}"
+							style="display: inline-block;">
 							<f:setPropertyActionListener value="#{oferta}"
 								target="#{backingFinalizarCurso.beanFinalizarCurso.ofertaCursosSeleccionado}" />
-							<i class="pi pi-users" style="font-size: 1em; color: green;"></i>		
+							<i class="pi pi-users" 
+								style="font-size: 1.3rem; color: var(--success-color); transition: transform 0.2s;"
+								onmouseover="this.style.transform='scale(1.2)';"
+								onmouseout="this.style.transform='scale(1)';" />
 						</p:commandLink>
 					</p:column>
 				</p:dataTable>
-
-		</p:outputPanel>
-		
-	</h:form>
+				
+			</p:outputPanel>
+		</h:form>
 	</ui:define>
 
 </ui:composition>

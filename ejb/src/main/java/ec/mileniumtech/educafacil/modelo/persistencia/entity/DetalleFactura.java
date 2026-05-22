@@ -39,5 +39,5 @@ public class DetalleFactura {
     private BigDecimal descuento;
     
     @Transient
-    private Integer impuestoIva;
+    private BigDecimal impuestoIva;
 }
