@@ -6,40 +6,58 @@
 
 	<p:dialog widgetVar="dlgGrabaCurso" showEffect="fade" hideEffect="fade"
 		modal="true" appendTo="@(body)" closable="false"
-		header="#{titulos['agregaEditaCurso']}" id="iddlggrabar">
-		<p:outputPanel id="pnlCurso">
-			<p:outputLabel
-				value="#{backingCreacionCursos.beanCreacionCursos.curso.cursNombre}" />
-			<p:scrollPanel mode="native" style="max-height:450px; max-width:300px;">
-				<div class="ui-fluid p-formgrid p-grid">
-					<div class="p-field p-col-12 p-md-12">
+		header="#{titulos['agregaEditaCurso']}" id="iddlggrabar"
+		styleClass="ui-dialog shadow-lg" width="420">
 
-						<span class="ui-float-label ui-input-icon-right"
-							style="margin-top: 2em"><p:inputTextarea required="true"
-								requiredMessage="#{mensajes['campoRequerido']}"
-								value="#{backingCreacionCursos.beanCreacionCursos.curso.cursNombre}"
-								maxlength="150" id="nombrecurso">
-								<p:ajax process="@this pnlCurso" event="blur" />
-							</p:inputTextarea> <p:outputLabel value="#{etiquetas['curso']}:*" /> </span>
+		<p:outputPanel id="pnlCurso">
+			<div class="ui-fluid">
+
+				<!-- Encabezado del diálogo -->
+				<div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color);">
+					<div style="width: 42px; height: 42px; border-radius: 10px; background: linear-gradient(135deg, #eff6ff, #dbeafe); border: 1px solid #bfdbfe; display: flex; align-items: center; justify-content: center;">
+						<i class="pi pi-file-edit" style="color: var(--primary-color); font-size: 1.2rem;"></i>
 					</div>
-					<div class="p-field p-col-12 p-md-12">
-						<p:message for="nombrecurso" />
-					</div>
-					<div class="p-field p-col-12 p-md-12">
-						<p:commandButton value="#{botones['grabar']}"
-							process="@this pnlCurso"
-							update="tablaoferta growl pnlCurso nombrecurso"
-							partialSubmit="true" icon="#{botones['icono.grabar']}"
-							actionListener="#{backingCreacionCursos.grabarActualizarCurso()}" />
-					</div>
-					<div class="p-field p-col-12 p-md-12">
-						<p:commandButton value="#{botones['cancelar']}" process="@this"
-							oncomplete="PF('dlgGrabaCurso').hide();"
-							icon="#{botones['icono.cancelar']}" />
+					<div>
+						<span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Edición de nombre</span>
+						<div style="font-size: 0.95rem; font-weight: 700; color: var(--text-main);">
+							<p:outputLabel value="#{backingCreacionCursos.beanCreacionCursos.curso.cursNombre}" />
+						</div>
 					</div>
 				</div>
-			</p:scrollPanel>
 
+				<!-- Campo: Nombre del Curso -->
+				<div style="margin-bottom: 1.5rem;">
+					<p:outputLabel value="#{etiquetas['curso']} *" for="nombrecurso"
+						style="display: block; font-weight: 600; color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.5rem;" />
+					<p:inputTextarea required="true"
+						requiredMessage="#{mensajes['campoRequerido']}"
+						value="#{backingCreacionCursos.beanCreacionCursos.curso.cursNombre}"
+						maxlength="150" id="nombrecurso"
+						rows="3"
+						style="width: 100%; resize: vertical;">
+						<p:ajax process="@this pnlCurso" event="blur" />
+					</p:inputTextarea>
+					<p:message for="nombrecurso" style="margin-top: 0.25rem;" />
+					<small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 0.25rem; display: block;">Máximo 150 caracteres</small>
+				</div>
+
+				<!-- Botones de acción -->
+				<div style="display: flex; gap: 0.5rem; justify-content: flex-end; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+					<p:commandButton value="#{botones['cancelar']}" process="@this"
+						oncomplete="PF('dlgGrabaCurso').hide();"
+						icon="pi pi-times"
+						styleClass="ui-button-outlined ui-button-secondary"
+						style="padding: 0.45rem 1.1rem !important;" />
+					<p:commandButton value="#{botones['grabar']}"
+						process="@this pnlCurso"
+						update="tablaoferta growl pnlCurso nombrecurso"
+						partialSubmit="true" icon="pi pi-save"
+						styleClass="ui-button-success"
+						style="padding: 0.45rem 1.1rem !important;"
+						actionListener="#{backingCreacionCursos.grabarActualizarCurso()}" />
+				</div>
+
+			</div>
 		</p:outputPanel>
 
 	</p:dialog>

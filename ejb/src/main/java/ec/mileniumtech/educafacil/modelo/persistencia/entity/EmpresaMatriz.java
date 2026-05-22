@@ -1,6 +1,7 @@
 package ec.mileniumtech.educafacil.modelo.persistencia.entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -81,8 +82,8 @@ public class EmpresaMatriz implements Serializable{
 	@Column(name="empm_resolucion_agente")
 	private String empmResolucionAgente;
 	
-	@Column(name="empm_porcentaje_iva")
-	private Integer empmPorcentajeIva; 
+    @Column(name = "empm_porcentaje_iva", precision = 6, scale = 2, nullable = false)
+    private BigDecimal empmPorcentajeIva;
 	
 	
 	@OneToMany(mappedBy="empresaMatriz", fetch=FetchType.LAZY)

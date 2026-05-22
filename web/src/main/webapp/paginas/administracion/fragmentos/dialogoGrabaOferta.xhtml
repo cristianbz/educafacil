@@ -6,23 +6,44 @@
 
 	<p:dialog widgetVar="dlgGrabaOferta" showEffect="fade" hideEffect="fade"
 		modal="true" appendTo="@(body)" closable="false"
-		header="#{titulos['grabar']}" id="idgrabaoferta">
-		<p:scrollPanel mode="native" style="max-height:450px; max-width:500px;">
-			<div class="ui-fluid p-formgrid p-grid">
-				<div class="p-field p-col-12 p-md-12">
-					<p:commandButton value="#{botones['grabar']}"
-						icon="#{botones['icono.grabar']}" update="tablaoferta growl"
-						actionListener="#{backingCreacionCursos.grabarOferta()}"
-						process="@this "
-						oncomplete="PF('dlgGrabaOferta').hide(); PF('dlgNuevoCurso').hide();" />
+		header="#{titulos['grabar']}" id="idgrabaoferta"
+		styleClass="ui-dialog shadow-lg" width="400">
+
+		<div class="ui-fluid">
+
+			<!-- Encabezado del diálogo de confirmación -->
+			<div style="text-align: center; padding: 1.5rem 1rem 1rem 1rem;">
+				<div style="width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #d1fae5, #a7f3d0); border: 2px solid #6ee7b7; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem auto;">
+					<i class="pi pi-save" style="color: #065f46; font-size: 1.75rem;"></i>
 				</div>
-				<div class="p-field p-col-12 p-md-12">
-					<p:commandButton value="#{botones['cancelar']}"
-						oncomplete="PF('dlgGrabaOferta').hide();"
-						icon="#{botones['icono.cancelar']}" />
-				</div>
+				<h3 style="margin: 0 0 0.5rem 0; font-weight: 700; color: var(--text-main); font-size: 1.1rem;">Confirmar Registro</h3>
+				<p style="color: var(--text-muted); font-size: 0.875rem; margin: 0; line-height: 1.5;">
+					¿Deseas guardar la oferta de curso? Esta acción registrará la información ingresada en el catálogo.
+				</p>
 			</div>
-		</p:scrollPanel>
+
+			<!-- Separador -->
+			<div style="border-top: 1px solid var(--border-color); margin: 1rem 0;"></div>
+
+			<!-- Botones de acción -->
+			<div style="display: flex; gap: 0.5rem; justify-content: center; padding-bottom: 0.5rem;">
+				<p:commandButton value="#{botones['cancelar']}"
+					oncomplete="PF('dlgGrabaOferta').hide();"
+					icon="pi pi-times"
+					styleClass="ui-button-outlined ui-button-secondary"
+					style="padding: 0.5rem 1.5rem !important; min-width: 120px;" />
+				<p:commandButton value="#{botones['grabar']}"
+					icon="pi pi-check"
+					styleClass="ui-button-success"
+					style="padding: 0.5rem 1.5rem !important; min-width: 120px;"
+					update="tablaoferta growl panelResultados"
+					actionListener="#{backingCreacionCursos.grabarOferta()}"
+					process="@this"
+					oncomplete="PF('dlgGrabaOferta').hide(); PF('dlgNuevoCurso').hide();" />
+			</div>
+
+		</div>
+
 	</p:dialog>
 
 </ui:composition>

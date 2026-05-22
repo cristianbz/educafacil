@@ -164,11 +164,25 @@
                                 <p:selectOneMenu id="tipoEmision" value="#{backingEmpresa.beanEmpresa.empresa.empmTipoEmision}">
                                     <f:selectItem itemLabel="NORMAL" itemValue="1" />
                                 </p:selectOneMenu>
-                            </div>
+                            </div>                            
                             <div class="field mb-3">
+                            	<p:outputLabel value="%IVA:" for="txtIVA" />
+								<p:inputNumber id="txtIVA" value="#{backingEmpresa.beanEmpresa.empresa.empmPorcentajeIva}" required="true" symbol="%" decimalPlaces="0" maxValue="99" minValue="1">
+									<f:validateLongRange minimum="1" maximum="99" />
+								</p:inputNumber>
+							</div>
+							<div class="field mb-3">
                                 <p:outputLabel for="obligado" value="Obligado a llevar Contabilidad" />
                                 <p:selectBooleanButton id="obligado" value="#{backingEmpresa.beanEmpresa.empresa.empmObligadoContabilidad}" onLabel="SÍ" offLabel="NO" style="width:6rem" />
                             </div>
+                            <div class="field mb-3">
+                                <p:outputLabel for="contribuyente" value="Resolución Contribuyente Especial" />
+                                <p:inputText id="contribuyente" value="#{backingEmpresa.beanEmpresa.empresa.empmContribuyenteEspecial}" />
+                            </div>
+                            <div class="field mb-3">
+                                <p:outputLabel for="agente" value="Resolución Agente Retención" />
+                                <p:inputText id="agente" value="#{backingEmpresa.beanEmpresa.empresa.empmResolucionAgente}" />
+                            </div>	
                         </div>
                     </p:panel>
 

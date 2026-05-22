@@ -6,107 +6,121 @@
 
 	<p:dialog widgetVar="dlgNuevoCurso" showEffect="fade"
 		header="#{titulos['agregaEditaCurso']}" hideEffect="fade" modal="true"
-		resizable="false" appendTo="@(body)" closable="false">
+		resizable="false" appendTo="@(body)" closable="false"
+		styleClass="ui-dialog shadow-lg" width="440">
 
-		<p:scrollPanel mode="native" style="max-height:450px; max-width:300px;">
-			<p:outputPanel id="idasignaoferta">
-				<div class="ui-fluid p-formgrid p-grid">
-					<div class="p-field p-col-12 p-md-10">
-						<span class="ui-float-label ui-input-icon-right"
-							style="margin-top: 2em"> <p:selectOneMenu id="idCurso"
-								value="#{backingCreacionCursos.beanCreacionCursos.codigoCurso}"
-								filter="true" filterMatchMode="contains" style="width:200px;"
-								required="true" requiredMessage="#{mensajes['campoRequerido']}">
-								<f:selectItem itemLabel=" " itemValue="#{null}"
-									noSelectionOption="true" />
-								<f:selectItems
-									value="#{backingCreacionCursos.beanCreacionCursos.listaCursos}"
-									var="curso" itemLabel="#{curso.cursNombre}"
-									itemValue="#{curso.cursId}" />
-								<p:ajax event="change" process="@this"
-									update="growl idasignaoferta" partialSubmit="true" />
-							</p:selectOneMenu> <p:outputLabel value="#{etiquetas['curso']}:*" />
-						</span>
+		<p:outputPanel id="idasignaoferta">
+			<div class="ui-fluid">
 
+				<!-- Encabezado del diálogo -->
+				<div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color);">
+					<div style="width: 42px; height: 42px; border-radius: 10px; background: linear-gradient(135deg, #eff6ff, #dbeafe); border: 1px solid #bfdbfe; display: flex; align-items: center; justify-content: center;">
+						<i class="pi pi-book" style="color: var(--primary-color); font-size: 1.2rem;"></i>
 					</div>
-					<div class="p-field p-col-12 p-md-2">
-						<p:commandLink title="Actualizar descripción curso"
-							style="margin-top: 2em"
-							disabled="#{backingCreacionCursos.beanCreacionCursos.codigoCurso le 0}"
-							process=" @this nombrecurso" update="growl nombrecurso"
-							actionListener="#{backingCreacionCursos.mostrarDialogoActualizaCurso()}">
-							<i class="#{botones['icono.notas']}"
-								style="font-size: 1em; color: green;"></i>
-						</p:commandLink>
-					</div>
-					<div class="p-field p-col-12 p-md-12">
-						<p:message for="idCurso" />
-					</div>
-					<div class="p-field p-col-12 p-md-12">
-						<span class="ui-float-label ui-input-icon-right"
-							style="margin-top: 2em"> <p:selectOneMenu id="idArea"
-								value="#{backingCreacionCursos.beanCreacionCursos.codigoArea}"
-								style="width:200px;" required="true"
-								requiredMessage="#{mensajes['campoRequerido']}">
-								<f:selectItem itemLabel=" " itemValue="#{null}"
-									noSelectionOption="true" />
-								<f:selectItems
-									value="#{backingCreacionCursos.beanCreacionCursos.listaAreas}"
-									var="area" itemLabel="#{area.areaNombre}"
-									itemValue="#{area.areaId}" />
-							</p:selectOneMenu> <p:outputLabel value="#{etiquetas['area']}:*" />
-						</span>
-					</div>
-					<div class="p-field p-col-12 p-md-12">
-						<p:message for="idArea" />
-					</div>
-
-					<div class="p-field p-col-12 p-md-12">
-
-						<span class="ui-float-label ui-input-icon-right"
-							style="margin-top: 2em"><p:selectOneMenu required="true"
-								id="idEspecialidad" style="width:200px;"
-								requiredMessage="#{mensajes['campoRequerido']}"
-								value="#{backingCreacionCursos.beanCreacionCursos.codigoEspecialidad}">
-								<f:selectItem itemLabel=" " itemValue="#{null}"
-									noSelectionOption="true" />
-								<f:selectItems
-									value="#{backingCreacionCursos.beanCreacionCursos.listaEspecialidades}"
-									var="especialidad" itemLabel="#{especialidad.espeNombre}"
-									itemValue="#{especialidad.espeId}" />
-							</p:selectOneMenu> <p:outputLabel value="#{etiquetas['especialidad']}:*" /> </span>
-					</div>
-
-
-					<div class="p-field p-col-12 p-md-12">
-						<p:message for="idEspecialidad" />
-					</div>
-
-					<div class="p-field p-col-12 p-md-12">
-						<p:outputLabel value="#{titulos['cursoActivo']}" />
-					</div>
-					<div class="p-field p-col-12 p-md-12">
-						<p:toggleSwitch
-							value="#{backingCreacionCursos.beanCreacionCursos.cursoActivo}" />
-					</div>
-
-
-					<div class="p-field p-col-12 p-md-12">
-						<p:commandButton value="#{botones['grabar']}"
-							process="@this idasignaoferta" update="idasignaoferta growl"
-							partialSubmit="true" icon="#{botones['icono.grabar']}"
-							actionListener="#{backingCreacionCursos.mostrarDialogoGrabaOferta()}" />
-					</div>
-					<div class="p-field p-col-12 p-md-12">
-						<p:commandButton value="#{botones['cancelar']}"
-							actionListener="#{backingCreacionCursos.ocultarOferta}"
-							icon="#{botones['icono.cancelar']}" process="@this tablaoferta"
-							update="idasignaoferta tablaoferta" />
+					<div>
+						<span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Catálogo de formación</span>
+						<div style="font-size: 0.9rem; font-weight: 700; color: var(--text-main);">Asignación de oferta</div>
 					</div>
 				</div>
 
-			</p:outputPanel>
-		</p:scrollPanel>
+				<!-- Campo: Curso -->
+				<div style="margin-bottom: 1.25rem;">
+					<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+						<p:outputLabel value="#{etiquetas['curso']} *" for="idCurso"
+							style="font-weight: 600; color: var(--text-muted); font-size: 0.875rem;" />
+						<!-- Link para editar nombre del curso -->
+						<p:commandLink title="Actualizar descripción del curso"
+							disabled="#{backingCreacionCursos.beanCreacionCursos.codigoCurso le 0}"
+							process="@this nombrecurso" update="growl nombrecurso"
+							actionListener="#{backingCreacionCursos.mostrarDialogoActualizaCurso()}"
+							style="display: flex; align-items: center; gap: 4px; font-size: 0.78rem; color: var(--primary-color); font-weight: 600; text-decoration: none;">
+							<i class="#{botones['icono.notas']}" style="font-size: 0.9rem;"></i>
+							<span>Editar nombre</span>
+						</p:commandLink>
+					</div>
+					<p:selectOneMenu id="idCurso"
+						value="#{backingCreacionCursos.beanCreacionCursos.codigoCurso}"
+						filter="true" filterMatchMode="contains"
+						style="width: 100%;"
+						required="true" requiredMessage="#{mensajes['campoRequerido']}">
+						<f:selectItem itemLabel="— Seleccionar curso —" itemValue="#{null}"
+							noSelectionOption="true" />
+						<f:selectItems
+							value="#{backingCreacionCursos.beanCreacionCursos.listaCursos}"
+							var="curso" itemLabel="#{curso.cursNombre}"
+							itemValue="#{curso.cursId}" />
+						<p:ajax event="change" process="@this"
+							update="growl idasignaoferta" partialSubmit="true" />
+					</p:selectOneMenu>
+					<p:message for="idCurso" style="margin-top: 0.25rem;" />
+				</div>
+
+				<!-- Campo: Área -->
+				<div style="margin-bottom: 1.25rem;">
+					<p:outputLabel value="#{etiquetas['area']} *" for="idArea"
+						style="display: block; font-weight: 600; color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.5rem;" />
+					<p:selectOneMenu id="idArea"
+						value="#{backingCreacionCursos.beanCreacionCursos.codigoArea}"
+						style="width: 100%;"
+						required="true" requiredMessage="#{mensajes['campoRequerido']}">
+						<f:selectItem itemLabel="— Seleccionar área —" itemValue="#{null}"
+							noSelectionOption="true" />
+						<f:selectItems
+							value="#{backingCreacionCursos.beanCreacionCursos.listaAreas}"
+							var="area" itemLabel="#{area.areaNombre}"
+							itemValue="#{area.areaId}" />
+					</p:selectOneMenu>
+					<p:message for="idArea" style="margin-top: 0.25rem;" />
+				</div>
+
+				<!-- Campo: Especialidad -->
+				<div style="margin-bottom: 1.25rem;">
+					<p:outputLabel value="#{etiquetas['especialidad']} *" for="idEspecialidad"
+						style="display: block; font-weight: 600; color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.5rem;" />
+					<p:selectOneMenu required="true"
+						id="idEspecialidad" style="width: 100%;"
+						requiredMessage="#{mensajes['campoRequerido']}"
+						value="#{backingCreacionCursos.beanCreacionCursos.codigoEspecialidad}">
+						<f:selectItem itemLabel="— Seleccionar especialidad —" itemValue="#{null}"
+							noSelectionOption="true" />
+						<f:selectItems
+							value="#{backingCreacionCursos.beanCreacionCursos.listaEspecialidades}"
+							var="especialidad" itemLabel="#{especialidad.espeNombre}"
+							itemValue="#{especialidad.espeId}" />
+					</p:selectOneMenu>
+					<p:message for="idEspecialidad" style="margin-top: 0.25rem;" />
+				</div>
+
+				<!-- Campo: Curso Activo -->
+				<div style="margin-bottom: 1.5rem; padding: 0.75rem 1rem; background: #f8fafc; border: 1px solid var(--border-color); border-radius: 10px; display: flex; align-items: center; justify-content: space-between;">
+					<div>
+						<p:outputLabel value="#{titulos['cursoActivo']}"
+							style="font-weight: 600; color: var(--text-main); font-size: 0.875rem; display: block;" />
+						<small style="color: var(--text-muted); font-size: 0.78rem;">Activa o desactiva la visibilidad del curso</small>
+					</div>
+					<p:toggleSwitch
+						value="#{backingCreacionCursos.beanCreacionCursos.cursoActivo}" />
+				</div>
+
+				<!-- Botones de acción -->
+				<div style="display: flex; gap: 0.5rem; justify-content: flex-end; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+					<p:commandButton value="#{botones['cancelar']}"
+						actionListener="#{backingCreacionCursos.ocultarOferta}"
+						icon="pi pi-times"
+						styleClass="ui-button-outlined ui-button-secondary"
+						style="padding: 0.45rem 1.1rem !important;"
+						process="@this tablaoferta"
+						update="idasignaoferta tablaoferta" />
+					<p:commandButton value="#{botones['grabar']}"
+						process="@this idasignaoferta" update="idasignaoferta growl"
+						partialSubmit="true" icon="pi pi-save"
+						styleClass="ui-button-success"
+						style="padding: 0.45rem 1.1rem !important;"
+						actionListener="#{backingCreacionCursos.mostrarDialogoGrabaOferta()}" />
+				</div>
+
+			</div>
+		</p:outputPanel>
 	</p:dialog>
 
 </ui:composition>
