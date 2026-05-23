@@ -2,7 +2,12 @@ package ec.mileniumtech.educafacil.backing.contabilidad;
 
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
+import java.time.format.DateTimeFormatter;
+
 import org.apache.log4j.Logger;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 
 import ec.mileniumtech.educafacil.bean.contabilidad.BeanReporteFacturas;
 import ec.mileniumtech.educafacil.dao.impl.FacturaDaoImpl;
@@ -16,8 +21,6 @@ import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import lombok.Getter;
-import org.primefaces.model.DefaultStreamedContent;
-import org.primefaces.model.StreamedContent;
 
 /**
  * Backing bean para gestionar el reporte de facturas.
@@ -148,6 +151,61 @@ public class BackingReporteFacturas implements Serializable {
             Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo enviar el correo: " + e.getMessage());
         }
     }
+    public StreamedContent getCsvDownload() {
+        try {
+            if (beanReporteFacturas.getListaFacturas() == null || beanReporteFacturas.getListaFacturas().isEmpty()) {
+                Mensaje.verMensaje(FacesMessage.SEVERITY_WARN, "Aviso", "No hay facturas para exportar.");
+                return null;
+            }
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("FECHA_EMISION COMPROBANTE NUMERO_COMPROBANTE IDENTIFICACION_RECEPTOR RAZON_SOCIAL CLAVE_ACCESO VALOR_TOTAL\n");
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+            for (Factura fac : beanReporteFacturas.getListaFacturas()) {
+                String claveAcceso = "";
+                if (fac.getDocumentoElectronico() != null) {
+                    claveAcceso = fac.getDocumentoElectronico().getNumeroAutorizacion() != null
+                        ? fac.getDocumentoElectronico().getNumeroAutorizacion()
+                        : fac.getDocumentoElectronico().getClaveAcceso() != null
+                            ? fac.getDocumentoElectronico().getClaveAcceso()
+                            : "";
+                }
+
+                sb.append(escaped(fac.getFechaEmision() != null ? fac.getFechaEmision().format(formatter) : "")).append(' ')
+                  .append(escaped("Factura")).append(' ')
+                  .append(escaped(fac.getNumero() != null ? fac.getNumero() : "")).append(' ')
+                  .append(escaped(fac.getCliente() != null && fac.getCliente().getNumeroIdentificacion() != null ? fac.getCliente().getNumeroIdentificacion() : "")).append(' ')
+                  .append(escaped(fac.getCliente() != null && fac.getCliente().getNombresCompletos() != null ? fac.getCliente().getNombresCompletos() : "")).append(' ')
+                  .append(escaped(claveAcceso)).append(' ')
+                  .append(escaped(fac.getTotal() != null ? fac.getTotal().toString() : "")).append('\n');
+            }
+
+            byte[] bytes = sb.toString().getBytes(StandardCharsets.UTF_8);
+
+            return DefaultStreamedContent.builder()
+                    .name("ReporteFacturas.csv")
+                    .contentType("text/csv")
+                    .stream(() -> new ByteArrayInputStream(bytes))
+                    .build();
+
+        } catch (Exception e) {
+            log.error("Error al generar CSV de reporte de facturas", e);
+            Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "Ocurrió un error al generar el archivo CSV");
+            return null;
+        }
+    }
+
+    private String escaped(String value) {
+        if (value == null) return "";
+        if (value.contains(" ") || value.contains("\"") || value.contains("\n")) {
+            return "\"" + value.replace("\"", "\"\"") + "\"";
+        }
+        return value;
+    }
+
+
     public void nuevoReporte() {
     	beanReporteFacturas.setListaFacturas(null);
     	beanReporteFacturas.setNumeroAutorizacion(null);

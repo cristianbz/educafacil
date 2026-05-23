@@ -1,5 +1,10 @@
 package ec.mileniumtech.educafacil.modelo.persistencia.entity;
 
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+
+import javax.xml.datatype.XMLGregorianCalendar;
+
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -42,4 +47,23 @@ public class DocumentoElectronico {
 
     @Column(name = "doel_numero_autorizacion", length = 49)
     private String numeroAutorizacion;
+    
+    @Transient 
+    private XMLGregorianCalendar fechaAutorizacion;
+
+    // Este campo es el que JPA guarda en la base de datos
+    @Column(name = "doel_fecha_autorizacion", columnDefinition = "TIMESTAMPTZ")
+    private OffsetDateTime fechaAutorizacionDb;
+    
+//    @Column(name = "doel_fecha_autorizacion")
+//    private LocalDateTime fechaAutorizacionDb;
+
+    // Getters y Setters
+//    public void setFechaAutorizacion(XMLGregorianCalendar fecha) {
+//        this.fechaAutorizacion = fecha;
+//        // Convertimos XMLGregorianCalendar a LocalDateTime
+//        if (fecha != null) {
+//            this.fechaAutorizacionDb = fecha.toGregorianCalendar().toZonedDateTime().toLocalDateTime();
+//        }
+//    }
 }

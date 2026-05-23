@@ -134,7 +134,7 @@
                         <p:commandButton value="Buscar" icon="pi pi-search" 
                                          actionListener="#{backingReporteFacturas.buscarFacturas()}" 
                                          process="estado_comprobante @this"
-                                         update="tblFacturas growl" 
+                                         update="tblFacturas growl csv" 
                                          style="background-color: #003366; border-color: #003366; width: 150px;"/>
                     </div>
                 </div>
@@ -200,11 +200,12 @@
             </p:dataTable>
             
             <div class="p-d-flex p-ai-center" style="margin-top: 10px;">
-                <h:commandLink styleClass="download-link">
-                    <i class="pi pi-download"></i>
-                    <span>Descargar reporte</span>
-                    <p:dataExporter type="xls" target="tblFacturas" fileName="ReporteFacturas" />
-                </h:commandLink>
+				<p:commandButton value="Descargar CSV" ajax="false" id="csv"
+                               disabled="#{beanReporteFacturas.listaFacturas == null || beanReporteFacturas.listaFacturas.isEmpty()}"
+                               icon="pi pi-file"
+                               styleClass="ui-button-outlined shadow-sm">
+                    <p:fileDownload value="#{backingReporteFacturas.csvDownload}" />
+                </p:commandButton>
             </div>
             
         </h:form>

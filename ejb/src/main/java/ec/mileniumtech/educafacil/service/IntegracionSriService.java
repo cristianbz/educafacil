@@ -7,11 +7,14 @@ import java.math.RoundingMode;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import ec.mileniumtech.educafacil.dao.impl.ConfiguracionesDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.FacturaDaoImpl;
@@ -277,6 +280,7 @@ public class IntegracionSriService {
                 Autorizacion aut = respuestaAut.getAutorizaciones().getAutorizacion().get(0);
                 docElec.setEstado(aut.getEstado());
                 docElec.setNumeroAutorizacion(aut.getNumeroAutorizacion());
+                docElec.setFechaAutorizacionDb(convertir( aut.getFechaAutorizacion()));
                 
                 if ("AUTORIZADO".equals(aut.getEstado())) {
                     docElec.setXmlAutorizadoSri(xmlFirmado); // Idealmente el XML del SRI
@@ -329,5 +333,15 @@ public class IntegracionSriService {
         if (porcentaje == 14) return "3";
         if (porcentaje == 15) return "4";
         return "0"; // fallback
+    }
+    
+    /**
+     * Conversion de GregorianCalendar
+     * @param xmlDate
+     * @return
+     */
+    public OffsetDateTime convertir(XMLGregorianCalendar xmlDate) {
+        if (xmlDate == null) return null;
+        return xmlDate.toGregorianCalendar().toZonedDateTime().toOffsetDateTime();
     }
 }

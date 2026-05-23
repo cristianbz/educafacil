@@ -12,6 +12,12 @@
 		<f:event listener="#{backingLogin.validarSesion()}" type="preRenderView" />
 		<h:form id="formFacturacion">
 			<p:growl id="growl" life="3000" showDetail="true" />
+						<!-- DIÁLOGO DE CARGA -->
+			<p:dialog widgetVar="dlgCargando" header="Por favor espere.."
+				draggable="false" modal="true" resizable="false" closable="false" responsive="true"
+				style="font-size: 11px;">
+				<h:graphicImage value="/resources/img/cargando.gif" width="200" height="200"/>
+			</p:dialog>
 			
 			<p:breadCrumb>
 				<p:menuitem value="Inicio" url="/paginas/inicio.xhtml" />
@@ -487,7 +493,7 @@
 																 process="@this :formFacturacion:pnlNuevaFactura"
 																 update=":formFacturacion:growl :formFacturacion:tblFacturas :formFacturacion:pnlMetrics" 
 																 disabled="#{not backingFacturacion.saldoCero or empty beanFacturacion.listaFormasPagoAgregadas}"
-																 styleClass="ui-button-success"
+																 styleClass="ui-button-success" oncomplete="PF('dlgNuevaFactura').hide()"
 																 style="width: 100%; font-weight: 700; padding: 0.75rem !important;" />
 												
 												<p:commandButton value="Cancelar" icon="pi pi-times" 
@@ -497,6 +503,7 @@
 											</div>
 										</p:outputPanel>
 									</p:panel>
+									
 								</div>
 							</div>
 						</div>
