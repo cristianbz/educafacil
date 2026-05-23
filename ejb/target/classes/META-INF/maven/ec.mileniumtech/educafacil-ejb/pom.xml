@@ -54,8 +54,8 @@
 <!-- https://mvnrepository.com/artifact/org.mockito/mockito-all -->
 <dependency>
     <groupId>org.mockito</groupId>
-    <artifactId>mockito-all</artifactId>
-    <version>1.8.4</version>
+        <artifactId>mockito-core</artifactId>
+    	<version>5.10.0</version>
     <scope>test</scope>
 </dependency>
 
@@ -266,7 +266,11 @@
                         <ejbVersion>4.0</ejbVersion>
                     </configuration>
                 </plugin>
-                
-        </plugins>
+                <plugin>
+	                <groupId>org.apache.maven.plugins</groupId>
+	                <artifactId>maven-surefire-plugin</artifactId>
+	                <version>${version.surefire.plugin}</version>
+            	</plugin>
+        </plugins>        
     </build>
 </project>

@@ -56,14 +56,15 @@ public class NotificacionService {
             Configuraciones config = configs.get(0);
 
             String host = config.getConfServidorSmtp();
-            String port = "587"; // O agregar a Configuraciones si varía
+//            String port = "587"; // O agregar a Configuraciones si varía
+            String port = "26"; // O agregar a Configuraciones si varía
             final String user = config.getConfUsuarioCorreo();
             final String pass = config.getConfClaveCorreo();
             final String from = config.getConfEnviadoMailDesde();
 
             Properties props = new Properties();
             props.put("mail.smtp.auth", "true");
-            props.put("mail.smtp.starttls.enable", "true");
+//            props.put("mail.smtp.starttls.enable", "true");
             props.put("mail.smtp.host", host);
             props.put("mail.smtp.port", port);
 

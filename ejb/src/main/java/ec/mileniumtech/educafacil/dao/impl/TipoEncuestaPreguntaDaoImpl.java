@@ -114,11 +114,13 @@ public class TipoEncuestaPreguntaDaoImpl extends GenericoDaoImpl<TipoEncuestaPre
 			
 			List <DtoEncuestas> listaRespuestasEncuestas= new ArrayList<DtoEncuestas>();
 			String queryString;
-			queryString="SELECT DISTINCT P.preg_Id, P.preg_descripcion, R.resp_descripcion,  concat(P.preg_Id,'-',R.resp_Id)"
-					+ "FROM  cap.pregunta P,"
-					+ "cap.categoriarespuesta CR, cap.respuestas R , cap.tipoencuestapregunta TEP"
-					+ "WHERE P.catr_Id = CR.catr_Id AND R.catr_Id = CR.catr_Id AND TEP.tipe_Id = '"+encuesta+"' ORDER BY P.preg_Id";
-					Query query = getEntityManager().createNativeQuery(queryString);
+			queryString = "SELECT DISTINCT P.preg_Id, P.preg_descripcion, R.resp_descripcion, concat(P.preg_Id,'-',R.resp_Id) "
+					+ "FROM cap.pregunta P, "
+					+ "cap.categoriarespuesta CR, cap.respuestas R, cap.tipoencuestapregunta TEP "
+					+ "WHERE P.catr_Id = CR.catr_Id AND R.catr_Id = CR.catr_Id AND TEP.tipe_Id = :encuestaId ORDER BY P.preg_Id";
+			Query query = getEntityManager().createNativeQuery(queryString);
+			query.setParameter("encuestaId", encuesta);
+
 			List<Object[]> objetos = query.getResultList();
 			if(!objetos.isEmpty()){
 				for (Object[] encuestaResuelta: objetos) {

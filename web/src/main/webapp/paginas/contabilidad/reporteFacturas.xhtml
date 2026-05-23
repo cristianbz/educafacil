@@ -97,7 +97,7 @@
                 <div class="search-orange-bar"></div>
                 <div class="search-blue-bar"></div>
             </div>
-            
+            <p:outputPanel id="panelBuscar">
             <div class="custom-search-panel">
                 <div class="ui-fluid p-grid p-formgrid">
                     <div class="p-col-12 p-md-3 p-field">
@@ -133,13 +133,13 @@
                     <div class="p-col-12 p-md-3 p-field p-d-flex p-ai-end p-jc-end">
                         <p:commandButton value="Buscar" icon="pi pi-search" 
                                          actionListener="#{backingReporteFacturas.buscarFacturas()}" 
-                                         process="estado_comprobante @this"
+                                         process="estado_comprobante @this panelBuscar"
                                          update="tblFacturas growl csv" 
                                          style="background-color: #003366; border-color: #003366; width: 150px;"/>
                     </div>
                 </div>
             </div>
-            
+            </p:outputPanel>
             <br />
             
             <p:dataTable id="tblFacturas" value="#{beanReporteFacturas.listaFacturas}" var="fac" 

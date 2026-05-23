@@ -103,7 +103,7 @@ public class UsuarioDaoImpl extends GenericoDaoImpl<Usuario, Long>{
 					+ "                 ROL ON ROL_PERFIL.rol_id = ROL.rol_id INNER JOIN "
 					+ "                 USUARIO_ROL ON ROL.rol_id = USUARIO_ROL.rol_id INNER JOIN "
 					+ "                 USUARIO ON USUARIO_ROL.usua_id = USUARIO.usua_id "
-					+ "		WHERE USUARIO.usua_usuario = '"+correo+"' "
+					+ "		WHERE USUARIO.usua_usuario = :correo "
 					+ "			  and USUARIO.usua_estado = TRUE"
 					+ "			  and USUARIO_ROL.urol_estado =TRUE "
 					+ "			  and ROL.rol_estado = TRUE"
@@ -114,6 +114,7 @@ public class UsuarioDaoImpl extends GenericoDaoImpl<Usuario, Long>{
 					+ "		ORDER BY rol_nombre, perf_nombre, acc_nombre";
 			
 			Query query = getEntityManager().createNativeQuery(queryString);
+			query.setParameter("correo", correo);
 			List<Object[]> objetos = query.getResultList();
 			
 			if(!objetos.isEmpty()){
@@ -176,10 +177,11 @@ public class UsuarioDaoImpl extends GenericoDaoImpl<Usuario, Long>{
 			queryString = " SELECT DISTINCT usuario.usua_id, persona.pers_nombres,persona.pers_apellidos " + 
 					" FROM persona, usuario, usuario_rol " + 
 					" WHERE persona.pers_id=usuario.pers_id AND usuario.usua_id=usuario_rol.usua_id " + 
-					" AND usuario_rol.usua_id=usuario.usua_id AND usuario.usua_estado=true AND usuario_rol.rol_id="+idRol+   
+					" AND usuario_rol.usua_id=usuario.usua_id AND usuario.usua_estado=true AND usuario_rol.rol_id= :rolId " +      
 					" AND usuario_rol.urol_estado=true ORDER BY persona.pers_apellidos ";
 
 			Query query = getEntityManager().createNativeQuery(queryString);
+			query.setParameter("rolId", idRol);
 			List<Object[]> objetos = query.getResultList();
 			List<Usuario> listaUsuariosPorIdRol = new ArrayList<Usuario>();
 			
