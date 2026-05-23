@@ -130,8 +130,9 @@ public class SeguimientoClientesDaoImpl extends GenericoDaoImpl<SeguimientoClien
 		try {
 			BigInteger alcance = null;
 			String queryString;
-			queryString = " select count(segc_id) from cap.seguimientoclientes where camp_id=" + campania;
-			Query query = getEntityManager().createNativeQuery(queryString);						
+			queryString = " select count(segc_id) from cap.seguimientoclientes where camp_id = :campId ";
+			Query query = getEntityManager().createNativeQuery(queryString);	
+			query.setParameter("campId", campania);
 			Object obj= query.getSingleResult();
 			alcance = new BigInteger(obj.toString());
 			return alcance;
@@ -248,8 +249,9 @@ public class SeguimientoClientesDaoImpl extends GenericoDaoImpl<SeguimientoClien
 	public BigDecimal totalDatosCRM(String estado) {
 		List<Object[]> resultado= null;
 		BigDecimal valor= new BigDecimal(0);		
-		String sql ="SELECT COUNT(segc_id) FROM cap.seguimientoclientes WHERE segc_estado = '" + estado +"'";
+		String sql ="SELECT COUNT(segc_id) FROM cap.seguimientoclientes WHERE segc_estado = :estado ";
 		Query q = getEntityManager().createNativeQuery(sql);
+		q.setParameter("estado", estado);
         
 		resultado = (List<Object[]>)q.getResultList();
 		if(resultado.size()>0){
@@ -265,9 +267,12 @@ public class SeguimientoClientesDaoImpl extends GenericoDaoImpl<SeguimientoClien
 	public BigDecimal totalDatosCRMVendedor(String estado, Integer vendedor, Integer campania) {
 		List<Object[]> resultado= null;
 		BigDecimal valor= new BigDecimal(0);		
-		String sql ="SELECT COUNT(segc_id) FROM cap.seguimientoclientes WHERE segc_estado = '" + estado +"'"
-		+" AND vend_id = '" + vendedor + "'" + "AND camp_id = '" + campania + "'";
+		String sql ="SELECT COUNT(segc_id) FROM cap.seguimientoclientes WHERE segc_estado = :estado "
+				+ " AND vend_id = :vendedorId AND camp_id = :campId ";
 		Query q = getEntityManager().createNativeQuery(sql);
+		q.setParameter("estado", estado);
+		q.setParameter("vendedorId", vendedor);
+		q.setParameter("campId", campania);
         
 		resultado = (List<Object[]>)q.getResultList();
 		if(resultado.size()>0){
@@ -310,11 +315,11 @@ public class SeguimientoClientesDaoImpl extends GenericoDaoImpl<SeguimientoClien
 		List<Object[]> resultado= null;
 		List<DtoMatriculasCurso> listaResultado = new ArrayList<DtoMatriculasCurso>();
 		String sql ="SELECT COUNT(segc_id) as cantidad,cu.curs_nombre  FROM cap.seguimientoclientes sc, cap.curso cu "+
-				 " WHERE sc.curs_id = cu.curs_id AND sc.segc_estado ='"+estado + "'" 
+				" WHERE sc.curs_id = cu.curs_id AND sc.segc_estado = :estado " 
 				+ "GROUP BY cu.curs_nombre ORDER BY cantidad DESC;";
 		
 		Query q = getEntityManager().createNativeQuery(sql);
-		
+		q.setParameter("estado", estado);
 		resultado = (List<Object[]>)q.getResultList();
 		if(resultado.size()>0){
 			for(Object obj:resultado){

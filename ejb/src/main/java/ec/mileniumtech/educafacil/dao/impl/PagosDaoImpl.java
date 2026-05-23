@@ -21,6 +21,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
+import jakarta.persistence.TemporalType;
 
 /**
 *@author christian  Jun 15, 2024
@@ -93,17 +94,17 @@ public class PagosDaoImpl extends GenericoDaoImpl<Pagos, Long>{
 			{
 		try {
 			DateFormat formatoFecha = new SimpleDateFormat ("yyyy-MM-dd");
-			SimpleDateFormat dt1 = new SimpleDateFormat("yyyy-MM-dd",new Locale("es","ES"));
-			
+						
 			List <DtoFlujoDinero> listaFlujo = new ArrayList<DtoFlujoDinero>();
 			String queryString;
 			queryString="SELECT EXTRACT(YEAR FROM depa_fecha_inserto) as anio, EXTRACT(MONTH FROM depa_fecha_inserto) as mes,depa_fecha_inserto, SUM(depa_valor) "
-					+ "FROM cap.detallepagos WHERE depa_estado=true AND depa_fecha_inserto BETWEEN '" + dt1.format(fechaInicial)
-					+ "' AND '" + dt1.format(fechaFinal)
-					+ "' GROUP BY depa_fecha_inserto ORDER BY depa_fecha_inserto,anio,mes;";
-					
-			
+					+ "FROM cap.detallepagos WHERE depa_estado=true AND depa_fecha_inserto BETWEEN :fechaInicial AND :fechaFinal "
+					+ "GROUP BY depa_fecha_inserto ORDER BY depa_fecha_inserto,anio,mes;";
+
 			Query query = getEntityManager().createNativeQuery(queryString);
+			query.setParameter("fechaInicial", fechaInicial, TemporalType.DATE);
+			query.setParameter("fechaFinal", fechaFinal, TemporalType.DATE);
+
 			List<Object[]> objetos = query.getResultList();
 			
 			if(!objetos.isEmpty()){
