@@ -69,7 +69,7 @@
 								value="#{backingMatriculaOnline.beanMatricula.persona.persDocumentoIdentidad}">
 								<p:ajax event="blur"
 									listener="#{backingMatriculaOnline.buscaPersonaPorCedula}"
-									partialSubmit="true" process="@this" update="panelPersona "
+									partialSubmit="true" process="@this" update="panelPersona btnMatricula growl"
 									onstart="PF('dlgEnProc').show();"
 									oncomplete="PF('dlgEnProc').hide();" />
 							</p:inputText>

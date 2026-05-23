@@ -146,9 +146,16 @@ public class BackingMatriculaOnline implements Serializable {
 	 * Busca una persona por su cedula
 	 * @return
 	 */
-	public void buscaPersonaPorCedula() {
+	public void buscaPersonaPorCedula() {		
 		Persona persona=null;
-				
+		if (getBeanMatricula().getPersona().getPersDocumentoIdentidad() != null && getBeanMatricula().getPersona().getPersDocumentoIdentidad().length() == 10) {
+            if (!ec.mileniumtech.educafacil.utilitarios.ValidacionUtil.validarCedula(getBeanMatricula().getPersona().getPersDocumentoIdentidad())) {
+                Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error de Validación", "La cédula ingresada no es válida.");
+                getBeanMatricula().setDeshabilitaMatricula(true);
+                return;
+            }else
+            	getBeanMatricula().setDeshabilitaMatricula(false);
+        }
 			persona=getPersonaServicioImpl().buscarPersonaPorCedula(getBeanMatricula().getPersona().getPersDocumentoIdentidad());
 			datosMatriculaAlBuscarPersona(persona);
 	
