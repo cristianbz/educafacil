@@ -18,6 +18,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import ec.mileniumtech.educafacil.dao.impl.ConfiguracionesDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.FacturaDaoImpl;
+import ec.mileniumtech.educafacil.modelo.persistencia.dto.InfoAdicionalDto;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Configuraciones;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleFactura;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DocumentoElectronico;
@@ -234,6 +235,14 @@ public class IntegracionSriService {
             campoEmail.setNombre("Email");
             campoEmail.setValor(facturaEntity.getCliente().getCorreo());
             facturaSri.getInfoAdicionalList().add(campoEmail);
+        }
+        if(facturaEntity.getListaInfoAdicional()!=null && !facturaEntity.getListaInfoAdicional().isEmpty()) {
+        	for (InfoAdicionalDto infoado : facturaEntity.getListaInfoAdicional()) {
+        		ec.mileniumtech.educafacil.modelo.sri.Factura.CampoAdicional campoAD = new ec.mileniumtech.educafacil.modelo.sri.Factura.CampoAdicional();
+        		campoAD.setNombre(infoado.getNombre());
+        		campoAD.setValor(infoado.getDescripcion());
+        		facturaSri.getInfoAdicionalList().add(campoAD);
+			}
         }
 
         // 3. Inicializar o recuperar DocumentoElectronico

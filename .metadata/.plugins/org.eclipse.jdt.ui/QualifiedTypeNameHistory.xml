@@ -18,7 +18,6 @@
     <fullyQualifiedTypeName name="jakarta.faces.view.ViewScoped"/>
     <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.dao.impl.EmpresaDaoImpl"/>
     <fullyQualifiedTypeName name="jakarta.annotation.PostConstruct"/>
-    <fullyQualifiedTypeName name="java.io.Serializable"/>
     <fullyQualifiedTypeName name="java.nio.charset.StandardCharsets"/>
     <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.modelo.persistencia.entity.EmpresaMatriz"/>
     <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.modelo.persistencia.entity.PuntoEmision"/>
@@ -26,15 +25,17 @@
     <fullyQualifiedTypeName name="lombok.Getter"/>
     <fullyQualifiedTypeName name="lombok.Setter"/>
     <fullyQualifiedTypeName name="jakarta.persistence.Table"/>
-    <fullyQualifiedTypeName name="jakarta.persistence.Transient"/>
     <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleFactura"/>
     <fullyQualifiedTypeName name="java.lang.StringBuilder"/>
     <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.modelo.persistencia.entity.Sriformapago"/>
     <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.modelo.persistencia.entity.FormaPagoFactura"/>
     <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.service.PagosService"/>
-    <fullyQualifiedTypeName name="java.util.ArrayList"/>
     <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.modelo.sri.Factura.PagoSRI"/>
     <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleRetencion"/>
     <fullyQualifiedTypeName name="java.math.BigDecimal"/>
     <fullyQualifiedTypeName name="java.math.RoundingMode"/>
+    <fullyQualifiedTypeName name="java.io.Serializable"/>
+    <fullyQualifiedTypeName name="java.util.ArrayList"/>
+    <fullyQualifiedTypeName name="jakarta.persistence.Transient"/>
+    <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.modelo.persistencia.dto.InfoAdicionalDto"/>
 </qualifiedTypeNameHistroy>

@@ -409,6 +409,51 @@
 										</p:dataTable>
 									</p:panel>
 									
+									<!-- 4. Informacion adicional -->
+									<p:panel styleClass="invoice-panel p-mt-4" toggleable="true" style="margin-bottom: 2rem;">
+										<div class="invoice-section-title">
+											<i class="pi pi-credit-card"></i>
+											<span>4. Información adicional</span>
+										</div>
+
+										<div class="p-grid p-formgrid p-ai-end p-mb-3">
+											<div class="p-col-12 p-md-4 p-field">
+												<p:outputLabel value="Nombre:" for="txtNombreAdicional" />
+												<p:inputText id="txtNombreAdicional" value="#{beanFacturacion.infoAdicional.nombre}">
+												</p:inputText>
+											</div>
+											<div class="p-col-12 p-md-2 p-field">
+												<p:outputLabel value="Descripcion:" for="txtDecripcionAdicional" />
+												<p:inputTextarea id="txtDecripcionAdicional" value="#{beanFacturacion.infoAdicional.descripcion}"/>
+												
+											</div>
+											
+											<div class="p-col-12 p-md-2 p-field">
+												<p:commandButton icon="pi pi-plus" value="Añadir"																  
+																 process="@this txtNombreAdicional txtDecripcionAdicional" partialSubmit="true"	
+																 actionListener="#{backingFacturacion.agregarInformacionAdicional()}"															  
+																 update="tblInfoAdicional txtNombreAdicional txtDecripcionAdicional"
+																 styleClass="ui-button-success" style="width: 100%;" title="Agregar Info"/>
+											</div>
+										</div>
+										
+										<p:dataTable id="tblInfoAdicional" value="#{beanFacturacion.listaInfoAdicional}" var="infoad" 
+													 reflow="true" styleClass="p-mt-2" emptyMessage="No se han registrado información adicional.">
+											<p:column headerText="Nombre">
+												<h:outputText value="#{infoad.nombre}" style="font-weight: 120;" />
+											</p:column>
+											
+											<p:column headerText="Descripcion" style="text-align: center; width: 600px;">
+												<h:outputText value="#{infoad.descripcion}" />
+											</p:column>											
+											<p:column headerText="" style="text-align: center; width: 50px;">
+												<p:commandButton icon="pi pi-trash" styleClass="ui-button-danger rounded-button ui-button-flat" 
+																 actionListener="#{backingFacturacion.removerInfoAdicional(infoad)}"
+																 process="@this"  update="tblInfoAdicional"/>
+											</p:column>
+										</p:dataTable>
+									</p:panel>
+																		
 								</div>
 
 								<!-- RIGHT COLUMN: Billing Summary Card (Sticky/Gradient) -->

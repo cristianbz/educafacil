@@ -17,6 +17,7 @@ import ec.mileniumtech.educafacil.dao.impl.FacturaDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.PersonaDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.PuntoEmisionDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.EmpresaMatrizDaoImpl;
+import ec.mileniumtech.educafacil.modelo.persistencia.dto.InfoAdicionalDto;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.CatalogoItem;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Cliente;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleFactura;
@@ -92,7 +93,7 @@ public class BackingFacturacion implements Serializable {
             cargarFacturas();
             prepararNuevaFactura();            
             getBeanFacturacion().setListaItems(catalogoItemDao.findAll());
-            getBeanFacturacion().setListaFormasPagoSri(sriformapagoDao.findAll());
+            getBeanFacturacion().setListaFormasPagoSri(sriformapagoDao.findAll());            
         } catch (Exception e) {
             log.error("Error en init de BackingFacturacion", e);
             Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "Error al inicializar la página: " + e.getMessage());
@@ -114,6 +115,8 @@ public class BackingFacturacion implements Serializable {
         getBeanFacturacion().setListaFormasPagoAgregadas(new ArrayList<>());
         getBeanFacturacion().setNuevaFormaPago(new ec.mileniumtech.educafacil.modelo.persistencia.entity.FormaPagoFactura());
         getBeanFacturacion().setIdFormaPagoSeleccionada(null);
+        getBeanFacturacion().setListaInfoAdicional(new ArrayList<InfoAdicionalDto>());
+        getBeanFacturacion().setInfoAdicional(new InfoAdicionalDto());
     }
 
     /**
@@ -300,7 +303,13 @@ public class BackingFacturacion implements Serializable {
             calcularTotales();
         }
     }
-
+    /**
+     * Agrega informacion adicional a la factura
+     */
+    public void agregarInformacionAdicional() {
+    	getBeanFacturacion().getListaInfoAdicional().add(getBeanFacturacion().getInfoAdicional());
+    	getBeanFacturacion().setInfoAdicional(new InfoAdicionalDto());
+    }
     /**
      * Calcula los totales de la nueva factura.
      */
@@ -365,6 +374,10 @@ public class BackingFacturacion implements Serializable {
     public void removerFormaPago(ec.mileniumtech.educafacil.modelo.persistencia.entity.FormaPagoFactura fp) {
         getBeanFacturacion().getListaFormasPagoAgregadas().remove(fp);
         Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Éxito", "Forma de pago removida.");
+    }
+    public void removerInfoAdicional(InfoAdicionalDto infoad) {
+        getBeanFacturacion().getListaInfoAdicional().remove(infoad);
+        Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Éxito", "Información adicional removida.");
     }
 
     /**
@@ -453,11 +466,12 @@ public class BackingFacturacion implements Serializable {
             
             f.setTotalImpuestos(totalImpuestos);
             f.setDescuentoTotal(totalDescuento);
+            f.setListaInfoAdicional(getBeanFacturacion().getListaInfoAdicional());
 
             facturaDao.guardar(f);
             
             // Emitir electrónicamente
-            facturacionService.emitirFactura(f.getId());
+            facturacionService.emitirFactura(f.getId(),getBeanFacturacion().getListaInfoAdicional());
             
             Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Éxito", "Factura generada y enviada al SRI.");
             cargarFacturas();
@@ -489,7 +503,7 @@ public class BackingFacturacion implements Serializable {
      */
     public void emitirFactura(Factura factura) {
         try {
-            facturacionService.emitirFactura(factura.getId());
+            facturacionService.emitirFactura(factura.getId(),getBeanFacturacion().getListaInfoAdicional());
             cargarFacturas(); // Refrescar lista para ver cambios en estado
             Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Éxito", "Proceso de facturación iniciado.");
         } catch (Exception e) {

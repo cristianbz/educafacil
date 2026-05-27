@@ -16,6 +16,7 @@ import ec.mileniumtech.educafacil.modelo.persistencia.entity.Factura;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Pagos;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.PagosFacturados;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.PuntoEmision;
+import ec.mileniumtech.educafacil.modelo.persistencia.dto.InfoAdicionalDto;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.CatalogoItem;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Persona;
 import jakarta.ejb.EJB;
@@ -155,11 +156,12 @@ public class FacturacionService {
      * @param facturaId ID de la factura.
      * @throws Exception Si ocurre un error.
      */
-    public void emitirFactura(Integer facturaId) throws Exception {
+    public void emitirFactura(Integer facturaId,List<InfoAdicionalDto> informacionAdicional) throws Exception {
         Factura factura = facturaDao.buscarFacturaPorId(facturaId);
         if (factura == null) {
             throw new Exception("No se encontró la factura con ID: " + facturaId);
         }
+        factura.setListaInfoAdicional(informacionAdicional);
         integracionSriService.procesarFacturaElectronica(factura);
     }
 }

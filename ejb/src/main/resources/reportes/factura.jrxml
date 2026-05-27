@@ -407,7 +407,7 @@
 				<textFieldExpression><![CDATA[$P{IMPORTE_TOTAL}]]></textFieldExpression>
 			</textField>
 			<componentElement>
-				<reportElement x="0" y="110" width="289" height="59" uuid="42f8186b-1760-4a35-adc9-e7adf3450e0a">
+				<reportElement positionType="Float" x="0" y="71" width="289" height="59" uuid="42f8186b-1760-4a35-adc9-e7adf3450e0a">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
