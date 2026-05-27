@@ -3,6 +3,7 @@ package ec.mileniumtech.educafacil.bean.contabilidad;
 import java.io.Serializable;
 import java.util.List;
 
+import ec.mileniumtech.educafacil.modelo.persistencia.dto.InfoAdicionalDto;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.CatalogoItem;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Cliente;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleFactura;
@@ -40,6 +41,8 @@ public class BeanFacturacion implements Serializable {
     private DetalleFactura detalleNuevo;
     private boolean mostrarFormularioNuevoCliente;
     private CatalogoItem nuevoItem;
+    private List<InfoAdicionalDto> listaInfoAdicional;
+    private InfoAdicionalDto infoAdicional;
     
  // Campos para Formas de Pago
     private List<ec.mileniumtech.educafacil.modelo.persistencia.entity.Sriformapago> listaFormasPagoSri;

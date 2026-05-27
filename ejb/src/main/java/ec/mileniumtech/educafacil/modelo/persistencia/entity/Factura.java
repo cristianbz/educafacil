@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+import ec.mileniumtech.educafacil.modelo.persistencia.dto.InfoAdicionalDto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -51,6 +52,9 @@ public class Factura {
 
     @Column(name = "fact_notas")
     private String notas;
+    
+    @Transient
+    private List<InfoAdicionalDto> listaInfoAdicional;
     
  // Relación con los detalles (Maestro-Detalle)
     @OneToMany(mappedBy = "factura", cascade = CascadeType.ALL, orphanRemoval = true)
