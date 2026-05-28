@@ -11,6 +11,7 @@ import org.primefaces.event.FileUploadEvent;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.administracion.BeanEmpresa;
+import ec.mileniumtech.educafacil.modelo.persistencia.dto.CertificateInfoDto;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.EmpresaMatriz;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Establecimiento;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.PuntoEmision;
@@ -18,6 +19,7 @@ import ec.mileniumtech.educafacil.service.AdministracionService;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitarios.encriptacion.CriptografiaUtil;
 import ec.mileniumtech.educafacil.utilitarios.encriptacion.Encriptar;
+import ec.mileniumtech.educafacil.utilitarios.sri.CertificateUtils;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
 import jakarta.faces.application.FacesMessage;
@@ -46,6 +48,7 @@ public class BackingEmpresa implements Serializable{
 
     @EJB
     private AdministracionService administracionService;
+    
 
     @PostConstruct
     public void init() {
@@ -173,6 +176,7 @@ public class BackingEmpresa implements Serializable{
             
             // Restauramos la clave original en el bean para que el usuario no la vea cifrada en la UI si sigue editando
             getBeanEmpresa().getEmpresa().setEmpmPasswordCertificado(claveOriginal);
+
             
             Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.grabar"));
         } catch (Exception e) {
@@ -188,6 +192,11 @@ public class BackingEmpresa implements Serializable{
     public void handleFileUploadCertificado(FileUploadEvent event) {
         try {
             getBeanEmpresa().getEmpresa().setEmpmCertificado(event.getFile().getContent());
+        	CertificateInfoDto infoCertificado=new CertificateInfoDto();        	
+            infoCertificado = CertificateUtils.getCertificateInfo(getBeanEmpresa().getEmpresa().getEmpmCertificado(), getBeanEmpresa().getEmpresa().getEmpmPasswordCertificado());
+            getBeanEmpresa().getEmpresa().setEmpmFirmaVigenciaDesde(infoCertificado.getIssueDate());
+            getBeanEmpresa().getEmpresa().setEmpmFirmaVigenciaHasta(infoCertificado.getExpirationDate());
+            getBeanEmpresa().getEmpresa().setEmpmFirmaPropietario(infoCertificado.getSubject());
             Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), "Certificado digital cargado correctamente.");
         } catch (Exception e) {
             log.error("Error al cargar certificado", e);

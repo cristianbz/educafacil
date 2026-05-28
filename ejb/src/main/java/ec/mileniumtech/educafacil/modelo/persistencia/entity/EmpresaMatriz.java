@@ -2,9 +2,9 @@ package ec.mileniumtech.educafacil.modelo.persistencia.entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -84,6 +84,15 @@ public class EmpresaMatriz implements Serializable{
 	
     @Column(name = "empm_porcentaje_iva", precision = 6, scale = 2, nullable = false)
     private BigDecimal empmPorcentajeIva;
+    
+    @Column(name="empm_firma_vigencia_desde")
+    private LocalDate empmFirmaVigenciaDesde;
+    
+    @Column(name="empm_firma_vigencia_hasta")
+    private LocalDate empmFirmaVigenciaHasta;
+    
+    @Column(name="empm_firma_propietario")
+    private String empmFirmaPropietario;
 	
 	
 	@OneToMany(mappedBy="empresaMatriz", fetch=FetchType.LAZY)

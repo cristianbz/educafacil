@@ -29,6 +29,7 @@ import ec.mileniumtech.educafacil.modelo.persistencia.entity.EmpresaMatriz;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.PuntoEmision;
 import ec.mileniumtech.educafacil.service.FacturacionService;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
+import ec.mileniumtech.educafacil.utilitarios.fechas.FechaFormato;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
 import jakarta.faces.application.FacesMessage;
@@ -86,10 +87,12 @@ public class BackingFacturacion implements Serializable {
     @Inject
     @Getter
     private MensajesBacking mensajesBacking;
-
+    
+    private EmpresaMatriz empresaMatriz;
     @PostConstruct
     public void init() {
         try {
+        	        	
             cargarFacturas();
             prepararNuevaFactura();            
             getBeanFacturacion().setListaItems(catalogoItemDao.findAll());
@@ -631,6 +634,10 @@ public class BackingFacturacion implements Serializable {
             }
         }
         return totalFactura.setScale(2,RoundingMode.HALF_UP).subtract(totalPagos.setScale(2,RoundingMode.HALF_UP));
+    }
+    public long getDiasVigenciaFirma() {
+    	empresaMatriz=empresaMatrizDao.findAll().get(0);
+    	return FechaFormato.calcularDiasRestantesSeguro(empresaMatriz.getEmpmFirmaVigenciaHasta().toString());
     }
 
     public boolean isSaldoPendiente() {
