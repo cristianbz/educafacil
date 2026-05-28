@@ -3,7 +3,6 @@
     <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.utilitarios.dto.registrodatos.PreguntasFormFacesbookRecord"/>
     <fullyQualifiedTypeName name="java.time.LocalDate"/>
     <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.utilitarios.dto.registrodatos.FormFacebookAdsRecord"/>
-    <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.utilitarios.fechas.FechaFormato"/>
     <fullyQualifiedTypeName name="jakarta.enterprise.context.ApplicationScoped"/>
     <fullyQualifiedTypeName name="jakarta.ejb.Stateless"/>
     <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.dao.impl.PersonaDaoImpl"/>
@@ -19,7 +18,6 @@
     <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.dao.impl.EmpresaDaoImpl"/>
     <fullyQualifiedTypeName name="jakarta.annotation.PostConstruct"/>
     <fullyQualifiedTypeName name="java.nio.charset.StandardCharsets"/>
-    <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.modelo.persistencia.entity.EmpresaMatriz"/>
     <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.modelo.persistencia.entity.PuntoEmision"/>
     <fullyQualifiedTypeName name="jakarta.persistence.Entity"/>
     <fullyQualifiedTypeName name="lombok.Getter"/>
@@ -38,4 +36,9 @@
     <fullyQualifiedTypeName name="java.util.ArrayList"/>
     <fullyQualifiedTypeName name="jakarta.persistence.Transient"/>
     <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.modelo.persistencia.dto.InfoAdicionalDto"/>
+    <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.modelo.persistencia.dto.CertificateInfoDto"/>
+    <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.utilitarios.sri.CertificateUtils"/>
+    <fullyQualifiedTypeName name="jakarta.persistence.Column"/>
+    <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.utilitarios.fechas.FechaFormato"/>
+    <fullyQualifiedTypeName name="ec.mileniumtech.educafacil.modelo.persistencia.entity.EmpresaMatriz"/>
 </qualifiedTypeNameHistroy>

@@ -7,6 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 import java.util.Calendar;
@@ -103,5 +104,24 @@ public class FechaFormato {
 		SimpleDateFormat dt1 = new SimpleDateFormat(formato,new Locale("es","ES"));
 		return dt1.format(fecha);
 	}
+	/**
+	 * Calcula los dias restantes entre una fecha y la fecha actual
+	 * @param fechaString
+	 * @return
+	 */
+	public static long calcularDiasRestantesSeguro(String fechaString) {
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate fechaObjetivo = LocalDate.parse(fechaString, formatter);
+            LocalDate fechaActual = LocalDate.now();
+            
+            return ChronoUnit.DAYS.between(fechaActual, fechaObjetivo);
+            
+        } catch (Exception e) {
+            throw new IllegalArgumentException(
+                "Formato de fecha inválido. Use yyyy-MM-dd (ej: 2026-12-31)", e
+            );
+        }
+    }
 
 }

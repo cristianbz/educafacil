@@ -190,16 +190,30 @@
                         <div class="ui-fluid">
                             <div class="field mb-3">
                                 <p:outputLabel for="claveFirma" value="Contraseña de Firma" />
-                                <p:password id="claveFirma" value="#{backingEmpresa.beanEmpresa.empresa.empmPasswordCertificado}" feedback="false" redisplay="true" />
+                                <p:password id="claveFirma" value="#{backingEmpresa.beanEmpresa.empresa.empmPasswordCertificado}" feedback="false" redisplay="true" >
+                                	<p:ajax event="change" process="@this"/>
+                                </p:password>
                             </div>
                             <div class="field">
                                 <p:fileUpload listener="#{backingEmpresa.handleFileUploadCertificado}" 
-                                              mode="advanced" update="growl" auto="true" 
+                                              mode="advanced" update="growl vigenciaDesde vigenciaHasta propietario" auto="true" process="vigenciaDesde vigenciaHasta claveFirma propietario"
                                               label="Seleccionar Certificado"
                                               allowTypes="/(\.|\/)(p12|pfx)$/" />
                                 <h:outputText value="Certificado cargado: " rendered="#{backingEmpresa.beanEmpresa.empresa.empmCertificado != null}" style="color:green; font-weight:bold" />
                                 <h:outputText value="SÍ" rendered="#{backingEmpresa.beanEmpresa.empresa.empmCertificado != null}" style="color:green; font-weight:bold" />
                             </div>
+                            <div class="field mb-3">
+                                <p:outputLabel for="vigenciaDesde" value="Vigencia desde" />
+                                <p:inputText id="vigenciaDesde" value="#{backingEmpresa.beanEmpresa.empresa.empmFirmaVigenciaDesde}" readonly="true" />
+                            </div>
+                            <div class="field mb-3">
+                                <p:outputLabel for="vigenciaHasta" value="Vigencia hasta" />
+                                <p:inputText id="vigenciaHasta" value="#{backingEmpresa.beanEmpresa.empresa.empmFirmaVigenciaHasta}" readonly="true"/>
+                            </div>
+                            <div class="field mb-3">
+                                <p:outputLabel for="propietario" value="Propietario certificado" />
+                                <p:inputText id="propietario" value="#{backingEmpresa.beanEmpresa.empresa.empmFirmaPropietario}" readonly="true"/>
+                            </div>	
                         </div>
                     </p:panel>
                 </div>
