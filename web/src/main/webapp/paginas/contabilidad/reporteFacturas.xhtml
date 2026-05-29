@@ -183,11 +183,11 @@
                 
                 <p:column style="width: 50px; text-align: center;" exportable="false">
                     <p:menuButton icon="pi pi-chevron-down" styleClass="ui-button-flat">
-                        <p:menuitem value="XML" ajax="false" icon="pi pi-file-excel">
-                            <p:fileDownload value="#{backingReporteFacturas.descargarXml(fac)}" />
-                        </p:menuitem>
-                        <p:menuitem value="RIDE" ajax="false" icon="pi pi-file-pdf">
-                            <p:fileDownload value="#{backingReporteFacturas.descargarRide(fac)}" />
+                        <p:menuitem value="XML" process="@this" icon="pi pi-file-excel" 
+                        	update=":formReporte:growl" action="#{backingReporteFacturas.descargarXml(fac)}"/>                                                   
+                        <p:menuitem value="RIDE" process="@this" icon="pi pi-file-pdf" update=":formReporte:growl"
+                        	action="#{backingReporteFacturas.descargarRide(fac)}">
+                            
                         </p:menuitem>
                         <p:menuitem value="Anular" actionListener="#{backingReporteFacturas.anularFactura(fac)}" 
                         			disabled="#{fac.documentoElectronico.estado == 'ANULADA'}"

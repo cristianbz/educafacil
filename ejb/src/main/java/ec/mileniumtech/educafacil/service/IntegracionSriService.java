@@ -71,6 +71,9 @@ public class IntegracionSriService {
     
     @EJB
     private ConfiguracionesDaoImpl configuracionesDao;
+    
+    @EJB
+    private AwsS3Service awsS3Service;
 
     /**
      * Procesa una factura electrónica completa a partir de la entidad Factura.
@@ -265,7 +268,7 @@ public class IntegracionSriService {
         }
             
         byte[] xmlFirmado = xadesSignatureService.firmarDocumento(xmlString.getBytes("UTF-8"), pkcs12, password);
-        docElec.setXmlFirmado(xmlFirmado);
+//        docElec.setXmlFirmado(xmlFirmado);
         
         // 5. Envío al SRI con validación de conexión previa
         boolean esProduccion = empresa.getEmpmAmbiente() == 2;
@@ -292,7 +295,7 @@ public class IntegracionSriService {
                 docElec.setFechaAutorizacionDb(convertir( aut.getFechaAutorizacion()));
                 
                 if ("AUTORIZADO".equals(aut.getEstado())) {
-                    docElec.setXmlAutorizadoSri(xmlFirmado); // Idealmente el XML del SRI
+//                    docElec.setXmlAutorizadoSri(xmlFirmado); // Idealmente el XML del SRI
                     URL resourceUrl = getClass().getResource("/reportes/factura.jrxml");
 //                    System.out.println("=== RUTA REAL DEL JRXML ===");
 //                    System.out.println(resourceUrl != null ? resourceUrl.getPath() : "NULL - no encontrado");
@@ -304,9 +307,27 @@ public class IntegracionSriService {
                     
                     if (jrxmlStream != null) {
                         byte[] pdfContent = rideGeneratorService.generarRidePdf(facturaSri, logoStream, jrxmlStream,facturaEntity.getFormaPagoFacturas());
-                        docElec.setPdfRide(pdfContent);
+//                        docElec.setPdfRide(pdfContent);
+                        // 7. Subir documentos a AWS S3
+                        try {
+                            String numeroFactura = facturaEntity.getNumero().replace("/", "-");
+                            
+                            // Subir PDF (RIDE) a S3
+                            String clavePdf = awsS3Service.construirClavePdf(numeroFactura);
+                            awsS3Service.subirArchivo(pdfContent, clavePdf, "application/pdf");
+                            docElec.setUrlPdf(clavePdf);
+                            
+                            // Subir XML firmado a S3
+                            String claveXml = awsS3Service.construirClaveXml(numeroFactura);
+                            awsS3Service.subirArchivo(xmlFirmado, claveXml, "text/xml");
+                            docElec.setUrlXml(claveXml);
+                            
+                        } catch (Exception e3) {
+                            // Si falla S3, el proceso no se interrumpe: los bytes quedan en BD como respaldo
+                            System.err.println("[AwsS3] Error al subir documentos a S3, se conservan en BD: " + e3.getMessage());
+                        }
                         facturaDao.actualizarFactura(facturaEntity);
-                        // 7. Enviar Notificación
+                        // 8. Enviar Notificación
                         String destinatario = facturaEntity.getCliente().getCorreo();
                         notificacionService.enviarComprobante(destinatario, xmlFirmado, pdfContent, secuencial);
                     }

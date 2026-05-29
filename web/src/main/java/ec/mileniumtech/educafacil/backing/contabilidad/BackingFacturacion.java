@@ -1,31 +1,34 @@
 package ec.mileniumtech.educafacil.backing.contabilidad;
 
-import java.io.ByteArrayInputStream;
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.PrimeFaces;
 import org.primefaces.model.StreamedContent;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.contabilidad.BeanFacturacion;
 import ec.mileniumtech.educafacil.dao.impl.CatalogoItemDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.ClienteDaoImpl;
+import ec.mileniumtech.educafacil.dao.impl.EmpresaMatrizDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.EstudianteDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.FacturaDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.PersonaDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.PuntoEmisionDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.EmpresaMatrizDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.InfoAdicionalDto;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.CatalogoItem;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Cliente;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleFactura;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DocumentoElectronico;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.EmpresaMatriz;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Estudiante;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Factura;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Persona;
-import ec.mileniumtech.educafacil.modelo.persistencia.entity.EmpresaMatriz;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.PuntoEmision;
 import ec.mileniumtech.educafacil.service.FacturacionService;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
@@ -37,11 +40,6 @@ import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import lombok.Getter;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Backing bean para la gestión de facturación electrónica en la UI.
@@ -79,6 +77,9 @@ public class BackingFacturacion implements Serializable {
 
     @EJB
     private FacturacionService facturacionService;
+
+    @EJB
+    private ec.mileniumtech.educafacil.service.AwsS3Service awsS3Service;
 
     @Inject
     @Getter
@@ -517,40 +518,83 @@ public class BackingFacturacion implements Serializable {
 
     /**
      * Genera la descarga del archivo RIDE (PDF) de la factura.
+     * Si existe URL de S3, genera una pre-signed URL y redirige al cliente.
+     * En caso contrario, usa los bytes almacenados en BD (facturas antiguas).
      * @param factura Factura seleccionada.
-     * @return StreamedContent para la descarga.
+     * @return StreamedContent para la descarga, o null si no hay PDF disponible.
      */
     public StreamedContent descargarRide(Factura factura) {
         DocumentoElectronico doc = factura.getDocumentoElectronico();
-        if (doc != null && doc.getPdfRide() != null) {
-            return DefaultStreamedContent.builder()
-                    .name("RIDE_" + factura.getNumero() + ".pdf")
-                    .contentType("application/pdf")
-                    .stream(() -> new ByteArrayInputStream(doc.getPdfRide()))
-                    .build();
-        } else {
+        if (doc == null) {
             Mensaje.verMensaje(FacesMessage.SEVERITY_WARN, "Aviso", "El RIDE no está disponible para esta factura.");
             return null;
         }
+
+        // Prioridad 1: Descargar desde S3 via pre-signed URL
+        if (doc.getUrlPdf() != null && !doc.getUrlPdf().isEmpty()) {
+            try {
+                String presignedUrl = awsS3Service.generarUrlDescarga(doc.getUrlPdf());
+             // ESCAPE Y EJECUCIÓN: Mandamos a abrir la ventana inmediatamente con la URL fresca
+                String script = String.format("window.open('%s', '_blank');", presignedUrl);
+                PrimeFaces.current().executeScript(script);
+                return null;
+            } catch (Exception e) {
+                log.error("Error al generar pre-signed URL para RIDE", e);
+                Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo generar el enlace de descarga: " + e.getMessage());
+                return null;
+            }
+        }
+        return null;
     }
 
 
     /**
      * Genera la descarga del archivo XML de la factura.
+     * Si existe URL de S3, genera una pre-signed URL y redirige al cliente.
+     * En caso contrario, usa los bytes almacenados en BD (facturas antiguas).
      * @param factura Factura seleccionada.
-     * @return StreamedContent para la descarga.
+     * @return StreamedContent para la descarga, o null si no hay XML disponible.
      */
     public StreamedContent descargarXml(Factura factura) {
         DocumentoElectronico doc = factura.getDocumentoElectronico();
-        if (doc != null && doc.getXmlAutorizadoSri() != null) {
-            return DefaultStreamedContent.builder()
-                    .name("Factura_" + factura.getNumero() + ".xml")
-                    .contentType("text/xml")
-                    .stream(() -> new ByteArrayInputStream(doc.getXmlAutorizadoSri()))
-                    .build();
-        } else {
+        if (doc == null) {
             Mensaje.verMensaje(FacesMessage.SEVERITY_WARN, "Aviso", "El XML no está disponible para esta factura.");
             return null;
+        }
+
+        // Prioridad 1: Descargar desde S3 via pre-signed URL
+        if (doc.getUrlXml() != null && !doc.getUrlXml().isEmpty()) {
+            try {
+                String presignedUrl = awsS3Service.generarUrlDescarga(doc.getUrlXml());
+             // ESCAPE Y EJECUCIÓN: Mandamos a abrir la ventana inmediatamente con la URL fresca
+                String script = String.format("window.open('%s', '_blank');", presignedUrl);
+                PrimeFaces.current().executeScript(script);
+                return null;
+            } catch (Exception e) {
+                log.error("Error al generar pre-signed URL para XML", e);
+                Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo generar el enlace de descarga: " + e.getMessage());
+                return null;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Sube manualmente los documentos de una factura autorizada al bucket S3.
+     * Se invoca desde el botón "Subir a AWS S3" en la tabla de facturas.
+     * Solo procesa facturas AUTORIZADAS que aún no tienen URL de S3.
+     *
+     * @param factura Factura cuyos documentos se desean subir a S3.
+     */
+    public void subirDocumentosAws(Factura factura) {
+        try {
+            facturacionService.subirDocumentosFacturaAws(factura.getId());
+            cargarFacturas();
+            Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Éxito",
+                "Documentos de la factura " + factura.getNumero() + " subidos a AWS S3 correctamente.");
+        } catch (Exception e) {
+            log.error("Error al subir documentos a S3", e);
+            Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage());
         }
     }
 
