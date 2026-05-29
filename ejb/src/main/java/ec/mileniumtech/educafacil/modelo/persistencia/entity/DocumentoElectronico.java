@@ -48,6 +48,12 @@ public class DocumentoElectronico {
     @Column(name = "doel_numero_autorizacion", length = 49)
     private String numeroAutorizacion;
     
+    @Column(name = "doel_url_pdf", length = 500)
+    private String urlPdf;
+    
+    @Column(name = "doel_url_xml", length = 500)
+    private String urlXml;
+    
     @Transient 
     private XMLGregorianCalendar fechaAutorizacion;
 

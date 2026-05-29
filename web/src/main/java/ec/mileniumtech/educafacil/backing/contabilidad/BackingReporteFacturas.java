@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeFormatter;
 
 import org.apache.log4j.Logger;
+import org.primefaces.PrimeFaces;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
@@ -42,7 +43,10 @@ public class BackingReporteFacturas implements Serializable {
     @Inject
     @Getter
     private BeanReporteFacturas beanReporteFacturas;
-
+    
+    @EJB
+    private ec.mileniumtech.educafacil.service.AwsS3Service awsS3Service;
+    
     /**
      * Realiza la búsqueda de facturas en base a los filtros.
      */
@@ -76,17 +80,24 @@ public class BackingReporteFacturas implements Serializable {
      * Genera la descarga del archivo XML de la factura.
      */
     public StreamedContent descargarXml(Factura factura) {
-        DocumentoElectronico doc = factura.getDocumentoElectronico();
-        if (doc != null && doc.getXmlAutorizadoSri() != null) {
-            return DefaultStreamedContent.builder()
-                    .name("Factura_" + factura.getNumero() + ".xml")
-                    .contentType("text/xml")
-                    .stream(() -> new ByteArrayInputStream(doc.getXmlAutorizadoSri()))
-                    .build();
-        } else {
-            Mensaje.verMensaje(FacesMessage.SEVERITY_WARN, "Aviso", "El XML no está disponible para esta factura.");
-            return null;
-        }
+    	DocumentoElectronico doc = factura.getDocumentoElectronico();
+    	// Prioridad 1: Descargar desde S3 via pre-signed URL
+    	if (doc.getUrlXml() != null && !doc.getUrlXml().isEmpty()) {
+    		try {
+    			String presignedUrl = awsS3Service.generarUrlDescarga(doc.getUrlXml());
+    			// ESCAPE Y EJECUCIÓN: Mandamos a abrir la ventana inmediatamente con la URL fresca
+    			String script = String.format("window.open('%s', '_blank');", presignedUrl);
+    			PrimeFaces.current().executeScript(script);
+    			return null;
+    		} catch (Exception e) {
+    			log.error("Error al generar pre-signed URL para XML", e);
+    			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo generar el enlace de descarga: " + e.getMessage());
+    			return null;
+    		}
+    	} else {
+    		Mensaje.verMensaje(FacesMessage.SEVERITY_WARN, "Aviso", "El XML no está disponible para esta factura.");
+    		return null;
+    	}
     }
 
     /**
@@ -94,18 +105,29 @@ public class BackingReporteFacturas implements Serializable {
      */
     public StreamedContent descargarRide(Factura factura) {
         DocumentoElectronico doc = factura.getDocumentoElectronico();
-        if (doc != null && doc.getPdfRide() != null) {
-            return DefaultStreamedContent.builder()
-                    .name("RIDE_" + factura.getNumero() + ".pdf")
-                    .contentType("application/pdf")
-                    .stream(() -> new ByteArrayInputStream(doc.getPdfRide()))
-                    .build();
-        } else {
+        if (doc == null) {
             Mensaje.verMensaje(FacesMessage.SEVERITY_WARN, "Aviso", "El RIDE no está disponible para esta factura.");
             return null;
         }
+        // Prioridad 1: Descargar desde S3 via pre-signed URL
+        if (doc.getUrlPdf() != null && !doc.getUrlPdf().isEmpty()) {
+            try {
+                String presignedUrl = awsS3Service.generarUrlDescarga(doc.getUrlPdf());
+             // ESCAPE Y EJECUCIÓN: Mandamos a abrir la ventana inmediatamente con la URL fresca
+                String script = String.format("window.open('%s', '_blank');", presignedUrl);
+                PrimeFaces.current().executeScript(script);
+                return null;
+            } catch (Exception e) {
+                log.error("Error al generar pre-signed URL para RIDE", e);
+                Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo generar el enlace de descarga: " + e.getMessage());
+                return null;
+            }
+        }else {
+        	Mensaje.verMensaje(FacesMessage.SEVERITY_WARN, "Aviso", "El RIDE no está disponible para esta factura.");
+          return null;
+        }
     }
-
+    
     /**
      * Anula la factura seleccionada.
      */

@@ -45,6 +45,9 @@ public class FacturacionService {
 
     @EJB
     private IntegracionSriService integracionSriService;
+    
+    @EJB
+    private AwsS3Service awsS3Service;
 
     /**
      * Crea una factura a partir de un registro de pago y procesa la facturación electrónica.
@@ -163,5 +166,61 @@ public class FacturacionService {
         }
         factura.setListaInfoAdicional(informacionAdicional);
         integracionSriService.procesarFacturaElectronica(factura);
+    }
+
+    /**
+     * Sube manualmente los documentos (PDF y XML) de una factura ya autorizada a AWS S3.
+     * Útil para migrar facturas existentes que tienen bytes en BD pero no tienen URLs de S3.
+     *
+     * @param facturaId ID de la factura a migrar.
+     * @throws Exception Si no se puede subir alguno de los documentos.
+     */
+    public void subirDocumentosFacturaAws(Integer facturaId) throws Exception {
+        Factura factura = facturaDao.buscarFacturaPorId(facturaId);
+        if (factura == null) {
+            throw new Exception("No se encontró la factura con ID: " + facturaId);
+        }
+
+        ec.mileniumtech.educafacil.modelo.persistencia.entity.DocumentoElectronico doc = factura.getDocumentoElectronico();
+        if (doc == null) {
+            throw new Exception("La factura no tiene un documento electrónico asociado.");
+        }
+        if (!"AUTORIZADO".equals(doc.getEstado())) {
+            throw new Exception("Solo se pueden subir documentos de facturas en estado AUTORIZADO.");
+        }
+
+        String numeroFactura = factura.getNumero().replace("/", "-");
+        boolean huboError = false;
+        StringBuilder errMsg = new StringBuilder();
+
+        // Subir PDF si existe en BD
+        if (doc.getPdfRide() != null && doc.getUrlPdf() == null) {
+            try {
+                String clavePdf = awsS3Service.construirClavePdf(numeroFactura);
+                awsS3Service.subirArchivo(doc.getPdfRide(), clavePdf, "application/pdf");
+                doc.setUrlPdf(clavePdf);
+            } catch (Exception e) {
+                huboError = true;
+                errMsg.append("Error al subir PDF: ").append(e.getMessage()).append(". ");
+            }
+        }
+
+        // Subir XML si existe en BD
+        if (doc.getXmlAutorizadoSri() != null && doc.getUrlXml() == null) {
+            try {
+                String claveXml = awsS3Service.construirClaveXml(numeroFactura);
+                awsS3Service.subirArchivo(doc.getXmlAutorizadoSri(), claveXml, "text/xml");
+                doc.setUrlXml(claveXml);
+            } catch (Exception e) {
+                huboError = true;
+                errMsg.append("Error al subir XML: ").append(e.getMessage()).append(". ");
+            }
+        }
+
+        facturaDao.actualizarFactura(factura);
+
+        if (huboError) {
+            throw new Exception("Se completó parcialmente: " + errMsg.toString().trim());
+        }
     }
 }

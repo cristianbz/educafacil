@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
-                                            
+                                                
+    
     
     
     
@@ -10,7 +11,8 @@
     
     
     <wb-module deploy-name="educafacil">
-                                                                                        
+                                                                                                
+        
         
         
         
@@ -21,7 +23,8 @@
         
         
         <wb-resource deploy-path="/" source-path="/target/m2e-wtp/ear-resources"/>
-                                                                                        
+                                                                                                
+        
         
         
         
@@ -32,7 +35,7 @@
         
         
         <wb-resource deploy-path="/" source-path="/src/main/application" tag="defaultRootSource"/>
-        <dependent-module archiveName="educafacil-ejb.jar" deploy-path="/" handle="module:/resource/ejb/ejb">
+        <dependent-module archiveName="educafacil-ejb.jar" deploy-path="/" handle="module:/resource/educafacil-ejb/educafacil-ejb">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="hibernate-core.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/org/hibernate/orm/hibernate-core/6.4.4.Final/hibernate-core-6.4.4.Final.jar">
@@ -221,7 +224,127 @@
         <dependent-module archiveName="log4j.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/log4j/log4j/1.2.17/log4j-1.2.17.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="educafacil-web.war" deploy-path="/" handle="module:/resource/web/web">
+        <dependent-module archiveName="s3.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/software/amazon/awssdk/s3/2.25.27/s3-2.25.27.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="aws-xml-protocol.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/software/amazon/awssdk/aws-xml-protocol/2.25.27/aws-xml-protocol-2.25.27.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="aws-query-protocol.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/software/amazon/awssdk/aws-query-protocol/2.25.27/aws-query-protocol-2.25.27.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="protocol-core.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/software/amazon/awssdk/protocol-core/2.25.27/protocol-core-2.25.27.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="arns.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/software/amazon/awssdk/arns/2.25.27/arns-2.25.27.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="profiles.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/software/amazon/awssdk/profiles/2.25.27/profiles-2.25.27.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="crt-core.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/software/amazon/awssdk/crt-core/2.25.27/crt-core-2.25.27.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="http-auth.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/software/amazon/awssdk/http-auth/2.25.27/http-auth-2.25.27.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="identity-spi.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/software/amazon/awssdk/identity-spi/2.25.27/identity-spi-2.25.27.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="http-auth-spi.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/software/amazon/awssdk/http-auth-spi/2.25.27/http-auth-spi-2.25.27.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="reactive-streams.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/org/reactivestreams/reactive-streams/1.0.4/reactive-streams-1.0.4.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="http-auth-aws.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/software/amazon/awssdk/http-auth-aws/2.25.27/http-auth-aws-2.25.27.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="checksums.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/software/amazon/awssdk/checksums/2.25.27/checksums-2.25.27.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="checksums-spi.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/software/amazon/awssdk/checksums-spi/2.25.27/checksums-spi-2.25.27.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="sdk-core.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/software/amazon/awssdk/sdk-core/2.25.27/sdk-core-2.25.27.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="auth.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/software/amazon/awssdk/auth/2.25.27/auth-2.25.27.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="eventstream.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/software/amazon/eventstream/eventstream/1.0.1/eventstream-1.0.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="http-client-spi.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/software/amazon/awssdk/http-client-spi/2.25.27/http-client-spi-2.25.27.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="regions.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/software/amazon/awssdk/regions/2.25.27/regions-2.25.27.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="annotations.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/software/amazon/awssdk/annotations/2.25.27/annotations-2.25.27.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="utils.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/software/amazon/awssdk/utils/2.25.27/utils-2.25.27.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="aws-core.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/software/amazon/awssdk/aws-core/2.25.27/aws-core-2.25.27.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="metrics-spi.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/software/amazon/awssdk/metrics-spi/2.25.27/metrics-spi-2.25.27.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="json-utils.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/software/amazon/awssdk/json-utils/2.25.27/json-utils-2.25.27.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="third-party-jackson-core.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/software/amazon/awssdk/third-party-jackson-core/2.25.27/third-party-jackson-core-2.25.27.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="endpoints-spi.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/software/amazon/awssdk/endpoints-spi/2.25.27/endpoints-spi-2.25.27.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="apache-client.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/software/amazon/awssdk/apache-client/2.25.27/apache-client-2.25.27.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="httpclient.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/org/apache/httpcomponents/httpclient/4.5.14/httpclient-4.5.14.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="httpcore.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/org/apache/httpcomponents/httpcore/4.4.16/httpcore-4.4.16.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="netty-nio-client.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/software/amazon/awssdk/netty-nio-client/2.25.27/netty-nio-client-2.25.27.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="netty-codec-http.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/io/netty/netty-codec-http/4.1.108.Final/netty-codec-http-4.1.108.Final.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="netty-codec-http2.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/io/netty/netty-codec-http2/4.1.108.Final/netty-codec-http2-4.1.108.Final.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="netty-codec.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/io/netty/netty-codec/4.1.108.Final/netty-codec-4.1.108.Final.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="netty-transport.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/io/netty/netty-transport/4.1.108.Final/netty-transport-4.1.108.Final.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="netty-common.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/io/netty/netty-common/4.1.108.Final/netty-common-4.1.108.Final.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="netty-buffer.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/io/netty/netty-buffer/4.1.108.Final/netty-buffer-4.1.108.Final.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="netty-handler.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/io/netty/netty-handler/4.1.108.Final/netty-handler-4.1.108.Final.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="netty-transport-native-unix-common.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/io/netty/netty-transport-native-unix-common/4.1.108.Final/netty-transport-native-unix-common-4.1.108.Final.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="netty-transport-classes-epoll.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/io/netty/netty-transport-classes-epoll/4.1.108.Final/netty-transport-classes-epoll-4.1.108.Final.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="netty-resolver.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/io/netty/netty-resolver/4.1.108.Final/netty-resolver-4.1.108.Final.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="educafacil-web.war" deploy-path="/" handle="module:/resource/educafacil-web/educafacil-web">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="batik-anim.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/org/apache/xmlgraphics/batik-anim/1.17/batik-anim-1.17.jar">
@@ -281,7 +404,8 @@
         <dependent-module archiveName="xml-apis-ext.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/xml-apis/xml-apis-ext/1.3.04/xml-apis-ext-1.3.04.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-                                                                                    
+                                                                                            
+    
     
     
     
@@ -292,7 +416,8 @@
     
     
     </wb-module>
-                                        
+                                            
+
 
 
 

@@ -148,7 +148,7 @@
 					</h:panelGroup>
 				</p:column>
 				
-				<p:column headerText="Acciones" style="width: 180px; text-align: center;">
+				<p:column headerText="Acciones" style="width: 220px; text-align: center;">
 					<p:commandButton icon="pi pi-cloud-upload" title="Emitir al SRI" 
 									 actionListener="#{backingFacturacion.emitirFactura(fac)}"
 									 rendered="#{fac.documentoElectronico == null or fac.documentoElectronico.estado != 'AUTORIZADO'}"
@@ -157,18 +157,32 @@
 									 styleClass="ui-button-warning"
 									 style="margin: 0 2px;" />
 					
-					<p:commandButton icon="pi pi-file-pdf" title="Descargar RIDE" ajax="false"
-									 rendered="#{fac.documentoElectronico != null and fac.documentoElectronico.pdfRide != null}"
-									 styleClass="ui-button-success"
+					<!-- Botón: Subir documentos a AWS S3 (para facturas autorizadas sin URL de S3) -->
+					<p:commandButton icon="pi pi-cloud" title="Subir a AWS S3"
+									 rendered="#{fac.documentoElectronico != null 
+												and fac.documentoElectronico.estado == 'AUTORIZADO'
+												and (fac.documentoElectronico.urlPdf == null or fac.documentoElectronico.urlPdf == '')}"
+									 actionListener="#{backingFacturacion.subirDocumentosAws(fac)}"
+									 update=":formFacturacion:growl :formFacturacion:tblFacturas"
+									 styleClass="ui-button-primary"
+									 style="margin: 0 2px;" />
+
+					<!-- Botón: Descargar RIDE (PDF) — disponible si hay URL de S3 o bytes en BD -->
+					<p:commandButton icon="pi pi-file-pdf" title="Descargar RIDE" process="@this"
+									 rendered="#{fac.documentoElectronico != null 
+												and (fac.documentoElectronico.urlPdf != null and fac.documentoElectronico.urlPdf != '')}"
+									 styleClass="ui-button-success" action="#{backingFacturacion.descargarRide(fac)}"
 									 style="margin: 0 2px;">
-						<p:fileDownload value="#{backingFacturacion.descargarRide(fac)}" />
+						
 					</p:commandButton>
 
-					<p:commandButton icon="pi pi-file" title="Descargar XML" ajax="false"
-									 rendered="#{fac.documentoElectronico != null and fac.documentoElectronico.xmlAutorizadoSri != null}"
+					<!-- Botón: Descargar XML — disponible si hay URL de S3 o bytes en BD -->
+					<p:commandButton icon="pi pi-file" title="Descargar XML" action="#{backingFacturacion.descargarXml(fac)}" process="@this"
+									 rendered="#{fac.documentoElectronico != null 
+												and (fac.documentoElectronico.urlXml != null and fac.documentoElectronico.urlXml != '')}"
 									 styleClass="ui-button-info"
 									 style="margin: 0 2px;">
-						<p:fileDownload value="#{backingFacturacion.descargarXml(fac)}" />
+						
 					</p:commandButton>
 				</p:column>
 				
