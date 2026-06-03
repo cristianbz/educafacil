@@ -82,20 +82,34 @@
 						</p:scrollPanel>
 					</p:outputPanel>
 				</p:dialog>
-			<p:breadCrumb>
-				<p:menuitem value="Categorias" url="#" />
-				<p:menuitem value="Contabilidad" url="#" />
-				<p:menuitem value="Reporte ingresos/egresos" url="#"/>
+			<p:breadCrumb styleClass="mb-3">
+				<p:menuitem value="Categorias" icon="pi pi-home" outcome="/paginas/index?faces-redirect=true" />
+				<p:menuitem value="Contabilidad" />
+				<p:menuitem value="Reporte ingresos/egresos" />
 			</p:breadCrumb>	
-			<br/>
-			<p:splitButton value="#{etiquetas['accionesRealizar']}">
-	            <p:menuitem value="#{botones['estadisticas']}" action="#{backingReporteria.dialogoReporteFechas}" update="fechas"
-							process="@this"  icon="pi pi-chart-line"/>
-	            <p:menuitem onclick="exportChartInPDF()" value="#{botones['descargarGraficas']}"  icon="pi pi-cloud-download" />	            
-	        </p:splitButton>			
-				
+			<div class="page-header">
+				<div class="page-title">
+					<h2>Administración estadísticas</h2>
+					<small>Gestión de estadisticas de ingresos / egresos</small>
+				</div>
+				<div class="page-actions">
 
-					
+					<!-- Acción primaria -->
+					<p:commandButton value="#{botones['estadisticas']}" action="#{backingReporteria.dialogoReporteFechas}" update="fechas"
+						process="@this"
+						icon="pi pi-chart-line" styleClass="ui-button-success" 
+					 />
+
+					<!-- Acciones secundarias -->
+					<p:menuButton value="Más acciones" icon="pi pi-ellipsis-v">
+
+						<p:menuitem onclick="exportChartInPDF()" value="#{botones['descargarGraficas']}"  icon="pi pi-cloud-download" />
+						
+					</p:menuButton>
+
+				</div>
+
+			</div>
 				<p:outputPanel id="graficas">
 					<center>
 					<p:outputLabel value="#{titulos['resumenIngresoEgreso']} #{beanReporteria.fechasReporte}"/>

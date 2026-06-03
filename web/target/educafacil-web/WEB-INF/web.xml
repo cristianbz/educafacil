@@ -27,6 +27,6 @@
     </welcome-file-list>
 <error-page>
   <exception-type>jakarta.faces.application.ViewExpiredException</exception-type>
-  <location>/finsesion.cap?redirected=true</location>
+  <location>/finsesion.xhtml?redirected=true</location>
  </error-page>
 </web-app>

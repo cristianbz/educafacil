@@ -71,4 +71,7 @@
 		<to-view-id>/paginas/index.cap</to-view-id>
 	</navigation-case>
 </navigation-rule>
+<factory>
+    <exception-handler-factory>ec.mileniumtech.educafacil.web.handler.EducafacilExceptionHandlerFactory</exception-handler-factory>
+</factory>
 </faces-config>

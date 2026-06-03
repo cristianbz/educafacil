@@ -28,6 +28,8 @@ import ec.mileniumtech.educafacil.modelo.persistencia.entity.DocumentoElectronic
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.EmpresaMatriz;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Estudiante;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Factura;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.NotaCredito;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleNotaCredito;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Persona;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.PuntoEmision;
 import ec.mileniumtech.educafacil.service.FacturacionService;
@@ -79,7 +81,10 @@ public class BackingFacturacion implements Serializable {
     private FacturacionService facturacionService;
 
     @EJB
+    private ec.mileniumtech.educafacil.service.NotaCreditoService notaCreditoService;
+    @EJB
     private ec.mileniumtech.educafacil.service.AwsS3Service awsS3Service;
+
 
     @Inject
     @Getter
@@ -484,7 +489,14 @@ public class BackingFacturacion implements Serializable {
             
         } catch (Exception e) {
             log.error("Error al guardar factura", e);
-            Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage());
+            if (e.getMessage() != null && e.getMessage().contains("No se pudo establecer comunicación")) {
+                Mensaje.verMensaje(FacesMessage.SEVERITY_WARN, "Advertencia", "No se pudo enviar el documento al SRI, se procesará luego.");
+                cargarFacturas();
+                Mensaje.ocultarDialogo("dlgNuevaFactura");
+                Mensaje.verDialogo("dlgErrorSri");
+            } else {
+                Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage());
+            }
         }
     }
     
@@ -516,6 +528,200 @@ public class BackingFacturacion implements Serializable {
         }
     }
 
+    /**
+     * Prepara la interfaz para generar una Nota de Crédito.
+     * @param factura Factura base.
+     */
+    public void prepararNotaCredito(Factura facturaParcial) {
+        try {
+            if (facturaParcial.getDocumentoElectronico() == null || !"AUTORIZADO".equals(facturaParcial.getDocumentoElectronico().getEstado())) {
+                Mensaje.verMensaje(FacesMessage.SEVERITY_WARN, "Aviso", "Solo se puede generar Nota de Crédito a facturas AUTORIZADAS.");
+                return;
+            }
+            
+            // Recargar la factura para asegurar que los detalles lazy se inicialicen correctamente
+            Factura factura = facturaDao.buscarFacturaPorId(facturaParcial.getId());
+            
+            getBeanFacturacion().setFacturaSeleccionada(factura);
+            getBeanFacturacion().setMotivoNotaCredito("");
+            
+            NotaCredito nc = new NotaCredito();
+            nc.setFactura(factura);
+            nc.setCliente(factura.getCliente());
+            nc.setPuntoEmision(factura.getPuntoEmision());
+            nc.setFechaEmision(LocalDate.now());
+            nc.setSubtotal(factura.getSubtotal());
+            nc.setTotalImpuestos(factura.getTotalImpuestos());
+            nc.setTotal(factura.getTotal());
+            BigDecimal porcentajeIva = factura.getPuntoEmision().getEstablecimientos().getEmpresaMatriz().getEmpmPorcentajeIva();
+            if (porcentajeIva == null) {
+                porcentajeIva = BigDecimal.ZERO;
+            }
+            
+            List<DetalleNotaCredito> detallesNc = new ArrayList<>();
+            for (DetalleFactura df : factura.getDetalles()) {
+                DetalleNotaCredito dnc = new DetalleNotaCredito();
+                dnc.setNotaCredito(nc);
+                dnc.setItem(df.getItem());
+                dnc.setDescripcion(df.getDescripcion());
+                dnc.setCantidad(df.getCantidad());
+                dnc.setPrecioUnitario(df.getPrecioUnitario());
+                dnc.setDescuento(df.getDescuento());
+                dnc.setImpuestoIva(porcentajeIva);
+                detallesNc.add(dnc);
+            }
+            nc.setDetalles(detallesNc);
+            
+            getBeanFacturacion().setNuevaNotaCredito(nc);
+            Mensaje.verDialogo("dlgNuevaNotaCredito");
+        } catch (Exception e) {
+            log.error("Error al preparar N.C.", e);
+            Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo preparar la Nota de Crédito.");
+        }
+    }
+    /**
+     * Genera y envía al SRI la Nota de Crédito.
+     */
+    public void generarNotaCredito() {
+        try {
+            if (getBeanFacturacion().getMotivoNotaCredito() == null || getBeanFacturacion().getMotivoNotaCredito().trim().isEmpty()) {
+                throw new Exception("El motivo es obligatorio para la Nota de Crédito.");
+            }
+            calcularTotalesNotaCredito();
+            
+            if (!validarDetallesNotaCredito()) {
+                return; // Validation failed, error messages already set
+            }
+            
+            NotaCredito nc = getBeanFacturacion().getNuevaNotaCredito();
+            nc.setMotivo(getBeanFacturacion().getMotivoNotaCredito());
+            
+            // Asignar numero secuencial
+            PuntoEmision puem = nc.getPuntoEmision();
+            int nuevoSec = puem.getSecuencialNotaCredito() != null ? puem.getSecuencialNotaCredito() + 1 : 1;
+            nc.setNumero(String.format("%03d-%03d-%09d", 
+                Integer.parseInt(puem.getEstablecimientos().getEstaCodigo()), 
+                Integer.parseInt(puem.getCodigo()), 
+                nuevoSec));
+            
+            puem.setSecuencialNotaCredito(nuevoSec);
+            puntoEmisionDao.actualizar(puem);
+            
+            notaCreditoService.procesarNotaCreditoElectronica(nc);
+            
+            Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Éxito", "Nota de Crédito generada y procesada correctamente.");
+            Mensaje.ocultarDialogo("dlgNuevaNotaCredito");
+            cargarFacturas(); // para refrescar estados si fuera necesario
+        } catch (Exception e) {
+            log.error("Error al generar N.C.", e);
+            Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage());
+        }
+    }
+    /*
+     * Calcula los totales de la nota de credito
+     */
+    public void calcularTotalesNotaCredito() {
+        if (getBeanFacturacion().getNuevaNotaCredito() == null || getBeanFacturacion().getNuevaNotaCredito().getDetalles() == null) {
+            return;
+        }
+        BigDecimal subtotal = BigDecimal.ZERO;
+        BigDecimal descuentoTotal = BigDecimal.ZERO;
+        BigDecimal totalImpuestos = BigDecimal.ZERO;
+        for (DetalleNotaCredito dnc : getBeanFacturacion().getNuevaNotaCredito().getDetalles()) {
+            BigDecimal cant = new BigDecimal(dnc.getCantidad() != null ? dnc.getCantidad() : 0);
+            BigDecimal precio = dnc.getPrecioUnitario() != null ? dnc.getPrecioUnitario() : BigDecimal.ZERO;
+            BigDecimal desc = dnc.getDescuento() != null ? dnc.getDescuento() : BigDecimal.ZERO;
+            
+            BigDecimal subtotalItem = precio.multiply(cant).subtract(desc);
+            subtotal = subtotal.add(precio.multiply(cant));
+            descuentoTotal = descuentoTotal.add(desc);
+            
+            if (dnc.getImpuestoIva() != null && dnc.getImpuestoIva().compareTo(BigDecimal.ZERO) > 0) {
+                BigDecimal iva = dnc.getImpuestoIva().divide(new BigDecimal(100));
+                totalImpuestos = totalImpuestos.add(subtotalItem.multiply(iva).setScale(2, RoundingMode.HALF_UP));
+            }
+        }
+        
+        getBeanFacturacion().getNuevaNotaCredito().setSubtotal(subtotal);
+        getBeanFacturacion().getNuevaNotaCredito().setTotalImpuestos(totalImpuestos);
+        getBeanFacturacion().getNuevaNotaCredito().setTotal(subtotal.subtract(descuentoTotal).add(totalImpuestos));
+    }
+    /**
+     * Remueve un detalle de la nota de credito
+     * @param det
+     */
+    public void removerDetalleNotaCredito(DetalleNotaCredito det) {
+        if (getBeanFacturacion().getNuevaNotaCredito() != null && getBeanFacturacion().getNuevaNotaCredito().getDetalles() != null) {
+            getBeanFacturacion().getNuevaNotaCredito().getDetalles().remove(det);
+            calcularTotalesNotaCredito();
+        }
+    }
+    /**
+     * Valida los detalles de la nota de credito
+     * @return
+     */
+    private boolean validarDetallesNotaCredito() {
+        if (getBeanFacturacion().getNuevaNotaCredito().getDetalles() == null || getBeanFacturacion().getNuevaNotaCredito().getDetalles().isEmpty()) {
+            Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "La nota de crédito debe tener al menos un ítem.");
+            return false;
+        }
+        Factura facturaOriginal = getBeanFacturacion().getFacturaSeleccionada();
+        for (DetalleNotaCredito dnc : getBeanFacturacion().getNuevaNotaCredito().getDetalles()) {
+            DetalleFactura original = null;
+            for (DetalleFactura df : facturaOriginal.getDetalles()) {
+                if (df.getItem().getId().equals(dnc.getItem().getId())) {
+                    original = df;
+                    break;
+                }
+            }
+            if (original == null) {
+                Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error de Validación", "El ítem " + dnc.getItem().getNombre() + " no pertenece a la factura original.");
+                return false;
+            }
+            if (dnc.getCantidad() == null || dnc.getCantidad() <= 0) {
+                Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error de Validación", "La cantidad del ítem " + dnc.getItem().getNombre() + " debe ser mayor a cero.");
+                return false;
+            }
+            if (dnc.getCantidad() > original.getCantidad()) {
+                Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error de Validación", "La cantidad del ítem " + dnc.getItem().getNombre() + " (" + dnc.getCantidad() + ") no puede ser mayor a la original (" + original.getCantidad() + ").");
+                return false;
+            }
+            if (dnc.getPrecioUnitario() == null || dnc.getPrecioUnitario().compareTo(BigDecimal.ZERO) < 0) {
+                Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error de Validación", "El precio del ítem " + dnc.getItem().getNombre() + " no es válido.");
+                return false;
+            }
+            if (dnc.getPrecioUnitario().compareTo(original.getPrecioUnitario()) > 0) {
+                Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error de Validación", "El precio del ítem " + dnc.getItem().getNombre() + " no puede ser mayor al original.");
+                return false;
+            }
+            if (dnc.getDescuento() == null || dnc.getDescuento().compareTo(BigDecimal.ZERO) < 0) {
+                Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error de Validación", "El descuento del ítem " + dnc.getItem().getNombre() + " no puede ser negativo.");
+                return false;
+            }
+            BigDecimal subtotalNetoOriginal = original.getPrecioUnitario().multiply(new BigDecimal(original.getCantidad())).subtract(original.getDescuento() != null ? original.getDescuento() : BigDecimal.ZERO);
+            BigDecimal subtotalNetoNuevo = dnc.getPrecioUnitario().multiply(new BigDecimal(dnc.getCantidad())).subtract(dnc.getDescuento());
+            if (subtotalNetoNuevo.compareTo(subtotalNetoOriginal) > 0) {
+                Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error de Validación", "El subtotal neto del ítem " + dnc.getItem().getNombre() + " excede el valor original facturado.");
+                return false;
+            }
+        }
+        return true;
+    }
+    /**
+     * Obtiene el descuento total de la nota de credito
+     * @return
+     */
+    public BigDecimal getDescuentoTotalNotaCredito() {
+        BigDecimal descuentoTotal = BigDecimal.ZERO;
+        if (getBeanFacturacion().getNuevaNotaCredito() != null && getBeanFacturacion().getNuevaNotaCredito().getDetalles() != null) {
+            for (DetalleNotaCredito dnc : getBeanFacturacion().getNuevaNotaCredito().getDetalles()) {
+                if (dnc.getDescuento() != null) {
+                    descuentoTotal = descuentoTotal.add(dnc.getDescuento());
+                }
+            }
+        }
+        return descuentoTotal;
+    }
     /**
      * Genera la descarga del archivo RIDE (PDF) de la factura.
      * Si existe URL de S3, genera una pre-signed URL y redirige al cliente.

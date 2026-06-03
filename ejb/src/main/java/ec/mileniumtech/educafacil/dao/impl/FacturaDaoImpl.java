@@ -1,11 +1,16 @@
 package ec.mileniumtech.educafacil.dao.impl;
 
 import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleFactura;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.Establecimiento;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Factura;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.PuntoEmision;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
+import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceException;
+import jakarta.persistence.Subgraph;
 import jakarta.persistence.TypedQuery;
 
 /**
@@ -30,15 +35,53 @@ public class FacturaDaoImpl extends GenericoDaoImpl<Factura, Integer> {
      */
     public Factura buscarFacturaPorId(Integer id) {
         try {
-            TypedQuery<Factura> query = getEntityManager().createQuery(
-                "SELECT f FROM Factura f " +
-                "JOIN FETCH f.cliente " +
-                "JOIN FETCH f.puntoEmision " +
-                "JOIN FETCH f.puntoEmision.establecimientos.empresaMatriz " +
-                "LEFT JOIN FETCH f.detalles " +
-                "WHERE f.id = :id", Factura.class);
-            query.setParameter("id", id);
-            return query.getSingleResult();
+        	// 1. Definimos el Entity Graph para Factura
+        	EntityGraph<Factura> graph = getEntityManager().createEntityGraph(Factura.class);
+
+        	// 2. Agregamos las relaciones simples a cargar
+        	graph.addAttributeNodes("cliente", "puntoEmision");
+
+        	// 3. Para las relaciones anidadas profundas, creamos "Subgraphs"
+        	// Esto equivale a: puntoEmision -> establecimientos -> empresaMatriz
+        	Subgraph<PuntoEmision> puntoGraph = graph.addSubgraph("puntoEmision");
+        	Subgraph<Establecimiento> estGraph = puntoGraph.addSubgraph("establecimientos");
+        	estGraph.addAttributeNodes("empresaMatriz");
+
+        	// Esto equivale a: detalles -> item
+        	Subgraph<DetalleFactura> detalleGraph = graph.addSubgraph("detalles");
+        	detalleGraph.addAttributeNodes("item");
+
+        	// 4. Tu consulta JPQL queda limpia y totalmente legal para JPA (sin FETCH ni alias raros)
+        	TypedQuery<Factura> query = getEntityManager().createQuery(
+        	    "SELECT f FROM Factura f WHERE f.id = :id", Factura.class);
+
+        	query.setParameter("id", id);
+
+        	// 5. Le pasamos el gráfico como una "pista" (Hint) a la consulta
+        	query.setHint("jakarta.persistence.loadgraph", graph); 
+        	// Nota: Si usas una versión antigua de Java EE, usa "javax.persistence.loadgraph"
+
+        	Factura factura = query.getSingleResult();
+//        	return factura;
+//            TypedQuery<Factura> query = getEntityManager().createQuery(
+//            		"SELECT f FROM Factura f " +
+//            			    "JOIN FETCH f.cliente " +
+//            			    "JOIN FETCH f.puntoEmision pe " +
+//            			    "JOIN FETCH pe.establecimientos est " +
+//            			    "JOIN FETCH est.empresaMatriz " +
+//            			    "LEFT JOIN FETCH f.detalles d " +
+//            			    "LEFT JOIN FETCH d.item " + // <--- ¡ESTA ES LA MAGIA!
+//            			    "WHERE f.id = :id", Factura.class);
+//            query.setParameter("id", id);
+//            Factura factura = query.getSingleResult();
+////            if (factura.getDetalles() != null) {
+////                for (DetalleFactura df : factura.getDetalles()) {
+////                    if (df.getItem() != null) {
+////                        df.getItem().getNombre(); // Forzar inicialización del proxy
+////                    }
+////                }
+////            }
+            return factura;
         } catch (PersistenceException e) {
             throw new SystemException("Error al buscar factura con detalles", "FACTURA-FIND-ERR", e);
         }

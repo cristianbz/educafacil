@@ -1,7 +1,12 @@
 package ec.mileniumtech.educafacil.backing.contabilidad;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeFormatter;
 
@@ -149,7 +154,7 @@ public class BackingReporteFacturas implements Serializable {
     public void enviarCorreo(Factura factura) {
         try {
             DocumentoElectronico doc = factura.getDocumentoElectronico();
-            if (doc == null || doc.getXmlAutorizadoSri() == null || doc.getPdfRide() == null) {
+            if (doc == null || doc.getUrlXml() == null || doc.getUrlPdf() == null) {
                 Mensaje.verMensaje(FacesMessage.SEVERITY_WARN, "Aviso", "La factura no tiene el XML o PDF autorizado para enviar por correo.");
                 return;
             }
@@ -160,10 +165,13 @@ public class BackingReporteFacturas implements Serializable {
                 return;
             }
 
+            byte[] xmlBytes = descargarBytes(awsS3Service.generarUrlDescarga(doc.getUrlXml()));
+            byte[] pdfBytes = descargarBytes(awsS3Service.generarUrlDescarga(doc.getUrlPdf()));
+
             notificacionService.enviarComprobante(
                 destinatario, 
-                doc.getXmlAutorizadoSri(), 
-                doc.getPdfRide(), 
+                xmlBytes,
+                pdfBytes, 
                 factura.getNumero()
             );
 
@@ -173,6 +181,29 @@ public class BackingReporteFacturas implements Serializable {
             Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo enviar el correo: " + e.getMessage());
         }
     }
+    /**
+     * Descarga un archivo desde la url del bucket s3
+     * @param urlStr
+     * @return
+     * @throws IOException
+     */
+    private byte[] descargarBytes(String urlStr) throws IOException {
+        URL url = new URL(urlStr);
+
+        try (InputStream is = url.openStream();
+             ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+
+            byte[] buffer = new byte[8192];
+            int bytesRead;
+
+            while ((bytesRead = is.read(buffer)) != -1) {
+                baos.write(buffer, 0, bytesRead);
+            }
+
+            return baos.toByteArray();
+        }
+    }
+    
     public StreamedContent getCsvDownload() {
         try {
             if (beanReporteFacturas.getListaFacturas() == null || beanReporteFacturas.getListaFacturas().isEmpty()) {

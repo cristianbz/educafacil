@@ -1,0 +1,127 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:p="http://primefaces.org/ui">
+
+<p:dialog id="dlgNuevaNotaCredito" widgetVar="dlgNuevaNotaCredito" header="Generar Nota de Crédito" 
+				  modal="true" width="90%" height="80vh" responsive="true" fitViewport="true"
+				  draggable="false" resizable="false" closeOnEscape="true" styleClass="invoice-dialog">
+			<h:form id="formNuevaNotaCredito">
+				<p:scrollPanel mode="native" style="height:calc(80vh - 70px); border:none;" styleClass="invoice-dialog-content">
+				<div class="p-grid" style="padding: 1rem;">
+					<!-- Columna Izquierda: Motivo e Ítems -->
+					<div class="p-col-12 p-lg-8">
+						<p:panel styleClass="invoice-panel">
+							<div class="invoice-section-title">
+								<i class="pi pi-info-circle"></i>
+								<span>Datos Generales</span>
+							</div>
+							<p style="margin-bottom: 1rem;">
+								Se generará una Nota de Crédito electrónica asociada a la factura <b>#{beanFacturacion.facturaSeleccionada.numero}</b> 
+								a nombre de <b>#{beanFacturacion.facturaSeleccionada.cliente.nombresCompletos}</b>.
+							</p>
+							
+							<div class="p-field">
+								<p:outputLabel value="Motivo de la Modificación:" for="txtMotivoNc" style="display: block; margin-bottom: 0.5rem; font-weight: bold;"/>
+								<p:inputTextarea id="txtMotivoNc" value="#{beanFacturacion.motivoNotaCredito}" required="true" 
+												 rows="2" style="width: 100%;" placeholder="Ej: Devolución de mercadería, Error en facturación..." />
+							</div>
+						</p:panel>
+						
+						<p:panel styleClass="invoice-panel p-mt-4">
+							<div class="invoice-section-title">
+								<i class="pi pi-list"></i>
+								<span>Ítems a Afectar</span>
+							</div>
+							<p:dataTable id="tblDetallesNc" value="#{beanFacturacion.nuevaNotaCredito.detalles}" var="det" 
+										 reflow="true" styleClass="p-mt-2 compact-table" emptyMessage="No hay ítems.">
+								<p:column headerText="Descripción">
+									<h:outputText value="#{det.item.nombre}" style="font-weight: 600;" />
+								</p:column>
+								<p:column headerText="Cant." style="text-align: center; width: 80px;">
+									<p:inputNumber value="#{det.cantidad}" decimalPlaces="0" style="width: 100%;">
+										<p:ajax listener="#{backingFacturacion.calcularTotalesNotaCredito()}" update="tblDetallesNc :formNuevaNotaCredito:pnlResumenNc" />
+									</p:inputNumber>
+								</p:column>
+								<p:column headerText="Precio Unit." style="text-align: right; width: 110px;">
+									<p:inputNumber value="#{det.precioUnitario}" decimalPlaces="2" style="width: 100%;">
+										<p:ajax listener="#{backingFacturacion.calcularTotalesNotaCredito()}" update="tblDetallesNc :formNuevaNotaCredito:pnlResumenNc" />
+									</p:inputNumber>
+								</p:column>
+								<p:column headerText="Descuento" style="text-align: right; width: 110px;">
+									<p:inputNumber value="#{det.descuento}" decimalPlaces="2" style="width: 100%;">
+										<p:ajax listener="#{backingFacturacion.calcularTotalesNotaCredito()}" update="tblDetallesNc :formNuevaNotaCredito:pnlResumenNc" />
+									</p:inputNumber>
+								</p:column>
+								<p:column headerText="IVA" style="text-align: center; width: 70px;">
+									<h:outputText value="#{det.impuestoIva}%" />
+								</p:column>
+								<p:column headerText="Subtotal" style="text-align: right; width: 110px;">
+									<h:outputText value="#{(det.precioUnitario * det.cantidad) - det.descuento}" style="font-weight: 700; color: #1e293b;">
+										<f:convertNumber type="currency" currencySymbol="$" />
+									</h:outputText>
+								</p:column>
+								<p:column headerText="" style="text-align: center; width: 50px;">
+									<p:commandButton icon="pi pi-trash" styleClass="ui-button-danger rounded-button ui-button-flat" 
+													 actionListener="#{backingFacturacion.removerDetalleNotaCredito(det)}"
+													 process="@this" update="tblDetallesNc :formNuevaNotaCredito:pnlResumenNc" title="Eliminar" />
+								</p:column>
+							</p:dataTable>
+						</p:panel>
+					</div>
+										<!-- Columna Derecha: Resumen -->
+					<div class="p-col-12 p-lg-4">
+						<p:panel header="Resumen Nota de Crédito" styleClass="invoice-summary-card">
+							<p:outputPanel id="pnlResumenNc">
+								<div class="summary-row">
+									<span>Subtotal (0%)</span>
+									<span class="summary-row-highlight">
+										<h:outputText value="#{beanFacturacion.nuevaNotaCredito.subtotal}">
+											<f:convertNumber type="currency" currencySymbol="$" />
+										</h:outputText>
+									</span>
+								</div>
+								<div class="summary-row">
+									<span>Descuento</span>
+									<span class="summary-row-highlight" style="color: #f87171;">
+										- <h:outputText value="#{backingFacturacion.descuentoTotalNotaCredito}">
+											<f:convertNumber type="currency" currencySymbol="$" />
+										</h:outputText>
+									</span>
+								</div>
+								<div class="summary-row">
+									<span>Impuestos (IVA)</span>
+									<span class="summary-row-highlight">
+										<h:outputText value="#{beanFacturacion.nuevaNotaCredito.totalImpuestos}">
+											<f:convertNumber type="currency" currencySymbol="$" />
+										</h:outputText>
+									</span>
+								</div>
+								
+								<div class="summary-total-container">
+									<span class="summary-total-label">Total a Afectar</span>
+									<div class="summary-total-value">
+										<h:outputText value="#{beanFacturacion.nuevaNotaCredito.total}">
+											<f:convertNumber type="currency" currencySymbol="$" />
+										</h:outputText>
+									</div>
+								</div>
+								<div class="p-mt-4" style="display: flex; flex-direction: column; gap: 0.75rem;">
+									<p:commandButton value="Generar y Autorizar" icon="pi pi-check" actionListener="#{backingFacturacion.generarNotaCredito()}"
+													 process="@form" update="@form :formFacturacion:growl :formFacturacion:tblFacturas" 
+													 styleClass="ui-button-success" 
+													 style="width: 100%; font-weight: 700; padding: 0.75rem !important;" />
+									
+									<p:commandButton value="Cancelar" icon="pi pi-times" onclick="PF('dlgNuevaNotaCredito').hide()" 
+													 styleClass="ui-button-secondary ui-button-outlined" type="button"
+													 style="width: 100%; color: #cbd5e1; border-color: rgba(255, 255, 255, 0.25);" />
+								</div>
+							</p:outputPanel>
+						</p:panel>
+					</div>
+				</div>
+				</p:scrollPanel>
+			</h:form>
+		</p:dialog>
+</ui:composition>

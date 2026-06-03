@@ -46,4 +46,7 @@ public class Cliente {
     
     @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
     private List<Factura> facturas;
+    
+    @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
+    private List<NotaCredito> notaCredito;
 }

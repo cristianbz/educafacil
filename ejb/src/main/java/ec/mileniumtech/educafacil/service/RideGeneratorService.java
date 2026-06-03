@@ -1,6 +1,7 @@
 package ec.mileniumtech.educafacil.service;
 
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,6 +12,7 @@ import ec.mileniumtech.educafacil.modelo.persistencia.entity.FormaPagoFactura;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Sriformapago;
 import ec.mileniumtech.educafacil.modelo.sri.Factura;
 import ec.mileniumtech.educafacil.modelo.sri.Factura.PagoSRI;
+import ec.mileniumtech.educafacil.modelo.sri.NotaCredito;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -111,5 +113,68 @@ public class RideGeneratorService {
         JasperPrint print = JasperFillManager.fillReport(report, parametros, ds);
         return JasperExportManager.exportReportToPdf(print);
 
+    }
+    /**
+     * Genera el PDF de la nota de crédito.
+     * 
+     * @param notaCredito Objeto notaCredito con los datos.
+     * @param logoStream  Stream del logo de la empresa.
+     * @param jrxmlStream Stream del archivo .jasper o .jrxml de la plantilla.
+     * @return Arreglo de bytes del PDF generado.
+     * @throws Exception Si ocurre un error en la generación.
+     */
+    public byte[] generarRideNotaCreditoPdf(NotaCredito notaCredito, InputStream logoStream, InputStream jrxmlStream) throws Exception {
+        Map<String, Object> parametros = new HashMap<>();
+        
+        parametros.put("RUC", notaCredito.getInfoTributaria().getRuc());
+        parametros.put("RAZON_SOCIAL", notaCredito.getInfoTributaria().getRazonSocial());
+        parametros.put("DIR_MATRIZ", notaCredito.getInfoTributaria().getDirMatriz());
+        parametros.put("CLAVE_ACCESO", notaCredito.getInfoTributaria().getClaveAcceso());
+        parametros.put("NUM_FACTURA", notaCredito.getInfoTributaria().getEstab() + "-" + 
+                                     notaCredito.getInfoTributaria().getPtoEmi() + "-" + 
+                                     notaCredito.getInfoTributaria().getSecuencial());
+        parametros.put("AMBIENTE", notaCredito.getInfoTributaria().getAmbiente().equals("1") ? "PRUEBAS" : "PRODUCCIÓN");
+        parametros.put("EMISION", "NORMAL");
+        parametros.put("LOGO", logoStream);
+        parametros.put("NOMBRE_COMERCIAL", notaCredito.getInfoTributaria().getNombreComercial());
+        
+        parametros.put("CLIENTE", notaCredito.getInfoNotaCredito().getRazonSocialComprador());
+        parametros.put("IDENTIFICACION", notaCredito.getInfoNotaCredito().getIdentificacionComprador());
+        parametros.put("FECHA_EMISION", notaCredito.getInfoNotaCredito().getFechaEmision());
+        parametros.put("TELEFONO_CLIENTE", "");
+        parametros.put("CORREO_CLIENTE", "");
+        
+        parametros.put("TOTAL_SIN_IMPUESTOS", notaCredito.getInfoNotaCredito().getTotalSinImpuestos());
+        parametros.put("IMPORTE_TOTAL", notaCredito.getInfoNotaCredito().getValorModificacion());
+        parametros.put("IMPUESTO_IVA", notaCredito.getInfoNotaCredito().getValorModificacion().subtract(notaCredito.getInfoNotaCredito().getTotalSinImpuestos()).setScale(2, RoundingMode.HALF_UP));
+        parametros.put("TOTAL_DESCUENTO", BigDecimal.ZERO); // NC doesn't have discount at header level usually in this model
+        
+        parametros.put("FORMAS_PAGO", "");
+        
+        // Add reason and modified doc info to infoAdicional to ensure it's printed
+        List<NotaCredito.CampoAdicional> infoAdicionalList = notaCredito.getInfoAdicionalList();
+        if (infoAdicionalList == null) {
+            infoAdicionalList = new ArrayList<>();
+        }
+        NotaCredito.CampoAdicional campoMotivo = new NotaCredito.CampoAdicional();
+        campoMotivo.setNombre("Motivo");
+        campoMotivo.setValor(notaCredito.getInfoNotaCredito().getMotivo());
+        infoAdicionalList.add(campoMotivo);
+        
+        NotaCredito.CampoAdicional campoDocModificado = new NotaCredito.CampoAdicional();
+        campoDocModificado.setNombre("Doc. Modificado");
+        campoDocModificado.setValor("Factura " + notaCredito.getInfoNotaCredito().getNumDocModificado());
+        infoAdicionalList.add(campoDocModificado);
+        if (!infoAdicionalList.isEmpty()) {
+            parametros.put("INFO_ADICIONAL_DATASOURCE", new JRBeanCollectionDataSource(infoAdicionalList));
+        }
+        
+        JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource(notaCredito.getDetallesList());
+        byte[] jrxmlBytes = jrxmlStream.readAllBytes();
+        JasperReport report = JasperCompileManager.compileReport(
+            new ByteArrayInputStream(jrxmlBytes)
+        );
+        JasperPrint print = JasperFillManager.fillReport(report, parametros, ds);
+        return JasperExportManager.exportReportToPdf(print);
     }
 }
