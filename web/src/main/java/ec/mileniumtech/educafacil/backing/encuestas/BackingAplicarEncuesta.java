@@ -9,26 +9,22 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.encuestas.BeanAplicarEncuesta;
 import ec.mileniumtech.educafacil.bean.usuarios.BeanLogin;
-import ec.mileniumtech.educafacil.dao.impl.DetalleEvaluaCursoDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.EstudianteDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.EvaluacionCursoDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.MatriculaDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.OfertaCursosDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.RespuestasDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.TipoEncuestaPreguntaDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleEvaluaCurso;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Estudiante;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.EvaluacionCurso;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Matricula;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Pregunta;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Respuestas;
+import ec.mileniumtech.educafacil.service.EncuestaDataService;
+import ec.mileniumtech.educafacil.service.MatriculaDataService;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumEstadosMatricula;
 import jakarta.annotation.PostConstruct;
@@ -49,34 +45,14 @@ import lombok.Setter;
 public class BackingAplicarEncuesta implements Serializable{
 
 	private static final long serialVersionUID = 1L;
-	private static final Logger log = Logger.getLogger(BackingAplicarEncuesta.class);
+	private static final Logger log = LogManager.getLogger(BackingAplicarEncuesta.class);
 	@EJB
 	@Getter
-	private EstudianteDaoImpl estudianteServicioImpl;
+	private MatriculaDataService matriculaDataService;
 	
 	@EJB
 	@Getter
-	private EvaluacionCursoDaoImpl evaluacionCursoServicioImpl;
-	
-	@EJB
-	@Getter
-	private OfertaCursosDaoImpl ofertaCursosServicioImpl;
-	
-	@EJB
-	@Getter
-	private MatriculaDaoImpl matriculaServicioImpl;
-	
-	@EJB
-	@Getter
-	private TipoEncuestaPreguntaDaoImpl tipoEncuestaPreguntaServicioImpl;
-	
-	@EJB
-	@Getter
-	private RespuestasDaoImpl respuestasServicioImpl;
-	
-	@EJB
-	@Getter
-	private DetalleEvaluaCursoDaoImpl detalleEvaluaCursoServicioImpl;
+	private EncuestaDataService encuestaDataService;
 	
 	@Inject
 	@Getter
@@ -117,14 +93,14 @@ public class BackingAplicarEncuesta implements Serializable{
 	public void init() {
 		try {
 			getBeanAplicarEncuesta().setPosicionPregunta(0);
-			Estudiante estudiante = getEstudianteServicioImpl().estudiantesPorCedula(getBeanLogin().getUsuario().getPersona().getPersDocumentoIdentidad());
+			Estudiante estudiante = matriculaDataService.estudiantesPorCedula(getBeanLogin().getUsuario().getPersona().getPersDocumentoIdentidad());
 			if(estudiante != null) {
 				getBeanAplicarEncuesta().setCodigoEstudiante(estudiante.getEstuId());
-				List<Matricula> listaMatriculas = getMatriculaServicioImpl().listaMatriculasEstudianteActivas(estudiante.getEstuId());
+				List<Matricula> listaMatriculas =matriculaDataService.listaMatriculasEstudianteActivas(estudiante.getEstuId());
 				getBeanAplicarEncuesta().setListaEvaluacionCurso(new ArrayList<>());
 
 				for (Matricula matricula : listaMatriculas) {
-					getBeanAplicarEncuesta().getListaEvaluacionCurso().addAll(getEvaluacionCursoServicioImpl().listaDeEvaluacionesDeCursoActivas(matricula.getOfertaCursos().getOcurId()));
+					getBeanAplicarEncuesta().getListaEvaluacionCurso().addAll(encuestaDataService.listaDeEvaluacionesDeCursoActivas(matricula.getOfertaCursos().getOcurId()));
 					if(!matricula.getMatrEstado().equals(EnumEstadosMatricula.CULMINADO.getCodigo())) {
 						encuDisponibles=true;
 					}
@@ -187,7 +163,7 @@ public class BackingAplicarEncuesta implements Serializable{
 				getBeanAplicarEncuesta().setNombreEncuestaSeleccionada(nodo.getNombre());
 				getBeanAplicarEncuesta().setOfertaCursos(Integer.parseInt(nodo.getOfertaCursoId()));
 				int codigoEncuesta = Integer.parseInt(nodo.getTipoEncuestaId());
-				Matricula matricula = getMatriculaServicioImpl().existeMatricula(getBeanAplicarEncuesta().getOfertaCursos(), getBeanAplicarEncuesta().getCodigoEstudiante());
+				Matricula matricula = matriculaDataService.existeMatricula(getBeanAplicarEncuesta().getOfertaCursos(), getBeanAplicarEncuesta().getCodigoEstudiante());
 				String idEncuesta = matricula.getMatrEvaluacionesRealizadas();
 				if(idEncuesta!=null) {
 					String[] encuestas = idEncuesta.split("-");
@@ -202,7 +178,7 @@ public class BackingAplicarEncuesta implements Serializable{
 					mostrarEncuestas=false;
 					Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.realizadoEncu"));
 				}else {				
-					getBeanAplicarEncuesta().setListaEncuestas(getTipoEncuestaPreguntaServicioImpl().listaDeEncuestas(codigoEncuesta));	
+					getBeanAplicarEncuesta().setListaEncuestas(encuestaDataService.listaDeEncuestas(codigoEncuesta));	
 					tamanio=getBeanAplicarEncuesta().getListaEncuestas().size();
 
 					if(!getBeanAplicarEncuesta().getListaEncuestas().isEmpty()) {
@@ -229,7 +205,7 @@ public class BackingAplicarEncuesta implements Serializable{
 	public void cargarRespuestas(int codigoCategoria) {
 		try {
 			getBeanAplicarEncuesta().setListaRespuestas(new ArrayList<>());
-			getBeanAplicarEncuesta().setListaRespuestas(getRespuestasServicioImpl().listaRespuestasPorCategoria(codigoCategoria));
+			getBeanAplicarEncuesta().setListaRespuestas(encuestaDataService.listaRespuestasPorCategoria(codigoCategoria));
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -273,15 +249,15 @@ public class BackingAplicarEncuesta implements Serializable{
 		try {
 			String codigoEncuestas = "";
 			codigoEncuestas=String.valueOf(getBeanAplicarEncuesta().getEvaluacionCursoId()).concat("-");
-			Matricula matricula = getMatriculaServicioImpl().existeMatricula(getBeanAplicarEncuesta().getOfertaCursos(), getBeanAplicarEncuesta().getCodigoEstudiante());
+			Matricula matricula = matriculaDataService.existeMatricula(getBeanAplicarEncuesta().getOfertaCursos(), getBeanAplicarEncuesta().getCodigoEstudiante());
 			if (matricula.getMatrEvaluacionesRealizadas()!=null)
 				codigoEncuestas=matricula.getMatrEvaluacionesRealizadas().concat(codigoEncuestas);			
 			matricula.setMatrEvaluacionesRealizadas(codigoEncuestas);
 			
-			getMatriculaServicioImpl().actualizaMatricula(matricula);
+			matriculaDataService.actualizaMatricula(matricula);
 			getBeanAplicarEncuesta().getListaRespuestasAGrabar().add(armarEvaluacionCurso());
 			for (DetalleEvaluaCurso respuestas : getBeanAplicarEncuesta().getListaRespuestasAGrabar()) 				
-				getDetalleEvaluaCursoServicioImpl().guardarEncuesta(respuestas);
+				encuestaDataService.guardarEncuesta(respuestas);
 				
 			mostrarEncuestas=false;
 			Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.grabar"));

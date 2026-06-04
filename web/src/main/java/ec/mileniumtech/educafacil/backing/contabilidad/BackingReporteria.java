@@ -7,7 +7,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.model.charts.ChartData;
 import org.primefaces.model.charts.axes.cartesian.CartesianScales;
 import org.primefaces.model.charts.axes.cartesian.linear.CartesianLinearAxes;
@@ -20,9 +21,8 @@ import org.primefaces.model.charts.pie.PieChartDataSet;
 import org.primefaces.model.charts.pie.PieChartModel;
 
 import ec.mileniumtech.educafacil.bean.contabilidad.BeanReporteria;
-import ec.mileniumtech.educafacil.dao.impl.EgresoDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.PagosDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.DtoFlujoDinero;
+import ec.mileniumtech.educafacil.service.ContabilidadDataService;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitarios.fechas.FechaFormato;
 import jakarta.annotation.PostConstruct;
@@ -41,15 +41,11 @@ import lombok.Getter;
 public class BackingReporteria implements Serializable{
 
 	private static final long serialVersionUID = 1L;
-	private static final Logger log = Logger.getLogger(BackingReporteria.class);
+	private static final Logger log = LogManager.getLogger(BackingReporteria.class);
 	
 	@EJB
 	@Getter
-	private EgresoDaoImpl egresoServicio;
-	
-	@EJB
-	@Getter
-	private PagosDaoImpl pagosServicio;
+	private ContabilidadDataService contabilidadDataService;
 	
 	@Inject
 	@Getter
@@ -84,7 +80,7 @@ try {
 			double totalEgresos=0;
 			getBeanReporteria().setListaEgresos(new ArrayList<DtoFlujoDinero>());
 			getBeanReporteria().setListaIngresos(new ArrayList<DtoFlujoDinero>());
-			getBeanReporteria().setListaEgresos(getEgresoServicio().buscaEgresosReporteria(getBeanReporteria().getFechaInicial(), getBeanReporteria().getFechaFinal()));
+			getBeanReporteria().setListaEgresos(contabilidadDataService.buscaEgresosReporteria(getBeanReporteria().getFechaInicial(), getBeanReporteria().getFechaFinal()));
 			
 			getBeanReporteria().setModelGraficoE(new HorizontalBarChartModel());
 			
@@ -157,7 +153,7 @@ try {
 			double totalIngresos=0;
 			getBeanReporteria().setListaIngresos(new ArrayList<DtoFlujoDinero>());
 			getBeanReporteria().setListaIngresos(new ArrayList<DtoFlujoDinero>());
-			getBeanReporteria().setListaIngresos(getPagosServicio().buscaIngresosReporteria(getBeanReporteria().getFechaInicial(), getBeanReporteria().getFechaFinal()));
+			getBeanReporteria().setListaIngresos(getContabilidadDataService().buscaIngresosReporteria(getBeanReporteria().getFechaInicial(), getBeanReporteria().getFechaFinal()));
 			
 			getBeanReporteria().setModelGraficoI(new HorizontalBarChartModel());
 			

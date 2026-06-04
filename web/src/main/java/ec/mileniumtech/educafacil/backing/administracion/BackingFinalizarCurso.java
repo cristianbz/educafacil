@@ -7,16 +7,15 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.administracion.BeanFinalizarCurso;
-import ec.mileniumtech.educafacil.dao.impl.MatriculaDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.OfertaCursosDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.UsuarioDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Matricula;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.OfertaCursos;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Usuario;
+import ec.mileniumtech.educafacil.service.MatriculaDataService;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumEstadosMatricula;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumEstadosOfertaCurso;
@@ -38,7 +37,7 @@ import lombok.Setter;
 public class BackingFinalizarCurso  implements Serializable{
 
 	private static final long serialVersionUID = 1L;
-	private static final Logger log = Logger.getLogger(BackingFinalizarCurso.class);
+	private static final Logger log = LogManager.getLogger(BackingFinalizarCurso.class);
 	
 	@Inject
 	@Getter
@@ -50,14 +49,8 @@ public class BackingFinalizarCurso  implements Serializable{
 	
 	@EJB
 	@Getter
-	private OfertaCursosDaoImpl ofertaCursosServicioImpl;
+	private MatriculaDataService matriculaDataService;
 	
-	@EJB
-	@Getter
-	private MatriculaDaoImpl matriculaServicioImpl;
-	@EJB
-	@Getter
-	private UsuarioDaoImpl usuarioServicioImpl;
 	@Getter
 	@Setter
 	private boolean mostrarTextArea;
@@ -73,7 +66,7 @@ public class BackingFinalizarCurso  implements Serializable{
 	public void cargarCursosActivos() {
 		
 			getBeanFinalizarCurso().setListaCursosAbiertos(new ArrayList<>());
-			getBeanFinalizarCurso().setListaCursosAbiertos(getOfertaCursosServicioImpl().listaOfertaCursosActivos());
+			getBeanFinalizarCurso().setListaCursosAbiertos(matriculaDataService.listaOfertaCursosActivos());
 			getBeanFinalizarCurso().setListaCursosAbiertos(getBeanFinalizarCurso().getListaCursosAbiertos().stream().sorted((c1,c2) -> c1.getOfertaCapacitacion().getCurso().getCursNombre().compareTo(c2.getOfertaCapacitacion().getCurso().getCursNombre())).collect(Collectors.toList()));
 		
 	}
@@ -83,7 +76,7 @@ public class BackingFinalizarCurso  implements Serializable{
 	public void cargarAlumnosCurso() {
 		
 			getBeanFinalizarCurso().setListaMatriculadosCurso(new ArrayList<>());
-			getBeanFinalizarCurso().setListaMatriculadosCurso(getMatriculaServicioImpl().listaMatriculadosOEnCursoPorOferta(getBeanFinalizarCurso().getOfertaCursosSeleccionado().getOcurId()));
+			getBeanFinalizarCurso().setListaMatriculadosCurso(matriculaDataService.listaMatriculadosOEnCursoPorOferta(getBeanFinalizarCurso().getOfertaCursosSeleccionado().getOcurId()));
 			getBeanFinalizarCurso().setListaMatriculadosCurso(getBeanFinalizarCurso().getListaMatriculadosCurso().stream().sorted((a1,a2) -> a1.getEstudiante().getPersona().getPersApellidos().compareTo(a2.getEstudiante().getPersona().getPersApellidos())).collect(Collectors.toList()));
 			Mensaje.verDialogo("dlgFinalCurso");
 		
@@ -103,7 +96,7 @@ public class BackingFinalizarCurso  implements Serializable{
 		
 			getBeanFinalizarCurso().getOfertaCursosSeleccionado().setOcurEstado(EnumEstadosOfertaCurso.FINALIZADO.getCodigo());
 
-			getOfertaCursosServicioImpl().finalizarCursoActivo(getBeanFinalizarCurso().getOfertaCursosSeleccionado(), getBeanFinalizarCurso().getListaMatriculadosCurso());
+			matriculaDataService.finalizarCursoActivo(getBeanFinalizarCurso().getOfertaCursosSeleccionado(), getBeanFinalizarCurso().getListaMatriculadosCurso());
 			getBeanFinalizarCurso().setListaMatriculadosCurso(new ArrayList<>());
 			getBeanFinalizarCurso().setOfertaCursosSeleccionado(null);
 			cargarCursosActivos();
@@ -144,13 +137,13 @@ public class BackingFinalizarCurso  implements Serializable{
 	public void grabarFinalizarCursoAlumno() {
 				
 			Usuario usuario = new Usuario();
-			usuario=getUsuarioServicioImpl().consultarUsuarioPorDocumento(getBeanFinalizarCurso().getMatriculaSeleccionada().getEstudiante().getPersona().getPersDocumentoIdentidad());
+			usuario=matriculaDataService.consultarUsuarioPorDocumento(getBeanFinalizarCurso().getMatriculaSeleccionada().getEstudiante().getPersona().getPersDocumentoIdentidad());
 			
 			if(usuario!=null) {
 				usuario.setUsuaEstado(false);
-				getMatriculaServicioImpl().actualizaMatriculaUsuario(getBeanFinalizarCurso().getMatriculaSeleccionada(), usuario);
+				matriculaDataService.actualizaMatriculaUsuario(getBeanFinalizarCurso().getMatriculaSeleccionada(), usuario);
 			}else 
-				getMatriculaServicioImpl().actualizaMatricula(getBeanFinalizarCurso().getMatriculaSeleccionada());
+				matriculaDataService.actualizaMatricula(getBeanFinalizarCurso().getMatriculaSeleccionada());
 			cargarAlumnosCurso();
 			Mensaje.ocultarDialogo("dlgFinCursoAlumno");
 		

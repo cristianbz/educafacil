@@ -3,7 +3,8 @@ package ec.mileniumtech.educafacil.web.handler;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import ec.mileniumtech.educafacil.dao.excepciones.BusinessException;
 import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
@@ -25,7 +26,7 @@ import jakarta.faces.event.ExceptionQueuedEventContext;
  */
 public class EducafacilExceptionHandler extends ExceptionHandlerWrapper {
 
-    private static final Logger log = Logger.getLogger(EducafacilExceptionHandler.class);
+    private static final Logger log = LogManager.getLogger(EducafacilExceptionHandler.class);
 
     public EducafacilExceptionHandler(ExceptionHandler wrapped) {
         super(wrapped);

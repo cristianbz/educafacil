@@ -17,7 +17,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -30,14 +31,12 @@ import org.primefaces.model.file.UploadedFile;
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.estudiantes.BeanSeguimientoClientes;
 import ec.mileniumtech.educafacil.bean.usuarios.BeanLogin;
-import ec.mileniumtech.educafacil.dao.impl.CampaniaDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.CursoDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.DetalleSeguimientoDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.SeguimientoClientesDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Campania;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Curso;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleSeguimiento;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.SeguimientoClientes;
+import ec.mileniumtech.educafacil.service.MarketingDataService;
+import ec.mileniumtech.educafacil.service.MatriculaDataService;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitarios.dto.registrodatos.FormFacebookAdsRecord;
 import ec.mileniumtech.educafacil.utilitarios.dto.registrodatos.PreguntasFormFacesbookRecord;
@@ -64,7 +63,7 @@ import lombok.Getter;
 public class BackingSeguimientoClientes implements Serializable{
 
 	private static final long serialVersionUID = 1L;
-	private static final Logger log = Logger.getLogger(BackingSeguimientoClientes.class);
+	private static final Logger log = LogManager.getLogger(BackingSeguimientoClientes.class);
 //	public static final APIContext context = new APIContext(
 //            "{access-token}",
 //            "{appsecret}"
@@ -80,27 +79,15 @@ public class BackingSeguimientoClientes implements Serializable{
 	
 	@EJB
 	@Getter
-	private SeguimientoClientesDaoImpl seguimientoDao;
+	private MatriculaDataService matriculaDataService;
 
 	@EJB
 	@Getter
-	private CursoDaoImpl cursosServicio;
-
-	@EJB
-	@Getter
-	private SeguimientoClientesDaoImpl seguimientoClientesServicioImpl;
-
-	@EJB
-	@Getter
-	private DetalleSeguimientoDaoImpl detalleServicio;
+	private MarketingDataService marketingDataService;
 
 	@Inject
 	@Getter
 	private BeanSeguimientoClientes beanSeguimiento;
-	
-	@EJB
-	@Getter
-	private CampaniaDaoImpl campaniaDao;
 	
 	private Integer idCampania;
 
@@ -113,7 +100,7 @@ public class BackingSeguimientoClientes implements Serializable{
 			String pattern = "yyyy-MM-dd";
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 			getBeanSeguimiento().setListaCursos(new ArrayList<>());
-			getBeanSeguimiento().setListaCursos(getCursosServicio().listaCursos());
+			getBeanSeguimiento().setListaCursos(matriculaDataService.listaCursos());
 			getBeanSeguimiento().setMedioContactoLlamada(false);
 			getBeanSeguimiento().setMedioContactoVisita(false);
 			getBeanSeguimiento().setTipoCargaInformacion(2);
@@ -126,9 +113,9 @@ public class BackingSeguimientoClientes implements Serializable{
 			getBeanSeguimiento().getMotivosNoInteres().add("No tiene interés");
 			getBeanSeguimiento().setEsCampania(false);
 			getBeanSeguimiento().setListaCampanias(new ArrayList<Campania>());
-			getBeanSeguimiento().setListaCampanias(getCampaniaDao().listaCampanias());
+			getBeanSeguimiento().setListaCampanias(getMarketingDataService().listaCampanias());
 			getBeanSeguimiento().setListaCampaniasTodas(new ArrayList<Campania>());
-			getBeanSeguimiento().setListaCampaniasTodas(getCampaniaDao().listaCampanias());
+			getBeanSeguimiento().setListaCampaniasTodas(getMarketingDataService().listaCampanias());
 			getBeanSeguimiento().getListaCampaniasTodas().forEach(f->{				
 				String f1 = simpleDateFormat.format(f.getCampFechaDesde());
 				String f2 =simpleDateFormat.format(f.getCampFechaHasta());
@@ -136,7 +123,7 @@ public class BackingSeguimientoClientes implements Serializable{
 			});
 			getBeanSeguimiento().setCampaniaSeleccionada(new Campania());
 			getBeanSeguimiento().setListaPorLlamar(new ArrayList<SeguimientoClientes>());
-			getBeanSeguimiento().setListaPorLlamar(getSeguimientoClientesServicioImpl().listaPendientesLlamada());
+			getBeanSeguimiento().setListaPorLlamar(getMarketingDataService().listaPendientesLlamada());
 
 	}
 	public void vaciarCodigos() {
@@ -210,7 +197,7 @@ public class BackingSeguimientoClientes implements Serializable{
 					DetalleSeguimiento dts = getBeanSeguimiento().getListaDetalle().get(getBeanSeguimiento().getListaDetalle().size()-1);
 					getBeanSeguimiento().getSeguimientoClientes().setSegcUltimoSeguimiento(dts.getDsegObservacion());
 					getBeanSeguimiento().getSeguimientoClientes().setSegcProximaLlamada(getBeanSeguimiento().getProximaLlamada());
-					getSeguimientoClientesServicioImpl().agregarSeguimiento(getBeanSeguimiento().getSeguimientoClientes(), getBeanSeguimiento().getListaDetalle());
+					getMarketingDataService().agregarSeguimiento(getBeanSeguimiento().getSeguimientoClientes(), getBeanSeguimiento().getListaDetalle());
 					
 				}else{
 					getBeanSeguimiento().getSeguimientoClientes().setSegcMotivoCurso(getBeanSeguimiento().getCodigoDeseoCurso());
@@ -218,7 +205,7 @@ public class BackingSeguimientoClientes implements Serializable{
 					DetalleSeguimiento dts = getBeanSeguimiento().getListaDetalle().get(getBeanSeguimiento().getListaDetalle().size()-1);
 					getBeanSeguimiento().getSeguimientoClientes().setSegcUltimoSeguimiento(dts.getDsegObservacion());
 					getBeanSeguimiento().getSeguimientoClientes().setSegcFechaSeguimiento(new Date());
-					getSeguimientoClientesServicioImpl().agregarSeguimiento(getBeanSeguimiento().getSeguimientoClientes(), getBeanSeguimiento().getListaDetalle());
+					getMarketingDataService().agregarSeguimiento(getBeanSeguimiento().getSeguimientoClientes(), getBeanSeguimiento().getListaDetalle());
 					
 				}
 				Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.agregar"));
@@ -293,7 +280,7 @@ public class BackingSeguimientoClientes implements Serializable{
 	public void cargarSeguimientoCampania() {
 	
 			getBeanSeguimiento().setListadoSeguimiento(new ArrayList<SeguimientoClientes>());
-			getBeanSeguimiento().setListadoSeguimiento(getSeguimientoClientesServicioImpl().listaSeguimientoCampania(getBeanSeguimiento().getCampaniaSeleccionada().getCampId()));				
+			getBeanSeguimiento().setListadoSeguimiento(getMarketingDataService().listaSeguimientoCampania(getBeanSeguimiento().getCampaniaSeleccionada().getCampId()));				
 
 	}
 	
@@ -301,13 +288,13 @@ public class BackingSeguimientoClientes implements Serializable{
 	public void cargarSeguimiento() {
 	
 			getBeanSeguimiento().setListadoSeguimiento(new ArrayList<SeguimientoClientes>());
-			getBeanSeguimiento().setListadoSeguimiento(getSeguimientoClientesServicioImpl().listaSeguimiento());				
+			getBeanSeguimiento().setListadoSeguimiento(getMarketingDataService().listaSeguimiento());				
 
 	}
 	public void cargaDetalleSeguimiento() {
 		
 			getBeanSeguimiento().setListaDetalle(new ArrayList<DetalleSeguimiento>());
-			getBeanSeguimiento().setListaDetalle(getDetalleServicio().listaDetalle(getBeanSeguimiento().getSeguimientoClientes().getSegcId()));
+			getBeanSeguimiento().setListaDetalle(getMarketingDataService().listaDetalle(getBeanSeguimiento().getSeguimientoClientes().getSegcId()));
 			
 			getBeanSeguimiento().setTrazabilidadObj(new ArrayList<DetalleSeguimiento>());
 			for(DetalleSeguimiento dt:getBeanSeguimiento().getListaDetalle()) {
@@ -332,7 +319,7 @@ public class BackingSeguimientoClientes implements Serializable{
 				Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.noSeguimiento"));
 			}else {
 				getBeanSeguimiento().setDetalleSeguimiento(new DetalleSeguimiento());
-				getBeanSeguimiento().setListaDetalle(getDetalleServicio().listaDetalle(getBeanSeguimiento().getSeguimientoClientes().getSegcId()));
+				getBeanSeguimiento().setListaDetalle(getMarketingDataService().listaDetalle(getBeanSeguimiento().getSeguimientoClientes().getSegcId()));
 				getBeanSeguimiento().setSeguimientoInicial(false);
 				getBeanSeguimiento().setCodigoCurso(getBeanSeguimiento().getSeguimientoClientes().getCurso().getCursId());
 				getBeanSeguimiento().setCodigoMedioInformacion(getBeanSeguimiento().getSeguimientoClientes().getSegcMedioInformacion());
@@ -399,14 +386,14 @@ public class BackingSeguimientoClientes implements Serializable{
 			getBeanSeguimiento().setListadoSeguimiento(new ArrayList<SeguimientoClientes>());
 			if(getBeanSeguimiento().getTipoCargaInformacion() ==2) {				
 				getBeanSeguimiento().setListadoSeguimiento(new ArrayList<SeguimientoClientes>());
-				getBeanSeguimiento().setListadoSeguimiento(getSeguimientoClientesServicioImpl().listaSeguimientoCampania(getBeanSeguimiento().getCampaniaSeleccionada().getCampId()));
+				getBeanSeguimiento().setListadoSeguimiento(getMarketingDataService().listaSeguimientoCampania(getBeanSeguimiento().getCampaniaSeleccionada().getCampId()));
 				idCampania = getBeanSeguimiento().getCampaniaSeleccionada().getCampId();
 			}else if(getBeanSeguimiento().getTipoCargaInformacion() == 3){
 				getBeanSeguimiento().setListadoSeguimiento(new ArrayList<SeguimientoClientes>());
-				getBeanSeguimiento().setListadoSeguimiento(getSeguimientoClientesServicioImpl().listaSeguimientoCampaniaCurso(getBeanSeguimiento().getCursoSeleccionado().getCursId()));
+				getBeanSeguimiento().setListadoSeguimiento(getMarketingDataService().listaSeguimientoCampaniaCurso(getBeanSeguimiento().getCursoSeleccionado().getCursId()));
 			}else if(getBeanSeguimiento().getTipoCargaInformacion() == 4){
 				getBeanSeguimiento().setListadoSeguimiento(new ArrayList<SeguimientoClientes>());
-				getBeanSeguimiento().setListadoSeguimiento(getSeguimientoClientesServicioImpl().listaSeguimientoCampaniaFechas(getBeanSeguimiento().getFechaInicio(), getBeanSeguimiento().getFechaFin()));
+				getBeanSeguimiento().setListadoSeguimiento(getMarketingDataService().listaSeguimientoCampaniaFechas(getBeanSeguimiento().getFechaInicio(), getBeanSeguimiento().getFechaFin()));
 			}
 			
 			Mensaje.ocultarDialogo("dlgCargarInfo");
@@ -417,7 +404,7 @@ public class BackingSeguimientoClientes implements Serializable{
 	public void localizaCampaniaCurso() {
 	
 			Campania campania = new Campania();
-			campania = getCampaniaDao().campaniaCurso(getBeanSeguimiento().getCodigoCurso());
+			campania = getMarketingDataService().campaniaCurso(getBeanSeguimiento().getCodigoCurso());
 			int codigocampania=0;
 			if(campania!=null) {
 				codigocampania= campania.getCampId();
@@ -440,7 +427,7 @@ public class BackingSeguimientoClientes implements Serializable{
 	}
 	public void actualizarCliente() {
 		
-			getSeguimientoClientesServicioImpl().actualizarSeguimiento(getBeanSeguimiento().getSeguimientoClientes());
+		getMarketingDataService().actualizarSeguimiento(getBeanSeguimiento().getSeguimientoClientes());
 			Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.actualizar"));	
 
 	}
@@ -705,7 +692,7 @@ public class BackingSeguimientoClientes implements Serializable{
 	
 			List<SeguimientoClientes> listaAux = new ArrayList<>();
 			if(getBeanSeguimiento().getListadoSeguimientoExcel().size()>0) {
-				listaAux = getSeguimientoClientesServicioImpl().listaSeguimientoCampania(getBeanSeguimiento().getCampaniaSeleccionada().getCampId());
+				listaAux = getMarketingDataService().listaSeguimientoCampania(getBeanSeguimiento().getCampaniaSeleccionada().getCampId());
 				procesaListaFormulario(listaAux, getBeanSeguimiento().getListadoSeguimientoExcel());
 				Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.actualizar"));
 				Mensaje.ocultarDialogo("dlgFormulario");
@@ -719,11 +706,11 @@ public class BackingSeguimientoClientes implements Serializable{
 			SeguimientoClientes seguimiento= new SeguimientoClientes();
 			List<SeguimientoClientes> listaAux = new ArrayList<>();
 			if(getBeanSeguimiento().getListadoSeguimientoExcel().size()>0) {
-				seguimiento = getSeguimientoClientesServicioImpl().seguimiento(getBeanSeguimiento().getListadoSeguimientoExcel().get(0).getSegcId());
+				seguimiento = getMarketingDataService().seguimiento(getBeanSeguimiento().getListadoSeguimientoExcel().get(0).getSegcId());
 				if(seguimiento.getCampania().getCampId()==0)
-					listaAux = getSeguimientoClientesServicioImpl().listaSeguimientoCampaniaCurso(seguimiento.getCurso().getCursId());
+					listaAux = getMarketingDataService().listaSeguimientoCampaniaCurso(seguimiento.getCurso().getCursId());
 				else if(seguimiento.getCampania().getCampId()>0)
-					listaAux = getSeguimientoClientesServicioImpl().listaSeguimientoCampania(seguimiento.getCampania().getCampId());
+					listaAux = getMarketingDataService().listaSeguimientoCampania(seguimiento.getCampania().getCampId());
 				procesaListas(listaAux, getBeanSeguimiento().getListadoSeguimientoExcel());
 				Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.actualizar"));
 				Mensaje.ocultarDialogo("dlgExcel");
@@ -769,7 +756,7 @@ public class BackingSeguimientoClientes implements Serializable{
 						
 					listaTemp.add(detalle);
 					
-					getSeguimientoClientesServicioImpl().agregarSeguimiento(seguimiento, listaTemp);
+					getMarketingDataService().agregarSeguimiento(seguimiento, listaTemp);
 				}
 			}
 	}
@@ -819,7 +806,7 @@ public class BackingSeguimientoClientes implements Serializable{
 					detalle.setDsegObservacion(formulario.observacion());
 					detalle.setDsegMedioContacto(EnumMedioContacto.WHATSAPP.getCodigo());		
 					listaTemp.add(detalle);					
-					getSeguimientoClientesServicioImpl().agregarSeguimiento(seguimiento, listaTemp);
+					getMarketingDataService().agregarSeguimiento(seguimiento, listaTemp);
 				}
 			Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.agregar"));
 			Mensaje.ocultarDialogo("dlgActualizaDesdeExcel");
@@ -858,7 +845,7 @@ public class BackingSeguimientoClientes implements Serializable{
 						detalle.setDsegObservacion(segE.getSegcUltimoSeguimiento());
 						detalle.setDsegMedioContacto(EnumMedioContacto.LLAMADATELEFONICA.getCodigo());
 						listaTemp.add(detalle);
-						getSeguimientoClientesServicioImpl().agregarSeguimiento(seguimiento, listaTemp);
+						getMarketingDataService().agregarSeguimiento(seguimiento, listaTemp);
 					}
 				}
 			}
@@ -880,7 +867,7 @@ public class BackingSeguimientoClientes implements Serializable{
 			else
 				campania=getBeanSeguimiento().getCampaniaSeleccionada().getCampId();
 			if(curso>0)
-				seg= getSeguimientoClientesServicioImpl().validaNumero(numero, curso, campania);
+				seg= getMarketingDataService().validaNumero(numero, curso, campania);
 			if(seg!=null && getBeanSeguimiento().getSeguimientoClientes().getSegcId()==null)
 				getBeanSeguimiento().setNohabilitaGrabar(true);
 			else
@@ -933,7 +920,7 @@ public class BackingSeguimientoClientes implements Serializable{
 	
 			getBeanSeguimiento().getSeguimientoClientes().setSegcProximaLlamada(null);
 			getBeanSeguimiento().getListaPorLlamar().remove(getBeanSeguimiento().getSeguimientoClientes());
-			getSeguimientoClientesServicioImpl().actualizarSeguimiento(getBeanSeguimiento().getSeguimientoClientes());
+			getMarketingDataService().actualizarSeguimiento(getBeanSeguimiento().getSeguimientoClientes());
 			Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.procesoexito"));
 
 	}

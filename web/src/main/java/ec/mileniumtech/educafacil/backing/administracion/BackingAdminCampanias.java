@@ -8,7 +8,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.administracion.BeanAdminCampanias;
@@ -17,6 +18,8 @@ import ec.mileniumtech.educafacil.dao.impl.CursoDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.SeguimientoClientesDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Campania;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Curso;
+import ec.mileniumtech.educafacil.service.MarketingDataService;
+import ec.mileniumtech.educafacil.service.MatriculaDataService;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumEstadosContactoCliente;
 import jakarta.annotation.PostConstruct;
@@ -45,19 +48,15 @@ import org.primefaces.model.charts.optionconfig.title.Title;
 public class BackingAdminCampanias implements Serializable{
 
 	private static final long serialVersionUID = 1L;
-	private static final Logger log = Logger.getLogger(BackingAdminCampanias.class);
+	private static final Logger log = LogManager.getLogger(BackingAdminCampanias.class);
 	
 	@EJB
 	@Getter
-	private CampaniaDaoImpl campaniaDao;
-	
+	private MarketingDataService marketingDataService;
+
 	@EJB
 	@Getter
-	private CursoDaoImpl cursoDaoImpl;
-	
-	@EJB
-	@Getter
-	private SeguimientoClientesDaoImpl seguimientoDao;
+	private MatriculaDataService matriculaDataService;
 	
 	@Inject
 	@Getter
@@ -71,12 +70,12 @@ public class BackingAdminCampanias implements Serializable{
 	public void init() {
 	
 			getBeanAdminCampanias().setListaCampanias(new ArrayList<>());
-			getBeanAdminCampanias().setListaCampanias(getCampaniaDao().listaTodasCampanias());
+			getBeanAdminCampanias().setListaCampanias(marketingDataService.listaTodasCampanias());
 			getBeanAdminCampanias().setModelGrafico(new HorizontalBarChartModel());
 			getBeanAdminCampanias().getModelGrafico().setOptions(new BarChartOptions());
 			getBeanAdminCampanias().setMostrarGrafica(true);
 			getBeanAdminCampanias().setListaCursos(new ArrayList<>());
-			getBeanAdminCampanias().setListaCursos(getCursoDaoImpl().listaCursos());
+			getBeanAdminCampanias().setListaCursos(matriculaDataService.listaCursos());
 			getBeanAdminCampanias().setCampaniaSeleccionada(new Campania());			
 
 	}
@@ -99,9 +98,9 @@ public class BackingAdminCampanias implements Serializable{
 			curso.setCursId(getBeanAdminCampanias().getCursoSeleccionado());
 			getBeanAdminCampanias().getCampaniaSeleccionada().setCurso(curso);
 			getBeanAdminCampanias().getCampaniaSeleccionada().setCampTipoContenido(getBeanAdminCampanias().getCodigoTipo());
-			getCampaniaDao().agregarActualizarCampania(getBeanAdminCampanias().getCampaniaSeleccionada());
+			marketingDataService.agregarActualizarCampania(getBeanAdminCampanias().getCampaniaSeleccionada());
 			getBeanAdminCampanias().setListaCampanias(new ArrayList<>());
-			getBeanAdminCampanias().setListaCampanias(getCampaniaDao().listaTodasCampanias());
+			getBeanAdminCampanias().setListaCampanias(marketingDataService.listaTodasCampanias());
 			Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.grabar"));	
 			Mensaje.ocultarDialogo("dlgCampania");
 	
@@ -121,12 +120,12 @@ public class BackingAdminCampanias implements Serializable{
 			String f2 =simpleDateFormat.format(getBeanAdminCampanias().getCampaniaSeleccionada().getCampFechaHasta());
 			String fechas =f1.concat(" al ").concat(f2);
 			getBeanAdminCampanias().setMostrarGrafica(true);
-			getBeanAdminCampanias().setProspectos(getSeguimientoDao().alcanceCampania(getBeanAdminCampanias().getCampaniaSeleccionada().getCampId()));
-			getBeanAdminCampanias().setProspectosSeguimiento(getSeguimientoDao().prospectosCampania(getBeanAdminCampanias().getCampaniaSeleccionada().getCampId(), EnumEstadosContactoCliente.ENSEGUIMIENTO.getCodigo()));
-			getBeanAdminCampanias().setProspectosAbandonados(getSeguimientoDao().prospectosCampania(getBeanAdminCampanias().getCampaniaSeleccionada().getCampId(), EnumEstadosContactoCliente.ABANDONADO.getCodigo()));
-			getBeanAdminCampanias().setProspectosMatriculados(getSeguimientoDao().prospectosCampania(getBeanAdminCampanias().getCampaniaSeleccionada().getCampId(), EnumEstadosContactoCliente.MATRICULADO.getCodigo()));
-			getBeanAdminCampanias().setProspectosCandidatos(getSeguimientoDao().prospectosCampania(getBeanAdminCampanias().getCampaniaSeleccionada().getCampId(), EnumEstadosContactoCliente.CANDIDATO.getCodigo()));
-			getBeanAdminCampanias().setProspectosProximaOcasion(getSeguimientoDao().prospectosCampania(getBeanAdminCampanias().getCampaniaSeleccionada().getCampId(), EnumEstadosContactoCliente.PROXIMAOCASION.getCodigo()));
+			getBeanAdminCampanias().setProspectos(marketingDataService.alcanceCampania(getBeanAdminCampanias().getCampaniaSeleccionada().getCampId()));
+			getBeanAdminCampanias().setProspectosSeguimiento(marketingDataService.prospectosCampania(getBeanAdminCampanias().getCampaniaSeleccionada().getCampId(), EnumEstadosContactoCliente.ENSEGUIMIENTO.getCodigo()));
+			getBeanAdminCampanias().setProspectosAbandonados(marketingDataService.prospectosCampania(getBeanAdminCampanias().getCampaniaSeleccionada().getCampId(), EnumEstadosContactoCliente.ABANDONADO.getCodigo()));
+			getBeanAdminCampanias().setProspectosMatriculados(marketingDataService.prospectosCampania(getBeanAdminCampanias().getCampaniaSeleccionada().getCampId(), EnumEstadosContactoCliente.MATRICULADO.getCodigo()));
+			getBeanAdminCampanias().setProspectosCandidatos(marketingDataService.prospectosCampania(getBeanAdminCampanias().getCampaniaSeleccionada().getCampId(), EnumEstadosContactoCliente.CANDIDATO.getCodigo()));
+			getBeanAdminCampanias().setProspectosProximaOcasion(marketingDataService.prospectosCampania(getBeanAdminCampanias().getCampaniaSeleccionada().getCampId(), EnumEstadosContactoCliente.PROXIMAOCASION.getCodigo()));
 			
 			getBeanAdminCampanias().setModelGrafico(new HorizontalBarChartModel());
 			

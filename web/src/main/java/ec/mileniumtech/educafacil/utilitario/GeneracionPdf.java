@@ -18,7 +18,8 @@ import java.util.Hashtable;
 
 import javax.imageio.ImageIO;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 import com.google.zxing.BarcodeFormat;
@@ -45,7 +46,6 @@ import ec.mileniumtech.educafacil.modelo.persistencia.entity.Matricula;
 import ec.mileniumtech.educafacil.utilitarios.dto.pdf.InscripcionMatriculaDto;
 import ec.mileniumtech.educafacil.utilitarios.fechas.FechaFormato;
 import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -54,19 +54,18 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  */
 public class GeneracionPdf {
-	private static final Logger log = Logger.getLogger(GeneracionPdf.class);
+	private static final Logger log = LogManager.getLogger(GeneracionPdf.class);
 	/**
 	 * Genera certificado digital
 	 * @param matricula
 	 * @param beanLogin
 	 * @param mensajesBacking
 	 */
-	public static void generarCertificado(Matricula matricula,BeanLogin beanLogin,MensajesBacking mensajesBacking) {
-		ServletContext ctx = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
-		String directorioArchivoPDF = new StringBuilder().append(ctx.getRealPath("")).append(File.separator).append("reportes").append(File.separator).append(matricula.getMatrId()).append(".pdf").toString();		
-		String logoQR = ctx.getRealPath("/") + File.separator + "imagenes" + File.separator + "logotipo" + File.separator + "logoQR.png";
-		String codigoQR = ctx.getRealPath("/") + File.separator + "imagenes" + File.separator + "logotipo" + File.separator + "codigoQR.png";
-		String logotipoURL = ctx.getRealPath("/")  + File.separator + "imagenes" + File.separator + "certificado" + File.separator +"certificadoDigital.png";
+	public static void generarCertificado(Matricula matricula, BeanLogin beanLogin, MensajesBacking mensajesBacking, ServletContext servletContext, HttpServletResponse httpResponse) {
+		String directorioArchivoPDF = new StringBuilder().append(servletContext.getRealPath("")).append(File.separator).append("reportes").append(File.separator).append(matricula.getMatrId()).append(".pdf").toString();		
+		String logoQR = servletContext.getRealPath("/") + File.separator + "imagenes" + File.separator + "logotipo" + File.separator + "logoQR.png";
+		String codigoQR = servletContext.getRealPath("/") + File.separator + "imagenes" + File.separator + "logotipo" + File.separator + "codigoQR.png";
+		String logotipoURL = servletContext.getRealPath("/")  + File.separator + "imagenes" + File.separator + "certificado" + File.separator +"certificadoDigital.png";
 		
 		try {
 			InscripcionMatriculaDto inscripcionMatriculaDto=new InscripcionMatriculaDto();
@@ -192,25 +191,21 @@ public class GeneracionPdf {
 		     document.close();
 			
 			
-			//document.close();
-			FacesContext context = FacesContext.getCurrentInstance();
-			HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
-			response.setContentType("application/pdf");
-			response.setHeader("Content-Disposition", "attachment; filename=" + new StringBuilder().append("CERT-").append(matricula.getEstudiante().getPersona().getPersApellidos()).append(".pdf").toString());
-			response.getOutputStream().write(Utilitario.getBytesFromFile(new File(directorioArchivoPDF)));
-			response.getOutputStream().flush();
-			response.getOutputStream().close();
-			context.responseComplete();
+			httpResponse.setContentType("application/pdf");
+			httpResponse.setHeader("Content-Disposition", "attachment; filename=" + new StringBuilder().append("CERT-").append(matricula.getEstudiante().getPersona().getPersApellidos()).append(".pdf").toString());
+			httpResponse.getOutputStream().write(Utilitario.getBytesFromFile(new File(directorioArchivoPDF)));
+			httpResponse.getOutputStream().flush();
+			httpResponse.getOutputStream().close();
 
 		}  catch (DocumentException e) {
 			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, mensajesBacking.getPropiedad("error"), mensajesBacking.getPropiedad("error.crearPdf"));			
-			log.error(new StringBuilder().append("GeneracionPdf." + "generarPdf" + ": ").append(e.getMessage()));			
+			log.error("GeneracionPdf.generarPdf", e);			
 		} catch (IOException e) {
 			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, mensajesBacking.getPropiedad("error"), mensajesBacking.getPropiedad("error.crearArchivo"));			
-			log.error(new StringBuilder().append("GeneracionPdf." + "generarPdf" + ": ").append(e.getMessage()));			
+			log.error("GeneracionPdf.generarPdf", e);			
 		} catch (WriterException e) {
 			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, mensajesBacking.getPropiedad("error"), mensajesBacking.getPropiedad("error.escribirArchivo"));			
-			log.error(new StringBuilder().append("GeneracionPdf." + "generarPdf" + ": ").append(e.getMessage()));			
+			log.error("GeneracionPdf.generarPdf", e);			
 		}
 	}
 	@SuppressWarnings({ "unchecked", "rawtypes" })

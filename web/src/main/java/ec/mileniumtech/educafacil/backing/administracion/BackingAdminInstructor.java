@@ -6,17 +6,18 @@ package ec.mileniumtech.educafacil.backing.administracion;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.administracion.BeanAdminInstructor;
-
 import ec.mileniumtech.educafacil.dao.impl.CapacitacionDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.FormacionDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.InstructorDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.PersonaDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Instructor;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Persona;
+import ec.mileniumtech.educafacil.service.InstructorDataService;
+import ec.mileniumtech.educafacil.service.MatriculaDataService;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
@@ -35,7 +36,7 @@ import lombok.Getter;
 public class BackingAdminInstructor implements Serializable{
 
 	private static final long serialVersionUID = 1L;
-	private static final Logger log = Logger.getLogger(BackingAdminInstructor.class);
+	private static final Logger log = LogManager.getLogger(BackingAdminInstructor.class);
 	
 	@Inject
 	@Getter
@@ -46,27 +47,19 @@ public class BackingAdminInstructor implements Serializable{
 	private MensajesBacking mensajesBacking;
 	
 	@EJB
-	@Getter	
-	private InstructorDaoImpl instructorServicioImpl;
-	
+	@Getter
+	private InstructorDataService instructorDataService;
+
 	@EJB
 	@Getter
-	private FormacionDaoImpl formacionServicioImpl;
-	
-	@EJB
-	@Getter
-	private CapacitacionDaoImpl capacitacionServicioImpl;
-	
-	@EJB
-	@Getter
-	private PersonaDaoImpl personaServicioImpl;
+	private MatriculaDataService matriculaDataService;
 	
 	/**
 	 * Carga los instructores
 	 */
 	public void cargarInstructores() {
 		getBeanAdminInstructor().setListaInstructores(new ArrayList<>());
-		getBeanAdminInstructor().setListaInstructores(getInstructorServicioImpl().listaInstructores());
+		getBeanAdminInstructor().setListaInstructores(instructorDataService.listaInstructores());
 	}
 	
 	@PostConstruct
@@ -97,7 +90,7 @@ public class BackingAdminInstructor implements Serializable{
 	 */
 	public void grabarDatosPersonales() {
 		getBeanAdminInstructor().getInstructor().setPersona(getBeanAdminInstructor().getPersona());
-		getInstructorServicioImpl().agregarActualizarInstructor(getBeanAdminInstructor().getInstructor());			
+		instructorDataService.agregarActualizarInstructor(getBeanAdminInstructor().getInstructor());			
 		cargarInstructores();
 		Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.procesoexito"));
 		Mensaje.ocultarDialogo("dlgNuevoInstructor");
@@ -108,7 +101,7 @@ public class BackingAdminInstructor implements Serializable{
 		Mensaje.verDialogo("dlgNuevoInstructor");
 	}
 	public void buscaPersonaCedula() {
-		getBeanAdminInstructor().setPersona(getPersonaServicioImpl().buscarPersonaPorCedula(getBeanAdminInstructor().getCedula()));
+		getBeanAdminInstructor().setPersona(matriculaDataService.buscarPersonaPorCedula(getBeanAdminInstructor().getCedula()));
 		if(getBeanAdminInstructor().getPersona()==null) {
 			getBeanAdminInstructor().setPersona(new Persona());
 			getBeanAdminInstructor().getPersona().setPersDocumentoIdentidad(getBeanAdminInstructor().getCedula());

@@ -10,7 +10,8 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeFormatter;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
@@ -36,7 +37,7 @@ import lombok.Getter;
 public class BackingReporteFacturas implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger log = Logger.getLogger(BackingReporteFacturas.class);
+    private static final Logger log = LogManager.getLogger(BackingReporteFacturas.class);
 
     @EJB
     @Getter

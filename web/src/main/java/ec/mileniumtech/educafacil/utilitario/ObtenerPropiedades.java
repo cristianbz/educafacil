@@ -8,7 +8,8 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
 *@author christian  Jul 7, 2024
@@ -20,7 +21,7 @@ public class ObtenerPropiedades implements Serializable {
 	 * Attributes
 	 */
 	private static final long serialVersionUID = 1L;	
-	private static final Logger logger = Logger.getLogger(ObtenerPropiedades.class);
+	private static final Logger logger = LogManager.getLogger(ObtenerPropiedades.class);
 	private Properties properties = null;
 
 	public Properties retrievePropertiesFromClasspath(String filePath) {

@@ -13,8 +13,22 @@ public class JwtUtil {
 
     // Clave secreta generada para esta implementación. 
     // En producción, esto debería cargarse desde una variable de entorno o almacén de claves.
-    private static final String SECRET_KEY = "Educafacil_Secret_Key_Random_2026_Secure_Key_Generation_1234567890";
+    private static final String SECRET_KEY;
     
+    static {
+        String key = System.getenv("JWT_SECRET_KEY");
+        if (key == null || key.isBlank()) {
+            key = System.getProperty("JWT_SECRET_KEY");
+        }
+        if (key == null || key.isBlank()) {
+            throw new IllegalStateException(
+                "La variable de entorno JWT_SECRET_KEY no está configurada. " +
+                "Configúrala en WildFly con: " +
+                "/subsystem=elytron/env-entry:add(environment-variable-name=JWT_SECRET_KEY, value=<clave-segura>)"
+            );
+        }
+        SECRET_KEY = key;
+    }
     // Duración de 8 horas en milisegundos
     private static final long EXPIRATION_TIME = 8 * 60 * 60 * 1000;
 

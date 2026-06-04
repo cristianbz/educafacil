@@ -2,7 +2,8 @@ package ec.mileniumtech.educafacil.service;
 
 import java.time.Duration;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
@@ -31,7 +32,7 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 @LocalBean
 public class AwsS3Service {
 
-    private static final Logger log = Logger.getLogger(AwsS3Service.class);
+	private static final Logger log = LogManager.getLogger(AwsS3Service.class);
 
     /** Duración de validez de las pre-signed URLs (en minutos). */
     private static final long PRESIGNED_URL_DURACION_MINUTOS = 60;

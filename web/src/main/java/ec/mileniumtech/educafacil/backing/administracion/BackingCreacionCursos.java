@@ -4,7 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.administracion.BeanCreacionCursos;
@@ -28,7 +29,7 @@ import lombok.Getter;
 @ViewScoped
 public class BackingCreacionCursos implements Serializable{
 	private static final long serialVersionUID = 1L;
-	private static final Logger log = Logger.getLogger(BackingCreacionCursos.class);
+	private static final Logger log = LogManager.getLogger(BackingCreacionCursos.class);
 	
 	@Inject
 	@Getter

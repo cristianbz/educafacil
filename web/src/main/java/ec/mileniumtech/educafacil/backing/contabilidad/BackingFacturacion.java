@@ -7,31 +7,26 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.StreamedContent;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.contabilidad.BeanFacturacion;
-import ec.mileniumtech.educafacil.dao.impl.CatalogoItemDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.ClienteDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.EmpresaMatrizDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.EstudianteDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.FacturaDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.PersonaDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.PuntoEmisionDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.InfoAdicionalDto;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.CatalogoItem;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Cliente;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleFactura;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleNotaCredito;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DocumentoElectronico;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.EmpresaMatriz;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Estudiante;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Factura;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.NotaCredito;
-import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleNotaCredito;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Persona;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.PuntoEmision;
+import ec.mileniumtech.educafacil.service.FacturacionDataService;
 import ec.mileniumtech.educafacil.service.FacturacionService;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitarios.fechas.FechaFormato;
@@ -51,31 +46,10 @@ import lombok.Getter;
 public class BackingFacturacion implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger log = Logger.getLogger(BackingFacturacion.class);
+    private static final Logger log = LogManager.getLogger(BackingFacturacion.class);
 
     @EJB
-    private FacturaDaoImpl facturaDao;
-
-    @EJB
-    private ClienteDaoImpl clienteDao;
-
-    @EJB
-    private CatalogoItemDaoImpl catalogoItemDao;
-
-    @EJB
-    private PuntoEmisionDaoImpl puntoEmisionDao;
-    
-    @EJB
-    private EmpresaMatrizDaoImpl empresaMatrizDao;
-    
-    @EJB
-    private ec.mileniumtech.educafacil.dao.impl.SriformapagoDaoImpl sriformapagoDao;
-
-    @EJB
-    private EstudianteDaoImpl estudianteDao;
-
-    @EJB
-    private PersonaDaoImpl personaDao;
+    private FacturacionDataService facturacionDataService;
 
     @EJB
     private FacturacionService facturacionService;
@@ -101,8 +75,8 @@ public class BackingFacturacion implements Serializable {
         	        	
             cargarFacturas();
             prepararNuevaFactura();            
-            getBeanFacturacion().setListaItems(catalogoItemDao.findAll());
-            getBeanFacturacion().setListaFormasPagoSri(sriformapagoDao.findAll());            
+            getBeanFacturacion().setListaItems(facturacionDataService.listarCatalogoItems());
+            getBeanFacturacion().setListaFormasPagoSri(facturacionDataService.listarFormasPago());            
         } catch (Exception e) {
             log.error("Error en init de BackingFacturacion", e);
             Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "Error al inicializar la página: " + e.getMessage());
@@ -151,7 +125,7 @@ public class BackingFacturacion implements Serializable {
                 }
             }
             // 1. Buscar en Cliente (Directo)
-            Cliente c = clienteDao.buscarPorIdentificacion(id);
+            Cliente c = facturacionDataService.buscarClientePorIdentificacion(id);
             if (c != null) {
                 getBeanFacturacion().setClienteSeleccionado(c);
                 Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Cliente Encontrado", c.getNombresCompletos());
@@ -159,7 +133,7 @@ public class BackingFacturacion implements Serializable {
             }
 
             // 2. Buscar en Estudiante
-            Estudiante e = estudianteDao.estudiantesPorCedula(id);
+            Estudiante e = facturacionDataService.buscarEstudiantePorCedula(id);
             if (e != null && e.getPersona() != null) {
                 prepararNuevoClienteDesdePersona(e.getPersona());
                 Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Datos recuperados de Estudiante", getBeanFacturacion().getClienteSeleccionado().getNombresCompletos());
@@ -167,7 +141,7 @@ public class BackingFacturacion implements Serializable {
             }
 
             // 3. Buscar en Persona (General)
-            Persona p = personaDao.buscarPersonaPorCedula(id);
+            Persona p = facturacionDataService.buscarPersonaPorCedula(id);
             if (p != null) {
                 prepararNuevoClienteDesdePersona(p);
                 Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Datos recuperados de Persona", getBeanFacturacion().getClienteSeleccionado().getNombresCompletos());
@@ -251,15 +225,15 @@ public class BackingFacturacion implements Serializable {
             
             boolean esNuevo = (item.getId() == null);
             if (esNuevo) {
-                catalogoItemDao.guardar(item);
+            	 facturacionDataService.guardarCatalogoItem(item);
                 Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Éxito", "Ítem creado correctamente.");
             } else {
-                catalogoItemDao.actualizar(item);
+            	facturacionDataService.actualizarCatalogoItem(item);
                 Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Éxito", "Ítem modificado correctamente.");
             }
             
             // Actualizar lista y seleccionar el ítem correcto
-            List<CatalogoItem> items = catalogoItemDao.findAll();
+            List<CatalogoItem> items = facturacionDataService.listarCatalogoItems();
             getBeanFacturacion().setListaItems(items);
             
             // Seleccionar el ítem correcto por referencia de la nueva lista
@@ -295,7 +269,7 @@ public class BackingFacturacion implements Serializable {
                 df.setDescuento(BigDecimal.ZERO);
             }
             
-            List<EmpresaMatriz> empresas = empresaMatrizDao.listaEmpresas();
+            List<EmpresaMatriz> empresas = facturacionDataService.listaEmpresas();
             if (empresas != null && !empresas.isEmpty()) {
                 df.setImpuestoIva(empresas.get(0).getEmpmPorcentajeIva());
             } else {
@@ -364,7 +338,7 @@ public class BackingFacturacion implements Serializable {
                 throw new Exception("El valor debe ser mayor a cero.");
             }
             
-            ec.mileniumtech.educafacil.modelo.persistencia.entity.Sriformapago sriFp = sriformapagoDao.findById(idFp).orElse(null);
+            ec.mileniumtech.educafacil.modelo.persistencia.entity.Sriformapago sriFp = facturacionDataService.buscarFormaPagoPorId(idFp);
             if (sriFp == null) throw new Exception("Forma de pago no encontrada.");
             
             fp.setSriformapagos(sriFp);
@@ -429,9 +403,9 @@ public class BackingFacturacion implements Serializable {
             
             // Si el cliente no existe en la base de datos (ID nulo), lo guardamos primero
             if (c.getId() == null) {
-                clienteDao.guardar(c);
+            	 facturacionDataService.guardarCliente(c);
             } else {
-                clienteDao.actualizar(c);
+            	facturacionDataService.actualizarCliente(c);
             }
             
             f.setCliente(c);
@@ -445,7 +419,7 @@ public class BackingFacturacion implements Serializable {
             f.setFormaPagoFacturas(formasPago);
             
             // Obtener Punto de Emisión
-            List<PuntoEmision> puntos = puntoEmisionDao.listarPuntosEmisionActivos();
+            List<PuntoEmision> puntos = facturacionDataService.listarPuntosEmisionActivos();
             if (puntos.isEmpty()) throw new Exception("No hay puntos de emisión activos.");
             PuntoEmision puem = puntos.get(0);
             f.setPuntoEmision(puem);
@@ -454,7 +428,7 @@ public class BackingFacturacion implements Serializable {
             int nuevoSec = puem.getSecuencialFactura() + 1;
             f.setNumero(String.format("001-%s-%09d", puem.getCodigo(), nuevoSec));
             puem.setSecuencialFactura(nuevoSec);
-            puntoEmisionDao.actualizar(puem);
+            facturacionDataService.actualizarPuntoEmision(puem);
             
             for (DetalleFactura df : f.getDetalles()) {
                 BigDecimal tasaImpuesto = df.getImpuestoIva().divide(
@@ -477,7 +451,7 @@ public class BackingFacturacion implements Serializable {
             f.setDescuentoTotal(totalDescuento);
             f.setListaInfoAdicional(getBeanFacturacion().getListaInfoAdicional());
 
-            facturaDao.guardar(f);
+            facturacionDataService.guardarFactura(f);
             
             // Emitir electrónicamente
             facturacionService.emitirFactura(f.getId(),getBeanFacturacion().getListaInfoAdicional());
@@ -506,7 +480,7 @@ public class BackingFacturacion implements Serializable {
      */
     public void cargarFacturas() {
         try {
-            getBeanFacturacion().setListaFacturas(facturaDao.listarTodasLasFacturasDelDia());
+            getBeanFacturacion().setListaFacturas(facturacionDataService.listarTodasLasFacturasDelDia());
         } catch (Exception e) {
             log.error("Error al cargar facturas", e);
             Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "No se pudieron cargar las facturas.");
@@ -540,7 +514,7 @@ public class BackingFacturacion implements Serializable {
             }
             
             // Recargar la factura para asegurar que los detalles lazy se inicialicen correctamente
-            Factura factura = facturaDao.buscarFacturaPorId(facturaParcial.getId());
+            Factura factura = facturacionDataService.buscarFacturaPorId(facturaParcial.getId());
             
             getBeanFacturacion().setFacturaSeleccionada(factura);
             getBeanFacturacion().setMotivoNotaCredito("");
@@ -605,7 +579,7 @@ public class BackingFacturacion implements Serializable {
                 nuevoSec));
             
             puem.setSecuencialNotaCredito(nuevoSec);
-            puntoEmisionDao.actualizar(puem);
+            facturacionDataService.actualizarPuntoEmision(puem);
             
             notaCreditoService.procesarNotaCreditoElectronica(nc);
             
@@ -886,7 +860,7 @@ public class BackingFacturacion implements Serializable {
         return totalFactura.setScale(2,RoundingMode.HALF_UP).subtract(totalPagos.setScale(2,RoundingMode.HALF_UP));
     }
     public long getDiasVigenciaFirma() {
-    	empresaMatriz=empresaMatrizDao.findAll().get(0);
+    	empresaMatriz=facturacionDataService.listarTodasEmpresas().get(0);
     	return FechaFormato.calcularDiasRestantesSeguro(empresaMatriz.getEmpmFirmaVigenciaHasta().toString());
     }
 

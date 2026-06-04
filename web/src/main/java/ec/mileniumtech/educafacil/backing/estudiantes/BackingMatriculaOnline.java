@@ -11,21 +11,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.estudiantes.BeanMatriculaOnline;
 import ec.mileniumtech.educafacil.bean.usuarios.BeanLogin;
-import ec.mileniumtech.educafacil.dao.impl.CampaniaDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.CatalogoDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.ConfiguracionesDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.CursoDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.EmpresaDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.MatriculaDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.OfertaCursosDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.PersonaDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.UsuarioDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.UsuarioRolDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Campania;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Catalogo;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Empresa;
@@ -36,6 +27,9 @@ import ec.mileniumtech.educafacil.modelo.persistencia.entity.Persona;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Rol;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Usuario;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.UsuarioRol;
+import ec.mileniumtech.educafacil.service.MarketingDataService;
+import ec.mileniumtech.educafacil.service.MatriculaDataService;
+import ec.mileniumtech.educafacil.service.SistemaDataService;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitarios.correo.Correo;
 import ec.mileniumtech.educafacil.utilitarios.encriptacion.Encriptar;
@@ -59,56 +53,29 @@ import lombok.Setter;
 @Named
 public class BackingMatriculaOnline implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private static final Logger log = Logger.getLogger(BackingMatriculaOnline.class);
+	private static final Logger log = LogManager.getLogger(BackingMatriculaOnline.class);
 
 	@Inject
 	@Getter	
 	private BeanLogin beanLogin;
 
 	@EJB
-	@Getter	
-	private ConfiguracionesDaoImpl configuracionesServicioImpl;
-	
+	@Getter
+	private SistemaDataService sistemaDataService;
+
 	@EJB
-	@Getter	
-	private CampaniaDaoImpl campaniaServicioImpl;
-	
-	@EJB
-	@Getter	
-	private CatalogoDaoImpl catalogoServicioImpl;
-	
+	@Getter
+	private MarketingDataService marketingDataService;
+
 	@Inject
 	@Getter
 	private BeanMatriculaOnline beanMatricula;
 	@Inject
 	@Getter
 	private MensajesBacking mensajesBacking;
-	@Getter
-	@EJB
-	private EmpresaDaoImpl empresaServicioImpl; 
 	@EJB
 	@Getter
-	private CursoDaoImpl cursoServicioImpl;
-	
-	@EJB
-	@Getter
-	private OfertaCursosDaoImpl ofertaServicios;
-	
-	@EJB
-	@Getter
-	private PersonaDaoImpl personaServicioImpl;
-	
-	@EJB
-	@Getter
-	private MatriculaDaoImpl matriculaServicio;
-	
-	@EJB
-	@Getter
-	private UsuarioDaoImpl usuarioServicioImpl;
-	
-	@EJB
-	@Getter
-	private UsuarioRolDaoImpl usuarioRolServicioImpl;
+	private MatriculaDataService matriculaDataService;
 	
 	@Getter
 	@Setter
@@ -132,13 +99,13 @@ public class BackingMatriculaOnline implements Serializable {
 	public void cargaProvincias() {
 		
 			getBeanMatricula().setListaProvincias(new ArrayList<>());
-			getBeanMatricula().setListaProvincias(getCatalogoServicioImpl().catalogosPorTipo("TPROV"));
+			getBeanMatricula().setListaProvincias(getSistemaDataService().catalogosPorTipo("TPROV"));
 
 	}
 	public void cargaCantones() {
 		
 			getBeanMatricula().setListaCantones(new ArrayList<>());
-			getBeanMatricula().setListaCantones(getCatalogoServicioImpl().catalogosPorPadre(getBeanMatricula().getProvincia()));
+			getBeanMatricula().setListaCantones(getSistemaDataService().catalogosPorPadre(getBeanMatricula().getProvincia()));
 
 
 	}
@@ -156,7 +123,7 @@ public class BackingMatriculaOnline implements Serializable {
             }else
             	getBeanMatricula().setDeshabilitaMatricula(false);
         }
-			persona=getPersonaServicioImpl().buscarPersonaPorCedula(getBeanMatricula().getPersona().getPersDocumentoIdentidad());
+			persona=matriculaDataService.buscarPersonaPorCedula(getBeanMatricula().getPersona().getPersDocumentoIdentidad());
 			datosMatriculaAlBuscarPersona(persona);
 	
 	}
@@ -167,7 +134,7 @@ public class BackingMatriculaOnline implements Serializable {
     public void datosMatriculaAlBuscarPersona(Persona persona) {
     	
 	    	if(persona!=null) {
-	    		persona=getPersonaServicioImpl().buscarPersonaPorId(persona.getPersId());
+	    		persona=matriculaDataService.buscarPersonaPorId(persona.getPersId());
 		    	getBeanMatricula().setPersona(persona);
 		    	for (Catalogo cat : getBeanMatricula().getListaProvincias()) {
 					if(cat.getCataId() == persona.getPersProvincia()) {
@@ -194,7 +161,7 @@ public class BackingMatriculaOnline implements Serializable {
 	public void cargarOfertaCursosActivos() {
 
 			getBeanMatricula().setListaOfertaCursos(new ArrayList<>());
-			getBeanMatricula().setListaOfertaCursos(getOfertaServicios().listaOfertaCursosActivos());
+			getBeanMatricula().setListaOfertaCursos(matriculaDataService.listaOfertaCursosActivos());
 			getBeanMatricula().setListaOfertaCursos(getBeanMatricula().getListaOfertaCursos().stream().sorted((a1,a2) -> a1.getOfertaCapacitacion().getCurso().getCursNombre().compareTo(a2.getOfertaCapacitacion().getCurso().getCursNombre())).collect(Collectors.toList()));
 
 	}
@@ -234,7 +201,7 @@ public class BackingMatriculaOnline implements Serializable {
 			getBeanMatricula().getUsuarioRol().setRol(rol);
 			getBeanMatricula().getUsuarioRol().setUsuario(usuarioE);
 			getBeanMatricula().getUsuarioRol().setUrolEstado(true);
-			getMatriculaServicio().agregarMatriculaInscripcion(getBeanMatricula().getPersona(), getBeanMatricula().getMatricula(), usuarioE, getBeanMatricula().getUsuarioRol());
+			matriculaDataService.agregarMatriculaInscripcion(getBeanMatricula().getPersona(), getBeanMatricula().getMatricula(), usuarioE, getBeanMatricula().getUsuarioRol());
 			getBeanMatricula().setMostrarDatosPersona(false);
 			enviarCorreo();
 			Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.grabar"));
@@ -256,7 +223,7 @@ public class BackingMatriculaOnline implements Serializable {
 	
 	public void enviarCorreo() {
 
-			getBeanLogin().setConfiguraciones(getConfiguracionesServicioImpl().listaConfiguraciones().get(0));
+			getBeanLogin().setConfiguraciones(getSistemaDataService().listaConfiguraciones().get(0));
 //			getBeanLogin().setConfiguraciones(conf);
 			StringBuilder contenido=new StringBuilder();
 			contenido.append("<h1>").append(getBeanLogin().getConfiguraciones().getConfEmpresa()).append("</h1>");
@@ -287,10 +254,10 @@ public class BackingMatriculaOnline implements Serializable {
 				List<Campania> listaCampanias=new ArrayList();
 
 				int oferta = getBeanMatricula().getCursoSeleccionado().getOcurId();
-				Matricula matricula = getMatriculaServicio().existeMatricula(oferta, getBeanMatricula().getEstudiante().getEstuId() );
+				Matricula matricula = matriculaDataService.existeMatricula(oferta, getBeanMatricula().getEstudiante().getEstuId() );
 				if(matricula == null) {
 					getBeanMatricula().setDeshabilitaMatricula(false);
-					listaCampanias=getCampaniaServicioImpl().listaCampanias();
+					listaCampanias=getMarketingDataService().listaCampanias();
 					for (Campania campania : listaCampanias) {
 						if(campania.getCampId()>0) {
 							if(campania.getCurso().getCursId()== getBeanMatricula().getCursoSeleccionado().getOfertaCapacitacion().getCurso().getCursId()) {

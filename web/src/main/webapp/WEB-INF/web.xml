@@ -15,7 +15,7 @@
 </servlet>
 <servlet-mapping>
    <servlet-name>Faces Servlet</servlet-name>
-   <url-pattern>*.cap</url-pattern>
+   <url-pattern>*.xhtml</url-pattern>
 </servlet-mapping>
     <session-config>
         <session-timeout>
@@ -23,7 +23,7 @@
         </session-timeout>
     </session-config>
     <welcome-file-list>
-    	<welcome-file>login.cap</welcome-file>        
+    	<welcome-file>login.xhtml</welcome-file>        
     </welcome-file-list>
 <error-page>
   <exception-type>jakarta.faces.application.ViewExpiredException</exception-type>

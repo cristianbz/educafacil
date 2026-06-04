@@ -11,10 +11,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.primefaces.PrimeFaces;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
@@ -22,17 +25,16 @@ import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.backing.estudiantes.ComponenteBuscaEstudiante;
 import ec.mileniumtech.educafacil.bean.contabilidad.BeanPagos;
 import ec.mileniumtech.educafacil.bean.usuarios.BeanLogin;
-import ec.mileniumtech.educafacil.dao.impl.CatalogoDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.MatriculaDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.OfertaCursosDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.PagosDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetallePagos;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.EmpresaMatriz;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Matricula;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.OfertaCursos;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Pagos;
-import ec.mileniumtech.educafacil.modelo.persistencia.entity.EmpresaMatriz;
-import ec.mileniumtech.educafacil.service.PagosService;
 import ec.mileniumtech.educafacil.service.AdministracionService;
+import ec.mileniumtech.educafacil.service.ContabilidadDataService;
+import ec.mileniumtech.educafacil.service.MatriculaDataService;
+import ec.mileniumtech.educafacil.service.PagosService;
+import ec.mileniumtech.educafacil.service.SistemaDataService;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumFormaPago;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumTipoCatalogo;
@@ -44,8 +46,6 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import lombok.Getter;
 import lombok.Setter;
-import java.util.List;
-import org.primefaces.PrimeFaces;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -62,7 +62,7 @@ import net.sf.jasperreports.engine.util.JRLoader;
 public class BackingPagos implements Serializable{
 
 	private static final long serialVersionUID = 1L;
-	private static final Logger log = Logger.getLogger(BackingPagos.class);
+	private static final Logger log = LogManager.getLogger(BackingPagos.class);
 	private JasperReport jasperReport;
 	@Getter
 	private StreamedContent fileDownload;
@@ -72,11 +72,11 @@ public class BackingPagos implements Serializable{
 
 	@EJB
 	@Getter
-	private CatalogoDaoImpl catalogoServicio;
+	private SistemaDataService sistemaDataService;
 
 	@EJB
 	@Getter
-	private PagosDaoImpl pagosServicio;
+	private ContabilidadDataService contabilidadDataService;
 
 	@EJB
 	private PagosService pagosService;
@@ -121,11 +121,7 @@ public class BackingPagos implements Serializable{
 
 	@EJB
 	@Getter
-	private OfertaCursosDaoImpl ofertaServicios;
-	
-	@EJB
-	@Getter
-	private MatriculaDaoImpl matriculaServicios;
+	private MatriculaDataService matriculaDataService;
 	
 	@Inject
 	@Getter
@@ -153,8 +149,8 @@ public class BackingPagos implements Serializable{
 		cargarOfertaCursosActivos();
 		try {
 			getBeanPagos().setListaServiciosPago(new ArrayList<>());
-			getBeanPagos().setListaServiciosPago(getCatalogoServicio().catalogosPorTipo(EnumTipoCatalogo.TIPOPAGO.getNemotecnico()));
-			getBeanPagos().setListaCursos(getOfertaServicios().listaOfertaCursosActivos());
+			getBeanPagos().setListaServiciosPago(getSistemaDataService().catalogosPorTipo(EnumTipoCatalogo.TIPOPAGO.getNemotecnico()));
+			getBeanPagos().setListaCursos(matriculaDataService.listaOfertaCursosActivos());
 			InputStream reportStream = getClass().getResourceAsStream("/reports/pagosAlumnosCurso.jasper");
             jasperReport = (JasperReport) JRLoader.loadObject(reportStream);
 		}catch(Exception e) {
@@ -199,7 +195,7 @@ public class BackingPagos implements Serializable{
 			pagosService.registrarPagoYFacturar(getBeanPagos().getPago());
 			
 			getBeanPagos().setListaDetallePagosRealizados(new ArrayList<>());
-			getBeanPagos().setListaDetallePagosRealizados(getPagosServicio().buscaPagosPorMatricula(getBeanPagos().getPago().getMatricula().getMatrId()));
+			getBeanPagos().setListaDetallePagosRealizados(getContabilidadDataService().buscaPagosPorMatricula(getBeanPagos().getPago().getMatricula().getMatrId()));
 			
 			getBeanPagos().getMatricula().setTotalPagadoCurso(totalPagado + getBeanPagos().getPago().getDetallePagos().stream().mapToDouble(p -> p.getDepaValor()).sum());
 			
@@ -329,7 +325,7 @@ public class BackingPagos implements Serializable{
 	public void cargarOfertaCursosActivos() {
 	
 			getBeanPagos().setListaOfertaCursos(new ArrayList<>());
-			getBeanPagos().setListaOfertaCursos(getOfertaServicios().listaOfertaCursosActivos());
+			getBeanPagos().setListaOfertaCursos(matriculaDataService.listaOfertaCursosActivos());
 			getBeanPagos().setListaOfertaCursos(getBeanPagos().getListaOfertaCursos().stream().sorted((a1,a2) -> a1.getOfertaCapacitacion().getCurso().getCursNombre().compareTo(a2.getOfertaCapacitacion().getCurso().getCursNombre())).collect(Collectors.toList()));
 
 	}
@@ -337,7 +333,7 @@ public class BackingPagos implements Serializable{
 	public void buscarMatriculadosCurso() {
 		
 			getBeanPagos().setListaCursosMatriculados(new ArrayList<Matricula>());
-			getBeanPagos().setListaCursosMatriculados(getMatriculaServicios().listaMatriculadosPorOfertaCurso(getBeanPagos().getCursoSeleccionado().getOcurId()));
+			getBeanPagos().setListaCursosMatriculados(matriculaDataService.listaMatriculadosPorOfertaCurso(getBeanPagos().getCursoSeleccionado().getOcurId()));
 			if(getBeanPagos().getCursoSeleccionado().getOcurHorario()!=null) {
 				getBeanPagos().setNombreCurso(getBeanPagos().getCursoSeleccionado().getOfertaCapacitacion().getCurso().getCursNombre().concat("/").concat(getBeanPagos().getCursoSeleccionado().getOcurHorario()));
 				getBeanPagos().setCursoSeleccionado(null);
@@ -365,7 +361,7 @@ public class BackingPagos implements Serializable{
 	public void mostrarDialogoResumenPago() {
 	
 			getBeanPagos().setListaDetallePagosRealizados(new ArrayList<DetallePagos>());
-			getBeanPagos().setListaDetallePagosRealizados(getPagosServicio().buscaPagosPorMatricula(getBeanPagos().getMatricula().getMatrId()));
+			getBeanPagos().setListaDetallePagosRealizados(getContabilidadDataService().buscaPagosPorMatricula(getBeanPagos().getMatricula().getMatrId()));
 			Mensaje.verDialogo("dlgresumenPagos");
 
 	}
@@ -378,9 +374,9 @@ public class BackingPagos implements Serializable{
 	public void cargarCursosActivosCerrados() {
 		
 			if(getBeanPagos().isCursosFinalizados())
-				getBeanPagos().setListaOfertaCursos(getOfertaServicios().listaOfertaCursosActivosCerrados());
+				getBeanPagos().setListaOfertaCursos(matriculaDataService.listaOfertaCursosActivosCerrados());
 			else {
-				getBeanPagos().setListaOfertaCursos(getOfertaServicios().listaOfertaCursosActivos());
+				getBeanPagos().setListaOfertaCursos(matriculaDataService.listaOfertaCursosActivos());
 				getBeanPagos().setListaOfertaCursos(getBeanPagos().getListaOfertaCursos().stream().sorted((a1,a2) -> a1.getOfertaCapacitacion().getCurso().getCursNombre().compareTo(a2.getOfertaCapacitacion().getCurso().getCursNombre())).collect(Collectors.toList()));
 			}
 	

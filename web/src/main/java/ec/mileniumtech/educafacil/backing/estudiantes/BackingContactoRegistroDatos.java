@@ -9,7 +9,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.estudiantes.BeanContactoRegistroDatos;
@@ -19,6 +20,9 @@ import ec.mileniumtech.educafacil.dao.impl.SeguimientoDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.UsuarioDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Matricula;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Seguimiento;
+import ec.mileniumtech.educafacil.service.MarketingDataService;
+import ec.mileniumtech.educafacil.service.MatriculaDataService;
+import ec.mileniumtech.educafacil.service.SistemaDataService;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumRol;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumTipoCatalogo;
@@ -42,7 +46,7 @@ public class BackingContactoRegistroDatos implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static final Logger log = Logger.getLogger(BackingContactoRegistroDatos.class);
+	private static final Logger log = LogManager.getLogger(BackingContactoRegistroDatos.class);
 	@Inject
 	@Getter
 	private BeanContactoRegistroDatos beanContactoRegistroDatos;
@@ -51,19 +55,15 @@ public class BackingContactoRegistroDatos implements Serializable {
 	private MensajesBacking mensajesBacking;
 	@EJB
 	@Getter
-	private MatriculaDaoImpl matriculaServicioImpl;
-	
+	private MatriculaDataService matriculaDataService;
+
 	@EJB
 	@Getter
-	private SeguimientoDaoImpl seguimientoServicioImpl;
-	
+	private MarketingDataService marketingDataService;
+
 	@EJB
 	@Getter
-	private CatalogoDaoImpl catalogoServicioImpl;
-	
-	@EJB
-	@Getter
-	private UsuarioDaoImpl usuarioServicioImpl;
+	private SistemaDataService sistemaDataService;
 	
 	
 	/**
@@ -72,7 +72,7 @@ public class BackingContactoRegistroDatos implements Serializable {
 	public void cargarOportunidades() {
 
 			getBeanContactoRegistroDatos().setLitaOportunidades(new ArrayList<>());
-			getBeanContactoRegistroDatos().setLitaOportunidades(getMatriculaServicioImpl().listaOportunidades());
+			getBeanContactoRegistroDatos().setLitaOportunidades(matriculaDataService.listaOportunidades());
 
 	}
 	
@@ -83,8 +83,8 @@ public class BackingContactoRegistroDatos implements Serializable {
 		getBeanContactoRegistroDatos().setMostrarClientes(true);
 		getBeanContactoRegistroDatos().setListaTipoSeguimiento(new ArrayList<>());
 
-			getBeanContactoRegistroDatos().setListaVendedores(getUsuarioServicioImpl().consultarUsuariosPorIdRol(EnumRol.ADMINISTRADOR.getCodigo()));			
-			getBeanContactoRegistroDatos().setListaTipoSeguimiento(getCatalogoServicioImpl().catalogosPorTipo(EnumTipoCatalogo.TIPOSEGUIMIENTO.getNemotecnico()));
+			getBeanContactoRegistroDatos().setListaVendedores(matriculaDataService.consultarUsuariosPorIdRol(EnumRol.ADMINISTRADOR.getCodigo()));			
+			getBeanContactoRegistroDatos().setListaTipoSeguimiento(sistemaDataService.catalogosPorTipo(EnumTipoCatalogo.TIPOSEGUIMIENTO.getNemotecnico()));
 
 	}
 
@@ -118,7 +118,7 @@ public class BackingContactoRegistroDatos implements Serializable {
 			getBeanContactoRegistroDatos().getSeguimiento().setSegmFechaRegistro(new Date());
 			getBeanContactoRegistroDatos().getSeguimiento().setSegmTipoTarea(getBeanContactoRegistroDatos().getCodigoTarea());
 			getBeanContactoRegistroDatos().getSeguimiento().setMatricula(getBeanContactoRegistroDatos().getOportunidadSeleccionado());
-			getSeguimientoServicioImpl().agregarActualizarSeguimiento(getBeanContactoRegistroDatos().getSeguimiento());
+			marketingDataService.agregarActualizarSeguimiento(getBeanContactoRegistroDatos().getSeguimiento());
 			getBeanContactoRegistroDatos().setSeguimiento(new Seguimiento());
 			getBeanContactoRegistroDatos().setCodigoTarea("");
 			getBeanContactoRegistroDatos().setCodigoUsuario(0);
@@ -131,7 +131,7 @@ public class BackingContactoRegistroDatos implements Serializable {
 	public void cargarActividadesClientePotencial() {
 
 			getBeanContactoRegistroDatos().setListadoSeguimiento(new ArrayList<>());
-			getBeanContactoRegistroDatos().setListadoSeguimiento(getSeguimientoServicioImpl().listaSeguimientoMatricula(getBeanContactoRegistroDatos().getOportunidadSeleccionado().getMatrId()));
+			getBeanContactoRegistroDatos().setListadoSeguimiento(getMarketingDataService().listarSeguimientoMatricula(getBeanContactoRegistroDatos().getOportunidadSeleccionado().getMatrId()));
 			getBeanContactoRegistroDatos().setListadoSeguimiento(getBeanContactoRegistroDatos().getListadoSeguimiento().stream().sorted((s1,s2)->s2.getSegmFechaEjecucionTarea().compareTo(s1.getSegmFechaEjecucionTarea())).collect(Collectors.toList()));
 
 	}
@@ -140,7 +140,7 @@ public class BackingContactoRegistroDatos implements Serializable {
 	 */
 	public void actualizarSeguimientoClientePotencial() {
 
-			getSeguimientoServicioImpl().agregarActualizarSeguimiento(getBeanContactoRegistroDatos().getSeguimiento());
+		getMarketingDataService().agregarActualizarSeguimiento(getBeanContactoRegistroDatos().getSeguimiento());
 			Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.procesoexito"));	
 
 	}

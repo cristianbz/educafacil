@@ -23,7 +23,8 @@ import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
 import jakarta.mail.util.ByteArrayDataSource;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Servicio para envío de correos electrónicos con los comprobantes autorizados.
@@ -32,7 +33,7 @@ import org.apache.log4j.Logger;
 @LocalBean
 public class NotificacionService {
 
-    private static final Logger log = Logger.getLogger(NotificacionService.class);
+    private static final Logger log = LogManager.getLogger(NotificacionService.class);
 
     @EJB
     private ConfiguracionesDaoImpl configuracionesDao;
@@ -64,7 +65,7 @@ public class NotificacionService {
 
             Properties props = new Properties();
             props.put("mail.smtp.auth", "true");
-//            props.put("mail.smtp.starttls.enable", "true");
+            props.put("mail.smtp.starttls.enable", "true");
             props.put("mail.smtp.host", host);
             props.put("mail.smtp.port", port);
 

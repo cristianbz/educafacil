@@ -7,15 +7,15 @@ package ec.mileniumtech.educafacil.backing.estudiantes;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.estudiantes.BeanFichaEstudiante;
 import ec.mileniumtech.educafacil.bean.usuarios.BeanLogin;
-import ec.mileniumtech.educafacil.dao.impl.EstudianteDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.MatriculaDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Estudiante;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Matricula;
+import ec.mileniumtech.educafacil.service.MatriculaDataService;
 import ec.mileniumtech.educafacil.utilitario.GeneracionPdf;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumRol;
@@ -40,7 +40,7 @@ public class BackingFichaEstudiante implements Serializable {
 
 
 	private static final long serialVersionUID = 1L;
-	private static final Logger log = Logger.getLogger(BackingFichaEstudiante.class);
+	private static final Logger log = LogManager.getLogger(BackingFichaEstudiante.class);
 	
 	@Inject
 	@Getter
@@ -52,11 +52,7 @@ public class BackingFichaEstudiante implements Serializable {
 	
 	@EJB
 	@Getter
-	private EstudianteDaoImpl estudianteServicioImpl;
-	
-	@EJB
-	@Getter
-	private MatriculaDaoImpl matriculaServicioImpl;
+	private MatriculaDataService matriculaDataService;
 	
 	@Inject
 	@Getter
@@ -82,7 +78,7 @@ public class BackingFichaEstudiante implements Serializable {
 		
 
 			if (rol== EnumRol.ESTUDIANTE.getCodigo()) {
-				getBeanFichaEstudiante().setEstudiante(getEstudianteServicioImpl().estudiantesPorCedula(getBeanLogin().getUsuario().getUsuaUsuario()));
+				getBeanFichaEstudiante().setEstudiante(matriculaDataService.estudiantesPorCedula(getBeanLogin().getUsuario().getUsuaUsuario()));
 				getBeanFichaEstudiante().setEstudiante(getBeanFichaEstudiante().getEstudiante());
 				getBeanFichaEstudiante().setCodigoCliente(getBeanFichaEstudiante().getEstudiante().getEstuId());
 				getBeanFichaEstudiante().setCodigoCargo( getBeanFichaEstudiante().getEstudiante().getEstuCargoOcupa());
@@ -107,7 +103,7 @@ public class BackingFichaEstudiante implements Serializable {
 	 */
 	public void buscarPorCedula() {
 
-			getBeanFichaEstudiante().setEstudiante(getEstudianteServicioImpl().estudiantesPorCedula(getBeanFichaEstudiante().getCedula()));
+			getBeanFichaEstudiante().setEstudiante(matriculaDataService.estudiantesPorCedula(getBeanFichaEstudiante().getCedula()));
 			if(getBeanFichaEstudiante().getEstudiante()==null) {
 				Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.noHayDatos"));
 				Mensaje.actualizarComponente("growl");
@@ -125,7 +121,7 @@ public class BackingFichaEstudiante implements Serializable {
 	 */
 	public void buscarPorApellido() {
 
-			getBeanFichaEstudiante().setListaEstudiante(getEstudianteServicioImpl().estudiantesPorApellido(getBeanFichaEstudiante().getApellidos()));
+			getBeanFichaEstudiante().setListaEstudiante(matriculaDataService.estudiantesPorApellido(getBeanFichaEstudiante().getApellidos()));
 			if(getBeanFichaEstudiante().getListaEstudiante().size()>0) {
 				getBeanFichaEstudiante().setMatriculaSeleccionada(null);
 				Mensaje.verDialogo("dlgClientes");
@@ -181,14 +177,17 @@ public class BackingFichaEstudiante implements Serializable {
 	public void cargaMatriculas() {
 
 			getBeanFichaEstudiante().setListaMatricula(new ArrayList<>());
-			getBeanFichaEstudiante().setListaMatricula(getMatriculaServicioImpl().listaMatriculasEstudiante(getBeanFichaEstudiante().getCodigoCliente()));
+			getBeanFichaEstudiante().setListaMatricula(matriculaDataService.listaMatriculasEstudiante(getBeanFichaEstudiante().getCodigoCliente()));
 
 	}
 	/**
 	 * Genera el certificado digital
 	 */
 	public void generarPdf() {
-		GeneracionPdf.generarCertificado(getBeanFichaEstudiante().getMatriculaSeleccionada(), beanLogin, mensajesBacking);
+		jakarta.servlet.ServletContext servletContext = (jakarta.servlet.ServletContext) jakarta.faces.context.FacesContext.getCurrentInstance().getExternalContext().getContext();
+		jakarta.servlet.http.HttpServletResponse httpServletResponse = (jakarta.servlet.http.HttpServletResponse) jakarta.faces.context.FacesContext.getCurrentInstance().getExternalContext().getResponse();
+		GeneracionPdf.generarCertificado(getBeanFichaEstudiante().getMatriculaSeleccionada(), beanLogin, mensajesBacking, servletContext, httpServletResponse);
+
 	}
 	/**
 	 * Muestra el cuadro dialogo actualizar estudiante
@@ -205,7 +204,7 @@ public class BackingFichaEstudiante implements Serializable {
 	
 			getBeanFichaEstudiante().getEstudiante().setEstuNivelEstudio(getBeanFichaEstudiante().getCodigoNivelEstudio());
 			getBeanFichaEstudiante().getEstudiante().setEstuCargoOcupa(getBeanFichaEstudiante().getCodigoCargo());
-			getEstudianteServicioImpl().actualizaEstudiante(getBeanFichaEstudiante().getEstudiante());
+			matriculaDataService.actualizaEstudiante(getBeanFichaEstudiante().getEstudiante());
 			Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.procesoexito"));
 	
 	}
