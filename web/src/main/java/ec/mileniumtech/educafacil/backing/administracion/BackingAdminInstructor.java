@@ -11,13 +11,10 @@ import org.apache.logging.log4j.Logger;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.administracion.BeanAdminInstructor;
-import ec.mileniumtech.educafacil.dao.impl.CapacitacionDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.FormacionDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.InstructorDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Instructor;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Persona;
-import ec.mileniumtech.educafacil.service.InstructorDataService;
-import ec.mileniumtech.educafacil.service.MatriculaDataService;
+import ec.mileniumtech.educafacil.service.facade.InstructorFacade;
+import ec.mileniumtech.educafacil.service.facade.MatriculaFacade;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
@@ -48,11 +45,11 @@ public class BackingAdminInstructor implements Serializable{
 	
 	@EJB
 	@Getter
-	private InstructorDataService instructorDataService;
+	private InstructorFacade instructorDataService;
 
 	@EJB
 	@Getter
-	private MatriculaDataService matriculaDataService;
+	private MatriculaFacade matriculaDataService;
 	
 	/**
 	 * Carga los instructores

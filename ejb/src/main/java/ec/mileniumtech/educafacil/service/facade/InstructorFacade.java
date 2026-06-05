@@ -1,11 +1,17 @@
-package ec.mileniumtech.educafacil.service;
+package ec.mileniumtech.educafacil.service.facade;
 
 import java.util.List;
 
 import ec.mileniumtech.educafacil.dao.impl.CapacitacionDaoImpl;
+import ec.mileniumtech.educafacil.dao.impl.CatalogoDaoImpl;
+import ec.mileniumtech.educafacil.dao.impl.ConfiguracionesDaoImpl;
+import ec.mileniumtech.educafacil.dao.impl.EmpresaDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.FormacionDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.InstructorDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Capacitacion;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.Catalogo;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.Configuraciones;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.Empresa;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Formacion;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Instructor;
 import jakarta.ejb.EJB;
@@ -14,7 +20,7 @@ import jakarta.ejb.Stateless;
 
 @Stateless
 @LocalBean
-public class InstructorDataService {
+public class InstructorFacade {
 
     @EJB
     private InstructorDaoImpl instructorDao;
@@ -25,7 +31,16 @@ public class InstructorDataService {
     @EJB
     private CapacitacionDaoImpl capacitacionDao;
 
-    // ========== Instructor methods ==========
+    @EJB
+    private ConfiguracionesDaoImpl configuracionesDao;
+
+    @EJB
+    private CatalogoDaoImpl catalogoDao;
+
+    @EJB
+    private EmpresaDaoImpl empresaDao;
+
+    // ========== Instructor ==========
 
     public List<Instructor> listaInstructores() {
         return instructorDao.listaInstructores();
@@ -35,7 +50,7 @@ public class InstructorDataService {
         instructorDao.agregarActualizarInstructor(instructor);
     }
 
-    // ========== Formacion methods ==========
+    // ========== Formacion ==========
 
     public void agregaActualizaFormacion(Formacion formacion) {
         formacionDao.agregaActualizaFormacion(formacion);
@@ -45,7 +60,7 @@ public class InstructorDataService {
         return formacionDao.listaFormaciones(codigoInstructor);
     }
 
-    // ========== Capacitacion methods ==========
+    // ========== Capacitacion ==========
 
     public void agregarActualizarCapacitacion(Capacitacion capacitacion) {
         capacitacionDao.agregarActualizarCapacitacion(capacitacion);
@@ -53,5 +68,31 @@ public class InstructorDataService {
 
     public List<Capacitacion> listaCapacitaciones(int codigoInstructor) {
         return capacitacionDao.listaCapacitaciones(codigoInstructor);
+    }
+
+    // ========== Configuraciones ==========
+
+    public List<Configuraciones> listaConfiguraciones() {
+        return configuracionesDao.listaConfiguraciones();
+    }
+
+    // ========== Catalogo ==========
+
+    public List<Catalogo> catalogosPorTipo(String tipoCatalogo) {
+        return catalogoDao.catalogosPorTipo(tipoCatalogo);
+    }
+
+    public List<Catalogo> catalogosPorPadre(Catalogo padre) {
+        return catalogoDao.catalogosPorPadre(padre);
+    }
+
+    // ========== Empresa ==========
+
+    public List<Empresa> listaEmpresas() {
+        return empresaDao.listaEmpresas();
+    }
+
+    public void agregarEmpresa(Empresa empresa) {
+        empresaDao.agregarEmpresa(empresa);
     }
 }

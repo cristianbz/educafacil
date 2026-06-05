@@ -15,7 +15,7 @@ import ec.mileniumtech.educafacil.bean.administracion.BeanFinalizarCurso;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Matricula;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.OfertaCursos;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Usuario;
-import ec.mileniumtech.educafacil.service.MatriculaDataService;
+import ec.mileniumtech.educafacil.service.facade.MatriculaFacade;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumEstadosMatricula;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumEstadosOfertaCurso;
@@ -49,7 +49,7 @@ public class BackingFinalizarCurso  implements Serializable{
 	
 	@EJB
 	@Getter
-	private MatriculaDataService matriculaDataService;
+	private MatriculaFacade matriculaDataService;
 	
 	@Getter
 	@Setter

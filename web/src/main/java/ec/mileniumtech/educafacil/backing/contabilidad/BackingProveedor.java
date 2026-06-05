@@ -14,7 +14,7 @@ import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.contabilidad.BeanProveedor;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DocumentacionProveedor;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Proveedor;
-import ec.mileniumtech.educafacil.service.ContabilidadDataService;
+import ec.mileniumtech.educafacil.service.facade.ContabilidadFacade;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
@@ -45,7 +45,7 @@ public class BackingProveedor implements Serializable {
 	
 	@Getter
 	@EJB
-	private ContabilidadDataService contabilidadDataService;
+	private ContabilidadFacade contabilidadDataService;
 	
 	@Getter
 	@Setter

@@ -27,9 +27,9 @@ import ec.mileniumtech.educafacil.modelo.persistencia.entity.Persona;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Rol;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Usuario;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.UsuarioRol;
-import ec.mileniumtech.educafacil.service.MarketingDataService;
-import ec.mileniumtech.educafacil.service.MatriculaDataService;
-import ec.mileniumtech.educafacil.service.SistemaDataService;
+import ec.mileniumtech.educafacil.service.facade.InstructorFacade;
+import ec.mileniumtech.educafacil.service.facade.MarketingFacade;
+import ec.mileniumtech.educafacil.service.facade.MatriculaFacade;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitarios.correo.Correo;
 import ec.mileniumtech.educafacil.utilitarios.encriptacion.Encriptar;
@@ -61,11 +61,11 @@ public class BackingMatriculaOnline implements Serializable {
 
 	@EJB
 	@Getter
-	private SistemaDataService sistemaDataService;
+	private InstructorFacade sistemaDataService;
 
 	@EJB
 	@Getter
-	private MarketingDataService marketingDataService;
+	private MarketingFacade marketingDataService;
 
 	@Inject
 	@Getter
@@ -75,7 +75,7 @@ public class BackingMatriculaOnline implements Serializable {
 	private MensajesBacking mensajesBacking;
 	@EJB
 	@Getter
-	private MatriculaDataService matriculaDataService;
+	private MatriculaFacade matriculaDataService;
 	
 	@Getter
 	@Setter

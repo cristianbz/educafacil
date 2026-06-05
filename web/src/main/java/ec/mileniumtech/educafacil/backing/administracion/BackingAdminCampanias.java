@@ -10,16 +10,21 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.primefaces.model.charts.ChartData;
+import org.primefaces.model.charts.axes.cartesian.CartesianScales;
+import org.primefaces.model.charts.axes.cartesian.linear.CartesianLinearAxes;
+import org.primefaces.model.charts.axes.cartesian.linear.CartesianLinearTicks;
+import org.primefaces.model.charts.bar.BarChartOptions;
+import org.primefaces.model.charts.hbar.HorizontalBarChartDataSet;
+import org.primefaces.model.charts.hbar.HorizontalBarChartModel;
+import org.primefaces.model.charts.optionconfig.title.Title;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.administracion.BeanAdminCampanias;
-import ec.mileniumtech.educafacil.dao.impl.CampaniaDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.CursoDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.SeguimientoClientesDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Campania;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Curso;
-import ec.mileniumtech.educafacil.service.MarketingDataService;
-import ec.mileniumtech.educafacil.service.MatriculaDataService;
+import ec.mileniumtech.educafacil.service.facade.MarketingFacade;
+import ec.mileniumtech.educafacil.service.facade.MatriculaFacade;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumEstadosContactoCliente;
 import jakarta.annotation.PostConstruct;
@@ -29,15 +34,6 @@ import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import lombok.Getter;
-
-import org.primefaces.model.charts.ChartData;
-import org.primefaces.model.charts.axes.cartesian.CartesianScales;
-import org.primefaces.model.charts.axes.cartesian.linear.CartesianLinearAxes;
-import org.primefaces.model.charts.axes.cartesian.linear.CartesianLinearTicks;
-import org.primefaces.model.charts.bar.BarChartOptions;
-import org.primefaces.model.charts.hbar.HorizontalBarChartDataSet;
-import org.primefaces.model.charts.hbar.HorizontalBarChartModel;
-import org.primefaces.model.charts.optionconfig.title.Title;
 
 /**
 *@author christian  Jul 7, 2024
@@ -52,11 +48,11 @@ public class BackingAdminCampanias implements Serializable{
 	
 	@EJB
 	@Getter
-	private MarketingDataService marketingDataService;
+	private MarketingFacade marketingDataService;
 
 	@EJB
 	@Getter
-	private MatriculaDataService matriculaDataService;
+	private MatriculaFacade matriculaDataService;
 	
 	@Inject
 	@Getter

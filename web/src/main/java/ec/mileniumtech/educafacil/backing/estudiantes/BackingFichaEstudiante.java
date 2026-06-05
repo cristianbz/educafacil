@@ -15,7 +15,7 @@ import ec.mileniumtech.educafacil.bean.estudiantes.BeanFichaEstudiante;
 import ec.mileniumtech.educafacil.bean.usuarios.BeanLogin;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Estudiante;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Matricula;
-import ec.mileniumtech.educafacil.service.MatriculaDataService;
+import ec.mileniumtech.educafacil.service.facade.MatriculaFacade;
 import ec.mileniumtech.educafacil.utilitario.GeneracionPdf;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumRol;
@@ -52,7 +52,7 @@ public class BackingFichaEstudiante implements Serializable {
 	
 	@EJB
 	@Getter
-	private MatriculaDataService matriculaDataService;
+	private MatriculaFacade matriculaDataService;
 	
 	@Inject
 	@Getter

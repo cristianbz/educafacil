@@ -14,11 +14,10 @@ import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.contabilidad.BeanPagos;
 import ec.mileniumtech.educafacil.bean.estudiantes.BeanBuscaEstudiante;
 import ec.mileniumtech.educafacil.bean.estudiantes.BeanFichaEstudiante;
-import ec.mileniumtech.educafacil.dao.impl.PagosDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Estudiante;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Matricula;
-import ec.mileniumtech.educafacil.service.ContabilidadDataService;
-import ec.mileniumtech.educafacil.service.MatriculaDataService;
+import ec.mileniumtech.educafacil.service.facade.ContabilidadFacade;
+import ec.mileniumtech.educafacil.service.facade.MatriculaFacade;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import jakarta.ejb.EJB;
 import jakarta.enterprise.context.Dependent;
@@ -53,11 +52,11 @@ public class ComponenteBuscaEstudiante implements Serializable{
 	
 	@EJB
 	@Getter
-	private MatriculaDataService matriculaDataService;
+	private MatriculaFacade matriculaDataService;
 
 	@EJB
 	@Getter
-	private ContabilidadDataService contabilidadDataService;
+	private ContabilidadFacade contabilidadDataService;
 	
 	@Inject
 	@Getter

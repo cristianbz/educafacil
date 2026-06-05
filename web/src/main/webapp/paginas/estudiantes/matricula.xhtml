@@ -1,8 +1,8 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:f="jakarta.faces.core"
+	xmlns:h="jakarta.faces.html"
 	xmlns:p="http://primefaces.org/ui"
 	xmlns:comp="http://java.sun.com/jsf/composite/componentes/matricula" 
 	xmlns:val="http://java.sun.com/jsf/composite/componentes">
@@ -23,18 +23,18 @@
 				</p:dialog>
 				<p:blockUI block="panelBotones" trigger="btngrabar" />
 				<p:fieldset legend="#{titulos['matriculaCliente']}" style="margin-bottom:20px">				
-					<center>
+					<div class="text-center">
 						<p:commandButton value="#{botones['nuevaMatricula']}" process="@this" update="@form" icon="#{botones['icono.nuevo']}"
 						immediate="true" resetValues="true" actionListener="#{backingMatricula.nuevaInscripcion}"/>	
-					</center>
+					</div>
 					<comp:componentematricula id="matricula" componenteBackingMatriculaInscripcion="#{backingMatricula.componenteBackingMatriculaInscripcion}"/>
 				</p:fieldset> 
-				<center>
+				<div class="text-center">
 					<h:panelGrid columns="2">					
 						<p:commandButton value="#{botones['matricular']}" process="@this :form:matricula:idpanelMatriculaInscripcion"  partialSubmit="true" update=":form:matricula:idpanelMatriculaInscripcion" 					
 						actionListener="#{backingMatricula.mostrarDialogoGrabar}" icon="#{botones['icono.matricular']}"/>					
 					</h:panelGrid>		
-				</center>	  
+				</div>	  
 			</h:form>
 	</ui:define>
 

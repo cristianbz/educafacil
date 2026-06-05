@@ -22,7 +22,7 @@ import org.primefaces.model.charts.pie.PieChartModel;
 
 import ec.mileniumtech.educafacil.bean.contabilidad.BeanReporteria;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.DtoFlujoDinero;
-import ec.mileniumtech.educafacil.service.ContabilidadDataService;
+import ec.mileniumtech.educafacil.service.facade.ContabilidadFacade;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitarios.fechas.FechaFormato;
 import jakarta.annotation.PostConstruct;
@@ -45,7 +45,7 @@ public class BackingReporteria implements Serializable{
 	
 	@EJB
 	@Getter
-	private ContabilidadDataService contabilidadDataService;
+	private ContabilidadFacade contabilidadDataService;
 	
 	@Inject
 	@Getter

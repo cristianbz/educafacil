@@ -1,10 +1,10 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:comp="http://java.sun.com/jsf/composite/componentes" 
-	xmlns:val="http://java.sun.com/jsf/composite/componentes"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core"
+      xmlns:h="jakarta.faces.html"
+      xmlns:comp="jakarta.faces.composite/componentes" 
+	xmlns:val="jakarta.faces.composite/componentes"
       xmlns:p="http://primefaces.org/ui">
 
 	<!-- 
@@ -16,12 +16,7 @@
 			<f:event listener="#{backingLogin.validarSesion()}" type="preRenderView" />
 			<h:form>							
 				<p:growl id="growl" life="3000" showDetail="true" />
-					<p:dialog widgetVar="dlgEnProc" draggable="false" modal="true"
-						resizable="false" closable="false" responsive="true"
-						style="font-size: 10px;">
-						<h:graphicImage value="/resources/img/cargando.gif" width="200"
-							height="200" />
-					</p:dialog>
+
 					<p:dialog widgetVar="dlgCargarInfo" modal="true" closable="false"
 			header="#{titulos['selInformacion']}">
 			<p:outputPanel id="campanias">						
@@ -61,9 +56,9 @@
 				<p:fieldset legend="#{titulos['regPagos']}">
 					<br />
 		
-					<center>				
+					<div class="text-center">			
 						<p:commandButton></p:commandButton>	
-					</center>
+					</div>
 				
 					<div class="ui-fluid p-formgrid p-grid">
 						

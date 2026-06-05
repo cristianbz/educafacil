@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:ui="jakarta.faces.facelets"
       	xmlns:f="jakarta.faces.core"
@@ -79,12 +79,7 @@
 			
 			
 			<p:growl id="growl" life="3000" showDetail="true" />
-			<p:dialog widgetVar="dlgEnProc" draggable="false" modal="true"
-				resizable="false" closable="false" responsive="true"
-				style="font-size: 10px;">
-				<h:graphicImage value="/resources/img/cargando.gif" width="200"
-					height="200" />
-			</p:dialog>
+
 
 			<p:breadCrumb styleClass="mb-3">
 				<p:menuitem value="Categorias" icon="pi pi-home" outcome="/paginas/index?faces-redirect=true" />
@@ -148,8 +143,7 @@
 							<f:setPropertyActionListener value="#{mat}" target="#{backingPagos.beanPagos.matricula}"></f:setPropertyActionListener>
 							<i class="pi pi-wallet" style="font-size: 1em; color: green;"></i>							
 						</p:commandLink>
-						&nbsp;
-						
+												
 						<p:commandLink  process="@this" title="#{tooltip['verPagos']}" 
 							partialSubmit="true" update=":form:tablapagos :form:nombreEstudiante" 
 							action="#{backingPagos.mostrarDialogoResumenPago()}" >

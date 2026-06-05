@@ -31,10 +31,10 @@ import ec.mileniumtech.educafacil.modelo.persistencia.entity.Matricula;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.OfertaCursos;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Pagos;
 import ec.mileniumtech.educafacil.service.AdministracionService;
-import ec.mileniumtech.educafacil.service.ContabilidadDataService;
-import ec.mileniumtech.educafacil.service.MatriculaDataService;
 import ec.mileniumtech.educafacil.service.PagosService;
-import ec.mileniumtech.educafacil.service.SistemaDataService;
+import ec.mileniumtech.educafacil.service.facade.ContabilidadFacade;
+import ec.mileniumtech.educafacil.service.facade.InstructorFacade;
+import ec.mileniumtech.educafacil.service.facade.MatriculaFacade;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumFormaPago;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumTipoCatalogo;
@@ -72,11 +72,11 @@ public class BackingPagos implements Serializable{
 
 	@EJB
 	@Getter
-	private SistemaDataService sistemaDataService;
+	private InstructorFacade sistemaDataService;
 
 	@EJB
 	@Getter
-	private ContabilidadDataService contabilidadDataService;
+	private ContabilidadFacade contabilidadDataService;
 
 	@EJB
 	private PagosService pagosService;
@@ -121,7 +121,7 @@ public class BackingPagos implements Serializable{
 
 	@EJB
 	@Getter
-	private MatriculaDataService matriculaDataService;
+	private MatriculaFacade matriculaDataService;
 	
 	@Inject
 	@Getter

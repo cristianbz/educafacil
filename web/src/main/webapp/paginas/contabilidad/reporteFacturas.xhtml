@@ -1,5 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
- "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="jakarta.faces.facelets"
       xmlns:f="jakarta.faces.core"
@@ -142,7 +141,7 @@
             </p:outputPanel>
             <br />
             
-            <p:dataTable id="tblFacturas" value="#{beanReporteFacturas.listaFacturas}" var="fac" 
+            <p:dataTable id="tblFacturas" value="#{beanReporteFacturas.listaFacturas}" var="fac" reflow="true"
                          paginator="true" rows="10" 
                          paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
                          currentPageReportTemplate="({currentPage} of {totalPages})"

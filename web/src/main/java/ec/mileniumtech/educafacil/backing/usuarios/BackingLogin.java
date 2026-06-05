@@ -19,14 +19,13 @@ import org.primefaces.model.menu.MenuModel;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.usuarios.BeanLogin;
-import ec.mileniumtech.educafacil.dao.impl.ConfiguracionesDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.ObjetosMenuDto;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Persona;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Usuario;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.UsuarioRol;
 import ec.mileniumtech.educafacil.service.AuthService;
-import ec.mileniumtech.educafacil.service.MatriculaDataService;
-import ec.mileniumtech.educafacil.service.SistemaDataService;
+import ec.mileniumtech.educafacil.service.facade.InstructorFacade;
+import ec.mileniumtech.educafacil.service.facade.MatriculaFacade;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitarios.correo.Correo;
 import ec.mileniumtech.educafacil.utilitarios.encriptacion.CifradorBase;
@@ -68,11 +67,11 @@ public class BackingLogin implements Serializable{
 
 	@EJB
 	@Getter
-	private MatriculaDataService matriculaDataService;
+	private MatriculaFacade matriculaDataService;
 	
 	@EJB
 	@Getter
-	private SistemaDataService sistemaDataService;
+	private InstructorFacade sistemaDataService;
 	
 	@Inject
 	@Getter	

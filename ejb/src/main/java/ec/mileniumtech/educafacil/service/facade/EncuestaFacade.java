@@ -1,4 +1,4 @@
-package ec.mileniumtech.educafacil.service;
+package ec.mileniumtech.educafacil.service.facade;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ import jakarta.ejb.Stateless;
 
 @Stateless
 @LocalBean
-public class EncuestaDataService {
+public class EncuestaFacade {
 
     @EJB
     private ObjetoEvaluacionDaoImpl objetoEvaluacionDao;
@@ -51,7 +51,7 @@ public class EncuestaDataService {
     @EJB
     private DetalleEvaluaCursoDaoImpl detalleEvaluaCursoDao;
 
-    // ========== ObjetoEvaluacion methods ==========
+    // ========== ObjetoEvaluacion ==========
 
     public List<ObjetoEvaluacion> listaDeObjetosDeEvaluacion() {
         return objetoEvaluacionDao.listaDeObjetosDeEvaluacion();
@@ -61,7 +61,7 @@ public class EncuestaDataService {
         return objetoEvaluacionDao.actualizarObjetoEvaluacion(objetoEvaluacion);
     }
 
-    // ========== CategoriaRespuesta methods ==========
+    // ========== CategoriaRespuesta ==========
 
     public List<CategoriaRespuesta> listaDeCategorias() {
         return categoriaRespuestaDao.listaDeCategorias();
@@ -75,7 +75,7 @@ public class EncuestaDataService {
         return categoriaRespuestaDao.buscaCategoria(codigoCategoria);
     }
 
-    // ========== Respuestas methods ==========
+    // ========== Respuestas ==========
 
     public List<Respuestas> listaRespuestas() {
         return respuestasDao.listaRespuestas();
@@ -89,7 +89,7 @@ public class EncuestaDataService {
         return respuestasDao.listaRespuestasPorCategoria(codigoCategoria);
     }
 
-    // ========== TipoEncuesta methods ==========
+    // ========== TipoEncuesta ==========
 
     public List<TipoEncuesta> listaDeTiposDeEncuestas() {
         return tipoEncuestaDao.listaDeTiposDeEncuestas();
@@ -103,7 +103,7 @@ public class EncuestaDataService {
         return tipoEncuestaDao.actualizarTipoEncuesta(tipoEncuesta);
     }
 
-    // ========== Pregunta methods ==========
+    // ========== Pregunta ==========
 
     public List<Pregunta> listaDePreguntas() {
         return preguntaDao.listaDePreguntas();
@@ -117,7 +117,7 @@ public class EncuestaDataService {
         return preguntaDao.listaPreguntasPorCategoria(codigoCategoriaP);
     }
 
-    // ========== TipoEncuestaPregunta methods ==========
+    // ========== TipoEncuestaPregunta ==========
 
     public List<TipoEncuestaPregunta> listaDePreguntasPorTipoEncuesta(int codigoP) {
         return tipoEncuestaPreguntaDao.listaDePreguntas(codigoP);
@@ -143,7 +143,7 @@ public class EncuestaDataService {
         return tipoEncuestaPreguntaDao.guardarRespuestasEncuestas(encuesta);
     }
 
-    // ========== EvaluacionCurso methods ==========
+    // ========== EvaluacionCurso ==========
 
     public List<EvaluacionCurso> listaDeEvaluacionesDeCurso() {
         return evaluacionCursoDao.listaDeEvaluacionesDeCurso();
@@ -161,7 +161,7 @@ public class EncuestaDataService {
         return evaluacionCursoDao.agregarEvaluacionCurso(evaluacionCurso);
     }
 
-    // ========== DetalleEvaluaCurso methods ==========
+    // ========== DetalleEvaluaCurso ==========
 
     public List<DetalleEvaluaCurso> listaDeDetallesDeEvaluacionDeCursos() {
         return detalleEvaluaCursoDao.listaDeDetallesDeEvaluacionDeCursos();

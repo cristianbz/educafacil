@@ -14,15 +14,11 @@ import org.apache.logging.log4j.Logger;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.estudiantes.BeanContactoRegistroDatos;
-import ec.mileniumtech.educafacil.dao.impl.CatalogoDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.MatriculaDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.SeguimientoDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.UsuarioDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Matricula;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Seguimiento;
-import ec.mileniumtech.educafacil.service.MarketingDataService;
-import ec.mileniumtech.educafacil.service.MatriculaDataService;
-import ec.mileniumtech.educafacil.service.SistemaDataService;
+import ec.mileniumtech.educafacil.service.facade.InstructorFacade;
+import ec.mileniumtech.educafacil.service.facade.MarketingFacade;
+import ec.mileniumtech.educafacil.service.facade.MatriculaFacade;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumRol;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumTipoCatalogo;
@@ -55,15 +51,15 @@ public class BackingContactoRegistroDatos implements Serializable {
 	private MensajesBacking mensajesBacking;
 	@EJB
 	@Getter
-	private MatriculaDataService matriculaDataService;
+	private MatriculaFacade matriculaDataService;
 
 	@EJB
 	@Getter
-	private MarketingDataService marketingDataService;
+	private MarketingFacade marketingDataService;
 
 	@EJB
 	@Getter
-	private SistemaDataService sistemaDataService;
+	private InstructorFacade sistemaDataService;
 	
 	
 	/**

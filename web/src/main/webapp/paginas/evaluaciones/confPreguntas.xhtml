@@ -1,8 +1,8 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:f="jakarta.faces.core"
+	xmlns:h="jakarta.faces.html"
 	xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
@@ -15,15 +15,6 @@
 		<h:form id="form" prependId="false">
 			<p:growl id="growl" life="3000" showDetail="true" />
 			
-			<!-- DIÁLOGO DE CARGA / PROCESAMIENTO -->
-			<p:dialog widgetVar="dlgEnProc" draggable="false" modal="true"
-				resizable="false" closable="false" responsive="true"
-				styleClass="loading-dialog" style="background: transparent; border: none; box-shadow: none; padding: 0;">
-				<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; background: rgba(255, 255, 255, 0.9); border-radius: 16px;">
-					<h:graphicImage value="/resources/img/cargando.gif" width="100" height="100" />
-					<span style="font-weight: 600; color: var(--text-muted); margin-top: 1rem; font-size: 0.9rem;">Procesando solicitud...</span>
-				</div>
-			</p:dialog>
 
 			<!-- BREADCRUMB REDISEÑADO -->
 			<p:breadCrumb styleClass="ui-breadcrumb p-mb-3" style="border: none; background: transparent; padding-left: 0; margin-bottom: 1rem;">

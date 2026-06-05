@@ -26,8 +26,7 @@ import ec.mileniumtech.educafacil.modelo.persistencia.entity.Factura;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.NotaCredito;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Persona;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.PuntoEmision;
-import ec.mileniumtech.educafacil.service.FacturacionDataService;
-import ec.mileniumtech.educafacil.service.FacturacionService;
+import ec.mileniumtech.educafacil.service.facade.FacturacionFacade;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitarios.fechas.FechaFormato;
 import jakarta.annotation.PostConstruct;
@@ -49,10 +48,10 @@ public class BackingFacturacion implements Serializable {
     private static final Logger log = LogManager.getLogger(BackingFacturacion.class);
 
     @EJB
-    private FacturacionDataService facturacionDataService;
+    private FacturacionFacade facturacionDataService;
 
     @EJB
-    private FacturacionService facturacionService;
+    private FacturacionFacade facturacionService;
 
     @EJB
     private ec.mileniumtech.educafacil.service.NotaCreditoService notaCreditoService;
@@ -782,63 +781,44 @@ public class BackingFacturacion implements Serializable {
      * Devuelve la cantidad de facturas autorizadas en la lista actual.
      */
     public int getCantAutorizadas() {
-        int count = 0;
-        if (getBeanFacturacion().getListaFacturas() != null) {
-            for (Factura f : getBeanFacturacion().getListaFacturas()) {
-                if (f.getDocumentoElectronico() != null && "AUTORIZADO".equals(f.getDocumentoElectronico().getEstado())) {
-                    count++;
-                }
-            }
-        }
-        return count;
+    	if (getBeanFacturacion().getListaFacturas() == null) return 0;
+        return (int) getBeanFacturacion().getListaFacturas().stream()
+                .filter(f -> f.getDocumentoElectronico() != null && "AUTORIZADO".equals(f.getDocumentoElectronico().getEstado()))
+                .count();
     }
 
     /**
      * Devuelve la cantidad de facturas pendientes en la lista actual.
      */
     public int getCantPendientes() {
-        int count = 0;
-        if (getBeanFacturacion().getListaFacturas() != null) {
-            for (Factura f : getBeanFacturacion().getListaFacturas()) {
-                if (f.getDocumentoElectronico() == null || 
-                    (!"AUTORIZADO".equals(f.getDocumentoElectronico().getEstado()) && 
+        if (getBeanFacturacion().getListaFacturas() == null) return 0;
+        return (int) getBeanFacturacion().getListaFacturas().stream()
+                .filter(f -> f.getDocumentoElectronico() == null ||
+                    (!"AUTORIZADO".equals(f.getDocumentoElectronico().getEstado()) &&
                      !"RECHAZADO".equals(f.getDocumentoElectronico().getEstado()) &&
-                     !"ANULADA".equals(f.getDocumentoElectronico().getEstado()))) {
-                    count++;
-                }
-            }
-        }
-        return count;
+                     !"ANULADA".equals(f.getDocumentoElectronico().getEstado())))
+                .count();
     }
 
     /**
      * Devuelve la cantidad de facturas rechazadas en la lista actual.
      */
     public int getCantRechazadas() {
-        int count = 0;
-        if (getBeanFacturacion().getListaFacturas() != null) {
-            for (Factura f : getBeanFacturacion().getListaFacturas()) {
-                if (f.getDocumentoElectronico() != null && "RECHAZADO".equals(f.getDocumentoElectronico().getEstado())) {
-                    count++;
-                }
-            }
-        }
-        return count;
+        if (getBeanFacturacion().getListaFacturas() == null) return 0;
+        return (int) getBeanFacturacion().getListaFacturas().stream()
+                .filter(f -> f.getDocumentoElectronico() != null && "RECHAZADO".equals(f.getDocumentoElectronico().getEstado()))
+                .count();
     }
 
     /**
      * Devuelve el monto total facturado en la lista actual.
      */
     public java.math.BigDecimal getTotalFacturado() {
-        java.math.BigDecimal total = java.math.BigDecimal.ZERO;
-        if (getBeanFacturacion().getListaFacturas() != null) {
-            for (Factura f : getBeanFacturacion().getListaFacturas()) {
-                if (f.getTotal() != null && (f.getDocumentoElectronico() == null || !"ANULADA".equals(f.getDocumentoElectronico().getEstado()))) {
-                    total = total.add(f.getTotal());
-                }
-            }
-        }
-        return total;
+        if (getBeanFacturacion().getListaFacturas() == null) return java.math.BigDecimal.ZERO;
+        return getBeanFacturacion().getListaFacturas().stream()
+                .filter(f -> f.getTotal() != null && (f.getDocumentoElectronico() == null || !"ANULADA".equals(f.getDocumentoElectronico().getEstado())))
+                .map(Factura::getTotal)
+                .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
     }
 
     /**
@@ -849,16 +829,18 @@ public class BackingFacturacion implements Serializable {
         if (totalFactura == null) {
             return java.math.BigDecimal.ZERO;
         }
-        java.math.BigDecimal totalPagos = java.math.BigDecimal.ZERO;
-        if (getBeanFacturacion().getListaFormasPagoAgregadas() != null) {
-            for (ec.mileniumtech.educafacil.modelo.persistencia.entity.FormaPagoFactura fp : getBeanFacturacion().getListaFormasPagoAgregadas()) {
-                if (fp.getValor() != null) {
-                    totalPagos = totalPagos.add(fp.getValor());
-                }
-            }
-        }
+        java.math.BigDecimal totalPagos = getBeanFacturacion().getListaFormasPagoAgregadas() != null
+                ? getBeanFacturacion().getListaFormasPagoAgregadas().stream()
+                        .filter(fp -> fp.getValor() != null)
+                        .map(ec.mileniumtech.educafacil.modelo.persistencia.entity.FormaPagoFactura::getValor)
+                        .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add)
+                : java.math.BigDecimal.ZERO;
         return totalFactura.setScale(2,RoundingMode.HALF_UP).subtract(totalPagos.setScale(2,RoundingMode.HALF_UP));
     }
+    /**
+     * Dias de vigencia de la firma
+     * @return
+     */
     public long getDiasVigenciaFirma() {
     	empresaMatriz=facturacionDataService.listarTodasEmpresas().get(0);
     	return FechaFormato.calcularDiasRestantesSeguro(empresaMatriz.getEmpmFirmaVigenciaHasta().toString());

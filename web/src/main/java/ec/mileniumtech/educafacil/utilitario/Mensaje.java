@@ -64,10 +64,9 @@ public class Mensaje {
 	 * @param mensajes
 	 */
 	public static void verErrores(List<String> errors, MensajesBacking mensajes) {
-		for (String error : errors) {
-			verMensaje(FacesMessage.SEVERITY_ERROR, mensajes.getPropiedad(error) + " " + mensajes.getPropiedad("campoRequerido"), null);
-		}
-
+		errors.forEach(error ->
+					verMensaje(FacesMessage.SEVERITY_ERROR, mensajes.getPropiedad(error) + " " + mensajes.getPropiedad("campoRequerido"), null)
+				);
 	}
 	/**
 	 * Obtiene url del servidor

@@ -7,15 +7,11 @@ package ec.mileniumtech.educafacil.backing.estudiantes;
 import java.io.Serializable;
 import java.util.stream.Collectors;
 
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
-
-import ec.mileniumtech.educafacil.dao.impl.OfertaCursosDaoImpl;
-import ec.mileniumtech.educafacil.service.MatriculaDataService;
+import ec.mileniumtech.educafacil.service.facade.MatriculaFacade;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
@@ -43,7 +39,7 @@ public class BackingInscripcion implements Serializable{
 	private MensajesBacking mensajesBacking;
 	@EJB
 	@Getter
-	private MatriculaDataService matriculaDataService; 
+	private MatriculaFacade matriculaDataService; 
 	
 	@Getter
 	@Setter

@@ -1,5 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
- "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="jakarta.faces.facelets"
       xmlns:f="jakarta.faces.core"
@@ -31,12 +30,12 @@
 			</p:breadCrumb>
 
 			<!-- ENCABEZADO DE LA PÁGINA -->
-			<div class="page-header" style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
-				<div class="page-title">
-					<h2 style="font-weight: 800; color: var(--text-main); margin: 0; font-size: 1.875rem;">Administración de Cursos</h2>
-					<small style="color: var(--text-muted); font-size: 0.9rem;">Gestión y control del catálogo de cursos y ofertas académicas</small>
+<div class="page-header">
+				<div>
+					<h2>Administración de Cursos</h2>
+					<small>Gestión y control del catálogo de cursos y ofertas académicas</small>
 				</div>
-				<div class="page-actions" style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+				<div class="page-actions">
 
 					<!-- Botón Nuevo Curso (acción principal) -->
 					<p:commandButton value="#{botones['nuevocurso']}"
@@ -205,12 +204,12 @@
 				<!-- ESTADO VACÍO (cuando no hay cursos cargados) -->
 				<h:panelGroup
 					rendered="#{backingCreacionCursos.beanCreacionCursos.listaOfertaCapacitacion == null or backingCreacionCursos.beanCreacionCursos.listaOfertaCapacitacion.size() == 0}">
-					<div style="text-align: center; padding: 5rem 2rem; background: white; border: 2px dashed var(--border-color); border-radius: 12px; margin-top: 1rem; box-shadow: var(--shadow-sm);">
+					<div class="empty-state">
 						<div style="margin-bottom: 1.5rem;">
 							<i class="pi pi-book" style="font-size: 4rem; color: #94a3b8; padding: 1.5rem; background-color: #f8fafc; border-radius: 50%;"></i>
 						</div>
-						<h3 style="font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem; font-size: 1.25rem;">Sin cursos registrados</h3>
-						<p style="color: var(--text-muted); max-width: 420px; margin: 0 auto 1.5rem auto; font-size: 0.95rem; line-height: 1.6;">
+						<h3>Sin cursos registrados</h3>
+						<p>
 							No existen cursos en el catálogo todavía. Usa el botón <strong>"Nuevo Curso"</strong> para comenzar a registrar el catálogo de formación.
 						</p>
 						<p:commandButton value="Crear primer curso"
@@ -253,7 +252,7 @@
 						<div class="p-formgrid p-grid">
 							<!-- Columna Clasificación -->
 							<div class="p-field p-col-12 p-md-6" style="margin-bottom: 1rem; padding-right: 0.5rem;">
-								<h5 style="margin-top: 0; margin-bottom: 0.75rem; color: var(--primary-color); font-weight: 700; font-size: 0.85rem; border-left: 3px solid var(--primary-color); padding-left: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Clasificación</h5>
+								<h5 class="section-title-accent">Clasificación</h5>
 								<div style="display: flex; flex-direction: column; gap: 0.75rem;">
 									<div>
 										<small style="display: block; color: var(--text-muted); font-weight: 700; font-size: 0.72rem; text-transform: uppercase;">Área</small>
@@ -268,7 +267,7 @@
 
 							<!-- Columna Estado -->
 							<div class="p-field p-col-12 p-md-6" style="margin-bottom: 1rem; padding-left: 0.5rem;">
-								<h5 style="margin-top: 0; margin-bottom: 0.75rem; color: var(--primary-color); font-weight: 700; font-size: 0.85rem; border-left: 3px solid var(--primary-color); padding-left: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Estado</h5>
+								<h5 class="section-title-accent">Estado</h5>
 								<div style="display: flex; flex-direction: column; gap: 0.75rem;">
 									<div>
 										<small style="display: block; color: var(--text-muted); font-weight: 700; font-size: 0.72rem; text-transform: uppercase; margin-bottom: 0.4rem;">Disponibilidad</small>

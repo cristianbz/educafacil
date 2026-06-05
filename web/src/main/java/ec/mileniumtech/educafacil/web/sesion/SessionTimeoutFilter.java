@@ -36,7 +36,24 @@ public class SessionTimeoutFilter extends HttpFilter {
         
         if (!sesionValida) {
             String timeoutUrl = req.getContextPath() + "/finsesion.xhtml";
-            res.sendRedirect(timeoutUrl);
+            
+            // DETECTAR SI ES UNA PETICIÓN AJAX
+            boolean isAjax = "partial/ajax".equals(req.getHeader("Faces-Request")) 
+                          || "XMLHttpRequest".equals(req.getHeader("X-Requested-With"));
+            
+            if (isAjax) {
+                // Generar la respuesta XML que JSF/PrimeFaces entienden para redireccionar
+                res.setContentType("text/xml");
+                res.setCharacterEncoding("UTF-8");
+                res.getWriter().printf(
+                    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                    "<partial-response><redirect url=\"%s\"/></partial-response>", 
+                    timeoutUrl
+                );
+            } else {
+                // Redirección normal para peticiones síncronas (F5, links normales)
+                res.sendRedirect(timeoutUrl);
+            }
             return;
         }
 		chain.doFilter(request, response);

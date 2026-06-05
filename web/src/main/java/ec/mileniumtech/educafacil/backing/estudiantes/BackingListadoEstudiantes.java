@@ -61,7 +61,7 @@ import ec.mileniumtech.educafacil.bean.usuarios.BeanLogin;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Curso;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Matricula;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.OfertaCursos;
-import ec.mileniumtech.educafacil.service.MatriculaDataService;
+import ec.mileniumtech.educafacil.service.facade.MatriculaFacade;
 import ec.mileniumtech.educafacil.utilitario.GeneracionPdf;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitario.Utilitario;
@@ -101,7 +101,7 @@ public class BackingListadoEstudiantes implements Serializable {
 	private StreamedContent fileDownload;
 	@EJB
 	@Getter
-	private MatriculaDataService matriculaDataService;
+	private MatriculaFacade matriculaDataService;
 	
 	@Inject
 	@Getter
@@ -470,5 +470,27 @@ public class BackingListadoEstudiantes implements Serializable {
 			throw new RuntimeException(e);
         }
 	}
+	public String getEstadoLabel(String codigo) {
+		if (EnumEstadosMatricula.INSCRITO.getCodigo().equals(codigo)) return EnumEstadosMatricula.INSCRITO.getLabel();
+		if (EnumEstadosMatricula.MATRICULADO.getCodigo().equals(codigo)) return EnumEstadosMatricula.MATRICULADO.getLabel();
+		if (EnumEstadosMatricula.DESERTADO.getCodigo().equals(codigo)) return EnumEstadosMatricula.DESERTADO.getLabel();
+		if (EnumEstadosMatricula.CULMINADO.getCodigo().equals(codigo)) return EnumEstadosMatricula.CULMINADO.getLabel();
+		return "";
+	}
 
+	public String getEstadoIcon(String codigo) {
+		if (EnumEstadosMatricula.INSCRITO.getCodigo().equals(codigo)) return "pi pi-info-circle";
+		if (EnumEstadosMatricula.MATRICULADO.getCodigo().equals(codigo)) return "pi pi-file-edit";
+		if (EnumEstadosMatricula.DESERTADO.getCodigo().equals(codigo)) return "pi pi-times-circle";
+		if (EnumEstadosMatricula.CULMINADO.getCodigo().equals(codigo)) return "pi pi-check-circle";
+		return "pi pi-question";
+	}
+
+	public String getEstadoStyleClass(String codigo) {
+		if (EnumEstadosMatricula.INSCRITO.getCodigo().equals(codigo)) return "inscrito";
+		if (EnumEstadosMatricula.MATRICULADO.getCodigo().equals(codigo)) return "colorMatriculado";
+		if (EnumEstadosMatricula.DESERTADO.getCodigo().equals(codigo)) return "colorDesertado";
+		if (EnumEstadosMatricula.CULMINADO.getCodigo().equals(codigo)) return "colorCulminado";
+		return "";
+	}
 }

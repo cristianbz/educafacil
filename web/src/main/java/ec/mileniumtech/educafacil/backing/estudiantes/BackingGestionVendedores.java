@@ -25,7 +25,7 @@ import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.estudiantes.BeanGestionVendedores;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.SeguimientoClientes;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Vendedor;
-import ec.mileniumtech.educafacil.service.MarketingDataService;
+import ec.mileniumtech.educafacil.service.facade.MarketingFacade;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumEstadosContactoCliente;
 import jakarta.annotation.PostConstruct;
@@ -58,7 +58,7 @@ public class BackingGestionVendedores implements Serializable{
 	
 	@EJB
 	@Getter
-	private MarketingDataService marketingDataService;
+	private MarketingFacade marketingDataService;
 	
 	@Setter
 	@Getter

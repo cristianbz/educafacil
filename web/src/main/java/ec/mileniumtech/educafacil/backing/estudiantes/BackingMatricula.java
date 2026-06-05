@@ -12,10 +12,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
-import ec.mileniumtech.educafacil.dao.impl.EmpresaDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Empresa;
-import ec.mileniumtech.educafacil.service.MatriculaDataService;
-import ec.mileniumtech.educafacil.service.SistemaDataService;
+import ec.mileniumtech.educafacil.service.facade.InstructorFacade;
+import ec.mileniumtech.educafacil.service.facade.MatriculaFacade;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
@@ -47,10 +46,10 @@ public class BackingMatricula implements Serializable{
 	private MensajesBacking mensajesBacking;
 	@EJB
 	@Getter
-	private SistemaDataService sistemaDataService;
+	private InstructorFacade sistemaDataService;
 	@EJB
 	@Getter
-	private MatriculaDataService matriculaDataService; 
+	private MatriculaFacade matriculaDataService; 
 	
 	@PostConstruct
 	public void init() {

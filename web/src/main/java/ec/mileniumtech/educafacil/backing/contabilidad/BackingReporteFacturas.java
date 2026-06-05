@@ -9,6 +9,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeFormatter;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -212,31 +213,31 @@ public class BackingReporteFacturas implements Serializable {
                 return null;
             }
 
-            StringBuilder sb = new StringBuilder();
-            sb.append("FECHA_EMISION COMPROBANTE NUMERO_COMPROBANTE IDENTIFICACION_RECEPTOR RAZON_SOCIAL CLAVE_ACCESO VALOR_TOTAL\n");
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-            for (Factura fac : beanReporteFacturas.getListaFacturas()) {
-                String claveAcceso = "";
-                if (fac.getDocumentoElectronico() != null) {
-                    claveAcceso = fac.getDocumentoElectronico().getNumeroAutorizacion() != null
-                        ? fac.getDocumentoElectronico().getNumeroAutorizacion()
-                        : fac.getDocumentoElectronico().getClaveAcceso() != null
-                            ? fac.getDocumentoElectronico().getClaveAcceso()
-                            : "";
-                }
+            String csv = "FECHA_EMISION COMPROBANTE NUMERO_COMPROBANTE IDENTIFICACION_RECEPTOR RAZON_SOCIAL CLAVE_ACCESO VALOR_TOTAL\n" +
+                    beanReporteFacturas.getListaFacturas().stream()
+                        .map(fac -> {
+                            String claveAcceso = "";
+                            if (fac.getDocumentoElectronico() != null) {
+                                claveAcceso = fac.getDocumentoElectronico().getNumeroAutorizacion() != null
+                                    ? fac.getDocumentoElectronico().getNumeroAutorizacion()
+                                    : fac.getDocumentoElectronico().getClaveAcceso() != null
+                                        ? fac.getDocumentoElectronico().getClaveAcceso()
+                                        : "";
+                            }
+                            return escaped(fac.getFechaEmision() != null ? fac.getFechaEmision().format(formatter) : "") + ' '
+                                + escaped("Factura") + ' '
+                                + escaped(fac.getNumero() != null ? fac.getNumero() : "") + ' '
+                                + escaped(fac.getCliente() != null && fac.getCliente().getNumeroIdentificacion() != null ? fac.getCliente().getNumeroIdentificacion() : "") + ' '
+                                + escaped(fac.getCliente() != null && fac.getCliente().getNombresCompletos() != null ? fac.getCliente().getNombresCompletos() : "") + ' '
+                                + escaped(claveAcceso) + ' '
+                                + escaped(fac.getTotal() != null ? fac.getTotal().toString() : "") + '\n';
+                        })
+                        .collect(Collectors.joining());
 
-                sb.append(escaped(fac.getFechaEmision() != null ? fac.getFechaEmision().format(formatter) : "")).append(' ')
-                  .append(escaped("Factura")).append(' ')
-                  .append(escaped(fac.getNumero() != null ? fac.getNumero() : "")).append(' ')
-                  .append(escaped(fac.getCliente() != null && fac.getCliente().getNumeroIdentificacion() != null ? fac.getCliente().getNumeroIdentificacion() : "")).append(' ')
-                  .append(escaped(fac.getCliente() != null && fac.getCliente().getNombresCompletos() != null ? fac.getCliente().getNombresCompletos() : "")).append(' ')
-                  .append(escaped(claveAcceso)).append(' ')
-                  .append(escaped(fac.getTotal() != null ? fac.getTotal().toString() : "")).append('\n');
-            }
-
-            byte[] bytes = sb.toString().getBytes(StandardCharsets.UTF_8);
+                byte[] bytes = csv.getBytes(StandardCharsets.UTF_8);
 
             return DefaultStreamedContent.builder()
                     .name("ReporteFacturas.csv")

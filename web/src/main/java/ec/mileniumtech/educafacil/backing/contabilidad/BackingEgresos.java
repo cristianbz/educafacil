@@ -14,11 +14,10 @@ import org.apache.logging.log4j.Logger;
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.contabilidad.BeanEgresos;
 import ec.mileniumtech.educafacil.bean.usuarios.BeanLogin;
-import ec.mileniumtech.educafacil.dao.impl.CatalogoDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Egresos;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Proveedor;
-import ec.mileniumtech.educafacil.service.ContabilidadDataService;
-import ec.mileniumtech.educafacil.service.SistemaDataService;
+import ec.mileniumtech.educafacil.service.facade.ContabilidadFacade;
+import ec.mileniumtech.educafacil.service.facade.InstructorFacade;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumEstadosEgresos;
 import jakarta.annotation.PostConstruct;
@@ -42,11 +41,11 @@ public class BackingEgresos implements Serializable{
 
 	@EJB
 	@Getter
-	private SistemaDataService sistemaDataService;
+	private InstructorFacade sistemaDataService;
 
 	@EJB
 	@Getter
-	private ContabilidadDataService contabilidadDataService;
+	private ContabilidadFacade contabilidadDataService;
 
 	@Inject
 	@Getter

@@ -1,4 +1,4 @@
-package ec.mileniumtech.educafacil.service;
+package ec.mileniumtech.educafacil.service.facade;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -22,7 +22,7 @@ import jakarta.ejb.Stateless;
 
 @Stateless
 @LocalBean
-public class MarketingDataService {
+public class MarketingFacade {
 
     @EJB
     private SeguimientoClientesDaoImpl seguimientoClientesDao;
@@ -39,7 +39,7 @@ public class MarketingDataService {
     @EJB
     private VendedorDaoImpl vendedorDao;
 
-    // ========== SeguimientoClientes methods ==========
+    // ========== Seguimiento Clientes ==========
 
     public void agregarSeguimiento(SeguimientoClientes seguimiento, List<DetalleSeguimiento> detalle) {
         seguimientoClientesDao.agregarSeguimiento(seguimiento, detalle);
@@ -109,7 +109,7 @@ public class MarketingDataService {
         return seguimientoClientesDao.listaEstadosContactoCursoCRM(estado);
     }
 
-    // ========== DetalleSeguimiento methods ==========
+    // ========== Detalle Seguimiento ==========
 
     public void agregarDetalle(DetalleSeguimiento detalle) {
         detalleSeguimientoDao.agregarDetalle(detalle);
@@ -119,7 +119,7 @@ public class MarketingDataService {
         return detalleSeguimientoDao.listaDetalle(seguimiento);
     }
 
-    // ========== Seguimiento methods ==========
+    // ========== Seguimiento (Matrícula) ==========
 
     public void agregarActualizarSeguimiento(Seguimiento seguimiento) {
         seguimientoDao.agregarActualizarSeguimiento(seguimiento);
@@ -129,7 +129,7 @@ public class MarketingDataService {
         return seguimientoDao.listaSeguimientoMatricula(matricula);
     }
 
-    // ========== Campania methods ==========
+    // ========== Campañas ==========
 
     public List<Campania> listaCampanias() {
         return campaniaDao.listaCampanias();
@@ -155,7 +155,7 @@ public class MarketingDataService {
         return campaniaDao.totalGastoCampanias();
     }
 
-    // ========== Vendedor methods ==========
+    // ========== Vendedores ==========
 
     public List<Vendedor> listaDeVendedores() {
         return vendedorDao.listaDeVendedores();

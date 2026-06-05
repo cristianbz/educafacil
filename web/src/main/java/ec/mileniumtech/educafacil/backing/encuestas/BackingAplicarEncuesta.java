@@ -23,8 +23,8 @@ import ec.mileniumtech.educafacil.modelo.persistencia.entity.EvaluacionCurso;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Matricula;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Pregunta;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Respuestas;
-import ec.mileniumtech.educafacil.service.EncuestaDataService;
-import ec.mileniumtech.educafacil.service.MatriculaDataService;
+import ec.mileniumtech.educafacil.service.facade.EncuestaFacade;
+import ec.mileniumtech.educafacil.service.facade.MatriculaFacade;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumEstadosMatricula;
 import jakarta.annotation.PostConstruct;
@@ -48,11 +48,11 @@ public class BackingAplicarEncuesta implements Serializable{
 	private static final Logger log = LogManager.getLogger(BackingAplicarEncuesta.class);
 	@EJB
 	@Getter
-	private MatriculaDataService matriculaDataService;
+	private MatriculaFacade matriculaDataService;
 	
 	@EJB
 	@Getter
-	private EncuestaDataService encuestaDataService;
+	private EncuestaFacade encuestaDataService;
 	
 	@Inject
 	@Getter

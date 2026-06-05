@@ -1,4 +1,4 @@
-package ec.mileniumtech.educafacil.service;
+package ec.mileniumtech.educafacil.service.facade;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -34,7 +34,7 @@ import jakarta.ejb.Stateless;
 
 @Stateless
 @LocalBean
-public class MatriculaDataService {
+public class MatriculaFacade {
 
     @EJB
     private MatriculaDaoImpl matriculaDao;
@@ -69,7 +69,7 @@ public class MatriculaDataService {
     @EJB
     private MedioInformacionDaoImpl medioInformacionDao;
 
-    // ========== Matricula methods ==========
+    // ========== Matricula ==========
 
     public void agregarMatriculaInscripcion(Persona persona, Matricula matricula, Usuario usuario, UsuarioRol usuarioRol) {
         matriculaDao.agregarMatriculaInscripcion(persona, matricula, usuario, usuarioRol);
@@ -135,7 +135,7 @@ public class MatriculaDataService {
         return matriculaDao.actualizar(matricula);
     }
 
-    // ========== Estudiante methods ==========
+    // ========== Estudiante ==========
 
     public List<Estudiante> estudiantesPorApellido(String apellidos) {
         return estudianteDao.estudiantesPorApellido(apellidos);
@@ -153,7 +153,7 @@ public class MatriculaDataService {
         return estudianteDao.guardar(estudiante);
     }
 
-    // ========== Persona methods ==========
+    // ========== Persona ==========
 
     public Persona buscarPersonaPorCedula(String cedula) {
         return personaDao.buscarPersonaPorCedula(cedula);
@@ -183,7 +183,7 @@ public class MatriculaDataService {
         return personaDao.guardar(persona);
     }
 
-    // ========== OfertaCursos methods ==========
+    // ========== OfertaCursos ==========
 
     public List<OfertaCursos> listaCursosDisponibles(int ofertaCapacitacion) {
         return ofertaCursosDao.listaCursosDisponibles(ofertaCapacitacion);
@@ -221,7 +221,7 @@ public class MatriculaDataService {
         return ofertaCursosDao.listaOfertaCursosPorCursoAnio(codigoCurso, anio);
     }
 
-    // ========== OfertaCapacitacion methods ==========
+    // ========== OfertaCapacitacion ==========
 
     public OfertaCapacitacion buscarOfertaCapacitacion(int area, int especialidad, int curso) {
         return ofertaCapacitacionDao.buscarOfertaCapacitacion(area, especialidad, curso);
@@ -247,7 +247,7 @@ public class MatriculaDataService {
         ofertaCapacitacionDao.agregarOfertaCapacitacion(ofertaCapacitacion, ofertaCursos);
     }
 
-    // ========== Usuario methods ==========
+    // ========== Usuario ==========
 
     public Usuario actualizaUsuario(Usuario usuario) {
         return usuarioDao.actualizaUsuario(usuario);
@@ -273,7 +273,7 @@ public class MatriculaDataService {
         return usuarioDao.consultarUsuariosPorIdRol(idRol);
     }
 
-    // ========== UsuarioRol methods ==========
+    // ========== UsuarioRol ==========
 
     public List<UsuarioRol> listaDeUsuarioRol() {
         return usuarioRolDao.listaDeUsuarioRol();
@@ -287,7 +287,7 @@ public class MatriculaDataService {
         return usuarioRolDao.agregarUsuarioRol(usuarioRol);
     }
 
-    // ========== Curso methods ==========
+    // ========== Curso ==========
 
     public List<Curso> listaCursos() {
         return cursoDao.listaCursos();
@@ -297,19 +297,19 @@ public class MatriculaDataService {
         return cursoDao.listaOfertaCursosActivos();
     }
 
-    // ========== Area methods ==========
+    // ========== Area ==========
 
     public List<Area> listaDeAreas() {
         return areaDao.listaDeAreas();
     }
 
-    // ========== Especialidad methods ==========
+    // ========== Especialidad ==========
 
     public List<Especialidad> listaDeEspecialidades() {
         return especialidadDao.listaDeEspecialidades();
     }
 
-    // ========== MedioInformacion methods ==========
+    // ========== MedioInformacion ==========
 
     public List<MedioInformacion> listaMedioInformacion() {
         return medioInformacionDao.listaMediosInformacion();

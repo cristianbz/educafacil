@@ -1,8 +1,8 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:f="jakarta.faces.core"
+	xmlns:h="jakarta.faces.html"
 	xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
@@ -12,14 +12,6 @@
 		
 		<h:form id="formFinCursos" prependId="false">
 			<p:growl id="growl" life="3000" showDetail="true" />
-			
-			<!-- DIÁLOGO DE PROCESAMIENTO / CARGA -->
-			<p:dialog widgetVar="dlgEnProc" draggable="false" modal="true"
-				resizable="false" closable="false" responsive="true"
-				styleClass="ui-dialog shadow-md" style="font-size: 11px; text-align: center; border: none;">
-				<h:graphicImage value="/resources/img/cargando.gif" width="180" height="180" style="margin: 0 auto; display: block;" />
-				<div style="font-weight: 600; color: var(--text-muted); margin-top: 0.5rem;">Cargando datos, por favor espere...</div>
-			</p:dialog>
 			
 			<!-- DIÁLOGO DE DESERCION DE ALUMNO -->
 			<p:dialog widgetVar="dlgFinCursoAlumno" showEffect="fade" hideEffect="fade"
@@ -200,7 +192,7 @@
 				<!-- ENCABEZADO DE LA PÁGINA -->
 				<div class="page-header" style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
 					<div class="page-title">
-						<h2 style="font-weight: 800; color: var(--text-main); margin: 0; font-size: 1.875rem;">Finalización de Cursos</h2>
+						<h2>Finalización de Cursos</h2>
 						<small style="color: var(--text-muted); font-size: 0.9rem;">Gestión de actas, cierre académico y registro de culminación o deserción de estudiantes</small>
 					</div>
 				</div>

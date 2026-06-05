@@ -1,8 +1,8 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:f="jakarta.faces.core"
+	xmlns:h="jakarta.faces.html"
 	xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
@@ -26,27 +26,22 @@
 					partialSubmit="true" oncomplete="PF('dlgCerrar').hide();" />
 			</h:panelGrid>
 		</p:dialog>
-		<p:dialog widgetVar="dlgEnProc" draggable="false" modal="true"
-			resizable="false" closable="false" responsive="true"
-			style="font-size: 10px;">
-			<h:graphicImage value="/resources/img/cargando.gif" width="200"
-				height="200" />
-		</p:dialog>
+
 		<div class="container">
-			<center>
+			<div class="text-center">
 				<p:graphicImage name="mileniumtechlogo.png" library="img"
 					width="25%" />
-			</center>
+			</div>
 			<p:outputPanel id="panelPersona">
 				<p:panel
 					rendered="#{backingMatriculaOnline.beanMatricula.mostrarDatosPersona}">
-					<center>
+					<div class="text-center">
 						<h2>FORMULARIO DE MATRICULA EN LINEA</h2>
-					</center>
-					<center>
+					</div>
+					<div class="text-center">
 						<h5>Por favor ingrese toda la información solicitada para
 							poder registrar su matrícula, escriba sus datos de forma correcta ya que se utilizarán para generar su factura, certficado,etc.</h5>
-					</center>
+					</div>
 
 					<div class="ui-fluid p-formgrid p-grid">
 						<div class="p-field p-col-12 p-md-5">
@@ -192,13 +187,13 @@
 						<div class="p-field p-col-12 p-md-10"></div>
 
 						<div class="p-field p-col-12 p-md-6">
-							<p:calendar id="fechaNacimiento" pattern="yyyy-MM-dd" locale="es"
-								navigator="true" required="true" tabindex="8"
+							<p:datePicker id="fechaNacimiento" pattern="yyyy-MM-dd" locale="es"
+								required="true" tabindex="8" yearNavigator="true"
 								requiredMessage="#{mensajes['campoRequerido']}"
 								validatorMessage="#{mensajes['campoRequerido']}"
 								value="#{backingMatriculaOnline.beanMatricula.persona.persFechaNacimiento}">
 
-							</p:calendar>
+							</p:datePicker>
 						</div>
 						<div class="p-field p-col-12 p-md-3">
 							<p:message for="fechaNacimiento" />
@@ -556,7 +551,7 @@
 				</p:panel>
 			</p:outputPanel>
 
-			<center>
+			<div class="text-center">
 				<p:outputPanel id="panelfin">
 					<p:panel
 						rendered="#{not backingMatriculaOnline.beanMatricula.mostrarDatosPersona}">
@@ -567,7 +562,7 @@
 
 					</p:panel>
 				</p:outputPanel>
-			</center>
+			</div>
 		</div>
 	</h:form>
 </ui:define>

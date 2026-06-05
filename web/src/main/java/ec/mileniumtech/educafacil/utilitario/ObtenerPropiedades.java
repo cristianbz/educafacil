@@ -27,18 +27,17 @@ public class ObtenerPropiedades implements Serializable {
 	public Properties retrievePropertiesFromClasspath(String filePath) {
 		try {
 			if (properties == null) {
-				ClassLoader cl = null;
-				cl = Thread.currentThread().getContextClassLoader();
+				ClassLoader cl = Thread.currentThread().getContextClassLoader();
 				if (cl == null) {
 					cl = ObtenerPropiedades.class.getClassLoader();
 				}
-				InputStream in = cl.getResourceAsStream(filePath);
-				properties = new Properties();
-				properties.load(in);
+				try (InputStream in = cl.getResourceAsStream(filePath)) {
+					properties = new Properties();
+					properties.load(in);
+				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
-			logger.error(e.getMessage());
+			logger.error(e.getMessage(), e);
 		}
 		return properties;
 	}

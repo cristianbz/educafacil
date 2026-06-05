@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:ui="jakarta.faces.facelets"
 	xmlns:f="jakarta.faces.core"
@@ -11,17 +11,11 @@
 		<f:event listener="#{backingLogin.validarSesion()}" type="preRenderView" />
 		<h:form prependId="false">
 			<p:growl id="growl" life="3000" showDetail="true" />
-			
-			<!-- DIÁLOGO DE CARGA -->
-			<p:dialog widgetVar="dlgEnProc" header="Por favor espere.."
-				draggable="false" modal="true" resizable="false" closable="false" responsive="true"
-				style="font-size: 11px;">             
-				<h:graphicImage value="/resources/img/cargando.gif" width="200" height="200"/>
-			</p:dialog>
+
 			
 			<!-- BREADCRUMB REDISEÑADO -->
-			<p:breadCrumb styleClass="ui-breadcrumb p-mb-3" style="border: none; background: transparent; padding-left: 0;">
-				<p:menuitem value="Inicio" url="#" />
+			<p:breadCrumb styleClass="ui-breadcrumb p-mb-3">
+				<p:menuitem value="Inicio" icon="pi pi-home" outcome="/paginas/index?faces-redirect=true" />
 				<p:menuitem value="Secretaría" url="#" />
 				<p:menuitem value="Listado Matrículas" url="#" />
 			</p:breadCrumb>				
@@ -39,7 +33,7 @@
 				<div class="ui-fluid p-formgrid p-grid">
 					<!-- Selección de Curso -->
 					<div class="p-field p-col-12 p-md-5" style="margin-bottom: 1rem;">
-						<p:outputLabel value="#{etiquetas['curso']}:" for="idCurso" styleClass="font-semibold p-d-block p-mb-2" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-muted);" />
+						<p:outputLabel value="#{etiquetas['curso']}:" for="idCurso" styleClass="font-semibold p-d-block p-mb-2 p-text-secondary" />
 						<p:selectOneMenu id="idCurso"																
 							value="#{backingListadoEstudiantes.beanListadoEstudiantes.cursoSeleccionado}"
 							converter="selectOneMenuConverter"
@@ -57,18 +51,19 @@
 					
 					<!-- Selección de Año -->
 					<div class="p-field p-col-12 p-md-2" style="margin-bottom: 1rem;">
-						<p:outputLabel value="#{etiquetas['anio']}:" for="anio" styleClass="font-semibold p-d-block p-mb-2" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-muted);" />
-						<p:inputNumber required="true" id="anio" decimalPlaces="0" requiredMessage="#{mensajes['campoRequerido']}" 
+						<p:outputLabel value="#{etiquetas['anio']}:" for="anio" styleClass="font-semibold p-d-block p-mb-2 p-text-secondary" />
+						<p:inputText required="true" id="anio" requiredMessage="#{mensajes['campoRequerido']}" 
 							value="#{backingListadoEstudiantes.beanListadoEstudiantes.anioBusqueda}">
 							<p:ajax process="@this idCurso" partialSubmit="true" update="ofertacurso" onstart="PF('dlgEnProc').show();" oncomplete="PF('dlgEnProc').hide();"
 								event="change" listener="#{backingListadoEstudiantes.cargarOfertaCursos()}"/>
-						</p:inputNumber>
+						</p:inputText>
+						<p:keyFilter for="anio" mask="pint" />
 						<p:message for="anio"/>	
 					</div>
 					
 					<!-- Selección de Oferta (Fechas) -->
 					<div class="p-field p-col-12 p-md-5" style="margin-bottom: 1rem;">
-						<p:outputLabel value="#{etiquetas['inicioFin']}:" for="ofertacurso" styleClass="font-semibold p-d-block p-mb-2" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-muted);" />
+						<p:outputLabel value="#{etiquetas['inicioFin']}:" for="ofertacurso" styleClass="font-semibold p-d-block p-mb-2 p-text-secondary" />
 						<p:selectOneMenu id="ofertacurso" value="#{backingListadoEstudiantes.beanListadoEstudiantes.ofertaSeleccionada}"
 							required="true" requiredMessage="#{mensajes['campoRequerido']}"
 							converter="selectOneMenuConverter">
@@ -81,17 +76,17 @@
 				</div>
 				
 				<!-- Botones del Filtro -->
-				<div class="p-grid p-jc-end p-mt-3" style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1rem; padding-right: 0.5rem;">
-					<div class="p-col-12 p-md-2" style="width: auto;">
+				<div class="p-grid p-jc-end p-mt-3">
+					<div class="p-col-12 p-md-2">
 						<p:commandButton icon="pi pi-search" value="#{botones['buscar']}" partialSubmit="true"
 							actionListener="#{backingListadoEstudiantes.buscarMatriculas()}" onstart="PF('dlgEnProc').show();" oncomplete="PF('dlgEnProc').hide();"
-							process="panelBuscar" update="panelDatosBusqueda panelBuscar growl" styleClass="ui-button-primary" style="padding: 0.5rem 1.5rem !important;"/>
+							process="panelBuscar" update="panelDatosBusqueda panelBuscar growl" styleClass="ui-button-primary"/>
 					</div>
-					<div class="p-col-12 p-md-2" style="width: auto;">
+					<div class="p-col-12 p-md-2">
 						<p:commandButton process="@this" value="Limpiar" icon="pi pi-refresh"
 							actionListener="#{backingListadoEstudiantes.nuevaBusqueda()}"
 							update="panelBuscar panelDatosBusqueda" styleClass="ui-button-outlined ui-button-secondary"
-							style="padding: 0.5rem 1.5rem !important;" resetValues="true"/>
+							resetValues="true"/>
 					</div>
 				</div>
 			</p:panel>
@@ -131,7 +126,7 @@
 							<!-- Exportar Moodle CSV -->
 							<p:commandButton value="CSV Moodle" immediate="true"
 								action="#{backingListadoEstudiantes.csvMoodle()}"
-								disabled="#{backingListadoEstudiantes.beanListadoEstudiantes.listaMatriculas.size()==0}"
+								disabled="#{empty backingListadoEstudiantes.beanListadoEstudiantes.listaMatriculas}"
 								process="@this" ajax="false" icon="pi pi-download"
 								styleClass="ui-button-success ui-button-outlined shadow-sm"/>
 								
@@ -146,7 +141,7 @@
 					<!-- TABLA DE ESTUDIANTES -->
 					<p:dataTable value="#{backingListadoEstudiantes.beanListadoEstudiantes.listaMatriculas}" id="listaMatriculas" reflow="true"
 						rows="15" rowKey="#{matricula.matrId}" paginator="true" widgetVar="tblmatriculas" 
-						styleClass="ui-datatable shadow-sm"
+						styleClass="ui-datatable shadow-sm" emptyMessage="No se encontraron estudiantes registrados."
 						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
 						var="matricula">
 						
@@ -193,17 +188,18 @@
 								</p:selectOneMenu>
 							</f:facet>
 							
-							<!-- Chips de estado correspondientes -->
-							<p:chip label="INSCRITO" icon="pi pi-info-circle" styleClass="inscrito chipstamanio" rendered="#{matricula.matrEstado.equals('INSMAT01')}" style="color: white; font-weight: bold;" />
-							<p:chip label="MATRICULADO" icon="pi pi-file-edit" styleClass="colorMatriculado chipstamanio" rendered="#{matricula.matrEstado.equals('INSMAT02')}" style="color: white; font-weight: bold;" />
-							<p:chip label="CULMINADO" icon="pi pi-check-circle" styleClass="colorCulminado chipstamanio" rendered="#{matricula.matrEstado.equals('INSMAT05')}" style="color: white; font-weight: bold;"/>
-							<p:chip label="DESERTADO" icon="pi pi-times-circle" styleClass="colorDesertado chipstamanio" rendered="#{matricula.matrEstado.equals('INSMAT03')}" style="color: white; font-weight: bold;"/>	
+							<!-- Chip dinámico de estado -->
+							<p:chip label="#{backingListadoEstudiantes.getEstadoLabel(matricula.matrEstado)}"
+								icon="#{backingListadoEstudiantes.getEstadoIcon(matricula.matrEstado)}"
+								styleClass="#{backingListadoEstudiantes.getEstadoStyleClass(matricula.matrEstado)} chipstamanio"
+								rendered="#{matricula.matrEstado != null}"
+								style="color: white; font-weight: bold;" />
 						</p:column>
 						
 						<!-- Acciones de Ficha y Documentos -->
 						<p:column headerText="Acciones" style="width:130px; text-align: center;"> 
 							<!-- Ver Ficha del Alumno -->
-							<p:commandLink title="#{tooltip['infoEstudiante']}" oncomplete="PF('dlgMatriculaSeleccionda').show();" process="@this" update="datosMatriculaSeleccionada" style="margin-right: 12px; display: inline-block;">
+							<p:commandLink title="#{tooltip['infoEstudiante']}" oncomplete="PF('dlgMatriculaSeleccionada').show();" process="@this" update="datosMatriculaSeleccionada" style="margin-right: 12px; display: inline-block;">
 								<f:setPropertyActionListener value="#{matricula}" target="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada}"/>
 								<i class="pi pi-user" style="font-size: 1.25rem; color: var(--primary-color); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)';" onmouseout="this.style.transform='scale(1)';"></i>
 							</p:commandLink>
@@ -239,7 +235,7 @@
 			</p:outputPanel>
 			
 			<!-- DIÁLOGO DETALLES ALUMNO (REDISEÑADO UX/UI ESTILO FICHA) -->
-			<p:dialog widgetVar="dlgMatriculaSeleccionda" header="Ficha de Datos del Estudiante" 
+			<p:dialog widgetVar="dlgMatriculaSeleccionada" header="Ficha de Datos del Estudiante" 
 				modal="true" responsive="true" width="550" resizable="false" 
 				styleClass="ui-dialog shadow-lg" appendTo="@(body)">
 				<p:outputPanel id="datosMatriculaSeleccionada" styleClass="p-p-2">
@@ -308,7 +304,7 @@
 									</div>
 									<div>
 										<small style="display: block; color: var(--text-muted); font-weight: 700; font-size: 0.75rem; text-transform: uppercase;">Observaciones</small>
-										<span style="font-size: 0.9rem; font-style: italic; color: var(--text-main);">#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.matrObservacion != null and !backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.matrObservacion.isEmpty() ? backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.matrObservacion : 'Ninguna'}</span>
+										<span style="font-size: 0.9rem; font-style: italic; color: var(--text-main);">#{not empty backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.matrObservacion ? backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.matrObservacion : 'Ninguna'}</span>
 									</div>
 								</div>
 							</div>
@@ -317,7 +313,7 @@
 					
 					<!-- Pie del Diálogo -->
 					<div style="display: flex; justify-content: flex-end; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
-						<p:commandButton value="Cerrar Ficha" type="button" onclick="PF('dlgMatriculaSeleccionda').hide();" 
+						<p:commandButton value="Cerrar Ficha" type="button" onclick="PF('dlgMatriculaSeleccionada').hide();" 
 							styleClass="ui-button-outlined ui-button-secondary" style="width: auto; padding: 0.25rem 1.5rem !important;"/>
 					</div>
 				</p:outputPanel>

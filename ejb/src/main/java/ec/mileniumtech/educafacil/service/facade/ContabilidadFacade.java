@@ -1,4 +1,4 @@
-package ec.mileniumtech.educafacil.service;
+package ec.mileniumtech.educafacil.service.facade;
 
 import java.util.Date;
 import java.util.List;
@@ -17,7 +17,7 @@ import jakarta.ejb.Stateless;
 
 @Stateless
 @LocalBean
-public class ContabilidadDataService {
+public class ContabilidadFacade {
 
     @EJB
     private EgresoDaoImpl egresoDao;
@@ -28,7 +28,7 @@ public class ContabilidadDataService {
     @EJB
     private PagosDaoImpl pagosDao;
 
-    // ========== Egreso methods ==========
+    // ========== Egresos ==========
 
     public void agregarActualizarEgreso(Egresos egreso) {
         egresoDao.agregarActualizarEgreso(egreso);
@@ -46,7 +46,7 @@ public class ContabilidadDataService {
         return egresoDao.buscaEgresosReporteria(fechaInicial, fechaFinal);
     }
 
-    // ========== Proveedor methods ==========
+    // ========== Proveedores ==========
 
     public void agregarActualizarProveedor(Proveedor proveedor) {
         proveedorDao.agregarActualizarProveedor(proveedor);
@@ -60,7 +60,7 @@ public class ContabilidadDataService {
         return proveedorDao.validaProveedor(ruc);
     }
 
-    // ========== Pagos methods ==========
+    // ========== Pagos ==========
 
     public List<DetallePagos> buscaPagosPorMatricula(int codigoMatricula) {
         return pagosDao.buscaPagosPorMatricula(codigoMatricula);

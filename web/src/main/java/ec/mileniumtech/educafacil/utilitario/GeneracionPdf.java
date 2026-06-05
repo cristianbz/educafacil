@@ -110,10 +110,10 @@ public class GeneracionPdf {
 			byte[] pngData=null;
 			pngData=getQRCodeImage(mensajeQR, 100, 100, logoQR);
 
-			FileOutputStream fileOuputStream = new FileOutputStream(codigoQR);
-			fileOuputStream.write(pngData);
-			fileOuputStream.close();
-						
+			try (FileOutputStream fileOuputStream = new FileOutputStream(codigoQR)) {
+				fileOuputStream.write(pngData);
+			}
+							
 			PdfContentByte capaNombres = writer.getDirectContent();
 			capaNombres.saveState();
 			
@@ -247,47 +247,13 @@ public class GeneracionPdf {
 		File file = new File(LOGO);
 		return ImageIO.read(file);
 	}
-	
+		
+	private static final String[] MESES = {
+		"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+		"Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+	};
+
 	public static String obtieneMes(int numeromes) {
-		String mes="";
-		switch(numeromes) {
-		case 0:
-			mes = "Enero";
-			break;
-		case 1:
-			mes = "Febrero";
-			break;
-		case 2:
-			mes = "Marzo";
-			break;
-		case 3:
-			mes = "Abril";
-			break;
-		case 4:
-			mes = "Mayo";
-			break;
-		case 5:
-			mes = "Junio";
-			break;
-		case 6:
-			mes = "Julio";
-			break;
-		case 7:
-			mes = "Agosto";
-			break;
-		case 8:
-			mes = "Septiembre";
-			break;
-		case 9:
-			mes = "Octubre";
-			break;
-		case 10:
-			mes = "Noviembre";
-			break;
-		case 11:
-			mes = "Diciembre";
-			break;
-		}
-		return mes;
+		return (numeromes >= 0 && numeromes < MESES.length) ? MESES[numeromes] : "";
 	}
 }

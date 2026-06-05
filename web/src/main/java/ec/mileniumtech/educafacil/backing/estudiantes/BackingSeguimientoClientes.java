@@ -35,8 +35,8 @@ import ec.mileniumtech.educafacil.modelo.persistencia.entity.Campania;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Curso;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleSeguimiento;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.SeguimientoClientes;
-import ec.mileniumtech.educafacil.service.MarketingDataService;
-import ec.mileniumtech.educafacil.service.MatriculaDataService;
+import ec.mileniumtech.educafacil.service.facade.MarketingFacade;
+import ec.mileniumtech.educafacil.service.facade.MatriculaFacade;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitarios.dto.registrodatos.FormFacebookAdsRecord;
 import ec.mileniumtech.educafacil.utilitarios.dto.registrodatos.PreguntasFormFacesbookRecord;
@@ -79,11 +79,11 @@ public class BackingSeguimientoClientes implements Serializable{
 	
 	@EJB
 	@Getter
-	private MatriculaDataService matriculaDataService;
+	private MatriculaFacade matriculaDataService;
 
 	@EJB
 	@Getter
-	private MarketingDataService marketingDataService;
+	private MarketingFacade marketingDataService;
 
 	@Inject
 	@Getter
