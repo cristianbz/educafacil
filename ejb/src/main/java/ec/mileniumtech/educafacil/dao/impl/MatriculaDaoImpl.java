@@ -251,16 +251,13 @@ public class MatriculaDaoImpl extends GenericoDaoImpl<Matricula, Long>{
 			Query query=null;
 			query=getEntityManager().createNamedQuery(Matricula.BUSCAR_MATRICULA_POR_OFERTA_CURSO);
 			query.setParameter("codigoOferta", codigoOferta);
-			for(Object obj: query.getResultList()) {
-				Matricula matricula=(Matricula)obj;
-				double total=0;
-				for(Pagos pago:matricula.getPagos()) {
-//					Hibernate.initialize(pago);
-					for(DetallePagos dpago:pago.getDetallePagos()) {
-						total=total+dpago.getDepaValor();
-						Hibernate.initialize(dpago);
-					}
-				}
+			for (Object obj : query.getResultList()) {
+				Matricula matricula = (Matricula) obj;
+				double total = matricula.getPagos().stream()
+						.flatMap(pago -> pago.getDetallePagos().stream())
+						.peek(dpago -> Hibernate.initialize(dpago))
+						.mapToDouble(DetallePagos::getDepaValor)
+						.sum();
 				matricula.setTotalPagadoCurso(total);
 			}
 			

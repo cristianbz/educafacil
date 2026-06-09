@@ -113,8 +113,8 @@ public class AwsS3Service {
      * @param numeroFactura Número de factura (ej: 001-001-000000001).
      * @return Clave S3 (ruta dentro del bucket).
      */
-    public String construirClavePdf(String numeroFactura) {
-        return "facturas/" + numeroFactura + "/RIDE_" + numeroFactura + ".pdf";
+    public String construirClavePdf(String numeroFactura,String documento,String ambiente) {
+        return documento+"/"+ambiente+"/" + numeroFactura + "/RIDE_" + numeroFactura + ".pdf";
     }
 
     /**
@@ -123,8 +123,8 @@ public class AwsS3Service {
      * @param numeroFactura Número de factura.
      * @return Clave S3 (ruta dentro del bucket).
      */
-    public String construirClaveXml(String numeroFactura) {
-        return "facturas/" + numeroFactura + "/Factura_" + numeroFactura + ".xml";
+    public String construirClaveXml(String numeroFactura,String documento,String ambiente) {
+        return documento+"/"+ambiente+"/" + numeroFactura + "/Factura_" + numeroFactura + ".xml";
     }
 
     // ---- Métodos privados de configuración ----

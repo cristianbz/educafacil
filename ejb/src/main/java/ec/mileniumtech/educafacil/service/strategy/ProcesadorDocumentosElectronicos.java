@@ -102,12 +102,15 @@ public class ProcesadorDocumentosElectronicos {
                         String identifier = strategy.getEntityIdentifier(entidad);
 
                         if (pdfContent != null) {
-                            String clavePdf = awsS3Service.construirClavePdf(identifier);
+                        	 String documento = resolverDocumento(entidad);
+                             String ambiente = empresa.getEmpmAmbiente() == 2 ? "produccion" : "pruebas";
+                            String clavePdf = awsS3Service.construirClavePdf(identifier,documento,ambiente);
                             awsS3Service.subirArchivo(pdfContent, clavePdf, "application/pdf");
                             context.setUrlPdf(clavePdf);
                         }
-
-                        String claveXml = awsS3Service.construirClaveXml(identifier);
+                        String documento = resolverDocumento(entidad);
+                        String ambiente = empresa.getEmpmAmbiente() == 2 ? "produccion" : "pruebas";
+                        String claveXml = awsS3Service.construirClaveXml(identifier,documento,ambiente);
                         awsS3Service.subirArchivo(xmlFirmado, claveXml, "text/xml");
                         context.setUrlXml(claveXml);
 
@@ -160,7 +163,20 @@ public class ProcesadorDocumentosElectronicos {
         }
         throw new IllegalArgumentException("Tipo de entidad no soportado: " + entidad.getClass().getName());
     }
-
+    
+    private String resolverDocumento(Object entidad) {
+        if (entidad instanceof ec.mileniumtech.educafacil.modelo.persistencia.entity.Factura) {
+            return "factura";
+        }
+        if (entidad instanceof ec.mileniumtech.educafacil.modelo.persistencia.entity.NotaCredito) {
+            return "notaCredito";
+        }
+        if (entidad instanceof ec.mileniumtech.educafacil.modelo.persistencia.entity.Retencion) {
+            return "retencion";
+        }
+        throw new IllegalArgumentException("Tipo de entidad no soportado: " + entidad.getClass().getName());
+    }
+    
     private String obtenerDestinatario(Object entidad) {
         if (entidad instanceof ec.mileniumtech.educafacil.modelo.persistencia.entity.Factura) {
             return ((ec.mileniumtech.educafacil.modelo.persistencia.entity.Factura) entidad).getCliente().getCorreo();

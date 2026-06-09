@@ -193,10 +193,13 @@ public class FacturacionService {
         boolean huboError = false;
         StringBuilder errMsg = new StringBuilder();
 
+        String documento = "factura";
+        String ambiente = factura.getPuntoEmision().getEstablecimientos().getEmpresaMatriz().getEmpmAmbiente() == 2 ? "produccion" : "pruebas";
+
         // Subir PDF si existe en BD
         if (doc.getPdfRide() != null && doc.getUrlPdf() == null) {
             try {
-                String clavePdf = awsS3Service.construirClavePdf(numeroFactura);
+                String clavePdf = awsS3Service.construirClavePdf(numeroFactura,documento,ambiente);
                 awsS3Service.subirArchivo(doc.getPdfRide(), clavePdf, "application/pdf");
                 doc.setUrlPdf(clavePdf);
             } catch (Exception e) {
@@ -208,7 +211,7 @@ public class FacturacionService {
         // Subir XML si existe en BD
         if (doc.getXmlAutorizadoSri() != null && doc.getUrlXml() == null) {
             try {
-                String claveXml = awsS3Service.construirClaveXml(numeroFactura);
+                String claveXml = awsS3Service.construirClaveXml(numeroFactura,documento,ambiente);
                 awsS3Service.subirArchivo(doc.getXmlAutorizadoSri(), claveXml, "text/xml");
                 doc.setUrlXml(claveXml);
             } catch (Exception e) {

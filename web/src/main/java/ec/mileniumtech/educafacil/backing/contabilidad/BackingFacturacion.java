@@ -289,7 +289,13 @@ public class BackingFacturacion implements Serializable {
      * Agrega informacion adicional a la factura
      */
     public void agregarInformacionAdicional() {
-    	getBeanFacturacion().getListaInfoAdicional().add(getBeanFacturacion().getInfoAdicional());
+    	InfoAdicionalDto info = getBeanFacturacion().getInfoAdicional();
+    	if (info.getNombre() == null || info.getNombre().isBlank()
+    			|| info.getDescripcion() == null || info.getDescripcion().isBlank()) {
+    		Mensaje.verMensaje(FacesMessage.SEVERITY_WARN, "Validación", "El nombre y la descripción no pueden estar vacíos.");
+    		return;
+    	}
+    	getBeanFacturacion().getListaInfoAdicional().add(info);
     	getBeanFacturacion().setInfoAdicional(new InfoAdicionalDto());
     }
     /**

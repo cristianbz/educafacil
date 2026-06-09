@@ -82,16 +82,18 @@ public class RideGeneratorService {
         
         // Formas de Pago como DataSource (para tablas o subreportes)
         if (factura.getInfoFactura().getPagosList() != null && !factura.getInfoFactura().getPagosList().isEmpty()) {
-//            parametros.put("PAGOS_DATASOURCE", new JRBeanCollectionDataSource(factura.getInfoFactura().getPagosList()));
-        	List<PagoSRI> listaPagosSri=new ArrayList<Factura.PagoSRI>();
+        	Map<String, FormaPagoFactura> mapaFormasPago = new HashMap<>();
+        	for (FormaPagoFactura fpf : listaFormaPagoFactura) {
+        		mapaFormasPago.put(fpf.getSriformapagos().getSrfpCodigoSri(), fpf);
+        	}
+        	List<PagoSRI> listaPagosSri = new ArrayList<>();
         	for (ec.mileniumtech.educafacil.modelo.sri.Factura.PagoSRI p : factura.getInfoFactura().getPagosList()) {
-        		for (FormaPagoFactura fpf : listaFormaPagoFactura) {
-        			if(p.getFormaPago().equals(fpf.getSriformapagos().getSrfpCodigoSri())) {
-	        			PagoSRI pagosSri= new PagoSRI();
-	        			pagosSri.setFormaPago(fpf.getSriformapagos().getSrfpCodigoSri().concat(" - ").concat(fpf.getSriformapagos().getSrfpDescripcion()));
-	        			pagosSri.setTotal(fpf.getValor());
-	        			listaPagosSri.add(pagosSri);
-        			}
+        		FormaPagoFactura fpf = mapaFormasPago.get(p.getFormaPago());
+        		if (fpf != null) {
+	        		PagoSRI pagosSri = new PagoSRI();
+	        		pagosSri.setFormaPago(fpf.getSriformapagos().getSrfpCodigoSri().concat(" - ").concat(fpf.getSriformapagos().getSrfpDescripcion()));
+	        		pagosSri.setTotal(fpf.getValor());
+	        		listaPagosSri.add(pagosSri);
         		}
         	}
         	parametros.put("PAGOS_DATASOURCE", new JRBeanCollectionDataSource(listaPagosSri));

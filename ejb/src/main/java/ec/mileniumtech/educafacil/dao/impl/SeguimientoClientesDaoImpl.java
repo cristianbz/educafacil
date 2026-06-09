@@ -8,6 +8,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.dao.util.JpaDaoSupport;
@@ -255,10 +256,11 @@ public class SeguimientoClientesDaoImpl extends GenericoDaoImpl<SeguimientoClien
         
 		resultado = (List<Object[]>)q.getResultList();
 		if(resultado.size()>0){
-			for(Object obj:resultado){
-				if(obj != null)
-					valor = new BigDecimal(obj.toString());
-			}
+			valor = resultado.stream()
+					.filter(obj -> obj[0] != null)
+					.map(obj -> new BigDecimal(obj[0].toString()))
+					.findFirst()
+					.orElse(BigDecimal.ZERO);
 		}
 		return valor;
 	}
@@ -276,10 +278,11 @@ public class SeguimientoClientesDaoImpl extends GenericoDaoImpl<SeguimientoClien
         
 		resultado = (List<Object[]>)q.getResultList();
 		if(resultado.size()>0){
-			for(Object obj:resultado){
-				if(obj != null)
-					valor = new BigDecimal(obj.toString());
-			}
+			valor = resultado.stream()
+					.filter(obj -> obj[0] != null)
+					.map(obj -> new BigDecimal(obj[0].toString()))
+					.findFirst()
+					.orElse(BigDecimal.ZERO);
 		}
 		return valor;
 	}
@@ -299,13 +302,13 @@ public class SeguimientoClientesDaoImpl extends GenericoDaoImpl<SeguimientoClien
 		
 		resultado = (List<Object[]>)q.getResultList();
 		if(resultado.size()>0){
-			for(Object obj:resultado){
+			listaResultado = resultado.stream().map(obj -> {
 				Object[] dataObj = (Object[]) obj;
-				DtoMatriculasCurso mc= new DtoMatriculasCurso();
+				DtoMatriculasCurso mc = new DtoMatriculasCurso();
 				mc.setCantidad(Integer.parseInt(dataObj[0].toString()));
 				mc.setCurso(dataObj[1].toString());
-				listaResultado.add(mc);
-			}
+				return mc;
+			}).collect(Collectors.toList());
 		}
 		return listaResultado;
 	}
@@ -322,13 +325,13 @@ public class SeguimientoClientesDaoImpl extends GenericoDaoImpl<SeguimientoClien
 		q.setParameter("estado", estado);
 		resultado = (List<Object[]>)q.getResultList();
 		if(resultado.size()>0){
-			for(Object obj:resultado){
+			listaResultado = resultado.stream().map(obj -> {
 				Object[] dataObj = (Object[]) obj;
-				DtoMatriculasCurso mc= new DtoMatriculasCurso();
+				DtoMatriculasCurso mc = new DtoMatriculasCurso();
 				mc.setCantidad(Integer.parseInt(dataObj[0].toString()));
 				mc.setCurso(dataObj[1].toString());
-				listaResultado.add(mc);
-			}
+				return mc;
+			}).collect(Collectors.toList());
 		}
 		return listaResultado;
 	}

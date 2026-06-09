@@ -28,7 +28,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NamedQueries({
-	@NamedQuery(name = Instructor.LISTADO_INSTRUCTORES,query = "SELECT I FROM Instructor I WHERE I.instActivo=true ORDER BY I.persona.persApellidos")
+	@NamedQuery(name = Instructor.LISTADO_INSTRUCTORES,query = "SELECT I FROM Instructor I ORDER BY I.persona.persApellidos")
 })
 public class Instructor implements Serializable {
 
@@ -50,6 +50,53 @@ public class Instructor implements Serializable {
 	@Column(name="inst_fecha_salida")
 	private Date instFechaSalida;
 	
+
+	// === DATOS ACADÉMICOS Y COMPETENCIA PROFESIONAL ===
+	@Column(name="inst_experiencia_profesional", columnDefinition="TEXT")
+	private String instExperienciaProfesional;
+
+	@Column(name="inst_experiencia_docente", columnDefinition="TEXT")
+	private String instExperienciaDocente;
+
+	// === HABILIDADES PEDAGÓGICAS Y EVALUACIÓN DE CALIDAD ===
+	@Column(name="inst_metodologias", columnDefinition="TEXT")
+	private String instMetodologias;
+
+	@Column(name="inst_modalidades_entrega", columnDefinition="TEXT")
+	private String instModalidadesEntrega;
+
+	@Column(name="inst_portafolio_materiales", columnDefinition="TEXT")
+	private String instPortafolioMateriales;
+
+	@Column(name="inst_evaluaciones_referencias", columnDefinition="TEXT")
+	private String instEvaluacionesReferencias;
+
+	// === INFORMACIÓN ADMINISTRATIVA Y DE CONTACTO ===
+	@Column(name="inst_linkedin")
+	private String instLinkedin;
+
+	@Column(name="inst_disponibilidad_horaria", columnDefinition="TEXT")
+	private String instDisponibilidadHoraria;
+
+	@Column(name="inst_disponibilidad_geografica", columnDefinition="TEXT")
+	private String instDisponibilidadGeografica;
+
+	@Column(name="inst_regimen_fiscal")
+	private String instRegimenFiscal;
+
+	@Column(name="inst_datos_bancarios", columnDefinition="TEXT")
+	private String instDatosBancarios;
+
+	// === APTITUDES BLANDAS ===
+	@Column(name="inst_habilidades_comunicacion", columnDefinition="TEXT")
+	private String instHabilidadesComunicacion;
+
+	@Column(name="inst_adaptabilidad", columnDefinition="TEXT")
+	private String instAdaptabilidad;
+
+	@Column(name="inst_notas_entrevista", columnDefinition="TEXT")
+	private String instNotasEntrevista;
+
 	@ManyToOne
 	@JoinColumn(name="pers_id",insertable = true,updatable = true)
 	private Persona persona;

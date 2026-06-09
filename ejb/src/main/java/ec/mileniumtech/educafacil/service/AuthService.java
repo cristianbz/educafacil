@@ -9,6 +9,7 @@ import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Servicio para manejar la autenticación y validación de usuarios.
@@ -44,15 +45,13 @@ public class AuthService {
 	    }
 
 	    public List<String> obtenerRoles(int idUsuario) {
-	        List<String> roles = new ArrayList<>();
 	        Usuario usuario = usuarioDao.getEntityManager().find(Usuario.class, idUsuario);
 	        if (usuario != null && usuario.getUsuarioRol() != null) {
-	            for (UsuarioRol ur : usuario.getUsuarioRol()) {
-	                if (ur.getUrolEstado()) {
-	                    roles.add(ur.getRol().getRolNombre());
-	                }
-	            }
+	            return usuario.getUsuarioRol().stream()
+	                    .filter(UsuarioRol::getUrolEstado)
+	                    .map(ur -> ur.getRol().getRolNombre())
+	                    .collect(Collectors.toList());
 	        }
-	        return roles;
+	        return new ArrayList<>();
 	    }
 	}

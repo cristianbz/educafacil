@@ -70,6 +70,14 @@ public class InstructorFacade {
         return capacitacionDao.listaCapacitaciones(codigoInstructor);
     }
 
+    public void eliminarFormacion(Formacion formacion) {
+        formacionDao.remover(formacion);
+    }
+
+    public void eliminarCapacitacion(Capacitacion capacitacion) {
+        capacitacionDao.remover(capacitacion);
+    }
+
     // ========== Configuraciones ==========
 
     public List<Configuraciones> listaConfiguraciones() {

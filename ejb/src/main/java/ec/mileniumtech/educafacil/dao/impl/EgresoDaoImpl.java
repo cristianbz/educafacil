@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
+import java.util.stream.Collectors;
 
 import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.dao.util.JpaDaoSupport;
@@ -103,17 +103,18 @@ public class EgresoDaoImpl extends GenericoDaoImpl<Egresos, Long> {
 			List<Object[]> objetos = query.getResultList();
 			
 			if(!objetos.isEmpty()){
-		
-				for (Object[] registro: objetos) {
+				return objetos.stream().map(registro -> {
 					DtoFlujoDinero flujoDinero = new DtoFlujoDinero();
 					flujoDinero.setAnio(Double.parseDouble(registro[0].toString()));
 					flujoDinero.setMes(Double.parseDouble(registro[1].toString()));					
-					flujoDinero.setFecha(formatoFecha.parse(registro[2].toString()));
+					try {
+						flujoDinero.setFecha(formatoFecha.parse(registro[2].toString()));
+					} catch (Exception e) {
+						flujoDinero.setFecha(null);
+					}
 					flujoDinero.setValor(Double.parseDouble(registro[3].toString()));
-					listaFlujo.add(flujoDinero);
-					
-				}
-				return listaFlujo;
+					return flujoDinero;
+				}).collect(Collectors.toList());
 			}else{
 				return null;
 			}

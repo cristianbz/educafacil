@@ -259,9 +259,7 @@
 											<div class="p-col-12 p-md-2 p-field">
 												<p:outputLabel value="Descripcion:" for="txtDecripcionAdicional" />
 												<p:inputTextarea id="txtDecripcionAdicional" value="#{beanFacturacion.infoAdicional.descripcion}"/>
-												
 											</div>
-											
 											<div class="p-col-12 p-md-2 p-field">
 												<p:commandButton icon="pi pi-plus" value="Añadir"																  
 																 process="@this txtNombreAdicional txtDecripcionAdicional" partialSubmit="true"	
@@ -330,7 +328,7 @@
 											<div class="summary-total-container">
 												<span class="summary-total-label">Importe Total</span>
 												<div class="summary-total-value">
-													<h:outputText value="#{beanFacturacion.nuevaFactura.total}">
+													<h:outputText value="#{beanFacturacion.nuevaFactura.total}" style="color: #38bdf8; font-size: 2.25rem; font-weight: 800; text-shadow: 0 0 20px rgba(56, 189, 248, 0.3);">
 														<f:convertNumber type="currency" currencySymbol="$" />
 													</h:outputText>
 												</div>

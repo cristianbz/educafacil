@@ -15,21 +15,24 @@
 			
 			<!-- DIÁLOGO INFORMACIÓN DEL INSTRUCTOR -->
 			<p:dialog widgetVar="dlgNuevoInstructor" showEffect="fade" hideEffect="fade"
-				modal="true" header="#{titulos['datosInstructor']}" styleClass="ui-dialog shadow-lg"
-				width="760" resizable="false" appendTo="@(body)">
+				modal="true" header="#{titulos['datosInstructor']}" styleClass="ui-dialog shadow-lg instructor-dialog"
+				width="960" resizable="false" appendTo="@(body)" responsive="true">
 				
-				<p:scrollPanel mode="native" style="max-height: 520px; border: none; padding-right: 8px;">
+				<div class="instructor-scrollpanel">
 					<p:outputPanel id="panelInstructor">
 						
 						<p:tabView id="iddatosInstructor" rendered="#{backingAdminInstructor.beanAdminInstructor.mostrarDatosInstructor}"
+							activeIndex="#{backingAdminInstructor.beanAdminInstructor.activeIndex}"
 							styleClass="ui-tabview shadow-sm" style="border: none; padding: 0;">
+							<p:ajax event="tabChange" process="@this" />
 							
-							<!-- Pestaña 1: Datos Personales -->
+							<!-- ================================================================== -->
+							<!-- Pestaña 1: Datos Personales                                        -->
+							<!-- ================================================================== -->
 							<p:tab title="#{etiquetas['datosPersonales']}">
 								<p:outputPanel id="datosPersonales">
 									<div class="ui-fluid" style="padding: 10px;">
 										
-										<!-- Encabezado de la pestaña -->
 										<div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color);">
 											<div style="width: 42px; height: 42px; border-radius: 10px; background: linear-gradient(135deg, #eff6ff, #dbeafe); border: 1px solid #bfdbfe; display: flex; align-items: center; justify-content: center;">
 												<i class="pi pi-user-plus" style="color: var(--primary-color); font-size: 1.25rem;"></i>
@@ -40,10 +43,8 @@
 											</div>
 										</div>
 										
-										<!-- Grid de Campos (2 Columnas) -->
 										<div class="p-formgrid p-grid" style="margin-bottom: 1.5rem;">
 											
-											<!-- Cédula / RUC -->
 											<div class="p-field p-col-12 p-md-6" style="margin-bottom: 1rem;">
 												<p:outputLabel value="#{etiquetas['cedularuc']} *" for="idCedula"
 													style="display: block; font-weight: 600; color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.4rem;" />
@@ -56,7 +57,6 @@
 												<p:message for="idCedula" style="margin-top: 0.25rem;" />
 											</div>
 											
-											<!-- Correo Electrónico -->
 											<div class="p-field p-col-12 p-md-6" style="margin-bottom: 1rem;">
 												<p:outputLabel value="#{etiquetas['correo']} *" for="idCorreo"
 													style="display: block; font-weight: 600; color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.4rem;" />
@@ -69,7 +69,6 @@
 												<p:message for="idCorreo" id="msgCorreo" style="margin-top: 0.25rem;" />
 											</div>
 											
-											<!-- Apellidos -->
 											<div class="p-field p-col-12 p-md-6" style="margin-bottom: 1rem;">
 												<p:outputLabel value="#{etiquetas['apellidos']} *" for="idApellidos"
 													style="display: block; font-weight: 600; color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.4rem;" />
@@ -79,7 +78,6 @@
 												<p:message for="idApellidos" style="margin-top: 0.25rem;" />
 											</div>
 											
-											<!-- Nombres -->
 											<div class="p-field p-col-12 p-md-6" style="margin-bottom: 1rem;">
 												<p:outputLabel value="#{etiquetas['nombres']} *" for="idNombres"
 													style="display: block; font-weight: 600; color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.4rem;" />
@@ -91,7 +89,6 @@
 												<p:message for="idNombres" style="margin-top: 0.25rem;" />
 											</div>
 											
-											<!-- Teléfono Móvil -->
 											<div class="p-field p-col-12 p-md-6" style="margin-bottom: 1rem;">
 												<p:outputLabel value="#{etiquetas['telefonoMobil']} *" for="idTelefonoMobil"
 													style="display: block; font-weight: 600; color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.4rem;" />
@@ -104,7 +101,6 @@
 												<p:message for="idTelefonoMobil" style="margin-top: 0.25rem;" />
 											</div>
 											
-											<!-- Teléfono Casa -->
 											<div class="p-field p-col-12 p-md-6" style="margin-bottom: 1rem;">
 												<p:outputLabel value="#{etiquetas['telefonoCasa']}" for="idTelefonoCasa"
 													style="display: block; font-weight: 600; color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.4rem;" />
@@ -114,11 +110,10 @@
 												</p:inputMask>
 											</div>
 											
-											<!-- Fecha de Nacimiento -->
 											<div class="p-field p-col-12 p-md-6" style="margin-bottom: 1rem;">
 												<p:outputLabel value="#{etiquetas['fechaNacimiento']} *" for="fechaNacimiento"
 													style="display: block; font-weight: 600; color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.4rem;" />
-												<p:calendar id="fechaNacimiento" pattern="yyyy-MM-dd"
+												<p:calendar id="fechaNacimiento" pattern="dd/MM/yyyy"
 													locale="es" navigator="true" required="true" placeholder="Seleccione la fecha..."
 													requiredMessage="#{mensajes['campoRequerido']}" validatorMessage="#{mensajes['campoRequerido']}"
 													value="#{backingAdminInstructor.beanAdminInstructor.persona.persFechaNacimiento}">
@@ -127,11 +122,10 @@
 												<p:message for="fechaNacimiento" style="margin-top: 0.25rem;" />
 											</div>
 
-											<!-- Fecha de Ingreso -->
 											<div class="p-field p-col-12 p-md-6" style="margin-bottom: 1rem;">
 												<p:outputLabel value="#{etiquetas['fechaIngreso']} *" for="fechaIngreso"
 													style="display: block; font-weight: 600; color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.4rem;" />
-												<p:calendar id="fechaIngreso" pattern="yyyy-MM-dd" locale="es"
+												<p:calendar id="fechaIngreso" pattern="dd/MM/yyyy" locale="es"
 													navigator="true" required="true" placeholder="Seleccione la fecha..."
 													requiredMessage="#{mensajes['campoRequerido']}" validatorMessage="#{mensajes['campoRequerido']}"
 													value="#{backingAdminInstructor.beanAdminInstructor.instructor.instFechaIngreso}">
@@ -140,18 +134,16 @@
 												<p:message for="fechaIngreso" style="margin-top: 0.25rem;" />
 											</div>
 											
-											<!-- Fecha de Salida -->
 											<div class="p-field p-col-12 p-md-6" style="margin-bottom: 1rem;">
 												<p:outputLabel value="#{etiquetas['fechaSalida']}" for="fechaSalida"
 													style="display: block; font-weight: 600; color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.4rem;" />
-												<p:calendar id="fechaSalida" pattern="yyyy-MM-dd" locale="es" placeholder="Seleccione la fecha..."
+												<p:calendar id="fechaSalida" pattern="dd/MM/yyyy" locale="es" placeholder="Seleccione la fecha..."
 													navigator="true"
 													value="#{backingAdminInstructor.beanAdminInstructor.instructor.instFechaSalida}">
 													<p:ajax event="blur" process="@this " partialSubmit="true" />
 												</p:calendar>
 											</div>
 											
-											<!-- Estado Activo -->
 											<div class="p-field p-col-12 p-md-6" style="margin-bottom: 1rem;">
 												<p:outputLabel value="#{etiquetas['estado']}"
 													style="display: block; font-weight: 600; color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.4rem;" />
@@ -163,91 +155,415 @@
 											
 										</div>
 										
-										<!-- Botones de Acción Formulario -->
-										<div style="display: flex; gap: 0.5rem; justify-content: flex-end; padding-top: 1rem; border-top: 1px solid var(--border-color); margin-top: 1rem;">
-											<p:commandButton value="#{botones['cancelar']}"
-												process="@this" oncomplete="PF('dlgNuevoInstructor').hide()"
-												icon="#{botones['icono.cancelar']}" immediate="true"
-												styleClass="ui-button-outlined ui-button-secondary"
-												style="padding: 0.45rem 1.1rem !important;">
-												<f:setPropertyActionListener value="false"
-													target="#{backingAdminInstructor.beanAdminInstructor.mostrarDatosInstructor}" />
-											</p:commandButton>
-											
-											<p:commandButton value="#{botones['grabar']}"
-												process="@this panelInstructor" update="panelInstructor listaInstructores growl"
-												icon="#{botones['icono.grabar']}" partialSubmit="true"
-												actionListener="#{backingAdminInstructor.mostrarDialogoGrabaDatosPersonales()}"
-												styleClass="ui-button-success"
-												style="padding: 0.45rem 1.1rem !important;" />
-										</div>
-										
 									</div>
 								</p:outputPanel>
 							</p:tab>
 							
-							<!-- Pestaña 2: Datos Académicos -->
-							<p:tab title="#{etiquetas['datosAcademicos']}">
-								<div style="padding: 1.25rem; background: #f8fafc; border: 1px solid var(--border-color); border-radius: 10px; margin-bottom: 1.5rem; margin-top: 10px;">
-									<div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.25rem; color: var(--primary-color); font-weight: 700; font-size: 0.95rem;">
-										<i class="pi pi-briefcase"></i>
-										<span>Nivel Académico y Formación</span>
-									</div>
-									<h:panelGrid style="width: 100%;">
-										<p:panelGrid style="width: 100%;" styleClass="ui-panelgrid-blank">
-											<p:row>
-												<p:column style="width: 20px; vertical-align: middle;">
-													<h:graphicImage value="/imagenes/utilitarios/asterisco.gif" width="5" height="5" />
-												</p:column>
-												<p:column style="width: 160px; vertical-align: middle;">
-													<p:outputLabel value="#{etiquetas['nivelEstudio']}" style="font-weight: 600; color: var(--text-muted);" />
-												</p:column>
-												<p:column style="vertical-align: middle;">
-													<p:selectOneMenu style="width: 100%;">
-														<f:selectItems />
-													</p:selectOneMenu>
-												</p:column>
-											</p:row>
-											<p:row>
-												<p:column style="vertical-align: middle;">
-													<h:graphicImage value="/imagenes/utilitarios/asterisco.gif" width="5" height="5" />
-												</p:column>
-												<p:column style="vertical-align: middle;">
-													<p:outputLabel value="#{etiquetas['tituloAcademico']}" style="font-weight: 600; color: var(--text-muted);" />
-												</p:column>
-												<p:column style="vertical-align: middle;">
-													<!-- Contenedor vacío original -->
-												</p:column>
-											</p:row>
-										</p:panelGrid>
-										
-										<p:dataTable styleClass="ui-datatable shadow-sm" style="margin-top: 1.25rem;" emptyMessage="No hay registros académicos programados.">
-											<!-- Tabla vacía original -->
+							<!-- ================================================================== -->
+							<!-- Pestaña 2: Datos Académicos y Competencia Profesional                -->
+							<!-- ================================================================== -->
+							<p:tab title="#{etiquetas['datosAcademicosCompetencia']}">
+								<div style="padding: 10px;">
+									
+									<!-- Sección: Formación Académica -->
+									<div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.5rem;">
+										<div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; color: var(--primary-color); font-weight: 700; font-size: 0.95rem;">
+											<i class="pi pi-book"></i>
+											<span>#{etiquetas['formacionAcademica']}</span>
+										</div>
+										<p:dataTable value="#{backingAdminInstructor.beanAdminInstructor.listaFormaciones}"
+											var="formacion" emptyMessage="#{mensajes['noRegistros']}"
+											styleClass="ui-datatable shadow-sm" style="margin-bottom: 0.75rem;"
+											reflow="true">
+											<p:column headerText="#{etiquetas['nivelEstudio']}">
+												<h:outputText value="#{formacion.formNivelEstudio}" />
+											</p:column>
+											<p:column headerText="#{etiquetas['tituloAcademico']}">
+												<h:outputText value="#{formacion.formTituloAcademico}" />
+											</p:column>
+											<p:column headerText="#{etiquetas['institucion']}">
+												<h:outputText value="#{formacion.formInstitucion}" />
+											</p:column>
+											<p:column headerText="#{etiquetas['inicioFin']}">
+												<div style="display: flex; align-items: center; gap: 4px; font-size: 0.85rem;">
+													<p:outputLabel value="#{formacion.formFechaInicio}" id="ffi">
+														<f:convertDateTime for="ffi" pattern="dd/MM/yyyy" />
+													</p:outputLabel>
+													<span style="color: var(--text-muted);">a</span>
+													<p:outputLabel value="#{formacion.formFechaFin}" id="fff">
+														<f:convertDateTime for="fff" pattern="dd/MM/yyyy" />
+													</p:outputLabel>
+												</div>
+											</p:column>
+											<p:column style="width:100px; text-align:center;" headerText="#{etiquetas['acciones']}">
+												<p:commandLink title="#{tooltip['editar']}"
+													aria-label="#{tooltip['editar']} #{formacion.formTituloAcademico}"
+													action="#{backingAdminInstructor.editarFormacion(formacion)}"
+													process="@this" update="panelInstructor"
+													styleClass="command-link-edit" style="margin-right: 8px;">
+													<i class="pi pi-pencil" style="font-size: 1.1rem; color: var(--primary-color);"></i>
+												</p:commandLink>
+												<p:commandLink title="#{tooltip['eliminar']}"
+													aria-label="#{tooltip['eliminar']} #{formacion.formTituloAcademico}"
+													action="#{backingAdminInstructor.eliminarFormacion(formacion)}"
+													process="@this" update="panelInstructor growl"
+													styleClass="command-link-delete" style="color: var(--danger-color);">
+													<i class="pi pi-trash" style="font-size: 1.1rem;"></i>
+												</p:commandLink>
+											</p:column>
 										</p:dataTable>
-									</h:panelGrid>
-								</div>
-								
-								<!-- Botón Cancelar Pestaña 2 -->
-								<div style="display: flex; justify-content: flex-end; padding-top: 1rem; border-top: 1px solid var(--border-color);">
-									<p:commandButton value="#{botones['cancelar']}"
-										process="@this" oncomplete="PF('dlgNuevoInstructor').hide()"
-										icon="#{botones['icono.cancelar']}" immediate="true"
-										styleClass="ui-button-outlined ui-button-secondary"
-										style="padding: 0.45rem 1.1rem !important;">
-										<f:setPropertyActionListener value="false"
-											target="#{backingAdminInstructor.beanAdminInstructor.mostrarDatosInstructor}" />
-									</p:commandButton>
+										<p:commandButton value="#{etiquetas['agregarFormacion']}"
+											actionListener="#{backingAdminInstructor.nuevaFormacion()}"
+											process="@this" update="panelInstructor"
+											icon="pi pi-plus-circle" styleClass="p-button-outlined p-button-secondary"
+											style="padding: 0.3rem 0.8rem !important; font-size: 0.85rem !important;" />
+									</div>
+									
+									<!-- Sección: Certificaciones / Capacitaciones -->
+									<div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.5rem;">
+										<div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; color: var(--primary-color); font-weight: 700; font-size: 0.95rem;">
+											<i class="pi pi-certificate"></i>
+											<span>#{etiquetas['certificaciones']}</span>
+										</div>
+										<p:dataTable value="#{backingAdminInstructor.beanAdminInstructor.listaCapacitaciones}"
+											var="capacitacion" emptyMessage="#{mensajes['noRegistros']}"
+											styleClass="ui-datatable shadow-sm" style="margin-bottom: 0.75rem;"
+											reflow="true">
+											<p:column headerText="#{etiquetas['tipo']}">
+												<h:outputText value="#{capacitacion.capaTipo}" />
+											</p:column>
+											<p:column headerText="#{etiquetas['nombre']}">
+												<h:outputText value="#{capacitacion.capaNombre}" />
+											</p:column>
+											<p:column headerText="#{etiquetas['institucion']}">
+												<h:outputText value="#{capacitacion.capaInstitucion}" />
+											</p:column>
+											<p:column headerText="#{etiquetas['inicioFin']}">
+												<div style="display: flex; align-items: center; gap: 4px; font-size: 0.85rem;">
+													<p:outputLabel value="#{capacitacion.capaFechaInicio}" id="cfi">
+														<f:convertDateTime for="cfi" pattern="dd/MM/yyyy" />
+													</p:outputLabel>
+													<span style="color: var(--text-muted);">a</span>
+													<p:outputLabel value="#{capacitacion.capaFechaFin}" id="cff">
+														<f:convertDateTime for="cff" pattern="dd/MM/yyyy" />
+													</p:outputLabel>
+												</div>
+											</p:column>
+											<p:column style="width:100px; text-align:center;" headerText="#{etiquetas['acciones']}">
+												<p:commandLink title="#{tooltip['editar']}"
+													aria-label="#{tooltip['editar']} #{capacitacion.capaNombre}"
+													action="#{backingAdminInstructor.editarCapacitacion(capacitacion)}"
+													process="@this" update="panelInstructor"
+													styleClass="command-link-edit" style="margin-right: 8px;">
+													<i class="pi pi-pencil" style="font-size: 1.1rem; color: var(--primary-color);"></i>
+												</p:commandLink>
+												<p:commandLink title="#{tooltip['eliminar']}"
+													aria-label="#{tooltip['eliminar']} #{capacitacion.capaNombre}"
+													action="#{backingAdminInstructor.eliminarCapacitacion(capacitacion)}"
+													process="@this" update="panelInstructor growl"
+													styleClass="command-link-delete" style="color: var(--danger-color);">
+													<i class="pi pi-trash" style="font-size: 1.1rem;"></i>
+												</p:commandLink>
+											</p:column>
+										</p:dataTable>
+										<p:commandButton value="#{etiquetas['agregarCertificacion']}"
+											actionListener="#{backingAdminInstructor.nuevaCapacitacion()}"
+											process="@this" update="panelInstructor"
+											icon="pi pi-plus-circle" styleClass="p-button-outlined p-button-secondary"
+											style="padding: 0.3rem 0.8rem !important; font-size: 0.85rem !important;" />
+									</div>
+									
+									<!-- Sección: Experiencia Profesional -->
+									<div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.5rem;">
+										<div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; color: var(--primary-color); font-weight: 700; font-size: 0.95rem;">
+											<i class="pi pi-briefcase"></i>
+											<span>#{etiquetas['experienciaProfesional']}</span>
+										</div>
+										<p:inputTextarea value="#{backingAdminInstructor.beanAdminInstructor.instructor.instExperienciaProfesional}"
+											style="width:100%; min-height:80px;" rows="3" counterTemplate="{0} caracteres" maxlength="5000"
+											counterStyleClass="ui-outputlabel-info" placeholder="Describa su experiencia profesional..." />
+									</div>
+									
+									<!-- Sección: Experiencia Docente -->
+									<div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.5rem;">
+										<div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; color: var(--primary-color); font-weight: 700; font-size: 0.95rem;">
+											<i class="pi pi-chalkboard"></i>
+											<span>#{etiquetas['experienciaDocente']}</span>
+										</div>
+										<p:inputTextarea value="#{backingAdminInstructor.beanAdminInstructor.instructor.instExperienciaDocente}"
+											style="width:100%; min-height:80px;" rows="3" counterTemplate="{0} caracteres" maxlength="5000"
+											counterStyleClass="ui-outputlabel-info" placeholder="Describa su experiencia docente..." />
+									</div>
+									
 								</div>
 							</p:tab>
+							
+							<!-- ================================================================== -->
+							<!-- Pestaña 3: Habilidades Pedagógicas                                  -->
+							<!-- ================================================================== -->
+							<p:tab title="#{etiquetas['habilidadesPedagogicas']}">
+								<div style="padding: 10px;">
+									
+									<div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.5rem;">
+										<div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; color: var(--primary-color); font-weight: 700; font-size: 0.95rem;">
+											<i class="pi pi-wrench"></i>
+											<span>#{etiquetas['metodologias']}</span>
+										</div>
+										<p:inputTextarea value="#{backingAdminInstructor.beanAdminInstructor.instructor.instMetodologias}"
+											style="width:100%; min-height:80px;" rows="3" counterTemplate="{0} caracteres" maxlength="5000"
+											counterStyleClass="ui-outputlabel-info" placeholder="Ejm: Aprendizaje basado en proyectos, gamificación, casos de estudio..." />
+									</div>
+									
+									<div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.5rem;">
+										<div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; color: var(--primary-color); font-weight: 700; font-size: 0.95rem;">
+											<i class="pi pi-globe"></i>
+											<span>#{etiquetas['modalidadesEntrega']}</span>
+										</div>
+										<p:inputTextarea value="#{backingAdminInstructor.beanAdminInstructor.instructor.instModalidadesEntrega}"
+											style="width:100%; min-height:80px;" rows="3" counterTemplate="{0} caracteres" maxlength="5000"
+											counterStyleClass="ui-outputlabel-info" placeholder="Presencial, online en vivo, asincrónico, manejo de LMS..." />
+									</div>
+									
+									<div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.5rem;">
+										<div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; color: var(--primary-color); font-weight: 700; font-size: 0.95rem;">
+											<i class="pi pi-folder-open"></i>
+											<span>#{etiquetas['portafolioMateriales']}</span>
+										</div>
+										<p:inputTextarea value="#{backingAdminInstructor.beanAdminInstructor.instructor.instPortafolioMateriales}"
+											style="width:100%; min-height:80px;" rows="3" counterTemplate="{0} caracteres" maxlength="5000"
+											counterStyleClass="ui-outputlabel-info" placeholder="Programas anteriores, manuales, diapositivas diseñadas..." />
+									</div>
+									
+									<div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.5rem;">
+										<div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; color: var(--primary-color); font-weight: 700; font-size: 0.95rem;">
+											<i class="pi pi-star"></i>
+											<span>#{etiquetas['evaluacionesReferencias']}</span>
+										</div>
+										<p:inputTextarea value="#{backingAdminInstructor.beanAdminInstructor.instructor.instEvaluacionesReferencias}"
+											style="width:100%; min-height:80px;" rows="3" counterTemplate="{0} caracteres" maxlength="5000"
+											counterStyleClass="ui-outputlabel-info" placeholder="Calificaciones de alumnos, cartas de recomendación, feedback de empresas..." />
+									</div>
+									
+								</div>
+							</p:tab>
+							
+							<!-- ================================================================== -->
+							<!-- Pestaña 4: Información Administrativa y de Contacto                   -->
+							<!-- ================================================================== -->
+							<p:tab title="#{etiquetas['infoAdministrativa']}">
+								<div style="padding: 10px;">
+									
+									<div class="p-formgrid p-grid">
+										
+										<div class="p-field p-col-12 p-md-6" style="margin-bottom: 1rem;">
+											<p:outputLabel value="#{etiquetas['linkedin']}" for="idLinkedin"
+												style="display: block; font-weight: 600; color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.4rem;" />
+											<p:inputText id="idLinkedin" maxlength="255" placeholder="https://www.linkedin.com/in/..."
+												value="#{backingAdminInstructor.beanAdminInstructor.instructor.instLinkedin}" />
+										</div>
+										
+										<div class="p-field p-col-12 p-md-6" style="margin-bottom: 1rem;">
+											<p:outputLabel value="#{etiquetas['regimenFiscal']}" for="idRegimenFiscal"
+												style="display: block; font-weight: 600; color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.4rem;" />
+											<p:inputText id="idRegimenFiscal" maxlength="100" placeholder="Ejm: RIMPE, Régimen General..."
+												value="#{backingAdminInstructor.beanAdminInstructor.instructor.instRegimenFiscal}" />
+										</div>
+										
+									</div>
+									
+									<div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.5rem;">
+										<div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; color: var(--primary-color); font-weight: 700; font-size: 0.95rem;">
+											<i class="pi pi-calendar-clock"></i>
+											<span>#{etiquetas['disponibilidadHoraria']}</span>
+										</div>
+										<p:inputTextarea value="#{backingAdminInstructor.beanAdminInstructor.instructor.instDisponibilidadHoraria}"
+											style="width:100%; min-height:80px;" rows="3" counterTemplate="{0} caracteres" maxlength="5000"
+											counterStyleClass="ui-outputlabel-info" placeholder="Días y horarios disponibles..." />
+									</div>
+									
+									<div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.5rem;">
+										<div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; color: var(--primary-color); font-weight: 700; font-size: 0.95rem;">
+											<i class="pi pi-map-marker"></i>
+											<span>#{etiquetas['disponibilidadGeografica']}</span>
+										</div>
+										<p:inputTextarea value="#{backingAdminInstructor.beanAdminInstructor.instructor.instDisponibilidadGeografica}"
+											style="width:100%; min-height:80px;" rows="3" counterTemplate="{0} caracteres" maxlength="5000"
+											counterStyleClass="ui-outputlabel-info" placeholder="Lugares donde puede dictar clases presencialmente..." />
+									</div>
+									
+									<div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.5rem;">
+										<div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; color: var(--primary-color); font-weight: 700; font-size: 0.95rem;">
+											<i class="pi pi-credit-card"></i>
+											<span>#{etiquetas['datosBancarios']}</span>
+										</div>
+										<p:inputTextarea value="#{backingAdminInstructor.beanAdminInstructor.instructor.instDatosBancarios}"
+											style="width:100%; min-height:80px;" rows="3" counterTemplate="{0} caracteres" maxlength="5000"
+											counterStyleClass="ui-outputlabel-info" placeholder="Banco, tipo de cuenta, número de cuenta..." />
+									</div>
+									
+								</div>
+							</p:tab>
+							
+							<!-- ================================================================== -->
+							<!-- Pestaña 5: Aptitudes Blandas (Soft Skills)                          -->
+							<!-- ================================================================== -->
+							<p:tab title="#{etiquetas['aptitudesBlandas']}">
+								<div style="padding: 10px;">
+									
+									<div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.5rem;">
+										<div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; color: var(--primary-color); font-weight: 700; font-size: 0.95rem;">
+											<i class="pi pi-comments"></i>
+											<span>#{etiquetas['habilidadesComunicacion']}</span>
+										</div>
+										<p:inputTextarea value="#{backingAdminInstructor.beanAdminInstructor.instructor.instHabilidadesComunicacion}"
+											style="width:100%; min-height:80px;" rows="3" counterTemplate="{0} caracteres" maxlength="5000"
+											counterStyleClass="ui-outputlabel-info" placeholder="Capacidad de escucha, empatía, manejo de grupos, resolución de conflictos..." />
+									</div>
+									
+									<div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.5rem;">
+										<div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; color: var(--primary-color); font-weight: 700; font-size: 0.95rem;">
+											<i class="pi pi-refresh"></i>
+											<span>#{etiquetas['adaptabilidad']}</span>
+										</div>
+										<p:inputTextarea value="#{backingAdminInstructor.beanAdminInstructor.instructor.instAdaptabilidad}"
+											style="width:100%; min-height:80px;" rows="3" counterTemplate="{0} caracteres" maxlength="5000"
+											counterStyleClass="ui-outputlabel-info" placeholder="Disposición a modificar temario o dinámica según necesidades..." />
+									</div>
+									
+									<div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.5rem;">
+										<div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; color: var(--primary-color); font-weight: 700; font-size: 0.95rem;">
+											<i class="pi pi-pencil"></i>
+											<span>#{etiquetas['notasEntrevista']}</span>
+										</div>
+										<p:inputTextarea value="#{backingAdminInstructor.beanAdminInstructor.instructor.instNotasEntrevista}"
+											style="width:100%; min-height:80px;" rows="4" counterTemplate="{0} caracteres" maxlength="10000"
+											counterStyleClass="ui-outputlabel-info" placeholder="Observaciones y notas relevantes de la entrevista..." />
+									</div>
+									
+								</div>
+							</p:tab>
+							
 						</p:tabView>
-						
 					</p:outputPanel>
-				</p:scrollPanel>
+				</div>
+			
+			<!-- Botones de Acción fijos fuera del scroll -->
+			<div class="instructor-actions">
+				<p:commandButton value="#{botones['cancelar']}"
+					process="@this" oncomplete="PF('dlgNuevoInstructor').hide()"
+					icon="#{botones['icono.cancelar']}" immediate="true"
+					styleClass="p-button-outlined p-button-secondary"
+					style="padding: 0.45rem 1.1rem !important;">
+					<f:setPropertyActionListener value="false"
+						target="#{backingAdminInstructor.beanAdminInstructor.mostrarDatosInstructor}" />
+				</p:commandButton>
+				
+				<p:commandButton value="#{botones['grabar']}"
+					process="@this panelInstructor" update="panelInstructor listaInstructores growl"
+					icon="#{botones['icono.grabar']}" partialSubmit="true"
+					actionListener="#{backingAdminInstructor.mostrarDialogoGrabaDatosPersonales()}"
+					styleClass="p-button-success"
+					style="padding: 0.45rem 1.1rem !important;" />
+			</div>
 			</p:dialog>
 			
-			<!-- BREADCRUMB REDISEÑADO -->
+			<!-- ================================================================== -->
+			<!-- SUB-DIÁLOGO: NUEVA FORMACIÓN                                        -->
+			<!-- ================================================================== -->
+			<p:dialog id="dlgNuevaFormacion" widgetVar="dlgNuevaFormacion" modal="true" closable="true" resizable="false"
+				header="#{etiquetas['agregarFormacion']}" styleClass="ui-dialog shadow-md subdialog-formacion" width="500" responsive="true">
+				<div class="ui-fluid" style="padding: 0.5rem;">
+					<div class="p-formgrid p-grid">
+						<div class="p-field p-col-12" style="margin-bottom: 0.75rem;">
+							<p:outputLabel value="#{etiquetas['nivelEstudio']} *" for="formNivelEstudio" style="font-weight:600; color:var(--text-muted); font-size:0.875rem;" />
+							<p:inputText id="formNivelEstudio" maxlength="100" required="true" requiredMessage="#{mensajes['campoRequerido']}"
+								value="#{backingAdminInstructor.beanAdminInstructor.formacionSelected.formNivelEstudio}" />
+						</div>
+						<div class="p-field p-col-12" style="margin-bottom: 0.75rem;">
+							<p:outputLabel value="#{etiquetas['tituloAcademico']} *" for="formTituloAcademico" style="font-weight:600; color:var(--text-muted); font-size:0.875rem;" />
+							<p:inputText id="formTituloAcademico" maxlength="200" required="true" requiredMessage="#{mensajes['campoRequerido']}"
+								value="#{backingAdminInstructor.beanAdminInstructor.formacionSelected.formTituloAcademico}" />
+						</div>
+						<div class="p-field p-col-12" style="margin-bottom: 0.75rem;">
+							<p:outputLabel value="#{etiquetas['institucion']} *" for="formInstitucion" style="font-weight:600; color:var(--text-muted); font-size:0.875rem;" />
+							<p:inputText id="formInstitucion" maxlength="200" required="true" requiredMessage="#{mensajes['campoRequerido']}"
+								value="#{backingAdminInstructor.beanAdminInstructor.formacionSelected.formInstitucion}" />
+						</div>
+						<div class="p-field p-col-12 p-md-6" style="margin-bottom: 0.75rem;">
+							<p:outputLabel value="#{etiquetas['fechaInicio']} *" for="formFechaInicio" style="font-weight:600; color:var(--text-muted); font-size:0.875rem;" />
+							<p:calendar id="formFechaInicio" pattern="dd/MM/yyyy" locale="es" navigator="true" required="true"
+								value="#{backingAdminInstructor.beanAdminInstructor.formacionSelected.formFechaInicio}" />
+						</div>
+						<div class="p-field p-col-12 p-md-6" style="margin-bottom: 0.75rem;">
+							<p:outputLabel value="#{etiquetas['fechaFin']}" for="formFechaFin" style="font-weight:600; color:var(--text-muted); font-size:0.875rem;" />
+							<p:calendar id="formFechaFin" pattern="dd/MM/yyyy" locale="es" navigator="true"
+								value="#{backingAdminInstructor.beanAdminInstructor.formacionSelected.formFechaFin}" />
+						</div>
+					</div>
+					<div style="display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color);">
+						<p:commandButton value="#{botones['cancelar']}" process="@this"
+							oncomplete="PF('dlgNuevaFormacion').hide()"
+							icon="#{botones['icono.cancelar']}" immediate="true"
+							styleClass="p-button-outlined p-button-secondary" style="padding:0.35rem 0.9rem !important;" />
+						<p:commandButton value="#{botones['grabar']}"
+							process="@this dlgNuevaFormacion panelInstructor" update="panelInstructor growl"
+							actionListener="#{backingAdminInstructor.grabarFormacion()}"
+							icon="#{botones['icono.grabar']}" styleClass="p-button-success"
+							style="padding:0.35rem 0.9rem !important;" />
+					</div>
+				</div>
+			</p:dialog>
+			
+			<!-- ================================================================== -->
+			<!-- SUB-DIÁLOGO: NUEVA CERTIFICACIÓN / CAPACITACIÓN                      -->
+			<!-- ================================================================== -->
+			<p:dialog id="dlgNuevaCapacitacion" widgetVar="dlgNuevaCapacitacion" modal="true" closable="true" resizable="false"
+				header="#{etiquetas['agregarCertificacion']}" styleClass="ui-dialog shadow-md subdialog-capacitacion" width="500" responsive="true">
+				<div class="ui-fluid" style="padding: 0.5rem;">
+					<div class="p-formgrid p-grid">
+						<div class="p-field p-col-12" style="margin-bottom: 0.75rem;">
+							<p:outputLabel value="#{etiquetas['tipoCapacitacion']} *" for="capaTipo" style="font-weight:600; color:var(--text-muted); font-size:0.875rem;" />
+							<p:inputText id="capaTipo" maxlength="100" required="true" requiredMessage="#{mensajes['campoRequerido']}"
+								value="#{backingAdminInstructor.beanAdminInstructor.capacitacionSelected.capaTipo}" />
+						</div>
+						<div class="p-field p-col-12" style="margin-bottom: 0.75rem;">
+							<p:outputLabel value="#{etiquetas['nombre']} *" for="capaNombre" style="font-weight:600; color:var(--text-muted); font-size:0.875rem;" />
+							<p:inputText id="capaNombre" maxlength="200" required="true" requiredMessage="#{mensajes['campoRequerido']}"
+								value="#{backingAdminInstructor.beanAdminInstructor.capacitacionSelected.capaNombre}" />
+						</div>
+						<div class="p-field p-col-12" style="margin-bottom: 0.75rem;">
+							<p:outputLabel value="#{etiquetas['institucion']} *" for="capaInstitucion" style="font-weight:600; color:var(--text-muted); font-size:0.875rem;" />
+							<p:inputText id="capaInstitucion" maxlength="200" required="true" requiredMessage="#{mensajes['campoRequerido']}"
+								value="#{backingAdminInstructor.beanAdminInstructor.capacitacionSelected.capaInstitucion}" />
+						</div>
+						<div class="p-field p-col-12 p-md-6" style="margin-bottom: 0.75rem;">
+							<p:outputLabel value="#{etiquetas['fechaInicio']} *" for="capaFechaInicio" style="font-weight:600; color:var(--text-muted); font-size:0.875rem;" />
+							<p:calendar id="capaFechaInicio" pattern="dd/MM/yyyy" locale="es" navigator="true" required="true"
+								value="#{backingAdminInstructor.beanAdminInstructor.capacitacionSelected.capaFechaInicio}" />
+						</div>
+						<div class="p-field p-col-12 p-md-6" style="margin-bottom: 0.75rem;">
+							<p:outputLabel value="#{etiquetas['fechaFin']}" for="capaFechaFin" style="font-weight:600; color:var(--text-muted); font-size:0.875rem;" />
+							<p:calendar id="capaFechaFin" pattern="dd/MM/yyyy" locale="es" navigator="true"
+								value="#{backingAdminInstructor.beanAdminInstructor.capacitacionSelected.capaFechaFin}" />
+						</div>
+					</div>
+					<div style="display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color);">
+						<p:commandButton value="#{botones['cancelar']}" process="@this"
+							oncomplete="PF('dlgNuevaCapacitacion').hide()"
+							icon="#{botones['icono.cancelar']}" immediate="true"
+							styleClass="p-button-outlined p-button-secondary" style="padding:0.35rem 0.9rem !important;" />
+						<p:commandButton value="#{botones['grabar']}"
+							process="@this dlgNuevaCapacitacion panelInstructor" update="panelInstructor growl"
+							actionListener="#{backingAdminInstructor.grabarCapacitacion()}"
+							icon="#{botones['icono.grabar']}" styleClass="p-button-success"
+							style="padding:0.35rem 0.9rem !important;" />
+					</div>
+				</div>
+			</p:dialog>
+			
+			<!-- BREADCRUMB -->
 			<p:breadCrumb styleClass="ui-breadcrumb p-mb-3" style="border: none; background: transparent; padding-left: 0;">
-				<p:menuitem value="Categorias" icon="pi pi-home" outcome="/paginas/index?faces-redirect=true" />
+				<p:menuitem value="Categorías" icon="pi pi-home" outcome="/paginas/index?faces-redirect=true" />
 				<p:menuitem value="Administración" url="#" />
 				<p:menuitem value="Instructores" url="#" />
 			</p:breadCrumb>
@@ -262,7 +578,7 @@
 					<p:commandButton value="#{botones['nuevoInstructor']}"
 						process="@this panelInstructor" 
 						actionListener="#{backingAdminInstructor.nuevoInstructor()}"
-						icon="pi pi-user-plus" styleClass="ui-button-success" 
+						icon="pi pi-user-plus" styleClass="p-button-success" 
 						style="padding: 0.5rem 1.25rem !important; font-weight: 600;"
 						update="iddatosInstructor panelInstructor" />
 				</div>
@@ -270,7 +586,6 @@
 			
 			<!-- KPI / RESUMEN DASHBOARD DE INSTRUCTORES -->
 			<div class="dashboard-stats" style="margin-bottom: 1.5rem;">
-				<!-- Total Docentes -->
 				<div class="stats-card stats-card-primary shadow-sm">
 					<div class="stats-content">
 						<span class="stats-label">Total Instructores</span>
@@ -281,7 +596,6 @@
 					</div>
 				</div>
 
-				<!-- Activos -->
 				<div class="stats-card stats-card-success shadow-sm">
 					<div class="stats-content">
 						<span class="stats-label">Docentes Activos</span>
@@ -294,7 +608,6 @@
 					</div>
 				</div>
 
-				<!-- Inactivos -->
 				<div class="stats-card stats-card-danger shadow-sm">
 					<div class="stats-content">
 						<span class="stats-label">Docentes Inactivos</span>
@@ -320,10 +633,8 @@
 					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
 					emptyMessage="No se encontraron instructores registrados.">
 
-					<!-- Columna: Instructor (Avatar Card) -->
 					<p:column headerText="#{etiquetas['instructor']}" filterBy="#{instructor.persona.persApellidos} #{instructor.persona.persNombres}" filterMatchMode="contains" style="min-width: 250px;">
 						<div style="display: flex; align-items: center; gap: 0.75rem;">
-							<!-- Avatar styled dynamic circle -->
 							<div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #eff6ff, #dbeafe); border: 1px solid #bfdbfe; display: flex; align-items: center; justify-content: center; color: var(--primary-color); font-weight: 700; font-size: 1.05rem;">
 								<i class="pi pi-user" style="font-size: 1.1rem; color: var(--primary-color);"></i>
 							</div>
@@ -338,23 +649,21 @@
 						</div>
 					</p:column>
 
-					<!-- Columna: Fecha de Ingreso -->
 					<p:column headerText="#{etiquetas['fechaIngreso']}" style="width: 180px;">
 						<div style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.88rem; font-weight: 500; color: var(--text-main);">
 							<i class="pi pi-calendar-plus" style="color: var(--primary-color); font-size: 0.95rem;"></i>
 							<p:outputLabel value="#{instructor.instFechaIngreso}" id="idFechaIngreso">
-								<f:convertDateTime for="idFechaIngreso" pattern="yyyy-MM-dd" />
+								<f:convertDateTime for="idFechaIngreso" pattern="dd/MM/yyyy" />
 							</p:outputLabel>
 						</div>
 					</p:column>
 
-					<!-- Columna: Fecha de Salida -->
 					<p:column headerText="#{etiquetas['fechaSalida']}" style="width: 180px;">
 						<ui:fragment rendered="#{not empty instructor.instFechaSalida}">
 							<div style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.88rem; font-weight: 500; color: var(--text-main);">
 								<i class="pi pi-calendar-minus" style="color: var(--danger-color); font-size: 0.95rem;"></i>
 								<p:outputLabel value="#{instructor.instFechaSalida}" id="idFechaSalida">
-									<f:convertDateTime for="idFechaSalida" pattern="yyyy-MM-dd" />
+									<f:convertDateTime for="idFechaSalida" pattern="dd/MM/yyyy" />
 								</p:outputLabel>
 							</div>
 						</ui:fragment>
@@ -363,31 +672,38 @@
 						</ui:fragment>
 					</p:column>
 
-					<!-- Columna: Estado -->
 					<p:column headerText="#{etiquetas['estado']}" filterBy="#{instructor.instActivo==true?'Activo':'Inactivo'}" filterMatchMode="exact" style="width: 120px; text-align: center;">
 						<span style="font-size: 0.75rem; border-radius: 6px; padding: 0.25rem 0.6rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; 
-							background: #{instructor.instActivo==true ? '#e0f2fe' : '#fee2e2'}; 
-							color: #{instructor.instActivo==true ? '#0369a1' : '#b91c1c'}; 
-							border: 1px solid #{instructor.instActivo==true ? '#bae6fd' : '#fecaca'};">
+							background: #{instructor.instActivo==true ? '#dbeafe' : '#fee2e2'}; 
+							color: #{instructor.instActivo==true ? '#1e40af' : '#991b1b'}; 
+							border: 1px solid #{instructor.instActivo==true ? '#93c5fd' : '#fecaca'};">
 							<i class="pi #{instructor.instActivo==true ? 'pi-check-circle' : 'pi-times-circle'}" style="font-size: 0.75rem;"></i>
 							<h:outputText value="#{instructor.instActivo==true?'Activo':'Inactivo'}" />
 						</span>
 					</p:column>
 
-					<!-- Columna: Acciones -->
-					<p:column style="width: 80px; text-align: center;" headerText="Editar">
+					<p:column style="width: 130px; text-align: center;" headerText="Acciones">
 						<p:commandLink title="#{tooltip['editar']}"
+							aria-label="#{tooltip['editar']} #{instructor.persona.persApellidos} #{instructor.persona.persNombres}"
 							action="#{backingAdminInstructor.mostrarInstructor()}"
-							process="@this " update="panelInstructor"
-							style="display: inline-block;">
+							process="@this" update="panelInstructor"
+							styleClass="command-link-edit" style="display: inline-block; margin-right: 8px;">
 							<f:setPropertyActionListener value="#{instructor}"
 								target="#{backingAdminInstructor.beanAdminInstructor.instructor}" />
 							<f:setPropertyActionListener value="true"
 								target="#{backingAdminInstructor.beanAdminInstructor.mostrarDatosInstructor}" />
 							<i class="pi pi-pencil" 
-								style="font-size: 1.25rem; color: var(--primary-color); transition: transform 0.2s;"
-								onmouseover="this.style.transform='scale(1.2)';"
-								onmouseout="this.style.transform='scale(1)';" />
+								style="font-size: 1.25rem; color: var(--primary-color);" />
+						</p:commandLink>
+						<p:commandLink title="Generar PDF" ajax="false" immediate="true"
+							aria-label="Generar PDF #{instructor.persona.persApellidos} #{instructor.persona.persNombres}"
+							action="#{backingAdminInstructor.generarPdfInstructor()}"
+							process="@this"
+							styleClass="command-link-pdf" style="display: inline-block;">
+							<f:setPropertyActionListener value="#{instructor}"
+								target="#{backingAdminInstructor.beanAdminInstructor.instructor}" />
+							<i class="pi pi-file-pdf" 
+								style="font-size: 1.25rem; color: #d32f2f;" />
 						</p:commandLink>
 					</p:column>
 				</p:dataTable>
@@ -399,17 +715,17 @@
 				width="320" closable="true" resizable="false">
 				<div style="text-align: center; padding: 1rem 0;">
 					<i class="pi pi-exclamation-triangle" style="font-size: 2.5rem; color: var(--warning-color); margin-bottom: 1rem;"></i>
-					<p style="color: var(--text-main); font-weight: 600; margin-bottom: 1.5rem;">¿Desea confirmar el registro de los datos del instructor?</p>
+					<p style="color: var(--text-main); font-weight: 600; margin-bottom: 1.5rem;">#{backingAdminInstructor.beanAdminInstructor.instructor.instId gt 0 ? '¿Desea guardar los cambios del instructor?' : '¿Desea confirmar el registro de los datos del instructor?'}</p>
 					<div style="display: flex; justify-content: center; gap: 0.5rem;">
 						<p:commandButton icon="#{botones['icono.cancelar']}" value="#{botones['cancelar']}" 
 							oncomplete="PF('dlggrabar').hide();" process="@this" resetValues="true"
-							styleClass="ui-button-outlined ui-button-secondary" style="padding: 0.35rem 1rem !important;" />
+							styleClass="p-button-outlined p-button-secondary" style="padding: 0.35rem 1rem !important;" />
 						<p:commandButton value="#{botones['grabar']}"
 							actionListener="#{backingAdminInstructor.grabarDatosPersonales()}"
 							oncomplete="PF('dlggrabar').hide();" partialSubmit="true"
 							process="@this panelInstructor" icon="#{botones['icono.grabar']}"
 							update="growl listaInstructores"
-							styleClass="ui-button-success" style="padding: 0.35rem 1rem !important;" />
+							styleClass="p-button-success" style="padding: 0.35rem 1rem !important;" />
 					</div>
 				</div>
 			</p:dialog>
