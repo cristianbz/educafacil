@@ -114,7 +114,10 @@
                     <div class="p-col-12 p-md-3 p-field">
                         <p:outputLabel value="Comprobante:" for="comprobante" style="font-weight: bold;"/>
                         <p:selectOneMenu id="comprobante" value="#{beanReporteFacturas.comprobanteTipo}">
-                            <f:selectItem itemLabel="Factura" itemValue="Factura" />                            
+                            <f:selectItem itemLabel="Factura" itemValue="Factura" />
+                            <f:selectItem itemLabel="Nota de Credito" itemValue="Nota de Credito" />
+                            <f:selectItem itemLabel="Nota de debito" itemValue="Nota de debito" />
+                            <f:selectItem itemLabel="Retencion" itemValue="Retencion" />
                         </p:selectOneMenu>
                     </div>
                     <div class="p-col-12 p-md-3 p-field">
@@ -141,7 +144,7 @@
             </p:outputPanel>
             <br />
             
-            <p:dataTable id="tblFacturas" value="#{beanReporteFacturas.listaFacturas}" var="fac" reflow="true"
+            <p:dataTable id="tblFacturas" value="#{beanReporteFacturas.listaComprobantes}" var="fac" reflow="true"
                          paginator="true" rows="10" 
                          paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
                          currentPageReportTemplate="({currentPage} of {totalPages})"
@@ -155,7 +158,7 @@
                 </p:column>
                 
                 <p:column headerText="Tipo de comprobante">
-                    <h:outputText value="Factura" />
+                    <h:outputText value="#{fac.tipoComprobante}" />
                 </p:column>
                 
                 <p:column headerText="Número de comprobante" sortBy="#{fac.numero}">
@@ -163,15 +166,15 @@
                 </p:column>
                 
                 <p:column headerText="Identificación">
-                    <h:outputText value="#{fac.cliente.numeroIdentificacion}" />
+                    <h:outputText value="#{fac.identificacion}" />
                 </p:column>
                 
                 <p:column headerText="Razón social">
-                    <h:outputText value="#{fac.cliente.nombresCompletos}" />
+                    <h:outputText value="#{fac.razonSocial}" />
                 </p:column>
                 
                 <p:column headerText="Clave de acceso/ Nro. Autorización">
-                    <h:outputText value="#{fac.documentoElectronico != null ? (fac.documentoElectronico.numeroAutorizacion != null ? fac.documentoElectronico.numeroAutorizacion : fac.documentoElectronico.claveAcceso) : ''}" />
+                    <h:outputText value="#{fac.numeroAutorizacion != null ? fac.numeroAutorizacion : fac.claveAcceso}" />
                 </p:column>
                 
                 <p:column headerText="Valor total" style="text-align: right;">
@@ -180,19 +183,18 @@
                     </h:outputText>
                 </p:column>
                 
-                <p:column style="width: 50px; text-align: center;" exportable="false">
+                <p:column style="width: 50px; text-align: center;" exportable="false"
+                          rendered="#{fac.entityType == 'Factura'}">
                     <p:menuButton icon="pi pi-chevron-down" styleClass="ui-button-flat">
                         <p:menuitem value="XML" process="@this" icon="pi pi-file-excel" 
                         	update=":formReporte:growl" action="#{backingReporteFacturas.descargarXml(fac)}"/>                                                   
                         <p:menuitem value="RIDE" process="@this" icon="pi pi-file-pdf" update=":formReporte:growl"
                         	action="#{backingReporteFacturas.descargarRide(fac)}">
-                            
                         </p:menuitem>
                         <p:menuitem value="Anular" actionListener="#{backingReporteFacturas.anularFactura(fac)}" 
-                        			disabled="#{fac.documentoElectronico.estado == 'ANULADA'}"
+                        			disabled="#{fac.estado == 'ANULADA'}"
                                     update=":formReporte:growl" icon="pi pi-times-circle" />
                         <p:menuitem value="Envío por correo" actionListener="#{backingReporteFacturas.enviarCorreo(fac)}" 
-                                    disabled="#{fac.documentoElectronico.estado == 'ANULADA'}"
                                     update=":formReporte:growl" icon="pi pi-envelope" />
                     </p:menuButton>
                 </p:column>
@@ -200,7 +202,7 @@
             
             <div class="p-d-flex p-ai-center" style="margin-top: 10px;">
 				<p:commandButton value="Descargar CSV" ajax="false" id="csv"
-                               disabled="#{beanReporteFacturas.listaFacturas == null || beanReporteFacturas.listaFacturas.isEmpty()}"
+                               disabled="#{beanReporteFacturas.listaComprobantes == null || beanReporteFacturas.listaComprobantes.isEmpty()}"
                                icon="pi pi-file"
                                styleClass="ui-button-outlined shadow-sm">
                     <p:fileDownload value="#{backingReporteFacturas.csvDownload}" />

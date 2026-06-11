@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import ec.mileniumtech.educafacil.modelo.persistencia.dto.ComprobanteReporteDto;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Factura;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.view.ViewScoped;
@@ -30,13 +31,13 @@ public class BeanReporteFacturas implements Serializable {
     private String numeroAutorizacion;
     private String estadoAutorizacion;
     
-    private List<Factura> listaFacturas;
+    private List<ComprobanteReporteDto> listaComprobantes;
     
     @PostConstruct
     public void init() {
         fechaInicio = LocalDate.now();
         fechaFin = LocalDate.now();
         comprobanteTipo = "Factura";
-        listaFacturas = new ArrayList<>();
+        listaComprobantes = new ArrayList<>();
     }
 }

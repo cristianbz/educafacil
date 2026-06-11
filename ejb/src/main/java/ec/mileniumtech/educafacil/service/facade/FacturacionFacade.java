@@ -10,21 +10,27 @@ import ec.mileniumtech.educafacil.dao.impl.ClienteDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.EmpresaMatrizDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.EstudianteDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.FacturaDaoImpl;
+import ec.mileniumtech.educafacil.dao.impl.NotaCreditoDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.PersonaDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.PuntoEmisionDaoImpl;
+import ec.mileniumtech.educafacil.dao.impl.RetencionDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.SriformapagoDaoImpl;
+import ec.mileniumtech.educafacil.modelo.persistencia.dto.ComprobanteReporteDto;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.InfoAdicionalDto;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.CatalogoItem;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Cliente;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleFactura;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetallePagos;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.DocumentoElectronico;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.EmpresaMatriz;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Estudiante;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Factura;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.NotaCredito;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Pagos;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.PagosFacturados;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Persona;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.PuntoEmision;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.Retencion;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Sriformapago;
 import ec.mileniumtech.educafacil.service.AwsS3Service;
 import ec.mileniumtech.educafacil.service.IntegracionSriService;
@@ -66,6 +72,12 @@ public class FacturacionFacade {
 
     @EJB
     private AwsS3Service awsS3Service;
+    
+    @EJB
+    private NotaCreditoDaoImpl notaCreditoDao;
+
+    @EJB
+    private RetencionDaoImpl retencionDao;
 
     // ========== Factura CRUD ==========
 
@@ -87,6 +99,96 @@ public class FacturacionFacade {
 
     public void actualizar(Factura factura) {
         facturaDao.actualizar(factura);
+    }
+    
+    public List<ComprobanteReporteDto> buscarComprobantesPorFiltros(
+            LocalDate fechaInicio, LocalDate fechaFin, String identificacion,
+            String numeroAutorizacion, String estadoAutorizacion, String comprobanteTipo) {
+        List<ComprobanteReporteDto> resultado = new ArrayList<>();
+
+        if (comprobanteTipo == null || comprobanteTipo.isEmpty() || "Factura".equals(comprobanteTipo)) {
+            List<Factura> facturas = facturaDao.buscarFacturasPorFiltros(
+                fechaInicio, fechaFin, identificacion, numeroAutorizacion, estadoAutorizacion);
+            for (Factura f : facturas) {
+                resultado.add(mapFacturaToDto(f));
+            }
+        } else if ("Nota de Credito".equals(comprobanteTipo)) {
+            List<NotaCredito> notas = notaCreditoDao.buscarNotasCreditoPorFiltros(
+                fechaInicio, fechaFin, identificacion, numeroAutorizacion, estadoAutorizacion);
+            for (NotaCredito nc : notas) {
+                resultado.add(mapNotaCreditoToDto(nc));
+            }
+        } else if ("Retencion".equals(comprobanteTipo)) {
+            List<Retencion> retenciones = retencionDao.buscarRetencionesPorFiltros(
+                fechaInicio, fechaFin, identificacion, numeroAutorizacion, estadoAutorizacion);
+            for (Retencion r : retenciones) {
+                resultado.add(mapRetencionToDto(r));
+            }
+        }
+
+        return resultado;
+    }
+    private ComprobanteReporteDto mapFacturaToDto(Factura f) {
+        DocumentoElectronico doc = f.getDocumentoElectronico();
+        return ComprobanteReporteDto.builder()
+            .fechaEmision(f.getFechaEmision())
+            .tipoComprobante("Factura")
+            .numero(f.getNumero())
+            .identificacion(f.getCliente() != null ? f.getCliente().getNumeroIdentificacion() : null)
+            .razonSocial(f.getCliente() != null ? f.getCliente().getNombresCompletos() : null)
+            .claveAcceso(doc != null ? doc.getClaveAcceso() : null)
+            .numeroAutorizacion(doc != null ? doc.getNumeroAutorizacion() : null)
+            .total(f.getTotal())
+            .estado(doc != null ? doc.getEstado() : null)
+            .entityId(f.getId())
+            .entityType("Factura")
+            .urlXml(doc != null ? doc.getUrlXml() : null)
+            .urlPdf(doc != null ? doc.getUrlPdf() : null)
+            .correo(f.getCliente() != null ? f.getCliente().getCorreo() : null)
+            .build();
+    }
+
+    private ComprobanteReporteDto mapNotaCreditoToDto(NotaCredito nc) {
+        return ComprobanteReporteDto.builder()
+            .fechaEmision(nc.getFechaEmision())
+            .tipoComprobante("Nota de Credito")
+            .numero(nc.getNumero())
+            .identificacion(nc.getCliente() != null ? nc.getCliente().getNumeroIdentificacion() : null)
+            .razonSocial(nc.getCliente() != null ? nc.getCliente().getNombresCompletos() : null)
+            .claveAcceso(nc.getClaveAcceso())
+            .numeroAutorizacion(nc.getNumeroAutorizacion())
+            .total(nc.getTotal())
+            .estado(nc.getEstado())
+            .entityId(nc.getId())
+            .entityType("NotaCredito")
+            .urlXml(nc.getUrlXml())
+            .urlPdf(nc.getUrlPdf())
+            .correo(nc.getCliente() != null ? nc.getCliente().getCorreo() : null)
+            .build();
+    }
+
+    private ComprobanteReporteDto mapRetencionToDto(Retencion r) {
+        java.time.LocalDate fechaEmision = null;
+        if (r.getFechaEmision() != null) {
+            fechaEmision = new java.sql.Date(r.getFechaEmision().getTime()).toLocalDate();
+        }
+        return ComprobanteReporteDto.builder()
+            .fechaEmision(fechaEmision)
+            .tipoComprobante("Retencion")
+            .numero(r.getNumero())
+            .identificacion(r.getEgreso() != null && r.getEgreso().getProveedor() != null
+                ? r.getEgreso().getProveedor().getProvRuc() : null)
+            .razonSocial(r.getEgreso() != null && r.getEgreso().getProveedor() != null
+                ? r.getEgreso().getProveedor().getProvNombre() : null)
+            .claveAcceso(r.getClaveAcceso())
+            .numeroAutorizacion(r.getNumeroAutorizacion())
+            .total(r.getEgreso() != null ? r.getEgreso().getEgreValor() : null)
+            .estado(r.getEstado())
+            .entityId(r.getId())
+            .entityType("Retencion")
+            .correo(r.getEgreso() != null && r.getEgreso().getProveedor() != null
+                ? r.getEgreso().getProveedor().getProvCorreo() : null)
+            .build();
     }
 
     // ========== Cliente ==========
