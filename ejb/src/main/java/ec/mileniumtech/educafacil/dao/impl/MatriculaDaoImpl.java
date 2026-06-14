@@ -6,10 +6,11 @@ package ec.mileniumtech.educafacil.dao.impl;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.Hibernate;
-
 
 import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.dao.util.JpaDaoSupport;
@@ -17,7 +18,6 @@ import ec.mileniumtech.educafacil.modelo.persistencia.dto.DtoMatriculasCurso;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetallePagos;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Estudiante;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Matricula;
-import ec.mileniumtech.educafacil.modelo.persistencia.entity.Pagos;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Persona;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Usuario;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.UsuarioRol;
@@ -339,5 +339,149 @@ public class MatriculaDaoImpl extends GenericoDaoImpl<Matricula, Long>{
 			}
 		}
 		return listaResultado;
+	}
+	/**
+	 * Total de personas en la tabla matriculas
+	 * @return
+	 */
+	public Integer totalMatriculas(int anio) {
+	    Integer valor = 0;
+	    
+	    // 1. Corregimos el SQL agregando WHERE y parámetros dinámicos (:anio y :mes)
+	    String sql = "SELECT COUNT(matr_id) FROM cap.matricula "
+	               + "WHERE EXTRACT(YEAR FROM matr_fecha_matricula) = :anio ";
+//	               + "AND EXTRACT(MONTH FROM matr_fecha_matricula) = :mes";
+	               
+	    try {
+	        Query q = getEntityManager().createNativeQuery(sql);
+	        // 2. Seteamos los parámetros que recibe el método
+	        q.setParameter("anio", anio);
+//	        q.setParameter("mes", mes);
+	        
+	        // 3. Como es una función de agregación (COUNT), siempre devuelve una sola fila y columna
+	        Object resultado = q.getSingleResult();
+	        
+	        if (resultado != null) {
+	            // Los conteos nativos suelen venir como Long, BigInteger o BigDecimal dependiendo del driver.
+	            // Convertirlo a String y luego a BigDecimal es la forma más segura de evitar ClassCastException.
+	            valor = Integer.parseInt(resultado.toString());
+	        }
+	    } catch (Exception e) {
+	        // Opcional: Manejar o loggear la excepción si la consulta falla
+	    	throw new SystemException("Error al contar  totalMatriculas", "MATRI-TOTAL-ERR", e);
+	    }
+	    
+	    return valor;
+	}
+	/**
+	 * Total de matriculados activos en el mes y anio
+	 * @param anio
+	 * @param mes
+	 * @return
+	 */
+	public Integer totalMatriculasActivas(int anio,int mes) {
+	    Integer valor = 0;	    
+	    String sql = "SELECT COUNT(matr_id) FROM cap.matricula "
+	               + "WHERE EXTRACT(YEAR FROM matr_fecha_matricula) = :anio "
+	               + "AND EXTRACT(MONTH FROM matr_fecha_matricula) <= :mes"
+	               + " AND matr_estado in('INSMAT02','INSMAT05')";	               
+	    try {
+	        Query q = getEntityManager().createNativeQuery(sql);
+	        q.setParameter("anio", anio);
+	        q.setParameter("mes", mes);	        
+	        Object resultado = q.getSingleResult();	        
+	        if (resultado != null) 	            
+	            valor = Integer.parseInt(resultado.toString());	        
+	    } catch (Exception e) { 	        
+	    	throw new SystemException("Error al contar  totalMatriculas", "MATRI-TOTAL-ERR", e);
+	    }
+	    
+	    return valor;
+	}
+	/**
+	 * Total de matriculas abandonadas
+	 * @param anio
+	 * @param mes
+	 * @return
+	 */
+	public Integer totalMatriculasDesertadas(int anio,int mes) {
+	    Integer valor = 0;	    
+	    String sql = "SELECT COUNT(matr_id) FROM cap.matricula "
+	               + "WHERE EXTRACT(YEAR FROM matr_fecha_matricula) = :anio "
+	               + "AND EXTRACT(MONTH FROM matr_fecha_matricula) <= :mes"
+	               + " AND matr_estado in('INSMAT03')";	               
+	    try {
+	        Query q = getEntityManager().createNativeQuery(sql);
+	        q.setParameter("anio", anio);
+	        q.setParameter("mes", mes);	        
+	        Object resultado = q.getSingleResult();	        
+	        if (resultado != null) 	            
+	            valor = new Integer(resultado.toString());	        
+	    } catch (Exception e) { 	        
+	    	throw new SystemException("Error al contar  totalMatriculas", "MATRI-TOTAL-ERR", e);
+	    }
+	    
+	    return valor;
+	}
+	
+	/**
+	 * Obtiene las matrículas mes a mes desde enero hasta el mes límite especificado.
+	 * @param anio Año de consulta (ej. 2026)
+	 * @param mesLimite Mes hasta el cual se quiere consultar (ej. 5 para Mayo)
+	 * @Key El número de mes (1 al 12)
+	 * @Value La cantidad de matrículas en formato BigDecimal
+	 */
+	public Map<Integer, Integer> obtenerMatriculasHastaMes(int anio, int mesLimite) {
+	    // Usamos LinkedHashMap para mantener el orden cronológico (Ene, Feb, Mar...)
+	    Map<Integer, Integer> mapaResultados = new LinkedHashMap<>();
+	    
+	    String sql = "SELECT EXTRACT(MONTH FROM matr_fecha_matricula) AS mes, COUNT(matr_id) AS total "
+	               + "FROM cap.matricula "
+	               + "WHERE EXTRACT(YEAR FROM matr_fecha_matricula) = :anio "
+	               + "  AND EXTRACT(MONTH FROM matr_fecha_matricula) <= :mes_limite "
+	               + "GROUP BY EXTRACT(MONTH FROM matr_fecha_matricula) "
+	               + "ORDER BY mes ASC";
+	               
+	    try {
+	        Query q = getEntityManager().createNativeQuery(sql);
+	        q.setParameter("anio", anio);
+	        q.setParameter("mes_limite", mesLimite);
+	        
+	        // Al traer varias columnas y filas, el resultado es una lista de arrays (Object[])
+	        List<Object[]> filas = (List<Object[]>) q.getResultList();
+	        
+	        for (Object[] columna : filas) {
+	            if (columna[0] != null && columna[1] != null) {
+	                // columna[0] contiene el número de mes (ej: 1, 2, 3...)
+	                Integer mesNo = Integer.parseInt(columna[0].toString());
+	                
+	                // columna[1] contiene el conteo de matrículas
+	                Integer totalMatriculas = Integer.parseInt(columna[1].toString());
+	                
+	                mapaResultados.put(mesNo, totalMatriculas);
+	            }
+	        }
+	    } catch (Exception e) {
+	    	throw new SystemException("Error al contar  obtenerMatriculasHastaMes", "MATRI-TOTALMES-ERR", e);
+	    }
+	    
+	    return mapaResultados;
+	}
+	/**
+	 * Devuelve las matriculas por anio
+	 * @param anio
+	 * @return
+	 */
+	public List<Matricula> listaMatriculasPorAnio(int anio) {
+		try {
+			Query query=null;
+			query=getEntityManager().createNamedQuery(Matricula.BUSCAR_MATRICULAS_POR_ANIO);
+			query.setParameter("anio", anio);
+			return query.getResultList();
+		}catch(NoResultException e) {
+			return null;
+		}catch(Exception e) {
+			throw new SystemException("Error al cargar lista  matriculasPorAnio", "MATRI-LIST-ERR", e);
+		}
 	}
 }

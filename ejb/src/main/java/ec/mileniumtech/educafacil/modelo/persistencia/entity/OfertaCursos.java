@@ -84,6 +84,9 @@ public class OfertaCursos implements Serializable {
 	@Column(name = "ocur_grupo_whatsapp")
 	private String ocurGrupoWhatsapp;	
 	
+	@Column(name = "ocur_modalidad")
+	private String ocurModalidad;	
+	
 	@OneToMany (mappedBy="ofertacursos", fetch=FetchType.LAZY)
 	private List<EvaluacionCurso> evaluacionCurso;
 	

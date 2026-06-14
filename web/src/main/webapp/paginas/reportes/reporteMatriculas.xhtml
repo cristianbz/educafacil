@@ -8,96 +8,164 @@
 <ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
 	
 	<ui:define name="contenido">
-			<f:event listener="#{backingLogin.validarSesion()}"
-		type="preRenderView" />
-	<h:form id="form" prependId="false">
-		<p:growl id="growl" life="3000" showDetail="true" />
+		<f:event listener="#{backingLogin.validarSesion()}" type="preRenderView" />
 		
-		<p:dialog widgetVar="dlgCargarInfo" modal="true" closable="false"
-			header="#{titulos['selInformacion']}">
-			<p:outputPanel id="campanias">						
-				<h:panelGrid columns="3">					
-					<p:outputLabel value="#{etiquetas['curso']}"/>										
-					<p:selectOneMenu id="idcursos" converter="selectOneMenuConverter"	
-						filterMatchMode="contains" filter="true" panelStyle="width:300px;" style="width:300px;"														
-					value="#{backingReporteMatriculas.beanReportes.cursoSeleccionado}">
-					<f:selectItems 
-						value="#{backingReporteMatriculas.beanReportes.listaCursos}"
-						var="cur" itemLabel="#{cur.cursNombre}" itemValue="#{cur}"
-						required="true" requiredMessage="#{mensajes['campoRequerido']}" />
-					<p:ajax process="@this idcursos"  partialSubmit="true" update="ofertacurso"
-						 event="change" listener="#{backingReporteMatriculas.cargarOfertaCursos()}"/>
-					</p:selectOneMenu>
-					<p:message for="idcursos"/>	
-					
-					<p:outputLabel value="#{etiquetas['fechaInicioFin']}"/>
-					<p:selectOneListbox  id="ofertacurso" value="#{backingReporteMatriculas.beanReportes.ofertaSeleccionada}" scrollHeight="150"  
-						converter="selectOneMenuConverter">
-						<f:selectItems value="#{backingReporteMatriculas.beanReportes.listaOfertaCursos}" var="oferta" itemLabel="#{backingReporteMatriculas.formatDate(oferta.ocurFechaInicio,'yyyy-MM-dd')} / #{backingReporteMatriculas.formatDate(oferta.ocurFechaFin,'yyyy-MM-dd')}" itemValue="#{oferta}"/>
-						
-					</p:selectOneListbox>											
-				</h:panelGrid>	
-				
-			</p:outputPanel>
-			<h:panelGrid columns="2">
-				<p:commandButton value="#{botones['aceptar']}" update="pnlDatos growl tblmatriculas" process="@this ofertacurso tblmatriculas" 
-					icon="#{botones['icono.select']}"  
-					partialSubmit="true" actionListener="#{backingReporteMatriculas.cargaMatriculas}"/>
-				<p:commandButton value="#{botones['cancelar']}" 
-					icon="#{botones['icono.cancelar']}"
-					process="@this" partialSubmit="true" oncomplete="PF('dlgCargarInfo').hide()"/>
-			</h:panelGrid>
-		</p:dialog>
-		<p:fieldset>
-			<br />
-			<div class="ui-fluid p-formgrid p-grid">
-				<div class="p-field p-col-12 p-md-4"></div>
-				<div class="p-field p-col-12 p-md-4">
-					<p:commandButton value="#{botones['nuevaBusqueda']}"  
-						icon="#{botones['icono.select']}" process="@this pnlDatos" update="tblmatriculas" partialSubmit="true" actionListener="#{backingSeguimientoClientes.mostrarDialogoCargaInfo()}">
-						
-					</p:commandButton>	
+		<h:form id="form" prependId="false">
+			<p:growl id="growl" life="3000" showDetail="true" />
+			
+			<!-- 🔵 BREADCRUMB -->
+			<p:breadCrumb styleClass="mb-3">
+				<p:menuitem value="Inicio" outcome="/paginas/inicio?faces-redirect=true" icon="pi pi-home" />
+				<p:menuitem value="Reportes" />
+				<p:menuitem value="Reporte de Matrículas" />
+			</p:breadCrumb>
+			
+			<!-- 🔵 HEADER SECTION -->
+			<div class="page-header">
+				<div class="page-title">
+					<h2>Reporte de Matrículas</h2>
+					<small>Resumen de inscripciones por período</small>
 				</div>
-				
-				<div class="p-field p-col-12 p-md-4"></div>
+				<div class="page-actions">
+					<span style="font-weight: 600; font-size: 0.85rem; color: var(--text-muted); margin-right: 6px;">Filtrar Período:</span>
+					<p:inputText id="fechaFiltro" value="#{backingReporteMatriculas.beanReportes.fechaFiltro}" type="month" 
+								 style="width: 160px; height: 38px; border-radius: 8px; border: 1px solid var(--border-color); padding: 0 0.5rem; margin-right: 8px;" />
+					
+					<p:commandButton value="Actualizar" actionListener="#{backingReporteMatriculas.actualizarFiltro()}"
+									 update="@form" icon="pi pi-refresh" styleClass="ui-button-outlined" 
+									 style="margin-right: 8px; height: 38px; vertical-align: middle;" />
+									 
+					<p:commandButton value="Exportar" actionListener="#{backingReporteMatriculas.exportarReporte()}"
+									 icon="pi pi-download" styleClass="ui-button-primary" 
+									 style="height: 38px; vertical-align: middle;" />
+				</div>
 			</div>
+			
+			<!-- 🔵 KPI CARDS SECTION -->
+			<div class="dashboard-stats mb-4">
+				<!-- Card 1: TOTAL MATRICULADOS -->
+				<div class="stats-card stats-card-primary">
+					<div class="stats-content">
+						<span class="stats-label">TOTAL MATRICULADOS</span>
+						<span class="stats-value">#{backingReporteMatriculas.beanReportes.totalMatriculados}</span>
+						<span class="stats-desc" style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Histórico acumulado</span>
+						<span class="stats-trend" style="font-size: 0.8rem; font-weight: 700; color: #{backingReporteMatriculas.beanReportes.tendenciaMatriculadosSubio ? '#10b981' : '#ef4444'}; margin-top: 4px; display: inline-flex; align-items: center; gap: 2px;">
+							#{backingReporteMatriculas.beanReportes.tendenciaMatriculados}
+						</span>
+					</div>
+					<div class="stats-icon-wrapper" style="background: rgba(37, 99, 235, 0.1); color: #2563eb;">
+						<i class="pi pi-users" style="font-size: 1.5rem;"></i>
+					</div>
+				</div>
 
-			<p:outputPanel id="pnlDatos">
-				<p:outputLabel rendered="#{backingReporteMatriculas.beanReportes.activaInfoCurso}" id="infoCurso" value="#{etiquetas['curso']}: #{backingReporteMatriculas.beanReportes.cursoSeleccionado.cursNombre} [Inicio: #{backingReporteMatriculas.formatDate(backingReporteMatriculas.beanReportes.ofertaSeleccionada.ocurFechaInicio,'yyyy-MM-dd')} Fin: #{backingReporteMatriculas.formatDate(backingReporteMatriculas.beanReportes.ofertaSeleccionada.ocurFechaFin,'yyyy-MM-dd')}]"/>
-				<p:dataTable id="tblmatriculas" widgetVar="tblSeg" value="#{backingReporteMatriculas.beanReportes.listaMatriculas}" var="mat"
-					rows="10" paginator="true" reflow="true">
-					<p:column headerText="#{etiquetas['estudiante']}">
-						<p:outputLabel value="#{mat.estudiante.persona.persApellidos.toUpperCase()} #{mat.estudiante.persona.persNombres.toUpperCase()} "/>
+				<!-- Card 2: ACTIVOS -->
+				<div class="stats-card stats-card-success">
+					<div class="stats-content">
+						<span class="stats-label">ACTIVOS</span>
+						<span class="stats-value">#{backingReporteMatriculas.beanReportes.totalActivos}</span>
+						<span class="stats-desc" style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Cursando actualmente</span>
+						<span style="height: 20px; display: block;"></span> <!-- Espaciador para igualar altura -->
+					</div>
+					<div class="stats-icon-wrapper" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+						<i class="pi pi-user-check" style="font-size: 1.5rem;"></i>
+					</div>
+				</div>
+
+				<!-- Card 3: INACTIVOS / RETIRADOS -->
+				<div class="stats-card stats-card-danger">
+					<div class="stats-content">
+						<span class="stats-label">INACTIVOS / RETIRADOS</span>
+						<span class="stats-value">#{backingReporteMatriculas.beanReportes.totalInactivos}</span>
+						<span class="stats-desc" style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Baja voluntaria</span>
+						<span class="stats-trend" style="font-size: 0.8rem; font-weight: 700; color: #{backingReporteMatriculas.beanReportes.tendenciaInactivosSubio ? '#10b981' : '#ef4444'}; margin-top: 4px; display: inline-flex; align-items: center; gap: 2px;">
+							#{backingReporteMatriculas.beanReportes.tendenciaInactivos}
+						</span>
+					</div>
+					<div class="stats-icon-wrapper" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+						<i class="pi pi-user-minus" style="font-size: 1.5rem;"></i>
+					</div>
+				</div>
+
+				<!-- Card 4: NUEVOS ESTE MES -->
+				<div class="stats-card stats-card-warning">
+					<div class="stats-content">
+						<span class="stats-label">NUEVOS ESTE MES</span>
+						<span class="stats-value">#{backingReporteMatriculas.beanReportes.totalNuevos}</span>
+						<span class="stats-desc" style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Período seleccionado</span>
+						<span class="stats-trend" style="font-size: 0.8rem; font-weight: 700; color: #{backingReporteMatriculas.beanReportes.tendenciaNuevosSubio ? '#10b981' : '#ef4444'}; margin-top: 4px; display: inline-flex; align-items: center; gap: 2px;">
+							#{backingReporteMatriculas.beanReportes.tendenciaNuevos}
+						</span>
+					</div>
+					<div class="stats-icon-wrapper" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+						<i class="pi pi-user-plus" style="font-size: 1.5rem;"></i>
+					</div>
+				</div>
+			</div>
+			
+			<!-- 🔵 CHARTS ROW (GRID) -->
+			<div class="ui-fluid p-formgrid p-grid mb-4">
+				<div class="p-field p-col-12 p-md-7 p-sm-12">
+					<p:card style="border-radius: 12px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); height: 100%;">
+						<f:facet name="title">
+							<span style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">Matrículas por Mes — #{backingReporteMatriculas.beanReportes.fechaFiltro.split('-')[0]}</span>
+						</f:facet>
+						<p:barChart model="#{backingReporteMatriculas.beanReportes.modelMatriculasMes}" style="width: 100%; height: 320px;" />
+					</p:card>
+				</div>
+				<div class="p-field p-col-12 p-md-5 p-sm-12">
+					<p:card style="border-radius: 12px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); height: 100%;">
+						<f:facet name="title">
+							<span style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">Distribución por Programa</span>
+						</f:facet>
+						<p:pieChart model="#{backingReporteMatriculas.beanReportes.modelDistribucionPrograma}" style="width: 100%; height: 320px;" />
+					</p:card>
+				</div>
+			</div>
+			
+			<!-- 🔵 RECENT REGISTRATIONS TABLE -->
+			<p:card style="border-radius: 12px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); margin-top: 1.5rem;">
+				<f:facet name="title">
+					<div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+						<span style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">Matrículas Recientes</span>
+						<span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">#{backingReporteMatriculas.beanReportes.listaMatriculasRecientes.size()} registros</span>
+					</div>
+				</f:facet>
+				
+				<p:dataTable id="tblRecientes" value="#{backingReporteMatriculas.beanReportes.listaMatriculasRecientes}" var="mat" 
+							 rows="10" paginator="true" reflow="true" styleClass="ui-datatable-striped">
+										
+					<p:column headerText="ALUMNO" style="width: 25%; font-weight: 600;" filterBy="#{mat.estudiante.persona.persApellidos}">
+						<h:outputText value="#{mat.estudiante.persona.persApellidos} #{mat.estudiante.persona.persNombres}" style="text-transform: uppercase;" />
 					</p:column>
-					<p:column headerText="#{etiquetas['estado']}" style="width:200px;">
-						<p:outputLabel value="#{mat.matrEstado.equals('INSMAT01')?'INSCRITO':mat.matrEstado.equals('INSMAT02')?'MATRICULADO':mat.matrEstado.equals('INSMAT03')?'DESERTADO':'CULMINADO'}"/>
+					
+					<p:column headerText="PROGRAMA" style="width: 25%;" filterBy="#{mat.ofertaCursos.ofertaCapacitacion.curso.cursNombre}">
+						<h:outputText value="#{mat.ofertaCursos.ofertaCapacitacion.curso.cursNombre}" />
 					</p:column>
-					<p:column headerText="#{etiquetas['datosMatCerti']}"
-							style="width:100px;">							
-							<p:commandButton icon="#{botones['icono.pdf']}"
-								title="#{tooltip['docMatricula']}"
-								action="#{backingReporteMatriculas.generarPdf}" process="@this"
-								immediate="true"
-								disabled="#{mat.ofertaCursos.ocurEstado.equals('OCUR03')?true:false}"
-								ajax="false">
-								<f:setPropertyActionListener value="#{mat}"
-									target="#{backingReporteMatriculas.beanReportes.matriculaSeleccionada}" />
-							</p:commandButton>
-							<p:commandButton icon="#{botones['icono.pdf']}"
-								title="#{tooltip['certCurso']}"
-								action="#{backingReporteMatriculas.generaCertificadoPdf}"
-								immediate="true" alt="Certificado" process="@this"
-								disabled="#{mat.matrEstado.equals('INSMAT05')?false:true}"
-								ajax="false">
-								<f:setPropertyActionListener value="#{mat}"
-									target="#{backingReporteMatriculas.beanReportes.matriculaSeleccionada}" />
-							</p:commandButton>
-						</p:column>
+					
+					<p:column headerText="FECHA" style="width: 12%; text-align: center;">
+						<h:outputText value="#{backingReporteMatriculas.formatRefDate(mat)}" />
+					</p:column>
+					
+					<p:column headerText="MODALIDAD" style="width: 11%; text-align: center;">
+						<span
+							style="font-size: 0.75rem; border-radius: 6px; padding: 0.25rem 0.6rem; font-weight: 700; display: inline-block;
+									background: #{backingReporteMatriculas.obtenerColorModalidad(mat)}; border: 1px solid #{backingReporteMatriculas.obtenerColorModalidad(mat)};
+									 color: #fffff;">
+							#{backingReporteMatriculas.obtenerModalidad(mat)} </span>
+					</p:column>
+					
+					<p:column headerText="ESTADO" style="width: 12%; text-align: center;">
+						<span style="font-size: 0.75rem; border-radius: 6px; padding: 0.25rem 0.6rem; font-weight: 700; display: inline-block;
+									 background: #{mat.matrEstado.equals('INSMAT02') ? '#d1fae5' : mat.matrEstado.equals('INSMAT05') ? '#e0f2fe' : mat.matrEstado.equals('INSMAT03') ? '#fee2e2' : '#f3f4f6'}; 
+									 color: #{mat.matrEstado.equals('INSMAT02') ? '#065f46' : mat.matrEstado.equals('INSMAT05') ? '#0369a1' : mat.matrEstado.equals('INSMAT03') ? '#b91c1c' : '#374151'};
+									 border: 1px solid #{mat.matrEstado.equals('INSMAT02') ? '#a7f3d0' : mat.matrEstado.equals('INSMAT05') ? '#bae6fd' : mat.matrEstado.equals('INSMAT03') ? '#fca5a5' : '#e5e7eb'};">
+							#{backingReporteMatriculas.obtenerEstadoLabel(mat)}
+						</span>
+					</p:column>
+					
 				</p:dataTable>
-			</p:outputPanel>
-		</p:fieldset>
-	</h:form>
-		
+			</p:card>
+		</h:form>
 	</ui:define>
 
 </ui:composition>

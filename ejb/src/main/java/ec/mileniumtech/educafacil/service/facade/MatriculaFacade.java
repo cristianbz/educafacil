@@ -3,6 +3,7 @@ package ec.mileniumtech.educafacil.service.facade;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import ec.mileniumtech.educafacil.dao.impl.AreaDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.CursoDaoImpl;
@@ -134,7 +135,30 @@ public class MatriculaFacade {
     public Matricula actualizarMatricula(Matricula matricula) {
         return matriculaDao.actualizar(matricula);
     }
+    
+    public List<Matricula> listaTodasMatriculas() {
+        return matriculaDao.findAll();
+    }
+    
+    public Integer totalMatriculados(int anio) {
+    	return matriculaDao.totalMatriculas(anio);
+    }
+    
+    public Integer totalMatriculasActivas(int anio, int mes) {
+    	return matriculaDao.totalMatriculasActivas(anio, mes);
+    }
+    
+    public Integer totalMatriculaDesertados(int anio, int mes) {
+    	return matriculaDao.totalMatriculasDesertadas(anio, mes);
+    }
 
+    public Map<Integer,Integer> obtenerMatriculasHastaMes(int anio, int mesLimite){
+    	return matriculaDao.obtenerMatriculasHastaMes(anio, mesLimite);
+    }
+    
+    public List<Matricula> listaMatriculasPorAnio(int anio){
+    	return matriculaDao.listaMatriculasPorAnio(anio);
+    }
     // ========== Estudiante ==========
 
     public List<Estudiante> estudiantesPorApellido(String apellidos) {
@@ -314,4 +338,6 @@ public class MatriculaFacade {
     public List<MedioInformacion> listaMedioInformacion() {
         return medioInformacionDao.listaMediosInformacion();
     }
+    
+
 }

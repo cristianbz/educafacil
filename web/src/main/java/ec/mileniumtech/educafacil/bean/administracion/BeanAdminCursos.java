@@ -74,6 +74,9 @@ public class BeanAdminCursos implements Serializable{
 	private String codigoTipoCurso;
 	@Getter
 	@Setter
+	private String codigoTipoModalidad;
+	@Getter
+	@Setter
 	private boolean editarOfertaCurso;
 	@Getter
 	@Setter
@@ -99,6 +102,10 @@ public class BeanAdminCursos implements Serializable{
 	@Getter
 	@Setter
 	private EvaluacionCurso evaluacionCurso;
+	
+	@Getter
+	@Setter
+	private List<Catalogo> listaModalidadEstudio;
 	
 	@PostConstruct
 	public void init() {

@@ -407,4 +407,13 @@ public class AdministracionService {
             puntoEmisionDao.actualizar(puntoEmision);
         }
     }
+    /**
+     * Las modalidades de estudio ordenadas
+     * @return
+     */
+    public List<Catalogo> listarTipoModalidadOrdenados() {
+        return catalogoDao.catalogosPorTipo(EnumTipoCatalogo.TIPOMODALIDADESTUDIO.getNemotecnico()).stream()
+                .sorted((t1, t2) -> t1.getCataDescripcion().compareTo(t2.getCataDescripcion()))
+                .collect(Collectors.toList());
+    }
 }

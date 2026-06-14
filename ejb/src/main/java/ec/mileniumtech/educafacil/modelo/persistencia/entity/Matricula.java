@@ -40,7 +40,8 @@ import lombok.Setter;
 	@NamedQuery(name = Matricula.BUSCAR_MATRICULA_ESTUDIANTE_CURSO,query = "SELECT M FROM Matricula M WHERE M.ofertaCursos.ocurId=:codigoOferta AND M.estudiante.estuId=:codigoEstudiante AND M.matrEstado ='INSMAT02'"),
 	@NamedQuery(name = Matricula.BUSCAR_MATRICULA_POR_OFERTA_CURSO,query = "SELECT M FROM Matricula M WHERE M.ofertaCursos.ocurId=:codigoOferta AND M.ofertaCursos.ocurEstado IN('OCUR01','OCUR02') ORDER BY M.estudiante.persona.persApellidos"),
 //	@NamedQuery(name = Matricula.BUSCAR_MATRICULA_POR_OFERTA_CURSO_ANIO,query = "SELECT M FROM Matricula M WHERE M.ofertaCursos.ocurId=:codigoOferta AND M.ofertaCursos.ocurEstado IN('OCUR01','OCUR02') ORDER BY M.estudiante.persona.persApellidos"),
-	@NamedQuery(name = Matricula.BUSCAR_MATRICULAS_ALUMNO_ACTIVAS,query = "SELECT M FROM Matricula M WHERE M.estudiante.estuId=:codigoEstudiante AND M.ofertaCursos.ocurPorDefecto=false AND M.matrEstado='INSMAT02'")
+	@NamedQuery(name = Matricula.BUSCAR_MATRICULAS_ALUMNO_ACTIVAS,query = "SELECT M FROM Matricula M WHERE M.estudiante.estuId=:codigoEstudiante AND M.ofertaCursos.ocurPorDefecto=false AND M.matrEstado='INSMAT02'"),
+	@NamedQuery(name = Matricula.BUSCAR_MATRICULAS_POR_ANIO,query = "SELECT M FROM Matricula M WHERE YEAR(M.matrFechaMatricula) = :anio")
 })
 public class Matricula implements Serializable {
 
@@ -56,6 +57,7 @@ public class Matricula implements Serializable {
 	public static final String BUSCAR_MATRICULA_ESTUDIANTE_CURSO ="buscarMatriculaEstudianteCurso";
 	public static final String BUSCAR_MATRICULA_POR_OFERTA_CURSO ="buscarMatriculaPorOfertaCurso";
 	public static final String BUSCAR_MATRICULAS_ALUMNO_ACTIVAS="buscarMatriculasAlumnoActivas";
+	public static final String BUSCAR_MATRICULAS_POR_ANIO="buscarMatriculasPorAnio";
 //	public static final String BUSCAR_MATRICULA_POR_OFERTA_CURSO_ANIO ="buscarMatriculaPorOfertaCursoAnio";
 	@Id
 	@SequenceGenerator(name="matriculaSeq", sequenceName="matricula_seq", allocationSize = 1)

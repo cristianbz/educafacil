@@ -98,7 +98,20 @@
 								</p:selectOneMenu>
 								<p:message for="comboTipoCurso" style="margin-top: 0.25rem;" />
 							</div>
-							
+							<!-- Tipo Modalidad -->
+							<div style="margin-bottom: 1.5rem;">
+								<p:outputLabel value="#{etiquetas['tipoModalidad']} *" for="comboTipoModalidad"
+									class="form-label" />
+								<p:selectOneMenu id="comboTipoModalidad"
+									value="#{backingAdminCursos.beanAdminCursos.codigoTipoModalidad}"
+									required="true" requiredMessage="#{mensajes['campoRequerido']}">
+									<f:selectItem itemLabel="— Seleccionar tipo —" itemValue="#{null}" noSelectionOption="true" />
+									<f:selectItems value="#{backingAdminCursos.beanAdminCursos.listaModalidadEstudio}"
+										var="catalogo" itemValue="#{catalogo.cataCodigoIndice}" itemLabel="#{catalogo.cataDescripcion}" />
+									<p:ajax process="@this" event="change" />
+								</p:selectOneMenu>
+								<p:message for="comboTipoModalidad" style="margin-top: 0.25rem;" />
+							</div>
 							<!-- Grupo 2: Programación y Logística -->
 							<h5 class="section-title-accent">Programación y Logística</h5>
 							

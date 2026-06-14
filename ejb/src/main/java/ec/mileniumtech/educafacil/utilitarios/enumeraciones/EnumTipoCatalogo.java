@@ -13,7 +13,8 @@ public enum EnumTipoCatalogo {
 	TIPOCAPACITACION(1,"Tipo Curso","TCAPA"),
 	TIPONIVELESTUDIO(2,"Tipo Nivel Estudio","TPNES"),
 	TIPOSEGUIMIENTO(3,"Tipo Seguimiento","TSEGM"),
-	TIPOPAGO(4,"Tipo Pago","TPAGO");
+	TIPOPAGO(4,"Tipo Pago","TPAGO"),
+	TIPOMODALIDADESTUDIO(5,"Tipo Modalidad Estudio","TMOES");
 	
 	@Getter
 	private final int codigo;
