@@ -1,247 +1,328 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:f="jakarta.faces.core"
+	xmlns:h="jakarta.faces.html"
 	xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
 	
 	<ui:define name="contenido">
-					<f:event listener="#{backingLogin.validarSesion()}" type="preRenderView" />
-			<h:form prependId="false">
-				<p:growl id="growl" life="3000" showDetail="true" />
-				<p:dialog  widgetVar="dlgEnProc" header="Por favor espere.."
-	                  draggable="false" 
-	                  modal="true" resizable="false" closable="false" responsive="true"
-	                  style="font-size: 10px;">             
-	            	<h:graphicImage value="/resources/img/cargando.gif" width="250" height="250"/>
-	            </p:dialog>
-	            
-	            <p:dialog widgetVar="dlgBuscar" appendTo="@(body)" resizable="false" modal="true" closable="false"  height="100px;" header="#{titulos['opcionesBusqueda']}">
-	            	<p:scrollPanel mode="native"
-						style="max-height:350px; max-width:300px;">
-	            	<p:outputPanel id="panelBuscar" >
-	            		<div class="ui-fluid p-formgrid p-grid">
-	            			<div class="p-field p-col-12 p-md-12" >
-								<span class="ui-float-label ui-input-icon-right" style="margin-top: 2em">
-	            			<p:selectOneMenu id="idCurso"																
-								value="#{backingListadoEstudiantes.beanListadoEstudiantes.cursoSeleccionado}"
-								converter="selectOneMenuConverter"
-								filter="true" filterMatchMode="contains" style="width:250px;"
-								required="true" requiredMessage="#{mensajes['campoRequerido']}">
-								<f:selectItem itemLabel="#{etiquetas['seleccionar']}"
-									itemValue="#{null}" noSelectionOption="true" />
-								<f:selectItems
-									value="#{backingListadoEstudiantes.beanListadoEstudiantes.listaCursos}"
-									var="curso" itemLabel="#{curso.cursNombre}"
-									itemValue="#{curso}" />
-									<p:ajax process="@this idCurso"  partialSubmit="true" update="ofertacurso" onstart="PF('dlgEnProc').show();" oncomplete="PF('dlgEnProc').hide();"
-								 event="change" listener="#{backingListadoEstudiantes.cargarOfertaCursos()}"/>
-							</p:selectOneMenu>
-							<p:outputLabel value="#{etiquetas['curso']}:" for="@previous"/>
-							</span>	
-							<p:message for="idCurso"/>	
-							</div>						
-							
-							<div class="p-field p-col-12 p-md-12" >
-								<span class="ui-float-label " style="margin-top: 2em">							
-									<p:selectOneListbox  id="ofertacurso" value="#{backingListadoEstudiantes.beanListadoEstudiantes.ofertaSeleccionada}" scrollHeight="250"
-										required="true"  requiredMessage="#{mensajes['campoRequerido']}" style="width:250px;"
-										converter="selectOneMenuConverter">
-										<f:selectItems value="#{backingListadoEstudiantes.beanListadoEstudiantes.listaOfertaCursos}" 
-											var="oferta" itemLabel="#{backingListadoEstudiantes.formatDate(oferta.ocurFechaInicio,'yyyy-MM-dd')} / #{backingReporteMatriculas.formatDate(oferta.ocurFechaFin,'yyyy-MM-dd')}" itemValue="#{oferta}"/>										
-									</p:selectOneListbox>
-									<p:outputLabel value="#{etiquetas['inicioFin']}" for="ofertacurso"/>
-								</span>
-								<p:message for="ofertacurso"/>	
-							</div>		
-							
-							<div class="p-field p-col-12 p-md-6" >								
-								<p:commandButton icon="#{botones['icono.buscar']}" value="#{botones['buscar']}" partialSubmit="true"
-									actionListener="#{backingListadoEstudiantes.buscarMatriculas()}" onstart="PF('dlgEnProc').show();" oncomplete="PF('dlgEnProc').hide(); "
-									process="@this panelDatosBusqueda panelBuscar" update=" panelDatosBusqueda panelBuscar"/>
-							</div>
-							<div class="p-field p-col-12 p-md-6" >		
-								<p:commandButton process="@this" value="#{botones['cancelar']}" icon="#{botones['icono.cancelar']}" oncomplete="PF('dlgBuscar').hide();"/>
-							</div>										
-	            		</div>          	
-	            	</p:outputPanel>
-	            	</p:scrollPanel>
-	            </p:dialog>
-	            
-				<!-- DIALOGO DETALLES ALUMNO -->
-				<p:dialog widgetVar="dlgMatriculaSeleccionda" header="#{titulos['datosEstudiante']}">
-					<p:panelGrid id="datosMatriculaSeleccionada" styleClass="panelNoBorder">
-						<p:row>
-							<p:column>
-								<p:outputLabel value="#{etiquetas['cedularuc']}:"/>
-							</p:column>
-							<p:column>
-								<p:outputLabel value="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.estudiante.persona.persDocumentoIdentidad}"/>
-							</p:column>
-						</p:row>
-						<p:row>
-							<p:column>
-								<p:outputLabel value="#{etiquetas['nombres']}:"/>
-							</p:column>
-							<p:column>
-								<p:outputLabel value="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.estudiante.persona.persApellidos} #{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.estudiante.persona.persNombres}"/>
-							</p:column>
-						</p:row>
-						<p:row>
-							<p:column>
-								<p:outputLabel value="#{etiquetas['telefonoCasa']}:"/>
-							</p:column>
-							<p:column>
-								<p:outputLabel value=" #{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.estudiante.persona.persTelefonoCasa}"/>
-							</p:column>
-						</p:row>
-						<p:row>
-							<p:column>
-								<p:outputLabel value="#{etiquetas['telefonoMobil']}:"/>
-							</p:column>
-							<p:column>
-								<p:outputLabel value=" #{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.estudiante.persona.persTelefonoMobil}"/>
-							</p:column>
-						</p:row>
-						<p:row>
-							<p:column>
-								<p:outputLabel value="#{etiquetas['correo']}:"/>
-							</p:column>
-							<p:column>
-								<p:outputLabel value=" #{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.estudiante.persona.persCorreoElectronico}"/>
-							</p:column>
-						</p:row>
-
-						<p:row rendered="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.ofertaCursos.ocurEstado.equals('OCUR03')?false:true}">
-							<p:column>
-								<p:outputLabel value="#{etiquetas['curso']}:"/>
-							</p:column>
-							<p:column>
-								<p:outputLabel value="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.ofertaCursos.ofertaCapacitacion.curso.cursNombre}"/>
-							</p:column>							
-						</p:row>
-						<p:row rendered="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.ofertaCursos.ocurEstado.equals('OCUR03')?false:true}">
-							<p:column>
-								<p:outputLabel value="#{etiquetas['fechaInicio']}:"/>
-							</p:column>
-							<p:column>
-								<p:outputLabel value="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.ofertaCursos.ocurFechaInicio}" id="fInicio">
-									<f:convertDateTime for="fInicio" pattern="yyyy-MM-dd"/>
-								</p:outputLabel>
-								 
-							</p:column>
-						</p:row>
-						<p:row rendered="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.ofertaCursos.ocurEstado.equals('OCUR03')?false:true}">
-							<p:column>
-								<p:outputLabel value="#{etiquetas['fechaFin']}:"/>
-							</p:column>
-							<p:column>
-								<p:outputLabel value="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.ofertaCursos.ocurFechaFin}" id="fFin">
-									<f:convertDateTime for="fFin" pattern="yyyy-MM-dd"/>
-								</p:outputLabel>
-								 
-							</p:column>
-						</p:row>						
-						<p:row>
-							<p:column>
-								<p:outputLabel value="#{etiquetas['observacion']}:"/>
-							</p:column>
-							<p:column>
-								<p:outputLabel value="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.matrObservacion}"/>
-							</p:column>
-						</p:row>
-					</p:panelGrid>
-				</p:dialog>
-			<p:breadCrumb>
-				<p:menuitem value="Categorias" url="#" />
-				<p:menuitem value="Secretaria" url="#" />
-				<p:menuitem value="Reporte clientes" url="#" />
+		<f:event listener="#{backingLogin.validarSesion()}" type="preRenderView" />
+		<h:form prependId="false">
+			<p:growl id="growl" life="3000" showDetail="true" />
+			
+			<!-- DIÁLOGO DE CARGA -->
+			<p:dialog widgetVar="dlgEnProc" header="Por favor espere.."
+				draggable="false" modal="true" resizable="false" closable="false" responsive="true"
+				style="font-size: 11px;">             
+				<h:graphicImage value="/resources/img/cargando.gif" width="200" height="200"/>
+			</p:dialog>
+			
+			<!-- BREADCRUMB REDISEÑADO -->
+			<p:breadCrumb styleClass="ui-breadcrumb p-mb-3" style="border: none; background: transparent; padding-left: 0;">
+				<p:menuitem value="Inicio" url="#" />
+				<p:menuitem value="Secretaría" url="#" />
+				<p:menuitem value="Listado Matrículas" url="#" />
 			</p:breadCrumb>				
-			<br/>
-			<p:splitButton value="#{etiquetas['accionesRealizar']}">
-	            <p:menuitem value="#{botones['nuevaBusqueda']}" process="@this" 
-							update="panelDatosBusqueda panelBuscar" resetValues="true"
-							partialSubmit="true" icon="#{botones['icono.nuevo']}" actionListener="#{backingListadoEstudiantes.mostrarDialogoBuscar()}"/>
-	        </p:splitButton>	
-			<br/>	
-			<br/>
-					<p:panel id="panelDatosBusqueda">	
-						<h:panelGrid columns="2">
-							<p:outputLabel value="#{etiquetas['curso']}: #{backingListadoEstudiantes.beanListadoEstudiantes.cursoSeleccionado.cursNombre} [Inicio: #{backingListadoEstudiantes.formatDate(backingListadoEstudiantes.beanListadoEstudiantes.ofertaSeleccionada.ocurFechaInicio,'yyyy-MM-dd')} Fin: #{backingListadoEstudiantes.formatDate(backingListadoEstudiantes.beanListadoEstudiantes.ofertaSeleccionada.ocurFechaFin,'yyyy-MM-dd')}] #{etiquetas['horario']}: #{backingListadoEstudiantes.beanListadoEstudiantes.ofertaSeleccionada.ocurHorario}"/>
-							<p:commandLink  title="#{tooltip['usuariosMoodle']}" action="#{backingListadoEstudiantes.csvMoodle()}" immediate="true" alt="#{tooltip['usuariosMoodle']}"
-							disabled="#{backingListadoEstudiantes.beanListadoEstudiantes.listaMatriculas.size()==0?true:false}"
-							process="@this"  ajax="false">
-								
-								<i class="pi pi-download" style="font-size: 1em; color: green;"></i>
-							</p:commandLink>
-						</h:panelGrid>
+
+			<!-- ENCABEZADO DE LA PÁGINA -->
+			<div class="page-header" style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+				<div class="page-title">
+					<h2 style="font-weight: 800; color: var(--text-main); margin: 0; font-size: 1.875rem;">Reportes y Listado de Estudiantes</h2>
+					<small style="color: var(--text-muted); font-size: 0.9rem;">Consulta de matrículas e inscripciones activas por curso</small>
+				</div>
+			</div>
+
+			<!-- PANEL INLINE DE BÚSQUEDA / FILTROS (MEJORA SIGNIFICATIVA DE UX) -->
+			<p:panel id="panelBuscar" header="Filtros de Búsqueda" toggleable="true" styleClass="card ui-panel p-mb-4 shadow-sm" style="margin-bottom: 2rem;">
+				<div class="ui-fluid p-formgrid p-grid">
+					<!-- Selección de Curso -->
+					<div class="p-field p-col-12 p-md-5" style="margin-bottom: 1rem;">
+						<p:outputLabel value="#{etiquetas['curso']}:" for="idCurso" styleClass="font-semibold p-d-block p-mb-2" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-muted);" />
+						<p:selectOneMenu id="idCurso"																
+							value="#{backingListadoEstudiantes.beanListadoEstudiantes.cursoSeleccionado}"
+							converter="selectOneMenuConverter"
+							filter="true" filterMatchMode="contains"
+							required="true" requiredMessage="#{mensajes['campoRequerido']}">
+							<f:selectItem itemLabel="#{etiquetas['seleccionar']}"
+								itemValue="#{null}" noSelectionOption="true" />
+							<f:selectItems
+								value="#{backingListadoEstudiantes.beanListadoEstudiantes.listaCursos}"
+								var="curso" itemLabel="#{curso.cursNombre}"
+								itemValue="#{curso}" />
+						</p:selectOneMenu>
+						<p:message for="idCurso"/>	
+					</div>						
 					
+					<!-- Selección de Año -->
+					<div class="p-field p-col-12 p-md-2" style="margin-bottom: 1rem;">
+						<p:outputLabel value="#{etiquetas['anio']}:" for="anio" styleClass="font-semibold p-d-block p-mb-2" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-muted);" />
+						<p:inputNumber required="true" id="anio" decimalPlaces="0" requiredMessage="#{mensajes['campoRequerido']}" 
+							value="#{backingListadoEstudiantes.beanListadoEstudiantes.anioBusqueda}">
+							<p:ajax process="@this idCurso" partialSubmit="true" update="ofertacurso" onstart="PF('dlgEnProc').show();" oncomplete="PF('dlgEnProc').hide();"
+								event="change" listener="#{backingListadoEstudiantes.cargarOfertaCursos()}"/>
+						</p:inputNumber>
+						<p:message for="anio"/>	
+					</div>
+					
+					<!-- Selección de Oferta (Fechas) -->
+					<div class="p-field p-col-12 p-md-5" style="margin-bottom: 1rem;">
+						<p:outputLabel value="#{etiquetas['inicioFin']}:" for="ofertacurso" styleClass="font-semibold p-d-block p-mb-2" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-muted);" />
+						<p:selectOneMenu id="ofertacurso" value="#{backingListadoEstudiantes.beanListadoEstudiantes.ofertaSeleccionada}"
+							required="true" requiredMessage="#{mensajes['campoRequerido']}"
+							converter="selectOneMenuConverter">
+							<f:selectItem itemLabel="#{etiquetas['seleccionar']}" itemValue="#{null}" noSelectionOption="true"/>
+							<f:selectItems value="#{backingListadoEstudiantes.beanListadoEstudiantes.listaOfertaCursos}" 
+								var="oferta" itemLabel="#{backingListadoEstudiantes.formatDate(oferta.ocurFechaInicio,'yyyy-MM-dd')} / #{backingListadoEstudiantes.formatDate(oferta.ocurFechaFin,'yyyy-MM-dd')}" itemValue="#{oferta}"/>										
+						</p:selectOneMenu>
+						<p:message for="ofertacurso"/>	
+					</div>
+				</div>
 				
-					<p:spacer height="20px;"/>
+				<!-- Botones del Filtro -->
+				<div class="p-grid p-jc-end p-mt-3" style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1rem; padding-right: 0.5rem;">
+					<div class="p-col-12 p-md-2" style="width: auto;">
+						<p:commandButton icon="pi pi-search" value="#{botones['buscar']}" partialSubmit="true"
+							actionListener="#{backingListadoEstudiantes.buscarMatriculas()}" onstart="PF('dlgEnProc').show();" oncomplete="PF('dlgEnProc').hide();"
+							process="panelBuscar" update="panelDatosBusqueda panelBuscar growl" styleClass="ui-button-primary" style="padding: 0.5rem 1.5rem !important;"/>
+					</div>
+					<div class="p-col-12 p-md-2" style="width: auto;">
+						<p:commandButton process="@this" value="Limpiar" icon="pi pi-refresh"
+							actionListener="#{backingListadoEstudiantes.nuevaBusqueda()}"
+							update="panelBuscar panelDatosBusqueda" styleClass="ui-button-outlined ui-button-secondary"
+							style="padding: 0.5rem 1.5rem !important;" resetValues="true"/>
+					</div>
+				</div>
+			</p:panel>
+
+			<!-- SECCIÓN DE RESULTADOS -->
+			<p:outputPanel id="panelDatosBusqueda">
+				<!-- RENDERIZAR SI UN CURSO HA SIDO CONSULTADO -->
+				<h:panelGroup rendered="#{backingListadoEstudiantes.beanListadoEstudiantes.cursoSeleccionado.cursId != null}">
+					
+					<!-- TARJETA INFORMATIVA DEL CURSO SELECCIONADO (KPI/DASHBOARD STYLE) -->
+					<div class="stats-card stats-card-primary p-mb-4 shadow-sm" style="margin-bottom: 2rem; background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 1px solid #bfdbfe; border-radius: 12px; padding: 1.25rem 1.5rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.5rem;">
+						<div style="display: flex; align-items: center; gap: 1rem;">
+							<div class="stats-icon-wrapper" style="width: 48px; height: 48px; border-radius: 12px; background-color: var(--primary-color); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
+								<i class="pi pi-bookmark"></i>
+							</div>
+							<div>
+								<h4 style="margin: 0; font-weight: 700; color: #1e3a8a; font-size: 1.2rem;">
+									#{backingListadoEstudiantes.beanListadoEstudiantes.cursoSeleccionado.cursNombre}
+								</h4>
+								<div style="display: flex; gap: 1.2rem; margin-top: 0.25rem; font-size: 0.85rem; color: #1e40af; flex-wrap: wrap;">
+									<span><i class="pi pi-calendar" style="margin-right: 4px;"></i><strong>Período:</strong> #{backingListadoEstudiantes.formatDate(backingListadoEstudiantes.beanListadoEstudiantes.ofertaSeleccionada.ocurFechaInicio,'yyyy-MM-dd')} al #{backingListadoEstudiantes.formatDate(backingListadoEstudiantes.beanListadoEstudiantes.ofertaSeleccionada.ocurFechaFin,'yyyy-MM-dd')}</span>
+									<span><i class="pi pi-clock" style="margin-right: 4px;"></i><strong>Horario:</strong> #{backingListadoEstudiantes.beanListadoEstudiantes.ofertaSeleccionada.ocurHorario}</span>
+								</div>
+							</div>
+						</div>
+						
+						<!-- ACCIONES DE EXPORTACIÓN -->
+						<div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+							<!-- Descargar Reporte PDF -->
+							<p:commandButton value="Reporte PDF" immediate="true"
+								action="#{backingListadoEstudiantes.generarReporte()}" 
+								ajax="false" icon="pi pi-file-pdf"
+								styleClass="ui-button-danger shadow-sm">        
+								<p:fileDownload value="#{backingListadoEstudiantes.fileDownload}" />
+							</p:commandButton>
+							
+							<!-- Exportar Moodle CSV -->
+							<p:commandButton value="CSV Moodle" immediate="true"
+								action="#{backingListadoEstudiantes.csvMoodle()}"
+								disabled="#{backingListadoEstudiantes.beanListadoEstudiantes.listaMatriculas.size()==0}"
+								process="@this" ajax="false" icon="pi pi-download"
+								styleClass="ui-button-success ui-button-outlined shadow-sm"/>
+								
+							<!-- Contador KPI -->
+							<div style="background-color: white; border: 1px solid #bfdbfe; border-radius: 8px; padding: 0.35rem 0.75rem; display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 90px; height: 42px; box-shadow: var(--shadow-sm);">
+								<span style="font-size: 0.7rem; font-weight: 700; color: #1e40af; text-transform: uppercase; line-height: 1;">Alumnos</span>
+								<span style="font-size: 1.2rem; font-weight: 800; color: #1e3a8a; line-height: 1.2;">#{backingListadoEstudiantes.beanListadoEstudiantes.listaMatriculas.size()}</span>
+							</div>
+						</div>
+					</div>
+					
+					<!-- TABLA DE ESTUDIANTES -->
 					<p:dataTable value="#{backingListadoEstudiantes.beanListadoEstudiantes.listaMatriculas}" id="listaMatriculas" reflow="true"
 						rows="15" rowKey="#{matricula.matrId}" paginator="true" widgetVar="tblmatriculas" 
+						styleClass="ui-datatable shadow-sm"
 						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
 						var="matricula">
+						
+						<!-- Exportador a Excel embebido -->
 						<f:facet name="{Exporters}">
 							<div style="float: right; padding-top: 5px;">
-								<h:commandLink immediate="true">
-									<h:graphicImage library="img" name="excel.png" />
+								<h:commandLink immediate="true" title="Exportar a Excel">
+									<h:graphicImage library="img" name="excel.png" width="24" height="24" style="transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.15)';" onmouseout="this.style.transform='scale(1)';" />
 									<p:dataExporter type="xls" target="listaMatriculas"
-										fileName="interesados" />
+										fileName="matriculados_curso" />
 								</h:commandLink>
-	
 							</div>
 						</f:facet>
-						<p:column headerText="#{etiquetas['estudiante']}" filterBy="#{matricula.estudiante.persona.persApellidos} #{matricula.estudiante.persona.persNombres}" filterMatchMode="contains">
-							<p:outputLabel value="#{matricula.estudiante.persona.persApellidos} #{matricula.estudiante.persona.persNombres}"/>  
+						
+						<!-- Nombre del Estudiante -->
+						<p:column headerText="#{etiquetas['estudiante']}" filterBy="#{matricula.estudiante.persona.persApellidos} #{matricula.estudiante.persona.persNombres}" filterMatchMode="contains" style="font-weight: 500;">
+							<p:outputLabel value="#{matricula.estudiante.persona.persApellidos} #{matricula.estudiante.persona.persNombres}" style="color: var(--text-main); font-weight: 600;"/>  
 						</p:column>	
-						<p:column  headerText="#{etiquetas['correo']}" style="width:300px;">
-							<p:outputLabel value="#{matricula.estudiante.persona.persCorreoElectronico}"/>
+						
+						<!-- Correo Electrónico -->
+						<p:column headerText="#{etiquetas['correo']}" style="width:250px;">
+							<p:outputLabel value="#{matricula.estudiante.persona.persCorreoElectronico}" style="color: var(--text-muted);"/>
 						</p:column>					
-						<p:column  headerText="#{etiquetas['cedularuc']}" style="width:100px;">
+						
+						<!-- Cédula/RUC -->
+						<p:column headerText="#{etiquetas['cedularuc']}" style="width:120px; text-align: center;">
 							<p:outputLabel value="#{matricula.estudiante.persona.persDocumentoIdentidad}"/>
 						</p:column>
-						<p:column  headerText="#{etiquetas['telefono']}" style="width:100px;">
+						
+						<!-- Teléfono -->
+						<p:column headerText="#{etiquetas['telefono']}" style="width:120px; text-align: center;">
 							<p:outputLabel value="#{matricula.estudiante.persona.persTelefonoMobil}"/>
 						</p:column>
-						<p:column headerText="#{etiquetas['estado']}" filterMatchMode="exact" filterBy="#{matricula.matrEstado}" style="width:150px;">
-							<f:facet name="filter">
-							<p:selectOneMenu onchange="PF('tblmatriculas').filter()">
-								<f:selectItem itemLabel="Todos" itemValue="#{null}" noSelectionOption="true"/>
-								<f:selectItem itemLabel="INSCRITO" itemValue="INSMAT01"/>
-								<f:selectItem itemLabel="MATRICULADO" itemValue="INSMAT02"/>
-								<f:selectItem itemLabel="DESERTADO" itemValue="INSMAT03"/>
-								<f:selectItem itemLabel="CULMINADO" itemValue="INSMAT05"/>								
-							</p:selectOneMenu>
-						</f:facet>
-								<p:chip label="MATRICULADO" icon="pi pi-file-edit" styleClass="colorMatriculado chipstamanio" rendered="#{matricula.matrEstado.equals('INSMAT02')}" />
-								<p:chip label="CULMINADO" icon="pi pi-check-circle" styleClass="colorCulminado chipstamanio" rendered="#{matricula.matrEstado.equals('INSMAT05')}"/>
-								<p:chip label="DESERTADO" icon="pi pi-times-circle" styleClass="colorDesertado chipstamanio" rendered="#{matricula.matrEstado.equals('INSMAT03')}"/>	
 						
+						<!-- Estado con filtro de menú y chips coloridos -->
+						<p:column headerText="#{etiquetas['estado']}" filterMatchMode="exact" filterBy="#{matricula.matrEstado}" style="width:160px; text-align: center;">
+							<f:facet name="filter">
+								<p:selectOneMenu onchange="PF('tblmatriculas').filter()" styleClass="w-full">
+									<f:selectItem itemLabel="Todos" itemValue="#{null}" noSelectionOption="true"/>
+									<f:selectItem itemLabel="INSCRITO" itemValue="INSMAT01"/>
+									<f:selectItem itemLabel="MATRICULADO" itemValue="INSMAT02"/>
+									<f:selectItem itemLabel="DESERTADO" itemValue="INSMAT03"/>
+									<f:selectItem itemLabel="CULMINADO" itemValue="INSMAT05"/>								
+								</p:selectOneMenu>
+							</f:facet>
+							
+							<!-- Chips de estado correspondientes -->
+							<p:chip label="INSCRITO" icon="pi pi-info-circle" styleClass="inscrito chipstamanio" rendered="#{matricula.matrEstado.equals('INSMAT01')}" style="color: white; font-weight: bold;" />
+							<p:chip label="MATRICULADO" icon="pi pi-file-edit" styleClass="colorMatriculado chipstamanio" rendered="#{matricula.matrEstado.equals('INSMAT02')}" style="color: white; font-weight: bold;" />
+							<p:chip label="CULMINADO" icon="pi pi-check-circle" styleClass="colorCulminado chipstamanio" rendered="#{matricula.matrEstado.equals('INSMAT05')}" style="color: white; font-weight: bold;"/>
+							<p:chip label="DESERTADO" icon="pi pi-times-circle" styleClass="colorDesertado chipstamanio" rendered="#{matricula.matrEstado.equals('INSMAT03')}" style="color: white; font-weight: bold;"/>	
 						</p:column>
-						<p:column headerText="#{etiquetas['datosMatCerti']}" style="width:100px;"> 
-							<p:commandLink  title="#{tooltip['infoEstudiante']}" oncomplete="PF('dlgMatriculaSeleccionda').show();" process="@this" update="datosMatriculaSeleccionada">
+						
+						<!-- Acciones de Ficha y Documentos -->
+						<p:column headerText="Acciones" style="width:130px; text-align: center;"> 
+							<!-- Ver Ficha del Alumno -->
+							<p:commandLink title="#{tooltip['infoEstudiante']}" oncomplete="PF('dlgMatriculaSeleccionda').show();" process="@this" update="datosMatriculaSeleccionada" style="margin-right: 12px; display: inline-block;">
 								<f:setPropertyActionListener value="#{matricula}" target="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada}"/>
-								<i class="pi pi-users" style="font-size: 1em; color: green;"></i>
+								<i class="pi pi-user" style="font-size: 1.25rem; color: var(--primary-color); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)';" onmouseout="this.style.transform='scale(1)';"></i>
 							</p:commandLink>
 							
-							<p:commandLink  title="#{tooltip['docMatricula']}" action="#{backingListadoEstudiantes.generarPdf}" process="@this" immediate="true" disabled="#{matricula.ofertaCursos.ocurEstado.equals('OCUR03')?true:false}" ajax="false">
+							<!-- Generar PDF de Matrícula (Deshabilitado si oferta cerrada) -->
+							<p:commandLink title="#{tooltip['docMatricula']}" action="#{backingListadoEstudiantes.generarPdf}" process="@this" immediate="true" disabled="#{matricula.ofertaCursos.ocurEstado.equals('OCUR03')}" ajax="false" style="margin-right: 12px; display: inline-block;">
 								<f:setPropertyActionListener value="#{matricula}" target="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada}"/>
-								<i class="pi pi-file-pdf" style="font-size: 1em; color: green;"></i>
+								<i class="pi pi-file-pdf" style="font-size: 1.25rem; color: #ef4444; transition: transform 0.2s; opacity: #{matricula.ofertaCursos.ocurEstado.equals('OCUR03') ? '0.3' : '1'};" onmouseover="if(!#{matricula.ofertaCursos.ocurEstado.equals('OCUR03')}) this.style.transform='scale(1.2)';" onmouseout="this.style.transform='scale(1)';"></i>
 							</p:commandLink>
 							
-							<p:commandLink  title="#{tooltip['certCurso']}" action="#{backingListadoEstudiantes.generaCertificadoPdf}" immediate="true" alt="Certificado"
-							process="@this" disabled="#{matricula.matrEstado.equals('INSMAT05')?false:true}" ajax="false">
+							<!-- Generar Certificado (Solo habilitado si está CULMINADO) -->
+							<p:commandLink title="#{tooltip['certCurso']}" action="#{backingListadoEstudiantes.generaCertificadoPdf}" immediate="true" alt="Certificado"
+								process="@this" disabled="#{not matricula.matrEstado.equals('INSMAT05')}" ajax="false" style="display: inline-block;">
 								<f:setPropertyActionListener value="#{matricula}" target="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada}"/>
-								<i class="pi pi-file-pdf" style="font-size: 1em; color: green;"></i>
+								<i class="pi pi-verified" style="font-size: 1.25rem; color: #{matricula.matrEstado.equals('INSMAT05') ? 'var(--success-color)' : '#94a3b8'}; transition: transform 0.2s; opacity: #{matricula.matrEstado.equals('INSMAT05') ? '1' : '0.3'};" onmouseover="if(#{matricula.matrEstado.equals('INSMAT05')}) this.style.transform='scale(1.2)';" onmouseout="this.style.transform='scale(1)';"></i>
 							</p:commandLink>
 						</p:column>
 					</p:dataTable>
-				</p:panel>
-				
-			</h:form>
+				</h:panelGroup>
+
+				<!-- ESTADO VACÍO (INICIAL - PANTALLA MÁS AMIGABLE) -->
+				<h:panelGroup rendered="#{backingListadoEstudiantes.beanListadoEstudiantes.cursoSeleccionado.cursId == null}">
+					<div style="text-align: center; padding: 5rem 2rem; background: white; border: 2px dashed var(--border-color); border-radius: 12px; margin-top: 1rem; box-shadow: var(--shadow-sm);">
+						<div style="margin-bottom: 1.5rem;">
+							<i class="pi pi-search" style="font-size: 4rem; color: #94a3b8; padding: 1.5rem; background-color: #f8fafc; border-radius: 50%;"></i>
+						</div>
+						<h3 style="font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem; font-size: 1.25rem;">Consulta de Matrículas</h3>
+						<p style="color: var(--text-muted); max-width: 440px; margin: 0 auto 1.5rem auto; font-size: 0.95rem; line-height: 1.6;">
+							Por favor, selecciona un **Curso**, introduce el **Año** y escoge una **Fecha de Inicio/Fin** en el panel de filtros superior para cargar el listado de estudiantes.
+						</p>
+					</div>
+				</h:panelGroup>
+			</p:outputPanel>
+			
+			<!-- DIÁLOGO DETALLES ALUMNO (REDISEÑADO UX/UI ESTILO FICHA) -->
+			<p:dialog widgetVar="dlgMatriculaSeleccionda" header="Ficha de Datos del Estudiante" 
+				modal="true" responsive="true" width="550" resizable="false" 
+				styleClass="ui-dialog shadow-lg" appendTo="@(body)">
+				<p:outputPanel id="datosMatriculaSeleccionada" styleClass="p-p-2">
+					<div class="ui-fluid">
+						<!-- Perfil Rápido -->
+						<div style="display: flex; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color);">
+							<div style="width: 50px; height: 50px; border-radius: 50%; background-color: var(--primary-color); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; margin-right: 1rem; box-shadow: var(--shadow-sm);">
+								<i class="pi pi-user"></i>
+							</div>
+							<div>
+								<h3 style="margin: 0; font-weight: 700; color: var(--text-main); font-size: 1.15rem;">
+									#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.estudiante.persona.persApellidos} #{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.estudiante.persona.persNombres}
+								</h3>
+								<span style="color: var(--text-muted); font-size: 0.85rem; display: flex; align-items: center; gap: 4px; margin-top: 2px;">
+									<i class="pi pi-id-card"></i> #{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.estudiante.persona.persDocumentoIdentidad}
+								</span>
+							</div>
+						</div>
+
+						<!-- Dos Columnas: Información de Contacto e Información Académica -->
+						<div class="p-formgrid p-grid">
+							<!-- Columna Contacto -->
+							<div class="p-field p-col-12 p-md-6" style="margin-bottom: 1rem; padding-right: 0.5rem;">
+								<h5 style="margin-top: 0; margin-bottom: 0.75rem; color: var(--primary-color); font-weight: 700; font-size: 0.9rem; border-left: 3px solid var(--primary-color); padding-left: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Contacto</h5>
+								<div style="display: flex; flex-direction: column; gap: 0.75rem;">
+									<div>
+										<small style="display: block; color: var(--text-muted); font-weight: 700; font-size: 0.75rem; text-transform: uppercase;">Correo Electrónico</small>
+										<span style="font-size: 0.9rem; word-break: break-all; color: var(--text-main);">#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.estudiante.persona.persCorreoElectronico}</span>
+									</div>
+									<div>
+										<small style="display: block; color: var(--text-muted); font-weight: 700; font-size: 0.75rem; text-transform: uppercase;">Teléfono Móvil</small>
+										<span style="font-size: 0.9rem; color: var(--text-main);">#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.estudiante.persona.persTelefonoMobil}</span>
+									</div>
+									<div>
+										<small style="display: block; color: var(--text-muted); font-weight: 700; font-size: 0.75rem; text-transform: uppercase;">Teléfono Fijo</small>
+										<span style="font-size: 0.9rem; color: var(--text-main);">#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.estudiante.persona.persTelefonoCasa != null ? backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.estudiante.persona.persTelefonoCasa : 'No registrado'}</span>
+									</div>
+								</div>
+							</div>
+
+							<!-- Columna Datos del Curso -->
+							<div class="p-field p-col-12 p-md-6" style="margin-bottom: 1rem; padding-left: 0.5rem;">
+								<h5 style="margin-top: 0; margin-bottom: 0.75rem; color: var(--primary-color); font-weight: 700; font-size: 0.9rem; border-left: 3px solid var(--primary-color); padding-left: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Matrícula e Inicio</h5>
+								<div style="display: flex; flex-direction: column; gap: 0.75rem;">
+									<div>
+										<small style="display: block; color: var(--text-muted); font-weight: 700; font-size: 0.75rem; text-transform: uppercase;">Curso Inscrito</small>
+										<span style="font-size: 0.9rem; font-weight: 600; color: var(--text-main);">#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.ofertaCursos.ofertaCapacitacion.curso.cursNombre}</span>
+									</div>
+									<div style="display: flex; gap: 1rem;">
+										<div>
+											<small style="display: block; color: var(--text-muted); font-weight: 700; font-size: 0.75rem; text-transform: uppercase;">Fecha Inicio</small>
+											<span style="font-size: 0.9rem; color: var(--text-main);">
+												<h:outputText value="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.ofertaCursos.ocurFechaInicio}">
+													<f:convertDateTime pattern="yyyy-MM-dd"/>
+												</h:outputText>
+											</span>
+										</div>
+										<div>
+											<small style="display: block; color: var(--text-muted); font-weight: 700; font-size: 0.75rem; text-transform: uppercase;">Fecha Fin</small>
+											<span style="font-size: 0.9rem; color: var(--text-main);">
+												<h:outputText value="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.ofertaCursos.ocurFechaFin}">
+													<f:convertDateTime pattern="yyyy-MM-dd"/>
+												</h:outputText>
+											</span>
+										</div>
+									</div>
+									<div>
+										<small style="display: block; color: var(--text-muted); font-weight: 700; font-size: 0.75rem; text-transform: uppercase;">Observaciones</small>
+										<span style="font-size: 0.9rem; font-style: italic; color: var(--text-main);">#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.matrObservacion != null and !backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.matrObservacion.isEmpty() ? backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada.matrObservacion : 'Ninguna'}</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<!-- Pie del Diálogo -->
+					<div style="display: flex; justify-content: flex-end; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+						<p:commandButton value="Cerrar Ficha" type="button" onclick="PF('dlgMatriculaSeleccionda').hide();" 
+							styleClass="ui-button-outlined ui-button-secondary" style="width: auto; padding: 0.25rem 1.5rem !important;"/>
+					</div>
+				</p:outputPanel>
+			</p:dialog>
+		</h:form>
 	</ui:define>
 
 </ui:composition>

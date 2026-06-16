@@ -54,6 +54,6 @@ public class Capacitacion implements Serializable{
 	private Date capaFechaFin;
 	
 	@ManyToOne
-	@JoinColumn(name="inst_id",updatable = false, insertable = false)
+	@JoinColumn(name="inst_id")
 	private Instructor instructor;
 }

@@ -1,0 +1,621 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reporteInstructor" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="10c169d1-5ccd-4cec-8618-87a32de9fb25">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<subDataset name="formacionDataset">
+		<field name="formNivelEstudio" class="java.lang.String"/>
+		<field name="formTituloAcademico" class="java.lang.String"/>
+		<field name="formInstitucion" class="java.lang.String"/>
+		<field name="formFechaInicio" class="java.util.Date"/>
+		<field name="formFechaFin" class="java.util.Date"/>
+	</subDataset>
+	<subDataset name="capacitacionDataset">
+		<field name="capaTipo" class="java.lang.String"/>
+		<field name="capaNombre" class="java.lang.String"/>
+		<field name="capaInstitucion" class="java.lang.String"/>
+		<field name="capaFechaInicio" class="java.util.Date"/>
+		<field name="capaFechaFin" class="java.util.Date"/>
+	</subDataset>
+	<parameter name="instructor" class="ec.mileniumtech.educafacil.modelo.persistencia.entity.Instructor"/>
+	<parameter name="persona" class="ec.mileniumtech.educafacil.modelo.persistencia.entity.Persona"/>
+	<parameter name="formaciones" class="java.util.List"/>
+	<parameter name="capacitaciones" class="java.util.List"/>
+	<title>
+		<band height="40" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="10" width="555" height="25" uuid="e9f6aa3a-8c0a-4dee-b7ec-d0ccc2ca24d5"/>
+				<textElement textAlignment="Center">
+					<font size="18" isBold="true"/>
+				</textElement>
+				<text><![CDATA[FICHA DEL INSTRUCTOR]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="15" splitType="Stretch"/>
+	</pageHeader>
+	<detail>
+		<band height="684" splitType="Stretch">
+
+			<!-- ===== DATOS PERSONALES ===== -->
+			<rectangle>
+				<reportElement x="0" y="5" width="555" height="20" uuid="28b285e6-ea25-41e7-9ad9-35db36a06fef"/>
+				<graphicElement fill="Solid">
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="5" y="7" width="200" height="16" uuid="b1aa461e-19bc-4b31-bcd7-545a40a59c35"/>
+				<textElement>
+					<font size="10" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[DATOS PERSONALES]]></text>
+			</staticText>
+
+			<staticText>
+				<reportElement x="10" y="30" width="120" height="14" uuid="e2a065bb-0ce5-4275-9174-f4e185516251"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Apellidos:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="130" y="30" width="200" height="14" uuid="fef7fae9-3802-4199-8d70-8e673561943b"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{persona}.getPersApellidos()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="10" y="46" width="120" height="14" uuid="5349c1b5-fb14-4459-947d-d5392f2275f9"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nombres:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="130" y="46" width="200" height="14" uuid="b1936fea-0286-4bc2-ab6a-5435deee8219"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{persona} != null && $P{persona}.getPersNombres() != null ? $P{persona}.getPersNombres(): ""]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="10" y="62" width="120" height="14" uuid="c72e3bdb-8721-425a-9c0e-4e165b807655"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cédula:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="130" y="62" width="200" height="14" uuid="9dbb9509-5457-41c6-82d9-c9567af16a59"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{persona}.getPersDocumentoIdentidad() != null ? $P{persona}.getPersDocumentoIdentidad():""]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="10" y="78" width="120" height="14" uuid="8cba84dd-770a-4569-8c35-1e721bb33d6f"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Correo:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="130" y="78" width="200" height="14" uuid="6423be81-3a86-4a93-b5fc-7e27f817e9b8"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{persona}.getPersCorreoElectronico()!=null ? $P{persona}.getPersCorreoElectronico() :""]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="10" y="94" width="120" height="14" uuid="93ba6779-2d72-456c-90de-5cfc7b7be823"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Teléfono Móvil:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="130" y="94" width="200" height="14" uuid="640e9c92-e9d3-48db-a7ea-dd588526e17c"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{persona}.getPersTelefonoMobil() !=null ? $P{persona}.getPersTelefonoMobil():""]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="10" y="110" width="120" height="14" uuid="2da791c6-b172-455e-b9da-6037475d5f9a"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Domicilio:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="130" y="110" width="200" height="14" uuid="9f17c0c4-18cd-4e53-bb04-12b16bed67ce"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{persona}.getPersDomicilio() !=null ? $P{persona}.getPersDomicilio(): ""]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="10" y="126" width="120" height="14" uuid="7aca5870-7e29-4966-b57f-0a1daa8a0b89"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nacionalidad:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="130" y="126" width="200" height="14" uuid="fd8f041c-c514-4229-a9fc-c3c68919779d"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{persona}.getPersNacionalidad() !=null ? $P{persona}.getPersNacionalidad(): ""]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="10" y="142" width="120" height="14" uuid="b73eaf8b-79e3-4975-954a-cbff463d22f3"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Estado Civil:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="130" y="142" width="200" height="14" uuid="e84ddd04-c166-469d-89f0-3ad4de91716d"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{persona}.getPersEstadoCivil() !=null ? $P{persona}.getPersEstadoCivil() : ""]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="10" y="158" width="120" height="14" uuid="535bda9e-6be0-4093-bce0-1fe3f0a2fe73"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha Nacimiento:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="130" y="158" width="200" height="14" uuid="9600caf4-d40c-4078-aa2b-14a23624e75c"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{persona}.getPersFechaNacimiento() !=null ? $P{persona}.getPersFechaNacimiento() : ""]]></textFieldExpression>
+			</textField>
+
+			<!-- ===== DATOS DEL INSTRUCTOR ===== -->
+			<rectangle>
+				<reportElement x="0" y="185" width="555" height="20" uuid="6048dc26-dd4a-4309-97f2-c6d6d84cd3a8"/>
+				<graphicElement fill="Solid">
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="5" y="187" width="200" height="16" uuid="ee47b887-02fc-4bf7-ba3f-472c155ddfe8"/>
+				<textElement>
+					<font size="10" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[DATOS DEL INSTRUCTOR]]></text>
+			</staticText>
+
+			<staticText>
+				<reportElement x="10" y="210" width="120" height="14" uuid="3b7930cb-193b-4316-b258-e969a584f438"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha Ingreso:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="130" y="210" width="200" height="14" uuid="93f92a19-42e9-41a2-bfea-b4862f6ba92f"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{instructor}.getInstFechaIngreso() !=null ? $P{instructor}.getInstFechaIngreso(): ""]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="10" y="226" width="120" height="14" uuid="71851f55-60b0-423f-a82f-1700290cab36"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha Salida:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="130" y="226" width="200" height="14" uuid="78d825a2-efb5-468a-9f37-b9f365055cc3"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{instructor}.getInstFechaSalida() !=null ? $P{instructor}.getInstFechaSalida() : ""]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="10" y="242" width="120" height="14" uuid="5ae3136a-6d9f-4078-84ec-53206413ff43"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Activo:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="130" y="242" width="200" height="14" uuid="8ffcc049-44aa-479e-ac20-8ca106b7accf"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{instructor}.isInstActivo() ? "Sí" : "No"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="10" y="258" width="120" height="14" uuid="bb8e85e4-c581-402a-b97b-888600938e19"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[LinkedIn:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="130" y="258" width="200" height="14" uuid="59f31437-8bc8-4597-bc2b-f8a55033bc13"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{instructor}.getInstLinkedin() != null ? $P{instructor}.getInstLinkedin() : ""]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="10" y="274" width="120" height="14" uuid="b64cd2a9-222c-4a2e-acbb-b85266d419ad"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Régimen Fiscal:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="130" y="274" width="200" height="14" uuid="63000cd9-c013-41c0-813e-035f3f6bc93d"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{instructor}.getInstRegimenFiscal() !=null ? $P{instructor}.getInstRegimenFiscal() : ""]]></textFieldExpression>
+			</textField>
+
+			<!-- ===== FORMACION ACADEMICA ===== -->
+			<rectangle>
+				<reportElement x="0" y="301" width="555" height="20" uuid="f70d8dea-97c5-4935-9593-897d78381e33"/>
+				<graphicElement fill="Solid">
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="5" y="303" width="200" height="16" uuid="2dcf2f28-a0a4-4a77-9f17-7043c299b294"/>
+				<textElement>
+					<font size="10" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[FORMACIÓN ACADÉMICA]]></text>
+			</staticText>
+
+			<!-- Table header -->
+			<rectangle>
+				<reportElement x="0" y="323" width="555" height="18" uuid="0e5c0b99-782f-418f-8773-a7f470ff87be"/>
+				<graphicElement fill="Solid">
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="5" y="324" width="110" height="16" uuid="79f09faa-4302-48e2-a808-afbd8621e796"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nivel]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="120" y="324" width="130" height="16" uuid="486a4830-ff66-481b-b146-46b71ac7d232"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Título]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="255" y="324" width="130" height="16" uuid="bc981087-759a-46d8-824a-dfbc67eaaafb"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Institución]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="390" y="324" width="70" height="16" uuid="f2eb0cf6-87ed-46a1-9737-c57eb8e5ca44"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Inicio]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="465" y="324" width="70" height="16" uuid="bc3a9ccf-6306-4d60-93a9-5e4420db946e"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fin]]></text>
+			</staticText>
+
+			<componentElement>
+				<reportElement x="0" y="343" width="555" height="90" uuid="3c97d9e4-666c-4355-9d08-fa5181a657ad"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+					<datasetRun subDataset="formacionDataset">
+						<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{formaciones})]]></dataSourceExpression>
+					</datasetRun>
+					<jr:listContents height="18" width="555">
+						<textField>
+							<reportElement x="5" y="0" width="110" height="18" uuid="937ad50a-e404-45a5-886a-1ed450e364e3"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$F{formNivelEstudio}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="120" y="0" width="130" height="18" uuid="0babd883-c359-44e7-8bae-0a5ef8ed4995"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$F{formTituloAcademico}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="255" y="0" width="130" height="18" uuid="7920b03e-9a40-4c2e-926e-f5e4e0db7c5b"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$F{formInstitucion}]]></textFieldExpression>
+						</textField>
+						<textField pattern="dd/MM/yyyy">
+							<reportElement x="390" y="0" width="70" height="18" uuid="aa6ed4cd-5e47-42cf-9e2d-231523506447"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$F{formFechaInicio}]]></textFieldExpression>
+						</textField>
+						<textField pattern="dd/MM/yyyy">
+							<reportElement x="465" y="0" width="70" height="18" uuid="6b23d960-2acf-453c-b989-1dddd5d814d2"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$F{formFechaFin}]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+
+			<!-- ===== CAPACITACIONES / CERTIFICACIONES ===== -->
+			<rectangle>
+				<reportElement x="0" y="440" width="555" height="20" uuid="7da27132-aec4-4670-9188-f56bd1672367"/>
+				<graphicElement fill="Solid">
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="5" y="442" width="300" height="16" uuid="60dd1569-a7f9-45f7-af76-02de5be7eb2d"/>
+				<textElement>
+					<font size="10" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[CAPACITACIONES / CERTIFICACIONES]]></text>
+			</staticText>
+
+			<!-- Table header -->
+			<rectangle>
+				<reportElement x="0" y="462" width="555" height="18" uuid="33f305ad-ada8-4073-8c40-8ad482787cea"/>
+				<graphicElement fill="Solid">
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="5" y="463" width="80" height="16" uuid="b705cac7-9690-47f5-a46c-c8e07e6405a8"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tipo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="90" y="463" width="110" height="16" uuid="7fb63335-b784-4c37-a58c-13418bb1268e"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nombre]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="205" y="463" width="120" height="16" uuid="2c7505e7-375d-4b63-9092-4c09f3ccfe84"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Institución]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="330" y="463" width="70" height="16" uuid="de6df7dd-6b3f-4c95-a4f6-0b9d5df999dc"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Inicio]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="405" y="463" width="70" height="16" uuid="550e7ff4-c445-4f90-9542-24d2a9acf9e6"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fin]]></text>
+			</staticText>
+
+			<componentElement>
+				<reportElement x="0" y="482" width="555" height="90" uuid="df909335-a06d-4acb-a63d-d6d0a614f363"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+					<datasetRun subDataset="capacitacionDataset">
+						<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{capacitaciones})]]></dataSourceExpression>
+					</datasetRun>
+					<jr:listContents height="18" width="555">
+						<textField>
+							<reportElement x="5" y="0" width="80" height="18" uuid="8dfd4277-96ff-43fa-9958-dc039ee52237"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$F{capaTipo}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="90" y="0" width="110" height="18" uuid="7fd12c95-eccb-4b38-b229-345131493325"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$F{capaNombre}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="205" y="0" width="120" height="18" uuid="6852344e-d0cb-4cff-af6d-9fab7931c491"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$F{capaInstitucion}]]></textFieldExpression>
+						</textField>
+						<textField pattern="dd/MM/yyyy">
+							<reportElement x="330" y="0" width="70" height="18" uuid="c9e108e1-53ee-4a87-adb1-33e2fa7f1c3e"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$F{capaFechaInicio}]]></textFieldExpression>
+						</textField>
+						<textField pattern="dd/MM/yyyy">
+							<reportElement x="405" y="0" width="70" height="18" uuid="544faf05-2704-4ce2-a888-9b4da5cf9abe"/>
+							<textElement>
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$F{capaFechaFin}]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+
+			<!-- ===== EXPERIENCIA PROFESIONAL ===== -->
+			<rectangle>
+				<reportElement x="0" y="579" width="555" height="20" uuid="6f915e74-c147-4027-971f-2193b3df80a3"/>
+				<graphicElement fill="Solid">
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="5" y="581" width="200" height="16" uuid="b3dfaee0-9ede-47ce-bbd0-7b60684a70ca"/>
+				<textElement>
+					<font size="10" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[EXPERIENCIA PROFESIONAL]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="10" y="604" width="530" height="80" uuid="35aed38d-2e0d-4a9c-8c29-a14eeec6160c"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{instructor}.getInstExperienciaProfesional() == null ? "" : $P{instructor}.getInstExperienciaProfesional()]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="465" splitType="Stretch">
+			<!-- ===== EXPERIENCIA DOCENTE ===== -->
+			<rectangle>
+				<reportElement x="0" y="0" width="555" height="20" uuid="824a0bfb-495a-4f63-8fa9-f8624fc0514f"/>
+				<graphicElement fill="Solid">
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="5" y="2" width="200" height="16" uuid="6220c013-b9c3-4060-b7a7-1821de1bce09"/>
+				<textElement>
+					<font size="10" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[EXPERIENCIA DOCENTE]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="10" y="25" width="530" height="80" uuid="d5996d27-61e7-45bb-86d6-b6dae93e9249"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{instructor}.getInstExperienciaDocente() == null ? "" : $P{instructor}.getInstExperienciaDocente()]]></textFieldExpression>
+			</textField>
+
+			<!-- ===== METODOLOGIAS ===== -->
+			<rectangle>
+				<reportElement x="0" y="110" width="555" height="20" uuid="4379598b-1f60-4e60-a247-fd172a08d8db"/>
+				<graphicElement fill="Solid">
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="5" y="112" width="200" height="16" uuid="a6424768-bbb8-4235-a670-eacb47147f4d"/>
+				<textElement>
+					<font size="10" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[METODOLOGÍAS]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="10" y="135" width="530" height="60" uuid="ecc66472-6074-45b7-96c1-c50fb1b883c8"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{instructor}.getInstMetodologias() == null ? "" : $P{instructor}.getInstMetodologias()]]></textFieldExpression>
+			</textField>
+
+			<!-- ===== HABILIDADES DE COMUNICACIÓN ===== -->
+			<rectangle>
+				<reportElement x="0" y="200" width="555" height="20" uuid="03e47d82-7281-4415-9e5b-f3e321bee8fb"/>
+				<graphicElement fill="Solid">
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="5" y="202" width="250" height="16" uuid="fb0d75d9-2f72-460b-989e-c3b40617db0e"/>
+				<textElement>
+					<font size="10" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[HABILIDADES DE COMUNICACIÓN]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="10" y="225" width="530" height="60" uuid="f050ec61-5182-4ad9-b990-a09d555798a5"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{instructor}.getInstHabilidadesComunicacion() == null ? "" : $P{instructor}.getInstHabilidadesComunicacion()]]></textFieldExpression>
+			</textField>
+
+			<!-- ===== ADAPTABILIDAD ===== -->
+			<rectangle>
+				<reportElement x="0" y="290" width="555" height="20" uuid="24f3b12c-3516-4dd4-b991-4e4c6f1cab29"/>
+				<graphicElement fill="Solid">
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="5" y="292" width="200" height="16" uuid="2e76c1e2-42d4-4b2f-9482-30d7b8d814e9"/>
+				<textElement>
+					<font size="10" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[ADAPTABILIDAD]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="10" y="315" width="530" height="60" uuid="de665e1e-2e8b-472e-938d-88f80d8eb4aa"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{instructor}.getInstAdaptabilidad() == null ? "" : $P{instructor}.getInstAdaptabilidad()]]></textFieldExpression>
+			</textField>
+
+			<!-- ===== DISPONIBILIDAD HORARIA ===== -->
+			<rectangle>
+				<reportElement x="0" y="380" width="555" height="20" uuid="8fd9478c-3040-4cb4-802f-a0f0463ff022"/>
+				<graphicElement fill="Solid">
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="5" y="382" width="200" height="16" uuid="4c36461d-a976-4c4a-8350-120faec2babf"/>
+				<textElement>
+					<font size="10" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[DISPONIBILIDAD HORARIA]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="10" y="405" width="530" height="60" uuid="ac780bc7-41ec-4330-a34e-9564527ac0ad"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{instructor}.getInstDisponibilidadHoraria() == null ? "" : $P{instructor}.getInstDisponibilidadHoraria()]]></textFieldExpression>
+			</textField>
+
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="555" height="15" uuid="421fdd68-8171-47bd-8acb-d91c967ed72c"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Página " + $V{PAGE_NUMBER} ]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

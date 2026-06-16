@@ -1,0 +1,57 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:p="http://primefaces.org/ui">
+
+<p:dialog id="dlgNuevoItem" widgetVar="dlgNuevoItem" header="#{beanFacturacion.nuevoItem.id != null ? 'Editar Ítem' : 'Registrar Nuevo Ítem'}" 
+				  modal="true" responsive="true" width="450px" fitViewport="true"
+				  appendTo="@(body)" closeOnEscape="true" draggable="false" resizable="false">
+			<h:form id="formNuevoItem">
+				<p:messages id="msgsItem" closable="true" showDetail="true">
+					<p:autoUpdate />
+				</p:messages>
+				
+				<p:scrollPanel mode="native" style="max-height: 60vh; border:none;">
+					<p:outputPanel id="pnlNuevoItem" styleClass="ui-fluid" style="padding: 1rem;">
+						<div class="p-field p-mb-3">
+							<p:outputLabel value="Código:" for="txtCodItem" styleClass="p-d-block p-mb-1" />
+							<p:inputText id="txtCodItem" value="#{beanFacturacion.nuevoItem.codigo}" required="true" maxlength="8" />
+							<p:message for="txtCodItem" />
+						</div>
+						<div class="p-field p-mb-3">
+							<p:outputLabel value="Nombre:" for="txtNomItem" styleClass="p-d-block p-mb-1" />
+							<p:inputText id="txtNomItem" value="#{beanFacturacion.nuevoItem.nombre}" required="true" maxlength="50" />
+							<p:message for="txtNomItem" />
+						</div>
+						<div class="p-field p-mb-3">
+							<p:outputLabel value="Tipo:" for="selTipoItem" styleClass="p-d-block p-mb-1" />
+							<p:selectOneMenu id="selTipoItem" value="#{beanFacturacion.nuevoItem.tipo}">
+								<f:selectItem itemLabel="Bien" itemValue="BIEN" />
+								<f:selectItem itemLabel="Servicio" itemValue="SERVICIO" />
+							</p:selectOneMenu>
+							<p:message for="selTipoItem" />
+						</div>
+						<div class="p-field p-mb-3">
+							<p:outputLabel value="Descripción:" for="txtDesItem" styleClass="p-d-block p-mb-1" />
+							<p:inputTextarea id="txtDesItem" value="#{beanFacturacion.nuevoItem.descripcion}" required="true" rows="2" />
+							<p:message for="txtDesItem" />
+						</div>
+						<div class="p-field p-mb-3">
+							<p:outputLabel value="Precio Unitario:" for="txtPreItem" styleClass="p-d-block p-mb-1" />
+							<p:inputNumber id="txtPreItem" value="#{beanFacturacion.nuevoItem.precio}" symbol="$" required="true" decimalPlaces="2" />
+							<p:message for="txtPreItem" />
+						</div>
+					</p:outputPanel>
+				</p:scrollPanel>
+
+				<div class="p-d-flex p-jc-end p-p-3" style="gap: 0.5rem; border-top: 1px solid var(--border-color);">
+					<p:commandButton value="Cancelar" icon="pi pi-times" onclick="PF('dlgNuevoItem').hide()" 
+									 styleClass="ui-button-secondary ui-button-flat" type="button" />
+					<p:commandButton value="Guardar" icon="pi pi-check" actionListener="#{backingFacturacion.guardarNuevoItem()}"
+									 process="@form" update="@form :formFacturacion:growl :formFacturacion:selItem :formFacturacion:btnEditarItem" 
+									 styleClass="ui-button-success" />
+				</div>
+			</h:form>
+		</p:dialog>
+</ui:composition>		

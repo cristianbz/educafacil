@@ -70,4 +70,7 @@ public class Factura {
     
     @OneToMany(mappedBy = "factura", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FormaPagoFactura> formaPagoFacturas;
+    
+    @OneToMany(mappedBy = "factura", fetch = FetchType.LAZY)
+    private List<NotaCredito> notaCredito;
 }

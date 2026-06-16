@@ -92,7 +92,7 @@ public class GenericoDaoImpl <T,K> implements GenericoDao<T,K> {
 
 	@Override
 	public List<T> findAll() {
-		return getEntityManager().createQuery("SELECT E FROM "+ entityClass.getSimpleName() + " e",entityClass).getResultList();
+		return getEntityManager().createQuery("SELECT e FROM "+ entityClass.getSimpleName() + " e",entityClass).getResultList();
 	}
 	
 }

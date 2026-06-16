@@ -1,8 +1,8 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:f="jakarta.faces.core"
+	xmlns:h="jakarta.faces.html"
 	xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
@@ -12,13 +12,6 @@
 		
 		<h:form id="formCursos" prependId="false">
 			<p:growl id="growl" life="3000" showDetail="true" />
-			
-			<!-- DIÁLOGO DE PROCESAMIENTO / CARGA -->
-			<p:dialog widgetVar="dlgEnProc" draggable="false" modal="true"
-				resizable="false" closable="false" responsive="true"
-				style="font-size: 11px;">
-				<h:graphicImage value="/resources/img/cargando.gif" width="200" height="200" />
-			</p:dialog>
 			
 			<!-- DIÁLOGO CREAR / EDITAR OFERTA CURSO -->
 			<p:dialog widgetVar="dlgOfertaCursos" showEffect="fade"
@@ -42,12 +35,12 @@
 							</div>
 							
 							<!-- Grupo 1: Definición Académica -->
-							<h5 style="margin: 0 0 1rem 0; color: var(--primary-color); font-weight: 700; font-size: 0.85rem; border-left: 3px solid var(--primary-color); padding-left: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Clasificación del Curso</h5>
+							<h5 class="section-title-accent">Clasificación del Curso</h5>
 							
 							<!-- Área -->
 							<div style="margin-bottom: 1rem;">
 								<p:outputLabel value="#{etiquetas['area']} *" for="comboArea"
-									style="display: block; font-weight: 600; color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.4rem;" />
+									class="form-label" />
 								<p:selectOneMenu id="comboArea"
 									value="#{backingAdminCursos.beanAdminCursos.codigoArea}"
 									required="true" requiredMessage="#{mensajes['campoRequerido']}">
@@ -63,7 +56,7 @@
 							<!-- Especialidad -->
 							<div style="margin-bottom: 1rem;">
 								<p:outputLabel value="#{etiquetas['especialidad']} *" for="comboEspecialidad"
-									style="display: block; font-weight: 600; color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.4rem;" />
+									class="form-label" />
 								<p:selectOneMenu id="comboEspecialidad"
 									value="#{backingAdminCursos.beanAdminCursos.codigoEspecialidad}"
 									required="true" requiredMessage="#{mensajes['campoRequerido']}">
@@ -79,7 +72,7 @@
 							<!-- Curso -->
 							<div style="margin-bottom: 1rem;">
 								<p:outputLabel value="#{etiquetas['curso']} *" for="comboCurso"
-									style="display: block; font-weight: 600; color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.4rem;" />
+									class="form-label" />
 								<p:selectOneMenu id="comboCurso" panelStyle="width: 35rem" style="width:100%;"
 									value="#{backingAdminCursos.beanAdminCursos.codigoCurso}"
 									required="true" requiredMessage="#{mensajes['campoRequerido']}">
@@ -94,7 +87,7 @@
 							<!-- Tipo Capacitación -->
 							<div style="margin-bottom: 1.5rem;">
 								<p:outputLabel value="#{etiquetas['tipoCapacitacion']} *" for="comboTipoCurso"
-									style="display: block; font-weight: 600; color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.4rem;" />
+									class="form-label" />
 								<p:selectOneMenu id="comboTipoCurso"
 									value="#{backingAdminCursos.beanAdminCursos.codigoTipoCurso}"
 									required="true" requiredMessage="#{mensajes['campoRequerido']}">
@@ -105,14 +98,27 @@
 								</p:selectOneMenu>
 								<p:message for="comboTipoCurso" style="margin-top: 0.25rem;" />
 							</div>
-							
+							<!-- Tipo Modalidad -->
+							<div style="margin-bottom: 1.5rem;">
+								<p:outputLabel value="#{etiquetas['tipoModalidad']} *" for="comboTipoModalidad"
+									class="form-label" />
+								<p:selectOneMenu id="comboTipoModalidad"
+									value="#{backingAdminCursos.beanAdminCursos.codigoTipoModalidad}"
+									required="true" requiredMessage="#{mensajes['campoRequerido']}">
+									<f:selectItem itemLabel="— Seleccionar tipo —" itemValue="#{null}" noSelectionOption="true" />
+									<f:selectItems value="#{backingAdminCursos.beanAdminCursos.listaModalidadEstudio}"
+										var="catalogo" itemValue="#{catalogo.cataCodigoIndice}" itemLabel="#{catalogo.cataDescripcion}" />
+									<p:ajax process="@this" event="change" />
+								</p:selectOneMenu>
+								<p:message for="comboTipoModalidad" style="margin-top: 0.25rem;" />
+							</div>
 							<!-- Grupo 2: Programación y Logística -->
-							<h5 style="margin: 0 0 1rem 0; color: var(--primary-color); font-weight: 700; font-size: 0.85rem; border-left: 3px solid var(--primary-color); padding-left: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Programación y Logística</h5>
+							<h5 class="section-title-accent">Programación y Logística</h5>
 							
 							<!-- Instructor -->
 							<div style="margin-bottom: 1rem;">
 								<p:outputLabel value="#{etiquetas['instructor']} *" for="comboInstructor"
-									style="display: block; font-weight: 600; color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.4rem;" />
+									class="form-label" />
 								<p:selectOneMenu id="comboInstructor"
 									value="#{backingAdminCursos.beanAdminCursos.codigoInstructor}"
 									required="true" requiredMessage="#{mensajes['campoRequerido']}">
@@ -128,7 +134,7 @@
 							<!-- Horario -->
 							<div style="margin-bottom: 1rem;">
 								<p:outputLabel value="#{etiquetas['horario']} *" for="horario"
-									style="display: block; font-weight: 600; color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.4rem;" />
+									class="form-label" />
 								<p:inputText id="horario" placeholder="Ej. Lunes a Viernes 19:00 - 21:00"
 									requiredMessage="#{mensajes['campoRequerido']}" required="true" 
 									value="#{backingAdminCursos.beanAdminCursos.ofertaCursos.ocurHorario}" maxlength="100"/>
@@ -138,7 +144,7 @@
 							<!-- Duración -->
 							<div style="margin-bottom: 1rem;">
 								<p:outputLabel value="#{etiquetas['duracion']} Horas*" for="duracion"
-									style="display: block; font-weight: 600; color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.4rem;" />
+									class="form-label" />
 								
 								<p:inputNumber required="true" id="duracion" placeholder="Ej. 40" decimalPlaces="0" minValue="1"
 									value="#{backingAdminCursos.beanAdminCursos.ofertaCursos.ocurDuracion}"
@@ -151,7 +157,7 @@
 							<!-- Grupo WhatsApp -->
 							<div style="margin-bottom: 1.5rem;">
 								<p:outputLabel value="#{etiquetas['grupoWhatsapp']} *" for="gwhatsapp"
-									style="display: block; font-weight: 600; color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.4rem;" />
+									class="form-label" />
 								<p:inputText id="gwhatsapp" placeholder="Enlace del grupo..."
 									requiredMessage="#{mensajes['campoRequerido']}" required="true" 
 									value="#{backingAdminCursos.beanAdminCursos.ofertaCursos.ocurGrupoWhatsapp}" maxlength="60"/>
@@ -159,13 +165,13 @@
 							</div>
 							
 							<!-- Grupo 3: Fechas y Costos -->
-							<h5 style="margin: 0 0 1rem 0; color: var(--primary-color); font-weight: 700; font-size: 0.85rem; border-left: 3px solid var(--primary-color); padding-left: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Fechas y Costos</h5>
+							<h5 class="section-title-accent">Fechas y Costos</h5>
 							
 							<div class="p-formgrid p-grid" style="margin-bottom: 1rem;">
 								<!-- Fecha Inicio -->
 								<div class="p-field p-col-12 p-md-6" style="margin-bottom: 0.5rem;">
 									<p:outputLabel value="#{etiquetas['fechaInicio']} *" for="fechaInicio"
-										style="display: block; font-weight: 600; color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.4rem;" />
+										class="form-label" />
 									<p:calendar value="#{backingAdminCursos.beanAdminCursos.ofertaCursos.ocurFechaInicio}"
 										id="fechaInicio" required="true" requiredMessage="#{mensajes['campoRequerido']}"
 										pattern="yyyy-MM-dd" navigator="true" locale="es" style="width: 100%;">
@@ -176,7 +182,7 @@
 								<!-- Fecha Fin -->
 								<div class="p-field p-col-12 p-md-6" style="margin-bottom: 0.5rem;">
 									<p:outputLabel value="#{etiquetas['fechaFin']} *" for="fechaFin"
-										style="display: block; font-weight: 600; color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.4rem;" />
+										class="form-label" />
 									<p:calendar value="#{backingAdminCursos.beanAdminCursos.ofertaCursos.ocurFechaFin}"
 										id="fechaFin" pattern="yyyy-MM-dd" locale="es" required="true"
 										requiredMessage="#{mensajes['campoRequerido']}" navigator="true" style="width: 100%;">
@@ -189,7 +195,7 @@
 								<!-- Valor -->
 								<div class="p-field p-col-12 p-md-6" style="margin-bottom: 0.5rem;">
 									<p:outputLabel value="#{etiquetas['valor']} *" for="valor"
-										style="display: block; font-weight: 600; color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.4rem;" />
+										class="form-label" />
 									<p:inputText id="valor" placeholder="Ej. 120.00"
 										value="#{backingAdminCursos.beanAdminCursos.ofertaCursos.ocurValor}"
 										required="true" requiredMessage="#{mensajes['campoRequerido']}" />
@@ -199,7 +205,7 @@
 								<!-- Descuento -->
 								<div class="p-field p-col-12 p-md-6" style="margin-bottom: 0.5rem;">
 									<p:outputLabel value="#{etiquetas['descuento']}" for="descuento"
-										style="display: block; font-weight: 600; color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.4rem;" />
+										class="form-label" />
 									<p:inputText id="descuento" placeholder="Ej. 10"
 										value="#{backingAdminCursos.beanAdminCursos.ofertaCursos.ocurDescuento}">
 										<p:ajax process="@this" event="blur" />
@@ -269,7 +275,7 @@
 			<!-- DIÁLOGO ASIGNACIÓN DE ENCUESTAS -->
 			<p:dialog header="#{titulos['asignacionEncu']}" appendTo="@(body)" width="520"
 				id="AsignacionEncuCurso" widgetVar="dlgAsignacionEncuestasCurso" modal="true"
-				resizable="false" closable="false" styleClass="ui-dialog shadow-lg">
+				resizable="false" closable="false" responsive="true" styleClass="ui-dialog shadow-lg">
 				
 				<p:scrollPanel mode="native" style="max-height: 480px; border: none; padding-right: 8px;">
 					<p:outputPanel id="datosEncuestasCurso">
@@ -400,12 +406,12 @@
 				</p:breadCrumb>
 				
 				<!-- ENCABEZADO DE LA PÁGINA -->
-				<div class="page-header" style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
-					<div class="page-title">
-						<h2 style="font-weight: 800; color: var(--text-main); margin: 0; font-size: 1.875rem;">Administración Oferta de Cursos</h2>
-						<small style="color: var(--text-muted); font-size: 0.9rem;">Planificación, asignación y programación de cursos vigentes</small>
+<div class="page-header">
+					<div>
+						<h2>Administración Oferta de Cursos</h2>
+						<small>Planificación, asignación y programación de cursos vigentes</small>
 					</div>
-					<div class="page-actions" style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+					<div class="page-actions">
 						<!-- Acción primaria: Nueva Oferta -->
 						<p:commandButton value="#{botones['nuevaOferta']}"
 							process="@this" update="panelNuevo"

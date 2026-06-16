@@ -207,10 +207,39 @@ body {
     animation: fadeIn 0.6s ease-out;
 }
 
+@media (prefers-reduced-motion: reduce) {
+    .page-header,
+    .ui-datatable,
+    .dashboard-stats,
+    .stats-card {
+        animation: none !important;
+        transform: none !important;
+    }
+}
+
 /* Custom Page Header (Educafacil Refined) */
 .page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
     margin-bottom: 2rem;
     padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.page-header h2 {
+    font-weight: 800;
+    color: var(--text-main);
+    margin: 0;
+    font-size: 1.875rem;
+}
+
+.page-header small {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-weight: 400;
 }
 
 .page-title h2 {
@@ -224,6 +253,61 @@ body {
     font-size: 0.875rem;
     color: var(--text-muted);
     font-weight: 400;
+}
+
+/* Form label utility */
+.form-label {
+    display: block;
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    margin-bottom: 0.4rem;
+}
+
+/* Section title with left accent bar */
+.section-title-accent {
+    margin: 0 0 1rem 0;
+    color: var(--primary-color);
+    font-weight: 700;
+    font-size: 0.85rem;
+    border-left: 3px solid var(--primary-color);
+    padding-left: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Empty state card */
+.empty-state {
+    text-align: center;
+    padding: 5rem 2rem;
+    background: white;
+    border: 2px dashed var(--border-color);
+    border-radius: 12px;
+    margin-top: 1rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.empty-state h3 {
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+}
+
+.empty-state p {
+    color: var(--text-muted);
+    max-width: 420px;
+    margin: 0 auto 1.5rem auto;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* Page actions */
+.page-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
 }
 
 /* Breadcrumb Styling */
@@ -247,7 +331,7 @@ body {
 .sidebar .ui-panelmenu-header {
     background: transparent !important;
     border: none !important;
-    color: #94a3b8 !important; /* Slate 400 */
+    color: #e2e8f0 !important; /* Slate 200 (mejora contraste) */
     transition: var(--transition-fast);
     border-radius: 8px !important;
 }
@@ -269,7 +353,7 @@ body {
 }
 
 .sidebar .ui-menuitem-link {
-    color: #cbd5e1 !important; /* Slate 300 */
+    color: #f1f5f9 !important; /* Slate 100 (mejora contraste) */
     border-radius: 6px;
     margin: 2px 0;
     transition: var(--transition-fast);
@@ -286,7 +370,7 @@ body {
 }
 
 .sidebar .ui-menuitem-icon {
-    color: var(--primary-color) !important;
+    color: #60a5fa !important;
     margin-right: 0.75rem !important;
 }
 
@@ -633,8 +717,13 @@ body.sidebar-mobile-open {
 .summary-total-value {
     font-size: 2.25rem;
     font-weight: 800;
-    color:black;
+    color: #38bdf8;
     margin-top: 0.25rem;
+    text-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+}
+
+.summary-total-value span {
+    color: #38bdf8 !important;
 }
 
 /* Balance widget for payment verification */
@@ -752,5 +841,122 @@ body.sidebar-mobile-open {
     background-color: #f3f4f6 !important;
     color: #374151 !important;
     border: 1px solid #e5e7eb !important;
+}
+
+/* Total destacado en tablas de facturación */
+.ui-datatable .total-destacado {
+    font-weight: 700;
+    color: #065f46;
+    background-color: #d1fae5;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    letter-spacing: 0.02em;
+    display: inline-block;
+    line-height: 1.4;
+    min-width: 110px;
+    text-align: right;
+}
+
+/* Focus visible for keyboard navigation */
+.ui-button:focus-visible,
+.ui-menuitem-link:focus-visible,
+.toggle-btn:focus-visible,
+.ui-inputfield:focus-visible,
+.ui-datatable thead th:focus-visible {
+    outline: 2px solid var(--primary-color) !important;
+    outline-offset: 2px !important;
+}
+
+.chipstamanio {
+    font-size: 0.6875rem !important;
+}
+
+/* =========================================================
+   Responsive dialogs - administrarInstructor
+   ========================================================= */
+.instructor-dialog {
+    max-width: calc(100vw - 2rem) !important;
+    max-height: calc(100vh - 0.5rem) !important;
+}
+.instructor-dialog.ui-dialog .ui-dialog-content {
+    height: calc(100vh - 60px) !important;
+    max-height: calc(100vh - 60px) !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    display: flex;
+    flex-direction: column;
+}
+.subdialog-formacion,
+.subdialog-capacitacion {
+    max-width: calc(100vw - 1rem) !important;
+}
+.instructor-scrollpanel {
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex: 1 1 auto;
+    min-height: 0;
+    border: none;
+    padding: 0.75rem 1rem;
+}
+.instructor-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    padding: 2.875rem 1.25rem;
+    border-top: 1px solid var(--border-color);
+    background: var(--surface-ground);
+    flex-shrink: 0;
+}
+@media (max-width: 576px) {
+    .instructor-dialog {
+        width: calc(100vw - 1rem) !important;
+        margin: 0.5rem;
+    }
+    .instructor-dialog.ui-dialog .ui-dialog-content {
+        height: calc(100vh - 56px) !important;
+        max-height: calc(100vh - 56px) !important;
+    }
+    .subdialog-formacion,
+    .subdialog-capacitacion {
+        width: calc(100vw - 0.5rem) !important;
+        min-width: 0 !important;
+    }
+    .instructor-scrollpanel {
+        overflow-y: auto;
+        overflow-x: hidden;
+        flex: 1 1 auto;
+        min-height: 0;
+        padding: 0.5rem;
+    }
+}
+
+/* Action link icons with accessible hover/focus */
+.command-link-edit i {
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+.command-link-edit:hover i,
+.command-link-edit:focus-visible i {
+    transform: scale(1.2);
+    color: var(--primary-hover) !important;
+}
+.command-link-delete i {
+    transition: transform 0.2s ease;
+}
+.command-link-delete:hover i,
+.command-link-delete:focus-visible i {
+    transform: scale(1.2);
+}
+@media (prefers-reduced-motion: reduce) {
+    .command-link-edit i,
+    .command-link-delete i {
+        transition: none !important;
+    }
+    .command-link-edit:hover i,
+    .command-link-edit:focus-visible i,
+    .command-link-delete:hover i,
+    .command-link-delete:focus-visible i {
+        transform: none;
+    }
 }
 

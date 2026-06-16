@@ -56,6 +56,6 @@ public class Formacion implements Serializable {
 	private Date formFechaFin;
 	
 	@ManyToOne
-	@JoinColumn(name="inst_id",updatable = false, insertable = false)
+	@JoinColumn(name="inst_id")
 	private Instructor instructor;
 }

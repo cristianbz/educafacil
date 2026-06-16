@@ -3,6 +3,7 @@ package ec.mileniumtech.educafacil.service;
 import java.io.StringWriter;
 
 import ec.mileniumtech.educafacil.modelo.sri.Factura;
+import ec.mileniumtech.educafacil.modelo.sri.NotaCredito;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.xml.bind.JAXBContext;
@@ -36,6 +37,27 @@ public class FacturaXmlService {
         
         StringWriter sw = new StringWriter();
         marshaller.marshal(factura, sw);
+        
+        return sw.toString();
+    }
+
+    /**
+     * Convierte un objeto NotaCredito a su representación XML en una cadena de texto.
+     * 
+     * @param notaCredito Objeto notaCredito con datos llenos.
+     * @return String con el XML generado.
+     * @throws Exception Si ocurre un error durante el marshalling.
+     */
+    public String generarXmlNotaCredito(NotaCredito notaCredito) throws Exception {
+        JAXBContext context = JAXBContext.newInstance(NotaCredito.class);
+        Marshaller marshaller = context.createMarshaller();
+        
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.FALSE);
+        marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.FALSE);
+        
+        StringWriter sw = new StringWriter();
+        marshaller.marshal(notaCredito, sw);
         
         return sw.toString();
     }

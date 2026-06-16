@@ -94,7 +94,7 @@ public class Correo extends Thread {
 		properties.put("mail.smtp.mail.sender",from);
 		properties.put("mail.smtp.user", user);
 		properties.put("mail.smtp.auth", "true");
- 
+		properties.put("mail.smtp.starttls.enable", "true");
 		session = Session.getDefaultInstance(properties);
 		
 		

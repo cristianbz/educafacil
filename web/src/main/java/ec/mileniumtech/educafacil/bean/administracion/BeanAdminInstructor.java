@@ -54,4 +54,19 @@ public class BeanAdminInstructor implements Serializable{
 	@Getter
 	@Setter
 	private String cedula;
+	@Getter
+	@Setter
+	private Formacion formacionSelected;
+	@Getter
+	@Setter
+	private Capacitacion capacitacionSelected;
+	@Getter
+	@Setter
+	private boolean mostrarDialogoFormacion;
+	@Getter
+	@Setter
+	private boolean mostrarDialogoCapacitacion;
+	@Getter
+	@Setter
+	private int activeIndex;
 }

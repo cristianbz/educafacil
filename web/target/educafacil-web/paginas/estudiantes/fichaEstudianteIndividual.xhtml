@@ -52,7 +52,7 @@
 							<div class="p-field p-col-12 p-md-3">
 							<span class="ui-float-label ui-input-icon-right" 
 								style="margin-top: 2em"> <p:inputText id="idCedula" maxlength="15"
-									disabled="#{beanFichaEstudiante.estudiante == null ?true:false}"
+									disabled="#{beanFichaEstudiante.estudiante == null ?false:true}"
 									value="#{backingFichaEstudiante.beanFichaEstudiante.estudiante.persona.persDocumentoIdentidad}"
 									required="true" requiredMessage="#{mensajes['campoRequerido']}" />
 								<p:outputLabel value="#{etiquetas['cedularuc']}:*" />
@@ -66,7 +66,7 @@
 							<div class="p-field p-col-12 p-md-3">
 								<span class="ui-float-label ui-input-icon-right" 
 								style="margin-top: 2em"> <p:inputText maxlength="30" id="idApellidos" required="true"
-									disabled="#{beanFichaEstudiante.estudiante == null ?true:false}"
+									disabled="#{beanFichaEstudiante.estudiante == null ?false:true}"
 									requiredMessage="#{mensajes['campoRequerido']}"
 									value="#{backingFichaEstudiante.beanFichaEstudiante.estudiante.persona.persApellidos}" />
 									<p:outputLabel value="#{etiquetas['apellidos']}:*" />
@@ -79,7 +79,7 @@
 							<div class="p-field p-col-12 p-md-3">
 								<span class="ui-float-label ui-input-icon-right" 
 								style="margin-top: 2em"> <p:inputText maxlength="30" id="idNombres" required="true"
-									disabled="#{beanFichaEstudiante.estudiante == null ?true:false}"
+									disabled="#{beanFichaEstudiante.estudiante == null ?false:true}"
 									requiredMessage="#{mensajes['campoRequerido']}"
 									value="#{backingFichaEstudiante.beanFichaEstudiante.estudiante.persona.persNombres}">
 									<p:ajax event="blur" process="@this" />
@@ -96,7 +96,7 @@
 							<div class="p-field p-col-12 p-md-3">
 								<span class="ui-float-label ui-input-icon-right" 
 								style="margin-top: 2em"><p:inputText maxlength="16" id="idTelefonoMobil" required="true"
-									disabled="#{beanFichaEstudiante.estudiante == null ?true:false}"
+									disabled="#{beanFichaEstudiante.estudiante == null ?false:true}"
 									requiredMessage="#{mensajes['campoRequerido']}" onkeypress="if( (event.which &lt; 48 || event.which &gt; 57) ) return false;"
 									value="#{backingFichaEstudiante.beanFichaEstudiante.estudiante.persona.persTelefonoMobil}"
 									>
@@ -112,7 +112,7 @@
 							<div class="p-field p-col-12 p-md-2">
 								<span class="ui-float-label ui-input-icon-right" 
 								style="margin-top: 2em"><p:inputText maxlength="16" onkeypress="if( (event.which &lt; 48 || event.which &gt; 57) ) return false;"
-									disabled="#{beanFichaEstudiante.estudiante == null ?true:false}"
+									disabled="#{beanFichaEstudiante.estudiante == null ?false:true}"
 									value="#{backingFichaEstudiante.beanFichaEstudiante.estudiante.persona.persTelefonoCasa}">
 									<p:ajax event="blur" process="@this" />
 								</p:inputText>
@@ -126,7 +126,7 @@
 							<div class="p-field p-col-12 p-md-3">
 								<span class="ui-float-label ui-input-icon-right" 
 								style="margin-top: 2em"><p:inputText maxlength="16" onkeypress="if( (event.which &lt; 48 || event.which &gt; 57) ) return false;"
-									disabled="#{beanFichaEstudiante.estudiante == null ?true:false}"
+									disabled="#{beanFichaEstudiante.estudiante == null ?false:true}"
 									value="#{backingFichaEstudiante.beanFichaEstudiante.estudiante.estuTelefonoTrabajo}">
 									<p:ajax event="blur" process="@this" />
 								</p:inputText>
@@ -138,7 +138,7 @@
 							<div class="p-field p-col-12 p-md-3">
 								<span class="ui-float-label ui-input-icon-right" 
 								style="margin-top: 2em"><p:calendar id="fechaNacimiento" pattern="yyyy-MM-dd"
-									disabled="#{beanFichaEstudiante.estudiante == null ?true:false}"
+									disabled="#{beanFichaEstudiante.estudiante == null ?false:true}"
 									locale="es" navigator="true" required="true"
 									requiredMessage="#{mensajes['campoRequerido']}"
 									validatorMessage="#{mensajes['campoRequerido']}"
@@ -157,7 +157,7 @@
 							<div class="p-field p-col-12 p-md-3">
 								<span class="ui-float-label ui-input-icon-right" 
 								style="margin-top: 2em"><p:inputText maxlength="60" id="idCorreo" required="true"
-									disabled="#{beanFichaEstudiante.estudiante == null ?true:false}"
+									disabled="#{beanFichaEstudiante.estudiante == null ?false:true}"
 									requiredMessage="#{mensajes['campoRequerido']}"
 									validatorMessage="#{mensajes['correoInvalido']}"
 									value="#{backingFichaEstudiante.beanFichaEstudiante.estudiante.persona.persCorreoElectronico}">
@@ -175,7 +175,7 @@
 							<div class="p-field p-col-12 p-md-3">
 								<span class="ui-float-label ui-input-icon-right" 
 								style="margin-top: 2em"><p:inputTextarea id="idDomicilio" required="true"
-									disabled="#{beanFichaEstudiante.estudiante == null ?true:false}"
+									disabled="#{beanFichaEstudiante.estudiante == null ?false:true}"
 									requiredMessage="#{mensajes['campoRequerido']}" maxlength="50"
 									value="#{backingFichaEstudiante.beanFichaEstudiante.estudiante.persona.persDomicilio}">
 									<p:ajax event="blur" process="@this" />
@@ -191,7 +191,7 @@
 							<div class="p-field p-col-12 p-md-3">
 								<span class="ui-float-label ui-input-icon-right" 
 								style="margin-top: 2em"><p:inputTextarea id="idTrabajo" required="true"
-									disabled="#{beanFichaEstudiante.estudiante == null ?true:false}"
+									disabled="#{beanFichaEstudiante.estudiante == null ?false:true}"
 									requiredMessage="#{mensajes['campoRequerido']}" maxlength="50"
 									value="#{backingFichaEstudiante.beanFichaEstudiante.estudiante.estuDireccionTrabajo}">
 									<p:ajax event="blur" process="@this" />
@@ -205,7 +205,7 @@
 							<div class="p-field p-col-12 p-md-3">
 								<span class="ui-float-label ui-input-icon-right" 
 								style="margin-top: 2em"><p:selectOneMenu id="idcargo"
-									disabled="#{beanFichaEstudiante.estudiante == null ?true:false}"
+									disabled="#{beanFichaEstudiante.estudiante == null ?false:true}"
 									value="#{backingFichaEstudiante.beanFichaEstudiante.codigoCargo}"
 									required="true" requiredMessage="#{mensajes['campoRequerido']}">
 									<f:selectItem itemLabel=" "
@@ -228,7 +228,7 @@
 							<div class="p-field p-col-12 p-md-3">
 								<span class="ui-float-label ui-input-icon-right" 
 								style="margin-top: 2em"><p:selectOneMenu id="idnivel"
-									disabled="#{beanFichaEstudiante.estudiante == null ?true:false}"
+									disabled="#{beanFichaEstudiante.estudiante == null ?false:true}"
 									value="#{backingFichaEstudiante.beanFichaEstudiante.codigoNivelEstudio}"
 									required="true" requiredMessage="#{mensajes['campoRequerido']}">
 									<f:selectItem itemLabel=" "
@@ -247,10 +247,10 @@
 
 							<div class="p-field p-col-12 p-md-1">
 								<p:commandButton value="#{botones['actualizar']}"
-									icon="#{botones['icono.actualizar']}" partialSubmit="true"
-									disabled="#{beanFichaEstudiante.estudiante == null ?true:false}"
-									process="@this panelEstudiante" update="growl panelEstudiante"
-									actionListener="#{backingFichaEstudiante.mostrarDialogoActualizar()}" />
+									icon="#{botones['icono.actualizar']}" 
+    process="@form"
+    update="@form growl"
+    action="#{backingFichaEstudiante.mostrarDialogoActualizar}" />
 							</div>
 							<div class="p-field p-col-12 p-md-2"></div>
 							<div class="p-field p-col-12 p-md-1"></div>

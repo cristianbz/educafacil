@@ -8,16 +8,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.contabilidad.BeanEgresos;
 import ec.mileniumtech.educafacil.bean.usuarios.BeanLogin;
-import ec.mileniumtech.educafacil.dao.impl.CatalogoDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.EgresoDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.ProveedorDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Egresos;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Proveedor;
+import ec.mileniumtech.educafacil.service.facade.ContabilidadFacade;
+import ec.mileniumtech.educafacil.service.facade.InstructorFacade;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumEstadosEgresos;
 import jakarta.annotation.PostConstruct;
@@ -37,19 +37,15 @@ import lombok.Getter;
 public class BackingEgresos implements Serializable{
 
 	private static final long serialVersionUID = 1L;
-	private static final Logger log = Logger.getLogger(BackingEgresos.class);
+	private static final Logger log = LogManager.getLogger(BackingEgresos.class);
 
 	@EJB
 	@Getter
-	private CatalogoDaoImpl catalogoServicio;
+	private InstructorFacade sistemaDataService;
 
 	@EJB
 	@Getter
-	private EgresoDaoImpl egresoServicio;
-
-	@EJB
-	@Getter
-	private ProveedorDaoImpl proveedorServicio;
+	private ContabilidadFacade contabilidadDataService;
 
 	@Inject
 	@Getter
@@ -68,10 +64,10 @@ public class BackingEgresos implements Serializable{
 	
 			getBeanEgresos().setListaProveedores(new ArrayList<>());
 			getBeanEgresos().setListaTipoEgreso(new ArrayList<>());
-			getBeanEgresos().setListaTipoEgreso(getCatalogoServicio().catalogosPorTipo("TPEGR"));
+			getBeanEgresos().setListaTipoEgreso(sistemaDataService.catalogosPorTipo("TPEGR"));
 			getBeanEgresos().setListaEgresosRegistrados(new ArrayList<>());
-			getBeanEgresos().setListaEgresosRegistrados(getEgresoServicio().listaEgresos());
-			getBeanEgresos().setListaProveedores(getProveedorServicio().listaProveedores().stream().sorted((p1,p2)->p1.getProvNombre().compareTo(p2.getProvNombre())).collect(Collectors.toList()));
+			getBeanEgresos().setListaEgresosRegistrados(contabilidadDataService.listaEgresos());
+			getBeanEgresos().setListaProveedores(contabilidadDataService.listaProveedores().stream().sorted((p1,p2)->p1.getProvNombre().compareTo(p2.getProvNombre())).collect(Collectors.toList()));
 			
 			getBeanEgresos().setNuevoProveedor(new Proveedor());
 
@@ -86,26 +82,26 @@ public class BackingEgresos implements Serializable{
 
 	public void registrarEgreso() {
 	
-			if (Double.parseDouble(getBeanEgresos().getEgreso().getEgreValor().toString()) > 0.00) {
+		if (Double.parseDouble(getBeanEgresos().getEgreso().getEgreValor().toString()) > 0.00) {
 			getBeanEgresos().getEgreso().setCatalogo(getBeanEgresos().getEgresoSeleccionado());
 			getBeanEgresos().getEgreso().setProveedor(getBeanEgresos().getProveedorSeleccionado());
 			getBeanEgresos().getEgreso().setEgreFechaRegistro(new Date());
 			getBeanEgresos().getEgreso().setEgreEstado(EnumEstadosEgresos.REGISTRADO.getCodigo());
-			getEgresoServicio().agregarActualizarEgreso(getBeanEgresos().getEgreso());
+			contabilidadDataService.agregarActualizarEgreso(getBeanEgresos().getEgreso());
 			getBeanEgresos().setListaEgresosRegistrados(new ArrayList<>());
-			getBeanEgresos().setListaEgresosRegistrados(getEgresoServicio().listaEgresos());
+			getBeanEgresos().setListaEgresosRegistrados(contabilidadDataService.listaEgresos());
 			Mensaje.ocultarDialogo("dlgRegEgreso");
-			}else {
-				Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.informacion"));
-				
-			}
-	
+		}else {
+			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.informacion"));
+
+		}
+
 	}
 
 	public void registrarProveedor() {
 	
-			if (getProveedorServicio().validaProveedor(getBeanEgresos().getNuevoProveedor().getProvRuc())==null) {
-				getProveedorServicio().agregarActualizarProveedor(getBeanEgresos().getNuevoProveedor());
+			if (contabilidadDataService.validaProveedor(getBeanEgresos().getNuevoProveedor().getProvRuc())==null) {
+				contabilidadDataService.agregarActualizarProveedor(getBeanEgresos().getNuevoProveedor());
 				getBeanEgresos().getListaProveedores().add(getBeanEgresos().getNuevoProveedor());
 				Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.agregaProveedor"));
 				Mensaje.ocultarDialogo("dlgRegProveedor");
@@ -128,7 +124,7 @@ public class BackingEgresos implements Serializable{
 	
 	public void buscarEgresos() {
 	
-			getBeanEgresos().setListaEgresosRegistrados(getEgresoServicio().listaEgresosFechas(getBeanEgresos().getFechaInicial(), getBeanEgresos().getFechaFinal()));
+			getBeanEgresos().setListaEgresosRegistrados(contabilidadDataService.listaEgresosFechas(getBeanEgresos().getFechaInicial(), getBeanEgresos().getFechaFinal()));
 			Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.cargarInfo"));
 			Mensaje.ocultarDialogo("dlgBuscaEgresos");
 

@@ -7,25 +7,22 @@ package ec.mileniumtech.educafacil.backing.estudiantes;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import jakarta.enterprise.context.Dependent;
-
-import jakarta.inject.*;
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.contabilidad.BeanPagos;
 import ec.mileniumtech.educafacil.bean.estudiantes.BeanBuscaEstudiante;
 import ec.mileniumtech.educafacil.bean.estudiantes.BeanFichaEstudiante;
-
-import ec.mileniumtech.educafacil.dao.impl.EstudianteDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.MatriculaDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.PagosDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Estudiante;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Matricula;
+import ec.mileniumtech.educafacil.service.facade.ContabilidadFacade;
+import ec.mileniumtech.educafacil.service.facade.MatriculaFacade;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import jakarta.ejb.EJB;
+import jakarta.enterprise.context.Dependent;
 import jakarta.faces.application.FacesMessage;
+import jakarta.inject.Inject;
 import lombok.Getter;
 
 /**
@@ -35,7 +32,7 @@ import lombok.Getter;
 @Dependent
 public class ComponenteBuscaEstudiante implements Serializable{
 	private static final long serialVersionUID = 1L;
-	private static final Logger log = Logger.getLogger(ComponenteBuscaEstudiante.class);
+	private static final Logger log = LogManager.getLogger(ComponenteBuscaEstudiante.class);
 
 	@Getter
 	@Inject
@@ -55,15 +52,11 @@ public class ComponenteBuscaEstudiante implements Serializable{
 	
 	@EJB
 	@Getter
-	private EstudianteDaoImpl estudianteServicioImpl;
-	
+	private MatriculaFacade matriculaDataService;
+
 	@EJB
 	@Getter
-	private MatriculaDaoImpl matriculaServicioImpl;
-	
-	@EJB
-	@Getter
-	private PagosDaoImpl pagosServicioImpl;
+	private ContabilidadFacade contabilidadDataService;
 	
 	@Inject
 	@Getter
@@ -88,7 +81,7 @@ public class ComponenteBuscaEstudiante implements Serializable{
 	
 	public void buscarPorApellido() {
 
-			getBeanBuscaEstudiante().setListaEstudiante(getEstudianteServicioImpl().estudiantesPorApellido(getBeanBuscaEstudiante().getApellidos()));
+			getBeanBuscaEstudiante().setListaEstudiante(matriculaDataService.estudiantesPorApellido(getBeanBuscaEstudiante().getApellidos()));
 			if(getBeanBuscaEstudiante().getListaEstudiante().size()>0) {
 				getBeanBuscaEstudiante().setMatriculaSeleccionada(null);
 //				Mensaje.verDialogo("dlgClientes");
@@ -101,7 +94,7 @@ public class ComponenteBuscaEstudiante implements Serializable{
 	
 	public void buscarPorCedula() {
 
-			getBeanBuscaEstudiante().setEstudiante(getEstudianteServicioImpl().estudiantesPorCedula(getBeanBuscaEstudiante().getCedula()));
+			getBeanBuscaEstudiante().setEstudiante(matriculaDataService.estudiantesPorCedula(getBeanBuscaEstudiante().getCedula()));
 			if(getBeanBuscaEstudiante().getEstudiante()==null) {
 				Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.noHayDatos"));
 				Mensaje.actualizarComponente("growl");
@@ -124,7 +117,7 @@ public class ComponenteBuscaEstudiante implements Serializable{
 	public void cargaMatriculas() {
 	
 			getBeanFichaEstudiante().setListaMatricula(new ArrayList<>());
-			getBeanFichaEstudiante().setListaMatricula(getMatriculaServicioImpl().listaMatriculasEstudiante(getBeanFichaEstudiante().getCodigoCliente()));
+			getBeanFichaEstudiante().setListaMatricula(matriculaDataService.listaMatriculasEstudiante(getBeanFichaEstudiante().getCodigoCliente()));
 			
 
 	}
@@ -148,11 +141,11 @@ public class ComponenteBuscaEstudiante implements Serializable{
 							
 								getBeanPagos().setEstudiante(estudiante);
 								getBeanPagos().setListaCursosMatriculados(new ArrayList<>());
-								getBeanPagos().setListaCursosMatriculados(getMatriculaServicioImpl().listaMatriculasEstudianteActivas(estudiante.getEstuId()));
+								getBeanPagos().setListaCursosMatriculados(matriculaDataService.listaMatriculasEstudianteActivas(estudiante.getEstuId()));
 								if(getBeanPagos().getListaCursosMatriculados().size()==1) {
 									getBeanPagos().setMatricula(getBeanPagos().getListaCursosMatriculados().get(0));
 									getBeanPagos().setListaDetallePagosRealizados(new ArrayList<>());
-									getBeanPagos().setListaDetallePagosRealizados(getPagosServicioImpl().buscaPagosPorMatricula(getBeanPagos().getListaCursosMatriculados().get(0).getMatrId()));
+									getBeanPagos().setListaDetallePagosRealizados(contabilidadDataService.buscaPagosPorMatricula(getBeanPagos().getListaCursosMatriculados().get(0).getMatrId()));
 								}else if(getBeanPagos().getListaCursosMatriculados().size()==0) {
 									getBeanPagos().setEstudiante(new Estudiante());
 									Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.matriculaNoExiste"));

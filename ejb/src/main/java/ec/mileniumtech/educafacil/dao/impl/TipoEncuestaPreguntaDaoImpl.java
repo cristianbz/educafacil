@@ -123,11 +123,13 @@ public class TipoEncuestaPreguntaDaoImpl extends GenericoDaoImpl<TipoEncuestaPre
 
 			List<Object[]> objetos = query.getResultList();
 			if(!objetos.isEmpty()){
+				
 				for (Object[] encuestaResuelta: objetos) {
 					DtoEncuestas dtoEncuestas = new DtoEncuestas();
 					dtoEncuestas.setPregunta(encuestaResuelta[0].toString());
 					dtoEncuestas.setRespuesta(encuestaResuelta[1].toString());
 					dtoEncuestas.setCodigoPregResp(encuestaResuelta[2].toString());
+					listaRespuestasEncuestas.add(dtoEncuestas);
 				}
 				return listaRespuestasEncuestas;
 			}else{

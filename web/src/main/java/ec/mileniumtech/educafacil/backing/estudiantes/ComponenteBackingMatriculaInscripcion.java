@@ -6,30 +6,16 @@ package ec.mileniumtech.educafacil.backing.estudiantes;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.Dependent;
-import jakarta.inject.Inject;
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.estudiantes.BeanInscripcionMatricula;
 import ec.mileniumtech.educafacil.bean.usuarios.BeanLogin;
-
-import ec.mileniumtech.educafacil.dao.impl.AreaDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.CursoDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.EspecialidadDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.MatriculaDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.MedioInformacionDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.OfertaCapacitacionDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.OfertaCursosDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.PersonaDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Empresa;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Estudiante;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Matricula;
@@ -37,6 +23,7 @@ import ec.mileniumtech.educafacil.modelo.persistencia.entity.MedioInformacion;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.OfertaCapacitacion;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.OfertaCursos;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Persona;
+import ec.mileniumtech.educafacil.service.facade.MatriculaFacade;
 import ec.mileniumtech.educafacil.utilitario.Cadenas;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitarios.correo.Correo;
@@ -44,8 +31,11 @@ import ec.mileniumtech.educafacil.utilitarios.dto.registrodatos.ClientesRegistra
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumEstadosMatricula;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumEstadosOfertaCurso;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumModalidadCurso;
+import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
+import jakarta.enterprise.context.Dependent;
 import jakarta.faces.application.FacesMessage;
+import jakarta.inject.Inject;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -57,7 +47,7 @@ import lombok.Setter;
 public class ComponenteBackingMatriculaInscripcion implements Serializable{
 
 	private static final long serialVersionUID = 1L;
-	private static final Logger log = Logger.getLogger(ComponenteBackingMatriculaInscripcion.class);
+	private static final Logger log = LogManager.getLogger(ComponenteBackingMatriculaInscripcion.class);
 	@Getter
 	@Setter
 	private int indiceTab;
@@ -86,35 +76,7 @@ public class ComponenteBackingMatriculaInscripcion implements Serializable{
 		
 	@EJB
 	@Getter
-	private AreaDaoImpl areaServicioImpl;
-	
-	@EJB
-	@Getter
-	private MedioInformacionDaoImpl medioInformacionServicioImpl;
-	
-	@EJB
-	@Getter
-	private EspecialidadDaoImpl especialidadServicioImpl;
-	
-	@EJB
-	@Getter
-	private CursoDaoImpl cursoServicioImpl;
-	
-	@EJB
-	@Getter
-	private MatriculaDaoImpl matriculaServicioImpl;
-	
-	@EJB
-	@Getter
-	private OfertaCapacitacionDaoImpl ofertaCapacitacionServicioImpl;
-	
-	@EJB
-	@Getter
-	private OfertaCursosDaoImpl ofertaCursosServicioImpl; 
-	
-	@EJB
-	@Getter
-	private PersonaDaoImpl personaServicioImpl;
+	private MatriculaFacade matriculaDataService;
 	
 	@Inject
 	@Getter
@@ -139,7 +101,7 @@ public class ComponenteBackingMatriculaInscripcion implements Serializable{
 	 */
 	public void cargarArea() {
 		getBeanInscripcionMatricula().setListaAreas(new ArrayList<>());
-		getBeanInscripcionMatricula().setListaAreas(getAreaServicioImpl().listaDeAreas());
+		getBeanInscripcionMatricula().setListaAreas(matriculaDataService.listaDeAreas());
 	}
 	/**
 	 * Carga las Especialidades
@@ -147,14 +109,14 @@ public class ComponenteBackingMatriculaInscripcion implements Serializable{
 	public void cargaEspecialidades() {
 		getBeanInscripcionMatricula().setListaEspecialidad(new ArrayList<>());
 		getBeanInscripcionMatricula().setListaCurso(new ArrayList<>());
-		getBeanInscripcionMatricula().setListaEspecialidad(getOfertaCapacitacionServicioImpl().listaEspecialidadPorArea(getBeanInscripcionMatricula().getCodigoArea()));
+		getBeanInscripcionMatricula().setListaEspecialidad(matriculaDataService.listaEspecialidadPorArea(getBeanInscripcionMatricula().getCodigoArea()));
 	}
 	/**
 	 * Carga los cursos
 	 */
 	public void cargarCursos() {
 		getBeanInscripcionMatricula().setListaCurso(new ArrayList<>());
-		getBeanInscripcionMatricula().setListaCurso(getOfertaCapacitacionServicioImpl().listaCursosPorAreaEspecilidad(getBeanInscripcionMatricula().getCodigoArea(), getBeanInscripcionMatricula().getCodigoEspecialidad()));
+		getBeanInscripcionMatricula().setListaCurso(matriculaDataService.listaCursosPorAreaEspecilidad(getBeanInscripcionMatricula().getCodigoArea(), getBeanInscripcionMatricula().getCodigoEspecialidad()));
 	}
 	
 	/**
@@ -215,7 +177,7 @@ public class ComponenteBackingMatriculaInscripcion implements Serializable{
 	 */
 	public void buscaPersonaPorCedula() {
 		Persona persona=null;
-		persona=getPersonaServicioImpl().buscarPersonaPorCedula(getBeanInscripcionMatricula().getPersona().getPersDocumentoIdentidad());
+		persona=matriculaDataService.buscarPersonaPorCedula(getBeanInscripcionMatricula().getPersona().getPersDocumentoIdentidad());
 		datosMatriculaAlBuscarPersona(persona);
 	}
 	/**
@@ -227,7 +189,7 @@ public class ComponenteBackingMatriculaInscripcion implements Serializable{
 		getBeanInscripcionMatricula().getEstudiante().setEstuNivelEstudio(getBeanInscripcionMatricula().getCodigoNivelEstudio());
 		listaEstudiante.add(getBeanInscripcionMatricula().getEstudiante());
 		getBeanInscripcionMatricula().getPersona().setEstudiantes(listaEstudiante);
-		getBeanInscripcionMatricula().setPersona(getPersonaServicioImpl().actualizarPersona(getBeanInscripcionMatricula().getPersona()));
+		getBeanInscripcionMatricula().setPersona(matriculaDataService.actualizarPersona(getBeanInscripcionMatricula().getPersona()));
 	}
 	/**
 	 * Carga la oferta de cursos configurados mediante grupo
@@ -235,10 +197,10 @@ public class ComponenteBackingMatriculaInscripcion implements Serializable{
 	public void cargarGruposCursos() {
 		if(FacesMessage.SEVERITY_ERROR.toString().trim().equals("ERROR 2")){
 			OfertaCapacitacion ofertaCapacitacion=new OfertaCapacitacion();
-			ofertaCapacitacion=getOfertaCapacitacionServicioImpl().buscarOfertaCapacitacion(getBeanInscripcionMatricula().getCodigoArea(), getBeanInscripcionMatricula().getCodigoEspecialidad(), getBeanInscripcionMatricula().getCodigoCurso());
+			ofertaCapacitacion=matriculaDataService.buscarOfertaCapacitacion(getBeanInscripcionMatricula().getCodigoArea(), getBeanInscripcionMatricula().getCodigoEspecialidad(), getBeanInscripcionMatricula().getCodigoCurso());
 			if(ofertaCapacitacion!=null) {
 				getBeanInscripcionMatricula().setListaOfertaCursos(new ArrayList<>());
-				getBeanInscripcionMatricula().setListaOfertaCursos(getOfertaCursosServicioImpl().listaCursosDisponibles(ofertaCapacitacion.getOfcaId()));					
+				getBeanInscripcionMatricula().setListaOfertaCursos(matriculaDataService.listaCursosDisponibles(ofertaCapacitacion.getOfcaId()));					
 				Mensaje.verDialogo("dlgOfertaCursos");
 			}else {
 				Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.noExisteOfertaCapacitacion"));
@@ -393,7 +355,7 @@ public class ComponenteBackingMatriculaInscripcion implements Serializable{
      */
     public void buscaPersonaPorApellidos() {
     	eliminarEspaciosBlancoApellidos();
-    	getBeanInscripcionMatricula().setListaPersonas(getPersonaServicioImpl().buscarPersonaPorApellidos(getBeanInscripcionMatricula().getPersona().getPersApellidos().toLowerCase()));
+    	getBeanInscripcionMatricula().setListaPersonas(matriculaDataService.buscarPersonaPorApellidos(getBeanInscripcionMatricula().getPersona().getPersApellidos().toLowerCase()));
     	if(getBeanInscripcionMatricula().getListaPersonas()!=null && !getBeanInscripcionMatricula().getListaPersonas().isEmpty()) {
     		Mensaje.verDialogo("dlgfiltroPersona");    			
     	}
@@ -413,17 +375,17 @@ public class ComponenteBackingMatriculaInscripcion implements Serializable{
      */
     public void datosMatriculaAlBuscarPersona(Persona persona) {
     	if(persona!=null) {
-    		persona=getPersonaServicioImpl().buscarPersonaPorId(persona.getPersId());
+    		persona=matriculaDataService.buscarPersonaPorId(persona.getPersId());
 	    	getBeanInscripcionMatricula().setPersona(persona);	
 	    	getBeanInscripcionMatricula().setEstudiante(persona.getEstudiantes().get(0));
 	    	getBeanInscripcionMatricula().setCodigoCargo(persona.getEstudiantes().get(0).getEstuCargoOcupa());
 	    	getBeanInscripcionMatricula().setCodigoNivelEstudio(persona.getEstudiantes().get(0).getEstuNivelEstudio());
 			if(isEsInscripcion()) {
-				getBeanInscripcionMatricula().setListaMatriculas(getMatriculaServicioImpl().listaMatriculasAlumno(persona.getPersId(), EnumEstadosMatricula.INSCRITO.getCodigo()));					
+				getBeanInscripcionMatricula().setListaMatriculas(matriculaDataService.listaMatriculasAlumno(persona.getPersId(), EnumEstadosMatricula.INSCRITO.getCodigo()));					
 			}else if(isEsMatricula()) {
-				getBeanInscripcionMatricula().setListaMatriculas(getMatriculaServicioImpl().listaMatriculasAlumno(persona.getPersId(), EnumEstadosMatricula.INSCRITO.getCodigo()));
+				getBeanInscripcionMatricula().setListaMatriculas(matriculaDataService.listaMatriculasAlumno(persona.getPersId(), EnumEstadosMatricula.INSCRITO.getCodigo()));
 				if(getBeanInscripcionMatricula().getListaMatriculas().size()==0) {
-					getBeanInscripcionMatricula().setListaMatriculas(getMatriculaServicioImpl().listaMatriculasAlumno(persona.getPersId(), EnumEstadosMatricula.MATRICULADO.getCodigo()));
+					getBeanInscripcionMatricula().setListaMatriculas(matriculaDataService.listaMatriculasAlumno(persona.getPersId(), EnumEstadosMatricula.MATRICULADO.getCodigo()));
 				}
 			}				
 			datosMatriculas(getBeanInscripcionMatricula().getListaMatriculas());
@@ -469,7 +431,7 @@ public class ComponenteBackingMatriculaInscripcion implements Serializable{
     public void seleccionarPersonaRegistrada() {
     	if(getBeanInscripcionMatricula().getClienteRegistradoSeleccionado()!=null) {
     		setMatriculaDesdeRegistroDatos(true);
-    		Persona persona= personaServicioImpl.buscarPersonaPorCedula(getBeanInscripcionMatricula().getClienteRegistradoSeleccionado().getPer_cedula());
+    		Persona persona= matriculaDataService.buscarPersonaPorCedula(getBeanInscripcionMatricula().getClienteRegistradoSeleccionado().getPer_cedula());
     		if (persona!=null) {
     			getBeanInscripcionMatricula().setPersona(persona);
     			getBeanInscripcionMatricula().setCodigoModalidadCurso(EnumModalidadCurso.VIRTUAL.getCodigo());

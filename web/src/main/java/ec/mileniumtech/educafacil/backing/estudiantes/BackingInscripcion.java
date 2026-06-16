@@ -7,13 +7,11 @@ package ec.mileniumtech.educafacil.backing.estudiantes;
 import java.io.Serializable;
 import java.util.stream.Collectors;
 
-
-import org.apache.log4j.Logger;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
-
-import ec.mileniumtech.educafacil.dao.impl.OfertaCursosDaoImpl;
+import ec.mileniumtech.educafacil.service.facade.MatriculaFacade;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
@@ -32,7 +30,7 @@ import lombok.Setter;
 @Named
 public class BackingInscripcion implements Serializable{
 	private static final long serialVersionUID = 1L;
-	private static final Logger log = Logger.getLogger(BackingInscripcion.class);
+	private static final Logger log = LogManager.getLogger(BackingInscripcion.class);
 	@Inject
 	@Getter
 	private ComponenteBackingMatriculaInscripcion componenteBackingMatriculaInscripcion;
@@ -41,7 +39,7 @@ public class BackingInscripcion implements Serializable{
 	private MensajesBacking mensajesBacking;
 	@EJB
 	@Getter
-	private OfertaCursosDaoImpl ofertaCursosServicioImpl; 
+	private MatriculaFacade matriculaDataService; 
 	
 	@Getter
 	@Setter
@@ -51,7 +49,7 @@ public class BackingInscripcion implements Serializable{
 	public void init() {
 		setEsInscripcion(true);
 		componenteBackingMatriculaInscripcion.setEsInscripcion(esInscripcion);
-		componenteBackingMatriculaInscripcion.getBeanInscripcionMatricula().setListaOfertaCursos(getOfertaCursosServicioImpl().listaOfertaCursosPorDefecto());
+		componenteBackingMatriculaInscripcion.getBeanInscripcionMatricula().setListaOfertaCursos(matriculaDataService.listaOfertaCursosPorDefecto());
 		componenteBackingMatriculaInscripcion.getBeanInscripcionMatricula().setListaOfertaCursos(componenteBackingMatriculaInscripcion.getBeanInscripcionMatricula().getListaOfertaCursos().stream().sorted((c1,c2)->c1.getOfertaCapacitacion().getCurso().getCursNombre().compareTo(c2.getOfertaCapacitacion().getCurso().getCursNombre())).collect(Collectors.toList()));
 	}
 	/**

@@ -5,7 +5,7 @@ package ec.mileniumtech.educafacil.dao.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.stream.Collectors;
 
 import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.dao.util.JpaDaoSupport;
@@ -119,7 +119,7 @@ public class UsuarioDaoImpl extends GenericoDaoImpl<Usuario, Long>{
 			
 			if(!objetos.isEmpty()){
 		
-				for (Object[] registro: objetos) {
+				return objetos.stream().map(registro -> {
 					ObjetosMenuDto objetoMenuDTO = new ObjetosMenuDto();
 					objetoMenuDTO.setRol_id(registro[0].toString());
 					objetoMenuDTO.setRol_nombre(registro[1].toString());
@@ -136,10 +136,8 @@ public class UsuarioDaoImpl extends GenericoDaoImpl<Usuario, Long>{
 					objetoMenuDTO.setAcc_ruta(registro[12].toString());
 					objetoMenuDTO.setAcc_icono(registro[13].toString());
 					objetoMenuDTO.setPer_icono(registro[14].toString());
-					listaAccesosUsuario.add(objetoMenuDTO);
-					
-				}
-				return listaAccesosUsuario;
+					return objetoMenuDTO;
+				}).collect(Collectors.toList());
 			}else{
 				return null;
 			}
@@ -186,17 +184,15 @@ public class UsuarioDaoImpl extends GenericoDaoImpl<Usuario, Long>{
 			List<Usuario> listaUsuariosPorIdRol = new ArrayList<Usuario>();
 			
 			if(!objetos.isEmpty()){
-				for (Object[] registro : objetos) {
+				return objetos.stream().map(registro -> {
 					Usuario usuario = new Usuario();
 					Persona persona = new Persona();
 					usuario.setUsuaId(Integer.valueOf(registro[0].toString()));
 					persona.setPersNombres(registro[1].toString());
 					persona.setPersApellidos(registro[2].toString());
 					usuario.setPersona(persona);
-					listaUsuariosPorIdRol.add(usuario);
-					
-				}
-				return listaUsuariosPorIdRol;
+					return usuario;
+				}).collect(Collectors.toList());
 			}else
 				return null;
 		} catch (Exception e) {

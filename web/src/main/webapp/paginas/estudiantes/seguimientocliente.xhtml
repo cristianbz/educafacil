@@ -1,5 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
- "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
      xmlns:ui="jakarta.faces.facelets"
       	xmlns:f="jakarta.faces.core"
@@ -94,12 +93,7 @@
 					</p:dataTable>
 				</p:outputPanel>
 			</p:dialog>
-			<p:dialog widgetVar="dlgEnProc" draggable="false" modal="true"
-				resizable="false" closable="false" responsive="true"
-				style="font-size: 10px;">
-				<h:graphicImage value="/resources/img/cargando.gif" width="200"
-					height="200" />
-			</p:dialog>
+
 			<p:dialog widgetVar="dlgFormulario" modal="true" closable="true"
 				resizable="false" appendTo="@form" minHeight="40" width="450"
 				showEffect="fade" header="#{titulos['descargarFacebook']}">
@@ -254,11 +248,11 @@
 					</p:selectManyCheckbox>
 					<p:message for="idnoInteres" />
 				</h:panelGrid>
-				<center>
+				<div class="text-center">
 					<p:commandButton partialSubmit="true" process="@this"
 						icon="#{botones['icono.grabar']}" value="#{botones['agregar']}"
 						actionListener="#{backingSeguimientoClientes.registrarMotivosNoInteres()}" />
-				</center>
+				</div>
 			</p:dialog>
 
 			<p:dialog widgetVar="dlggrabar" modal="true" appendTo="@(body)"
@@ -272,7 +266,7 @@
 					</p:selectBooleanCheckbox>
 					<br />
 					<br />
-					<center>
+					<div class="text-center">
 						<h:panelGrid columns="2">
 							<p:commandButton value="#{botones['grabar']}"
 								onstart="PF('dlgEnProc').show();"
@@ -288,7 +282,7 @@
 								icon="#{botones['icono.cancelar']}" process="@this"
 								oncomplete="PF('dlggrabar').hide();" />
 						</h:panelGrid>
-					</center>
+					</div>
 				</p:outputPanel>
 			</p:dialog>
 			<p:breadCrumb styleClass="mb-3">

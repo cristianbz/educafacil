@@ -6,7 +6,8 @@ import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.event.FileUploadEvent;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
@@ -36,7 +37,7 @@ import lombok.Getter;
 @ViewScoped
 public class BackingEmpresa implements Serializable{
 	private static final long serialVersionUID = 1L;
-    private static final Logger log = Logger.getLogger(BackingEmpresa.class);
+    private static final Logger log = LogManager.getLogger(BackingEmpresa.class);
 
     @Inject
     @Getter

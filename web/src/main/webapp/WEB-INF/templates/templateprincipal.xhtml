@@ -23,8 +23,7 @@
 		src="#{facesContext.externalContext.requestContextPath}/resources/js/bootstrap.min.js"></script>
 	<script type="text/javascript"
 		src="#{request.contextPath}/js/calendario/calendar_es.js"></script>
-	<script type="text/javascript"
-		src="#{facesContext.externalContext.requestContextPath}/resources/js/atras.js"></script>
+
 	<script type="text/javascript"
 		src="#{request.contextPath}/resources/js/pdfmake.min.js"></script>
 	<script type="text/javascript"
@@ -171,7 +170,14 @@
                 Contenido por defecto...
             </ui:insert>
         </div>
-
+        <!-- Diálogo de carga compartido -->
+        <h:form id="cargaForm">
+            <p:dialog widgetVar="dlgEnProc" draggable="false" modal="true"
+                      resizable="false" closable="false" responsive="true"
+                      style="font-size: var(--text-xs);">
+                <h:graphicImage value="/resources/img/cargando.gif" width="200" height="200" />
+            </p:dialog>
+        </h:form>
 
 
 </body>

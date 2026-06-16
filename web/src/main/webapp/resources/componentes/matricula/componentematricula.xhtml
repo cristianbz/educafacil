@@ -1,12 +1,12 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
 	xmlns:p="http://primefaces.org/ui"
-	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:fn="jakarta.tags.functions"
 	xmlns:pe="http://primefaces.org/ui/extensions"
-	xmlns:composite="http://java.sun.com/jsf/composite">
+	xmlns:composite="jakarta.faces.composite">
 <composite:interface>
 	<composite:attribute name="componenteBackingMatriculaInscripcion"
 		required="true" />
@@ -18,7 +18,7 @@
 		header="#{titulos['seleccioneCurso']}" width="750" closable="true"
 		resizable="false">
 		<p:outputPanel id="panelGrupos">
-			<p:dataTable id="tablaGrupos"
+			<p:dataTable id="tablaGrupos" reflow="true"
 				value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.listaOfertaCursos}"
 				rowKey="#{grupo.ocurId}"
 				rowStyleClass="#{grupo.ocurFechaFin.compareTo(cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.fechaActual) le 0?'background-color: #fca752 !important;':'background-color: #fca752 !important;'}"
@@ -219,14 +219,14 @@
 									rendered="#{cc.attrs.componenteBackingMatriculaInscripcion.esMatricula}" />
 							</div>
 							<div class="p-field p-col-12 p-md-2">
-								<p:calendar id="fechaNacimiento" pattern="yyyy-MM-dd"
-									locale="es" navigator="true" required="true"
+								<p:datePicker id="fechaNacimiento" pattern="yyyy-MM-dd"
+									locale="es" required="true"
 									requiredMessage="#{mensajes['campoRequerido']}"
 									validatorMessage="#{mensajes['campoRequerido']}"
 									rendered="#{cc.attrs.componenteBackingMatriculaInscripcion.esMatricula}"
 									value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.persona.persFechaNacimiento}">
 									<p:ajax event="blur" process="@this " partialSubmit="true" />
-								</p:calendar>
+								</p:datePicker>
 							</div>
 							<div class="p-field p-col-12 p-md-1">
 								<p:message for="fechaNacimiento"
@@ -368,7 +368,7 @@
 				</p:tab>
 				<p:tab title="#{etiquetas['datoscurso']}">
 					<p:outputPanel id="panelDatosCurso">
-						<p:dataTable id="tablaCursosDisponibles"
+						<p:dataTable id="tablaCursosDisponibles" reflow="true"
 							value="#{cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.listaOfertaCursos}"
 							rows="10" paginator="true" rowKey="#{grupo.ocurId}"
 							rowStyleClass="#{grupo.ocurFechaFin.compareTo(cc.attrs.componenteBackingMatriculaInscripcion.beanInscripcionMatricula.fechaActual) le 0?'background-color: #fca752 !important;':'background-color: #fca752 !important;'}"
@@ -484,7 +484,7 @@
 		</div>
 	</p:outputPanel>
 	<!-- Dialogo filtro persona -->
-	<p:dialog widgetVar="dlgfiltroPersona" showEffect="fade" width="400"
+	<p:dialog widgetVar="dlgfiltroPersona" showEffect="fade" width="400" responsive="true"
 		header="#{titulos['seleccionePersona']}" closable="true"
 		hideEffect="fade" modal="true" appendTo="@(body)">
 		<p:outputPanel id="panelListaPersonas">
@@ -506,7 +506,7 @@
 		</p:outputPanel>
 	</p:dialog>
 	<!-- Dialogo seleccion empresa -->
-	<p:dialog widgetVar="dlgEmpresa" showEffect="fade" width="600"
+	<p:dialog widgetVar="dlgEmpresa" showEffect="fade" width="600" responsive="true"
 		header="#{titulos['datosFacturacionEmpresa']}" closable="false"
 		hideEffect="fade" modal="true" appendTo="@(body)">
 		<p:outputPanel id="panelEmpresas">

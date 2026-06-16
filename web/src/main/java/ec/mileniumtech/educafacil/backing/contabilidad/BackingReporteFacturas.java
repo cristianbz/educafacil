@@ -1,11 +1,18 @@
 package ec.mileniumtech.educafacil.backing.contabilidad;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeFormatter;
+import java.util.stream.Collectors;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
@@ -15,6 +22,7 @@ import ec.mileniumtech.educafacil.dao.impl.FacturaDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DocumentoElectronico;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Factura;
 import ec.mileniumtech.educafacil.service.NotificacionService;
+import ec.mileniumtech.educafacil.service.facade.FacturacionFacade;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import jakarta.ejb.EJB;
 import jakarta.faces.application.FacesMessage;
@@ -31,11 +39,11 @@ import lombok.Getter;
 public class BackingReporteFacturas implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger log = Logger.getLogger(BackingReporteFacturas.class);
+    private static final Logger log = LogManager.getLogger(BackingReporteFacturas.class);
 
     @EJB
     @Getter
-    private FacturaDaoImpl facturaServicio;
+    private FacturacionFacade facturaServicio;
     
     @EJB
     private NotificacionService notificacionService;
@@ -52,20 +60,21 @@ public class BackingReporteFacturas implements Serializable {
      */
     public void buscarFacturas() {
         try {
-            beanReporteFacturas.setListaFacturas(facturaServicio.buscarFacturasPorFiltros(
-                beanReporteFacturas.getFechaInicio(),
-                beanReporteFacturas.getFechaFin(),
-                beanReporteFacturas.getIdentificacion(),
-                beanReporteFacturas.getNumeroAutorizacion(),
-                beanReporteFacturas.getEstadoAutorizacion()
-            ));
+            beanReporteFacturas.setListaComprobantes(facturaServicio.buscarComprobantesPorFiltros(
+                    beanReporteFacturas.getFechaInicio(),
+                    beanReporteFacturas.getFechaFin(),
+                    beanReporteFacturas.getIdentificacion(),
+                    beanReporteFacturas.getNumeroAutorizacion(),
+                    beanReporteFacturas.getEstadoAutorizacion(),
+                    beanReporteFacturas.getComprobanteTipo()
+                ));
             
-            if (beanReporteFacturas.getListaFacturas().isEmpty()) {
+            if (beanReporteFacturas.getListaComprobantes().isEmpty()) {
                 Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Información", "No se encontraron resultados");
             }
         } catch (Exception e) {
-            log.error("Error al buscar facturas", e);
-            Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "Ocurrió un error al buscar las facturas");
+            log.error("Error al buscar comprobantes", e);
+            Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "Ocurrió un error al buscar los comprobantes");
         }
     }
     
@@ -149,7 +158,7 @@ public class BackingReporteFacturas implements Serializable {
     public void enviarCorreo(Factura factura) {
         try {
             DocumentoElectronico doc = factura.getDocumentoElectronico();
-            if (doc == null || doc.getXmlAutorizadoSri() == null || doc.getPdfRide() == null) {
+            if (doc == null || doc.getUrlXml() == null || doc.getUrlPdf() == null) {
                 Mensaje.verMensaje(FacesMessage.SEVERITY_WARN, "Aviso", "La factura no tiene el XML o PDF autorizado para enviar por correo.");
                 return;
             }
@@ -160,10 +169,13 @@ public class BackingReporteFacturas implements Serializable {
                 return;
             }
 
+            byte[] xmlBytes = descargarBytes(awsS3Service.generarUrlDescarga(doc.getUrlXml()));
+            byte[] pdfBytes = descargarBytes(awsS3Service.generarUrlDescarga(doc.getUrlPdf()));
+
             notificacionService.enviarComprobante(
                 destinatario, 
-                doc.getXmlAutorizadoSri(), 
-                doc.getPdfRide(), 
+                xmlBytes,
+                pdfBytes, 
                 factura.getNumero()
             );
 
@@ -173,47 +185,64 @@ public class BackingReporteFacturas implements Serializable {
             Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo enviar el correo: " + e.getMessage());
         }
     }
+    /**
+     * Descarga un archivo desde la url del bucket s3
+     * @param urlStr
+     * @return
+     * @throws IOException
+     */
+    private byte[] descargarBytes(String urlStr) throws IOException {
+        URL url = new URL(urlStr);
+
+        try (InputStream is = url.openStream();
+             ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+
+            byte[] buffer = new byte[8192];
+            int bytesRead;
+
+            while ((bytesRead = is.read(buffer)) != -1) {
+                baos.write(buffer, 0, bytesRead);
+            }
+
+            return baos.toByteArray();
+        }
+    }
+    
     public StreamedContent getCsvDownload() {
         try {
-            if (beanReporteFacturas.getListaFacturas() == null || beanReporteFacturas.getListaFacturas().isEmpty()) {
-                Mensaje.verMensaje(FacesMessage.SEVERITY_WARN, "Aviso", "No hay facturas para exportar.");
+            if (beanReporteFacturas.getListaComprobantes() == null || beanReporteFacturas.getListaComprobantes().isEmpty()) {
+                Mensaje.verMensaje(FacesMessage.SEVERITY_WARN, "Aviso", "No hay comprobantes para exportar.");
                 return null;
             }
 
-            StringBuilder sb = new StringBuilder();
-            sb.append("FECHA_EMISION COMPROBANTE NUMERO_COMPROBANTE IDENTIFICACION_RECEPTOR RAZON_SOCIAL CLAVE_ACCESO VALOR_TOTAL\n");
-
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-            for (Factura fac : beanReporteFacturas.getListaFacturas()) {
-                String claveAcceso = "";
-                if (fac.getDocumentoElectronico() != null) {
-                    claveAcceso = fac.getDocumentoElectronico().getNumeroAutorizacion() != null
-                        ? fac.getDocumentoElectronico().getNumeroAutorizacion()
-                        : fac.getDocumentoElectronico().getClaveAcceso() != null
-                            ? fac.getDocumentoElectronico().getClaveAcceso()
-                            : "";
-                }
+            String csv = "FECHA_EMISION COMPROBANTE NUMERO_COMPROBANTE IDENTIFICACION_RECEPTOR RAZON_SOCIAL CLAVE_ACCESO VALOR_TOTAL\n" +
+                beanReporteFacturas.getListaComprobantes().stream()
+                    .map(dto -> {
+                        String claveAcceso = dto.getNumeroAutorizacion() != null
+                            ? dto.getNumeroAutorizacion()
+                            : dto.getClaveAcceso() != null ? dto.getClaveAcceso() : "";
+                        return escaped(dto.getFechaEmision() != null ? dto.getFechaEmision().format(formatter) : "") + ' '
+                            + escaped(dto.getTipoComprobante() != null ? dto.getTipoComprobante() : "") + ' '
+                            + escaped(dto.getNumero() != null ? dto.getNumero() : "") + ' '
+                            + escaped(dto.getIdentificacion() != null ? dto.getIdentificacion() : "") + ' '
+                            + escaped(dto.getRazonSocial() != null ? dto.getRazonSocial() : "") + ' '
+                            + escaped(claveAcceso) + ' '
+                            + escaped(dto.getTotal() != null ? dto.getTotal().toString() : "") + '\n';
+                    })
+                    .collect(Collectors.joining());
 
-                sb.append(escaped(fac.getFechaEmision() != null ? fac.getFechaEmision().format(formatter) : "")).append(' ')
-                  .append(escaped("Factura")).append(' ')
-                  .append(escaped(fac.getNumero() != null ? fac.getNumero() : "")).append(' ')
-                  .append(escaped(fac.getCliente() != null && fac.getCliente().getNumeroIdentificacion() != null ? fac.getCliente().getNumeroIdentificacion() : "")).append(' ')
-                  .append(escaped(fac.getCliente() != null && fac.getCliente().getNombresCompletos() != null ? fac.getCliente().getNombresCompletos() : "")).append(' ')
-                  .append(escaped(claveAcceso)).append(' ')
-                  .append(escaped(fac.getTotal() != null ? fac.getTotal().toString() : "")).append('\n');
-            }
-
-            byte[] bytes = sb.toString().getBytes(StandardCharsets.UTF_8);
+            byte[] bytes = csv.getBytes(StandardCharsets.UTF_8);
 
             return DefaultStreamedContent.builder()
-                    .name("ReporteFacturas.csv")
+                    .name("ReporteComprobantes.csv")
                     .contentType("text/csv")
                     .stream(() -> new ByteArrayInputStream(bytes))
                     .build();
 
         } catch (Exception e) {
-            log.error("Error al generar CSV de reporte de facturas", e);
+            log.error("Error al generar CSV de reporte de comprobantes", e);
             Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "Ocurrió un error al generar el archivo CSV");
             return null;
         }
@@ -229,7 +258,7 @@ public class BackingReporteFacturas implements Serializable {
 
 
     public void nuevoReporte() {
-    	beanReporteFacturas.setListaFacturas(null);
+    	beanReporteFacturas.setListaComprobantes(null);
     	beanReporteFacturas.setNumeroAutorizacion(null);
     }
 }

@@ -2,7 +2,8 @@ package ec.mileniumtech.educafacil.service;
 
 import java.time.Duration;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
@@ -31,7 +32,7 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 @LocalBean
 public class AwsS3Service {
 
-    private static final Logger log = Logger.getLogger(AwsS3Service.class);
+	private static final Logger log = LogManager.getLogger(AwsS3Service.class);
 
     /** Duración de validez de las pre-signed URLs (en minutos). */
     private static final long PRESIGNED_URL_DURACION_MINUTOS = 60;
@@ -112,8 +113,8 @@ public class AwsS3Service {
      * @param numeroFactura Número de factura (ej: 001-001-000000001).
      * @return Clave S3 (ruta dentro del bucket).
      */
-    public String construirClavePdf(String numeroFactura) {
-        return "facturas/" + numeroFactura + "/RIDE_" + numeroFactura + ".pdf";
+    public String construirClavePdf(String numeroFactura,String documento,String ambiente) {
+        return documento+"/"+ambiente+"/" + numeroFactura + "/RIDE_" + numeroFactura + ".pdf";
     }
 
     /**
@@ -122,8 +123,8 @@ public class AwsS3Service {
      * @param numeroFactura Número de factura.
      * @return Clave S3 (ruta dentro del bucket).
      */
-    public String construirClaveXml(String numeroFactura) {
-        return "facturas/" + numeroFactura + "/Factura_" + numeroFactura + ".xml";
+    public String construirClaveXml(String numeroFactura,String documento,String ambiente) {
+        return documento+"/"+ambiente+"/" + numeroFactura + "/Factura_" + numeroFactura + ".xml";
     }
 
     // ---- Métodos privados de configuración ----

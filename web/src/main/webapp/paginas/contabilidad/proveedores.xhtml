@@ -1,8 +1,8 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:f="jakarta.faces.core"
+	xmlns:h="jakarta.faces.html"
 	xmlns:p="http://primefaces.org/ui">
 
 <!-- 
@@ -15,7 +15,7 @@
 		<h:form  id="formproveedor" prependId="false">
 			<p:growl id="growl" life="3000" showDetail="true"/>
 		    <p:fieldset legend="#{titulos['listaProveedores']}" style="margin-bottom:20px">
-			<p:dataTable id="tablaproveedor" value="#{backingProveedor.beanProveedor.listaProveedores}" var="proveedor">
+			<p:dataTable id="tablaproveedor" value="#{backingProveedor.beanProveedor.listaProveedores}" var="proveedor" reflow="true">
 				<p:column headerText="#{etiquetas['ruc']}">
 					#{proveedor.provRuc}
 				</p:column>
@@ -108,14 +108,14 @@
 								<h:graphicImage value="/imagenes/utilitarios/asterisco.gif"
 												width="5" height="5" />
 								<p:outputLabel value="#{etiquetas['fechaInicio']}"/>
-								<p:calendar value="#{backingProveedor.beanProveedor.documentacionProveedor.docpFechaAutorizacionDesde}"
+								<p:datePicker value="#{backingProveedor.beanProveedor.documentacionProveedor.docpFechaAutorizacionDesde}"
 									required="true" id="fechaDesde" requiredMessage="#{mensajes['campoRequerido']}"/>
 								<p:message for="fechaDesde"/>	
 								
 								<h:graphicImage value="/imagenes/utilitarios/asterisco.gif"
 												width="5" height="5" />
 								<p:outputLabel value="#{etiquetas['fechaInicio']}"/>
-								<p:calendar value="#{backingProveedor.beanProveedor.documentacionProveedor.docpFechaAutorizacionHasta}"
+								<p:datePicker value="#{backingProveedor.beanProveedor.documentacionProveedor.docpFechaAutorizacionHasta}"
 									required="true" id="fechaHasta" requiredMessage="#{mensajes['campoRequerido']}"/>
 								<p:message for="fechaHasta"/>
 								

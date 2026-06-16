@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="jakarta.faces.facelets"
@@ -14,244 +14,298 @@
 		<h:form id="formCursos" prependId="false">
 			<p:growl id="growl" life="3000" showDetail="true" />
 
-			<p:dialog widgetVar="dlgNuevoCurso" showEffect="fade"
-				header="#{titulos['agregaEditaCurso']}" hideEffect="fade"
-				modal="true" resizable="false" appendTo="@(body)" closable="false">
-
-				<p:scrollPanel mode="native"
-					style="max-height:450px; max-width:300px;">
-					<p:outputPanel id="idasignaoferta">
-						<div class="ui-fluid p-formgrid p-grid">
-							<div class="p-field p-col-12 p-md-10">
-								<span class="ui-float-label ui-input-icon-right"
-									style="margin-top: 2em"> <p:selectOneMenu id="idCurso"
-										value="#{backingCreacionCursos.beanCreacionCursos.codigoCurso}"
-										filter="true" filterMatchMode="contains" style="width:200px;"
-										required="true"
-										requiredMessage="#{mensajes['campoRequerido']}">
-										<f:selectItem itemLabel=" " itemValue="#{null}"
-											noSelectionOption="true" />
-										<f:selectItems
-											value="#{backingCreacionCursos.beanCreacionCursos.listaCursos}"
-											var="curso" itemLabel="#{curso.cursNombre}"
-											itemValue="#{curso.cursId}" />
-										<p:ajax event="change" process="@this"
-											update="growl idasignaoferta" partialSubmit="true" />
-									</p:selectOneMenu> 
-									<p:outputLabel value="#{etiquetas['curso']}:*" />
-								</span>
-								
-							</div>
-							<div class="p-field p-col-12 p-md-2">
-								<p:commandLink title="Actualizar descripción curso" style="margin-top: 2em"
-									disabled="#{beanCreacionCursos.codigoCurso >0 ?false:true}"
-									process=" @this nombrecurso" update="growl nombrecurso"
-									actionListener="#{backingCreacionCursos.mostrarDialogoActualizaCurso()}" >
-									<i class="#{botones['icono.notas']}" style="font-size: 1em; color: green;"></i>	
-								</p:commandLink>
-								</div>
-							<div class="p-field p-col-12 p-md-12">
-								<p:message for="idCurso" />
-							</div>
-							<div class="p-field p-col-12 p-md-12">
-								<span class="ui-float-label ui-input-icon-right"
-									style="margin-top: 2em"> <p:selectOneMenu id="idArea"
-										value="#{backingCreacionCursos.beanCreacionCursos.codigoArea}"
-										style="width:200px;" required="true"
-										requiredMessage="#{mensajes['campoRequerido']}">
-										<f:selectItem itemLabel=" " itemValue="#{null}"
-											noSelectionOption="true" />
-										<f:selectItems
-											value="#{backingCreacionCursos.beanCreacionCursos.listaAreas}"
-											var="area" itemLabel="#{area.areaNombre}"
-											itemValue="#{area.areaId}" />
-									</p:selectOneMenu> <p:outputLabel value="#{etiquetas['area']}:*" />
-								</span>
-							</div>
-							<div class="p-field p-col-12 p-md-12">
-							<p:message for="idArea" />
-							</div>
-
-							<div class="p-field p-col-12 p-md-12">
-
-								<span class="ui-float-label ui-input-icon-right"
-									style="margin-top: 2em"><p:selectOneMenu required="true"
-										id="idEspecialidad" style="width:200px;"
-										requiredMessage="#{mensajes['campoRequerido']}"
-										value="#{backingCreacionCursos.beanCreacionCursos.codigoEspecialidad}">
-										<f:selectItem itemLabel=" " itemValue="#{null}"
-											noSelectionOption="true" />
-										<f:selectItems
-											value="#{backingCreacionCursos.beanCreacionCursos.listaEspecialidades}"
-											var="especialidad" itemLabel="#{especialidad.espeNombre}"
-											itemValue="#{especialidad.espeId}" />
-									</p:selectOneMenu> <p:outputLabel value="#{etiquetas['especialidad']}:*" /> </span>
-							</div>
-
-
-							<div class="p-field p-col-12 p-md-12">
-							<p:message for="idEspecialidad" />
-							</div>
-							
-							<div class="p-field p-col-12 p-md-12">
-								<p:outputLabel value="#{titulos['cursoActivo']}" />
-							</div>
-							<div class="p-field p-col-12 p-md-12">
-								<p:toggleSwitch
-									value="#{backingCreacionCursos.beanCreacionCursos.cursoActivo}" />
-							</div>
-
-
-							<div class="p-field p-col-12 p-md-12">
-								<p:commandButton value="#{botones['grabar']}"
-									process="@this idasignaoferta" update="idasignaoferta growl"
-									partialSubmit="true" icon="#{botones['icono.grabar']}"
-									actionListener="#{backingCreacionCursos.mostrarDialogoGrabaOferta()}" />
-							</div>
-							<div class="p-field p-col-12 p-md-12">
-								<p:commandButton value="#{botones['cancelar']}"
-									actionListener="#{backingCreacionCursos.ocultarOferta}"
-									icon="#{botones['icono.cancelar']}" process="@this tablaoferta"
-									update="idasignaoferta tablaoferta" />
-							</div>
-						</div>
-
-					</p:outputPanel>
-				</p:scrollPanel>
+			<!-- DIÁLOGO DE CARGA -->
+			<p:dialog widgetVar="dlgCargando" header="Por favor espere.."
+				draggable="false" modal="true" resizable="false" closable="false" responsive="true"
+				style="font-size: 11px;">
+				<h:graphicImage value="/resources/img/cargando.gif" width="200" height="200"/>
 			</p:dialog>
 
-			<p:breadCrumb>
-				<p:menuitem value="Categorias" url="#" />
+			<ui:include src="/paginas/administracion/fragmentos/dialogoNuevoCurso.xhtml" />
+
+			<!-- BREADCRUMB REDISEÑADO -->
+			<p:breadCrumb styleClass="ui-breadcrumb p-mb-3" style="border: none; background: transparent; padding-left: 0;">
+				<p:menuitem value="Inicio" outcome="/paginas/index?faces-redirect=true" icon="pi pi-home" />
 				<p:menuitem value="Administración" url="#" />
 				<p:menuitem value="Cursos" url="#" />
 			</p:breadCrumb>
-			<br />
-			<p:splitButton value="#{etiquetas['accionesRealizar']}">
-				<p:menuitem value="#{botones['nuevocurso']}" partialSubmit="true" resetValues="true"
-					icon="pi pi-file" actionListener="#{backingCreacionCursos.nuevaOferta()}"
-					process="@this " update="idasignaoferta" />
-				<p:menuitem value="#{botones['crearCurso']}" partialSubmit="true" resetValues="true"
-					icon="pi pi-file" actionListener="#{backingCreacionCursos.mostrarDialogoNuevoCurso()}"
-					process="@this " update="idasignaoferta" />
-			</p:splitButton>
-			<br />
-			<br />
-			<p:panel>
-				<br />
 
-				<p:dataTable reflow="true"
+			<!-- ENCABEZADO DE LA PÁGINA -->
+			<div class="page-header" style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+				<div class="page-title">
+					<h2 style="font-weight: 800; color: var(--text-main); margin: 0; font-size: 1.875rem;">Administración de Cursos</h2>
+					<small style="color: var(--text-muted); font-size: 0.9rem;">Gestión y control del catálogo de cursos y ofertas académicas</small>
+				</div>
+				<div class="page-actions" style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+
+					<!-- Botón Nuevo Curso (acción principal) -->
+					<p:commandButton value="#{botones['nuevocurso']}"
+						partialSubmit="true" resetValues="true"
+						icon="pi pi-plus"
+						styleClass="ui-button-success"
+						style="padding: 0.5rem 1.25rem !important; font-weight: 600;"
+						actionListener="#{backingCreacionCursos.nuevaOferta()}"
+						process="@this" update="idasignaoferta" />
+
+					<!-- Botón Crear Curso (acción secundaria) -->
+					<p:commandButton value="#{botones['crearCurso']}"
+						partialSubmit="true" resetValues="true"
+						icon="pi pi-book"
+						styleClass="ui-button-outlined ui-button-primary"
+						style="padding: 0.5rem 1.25rem !important; font-weight: 600;"
+						actionListener="#{backingCreacionCursos.mostrarDialogoNuevoCurso()}"
+						process="@this" update="idasignaoferta" />
+
+				</div>
+			</div>
+
+			
+
+			<!-- SECCIÓN DE RESULTADOS -->
+			<p:outputPanel id="panelResultados">
+
+				<!-- KPI / RESUMEN DASHBOARD -->
+				<div class="dashboard-stats" style="margin-bottom: 1.5rem;">
+					<!-- Total cursos -->
+					<div class="stats-card stats-card-primary shadow-sm">
+						<div class="stats-content">
+							<span class="stats-label">Total Cursos</span>
+							<span class="stats-value">#{backingCreacionCursos.beanCreacionCursos.listaOfertaCapacitacion.size()}</span>
+						</div>
+						<div class="stats-icon-wrapper">
+							<i class="pi pi-book"></i>
+						</div>
+					</div>
+
+					<!-- Cursos activos -->
+					<div class="stats-card stats-card-success shadow-sm">
+						<div class="stats-content">
+							<span class="stats-label">Activos</span>
+							<span class="stats-value" style="color: var(--success-color);">
+								#{backingCreacionCursos.beanCreacionCursos.listaOfertaCapacitacion.stream().filter(o -> o.ofcaEstado).count()}
+							</span>
+						</div>
+						<div class="stats-icon-wrapper">
+							<i class="pi pi-check-circle"></i>
+						</div>
+					</div>
+
+					<!-- Cursos inactivos -->
+					<div class="stats-card stats-card-danger shadow-sm">
+						<div class="stats-content">
+							<span class="stats-label">Inactivos</span>
+							<span class="stats-value" style="color: var(--danger-color);">
+								#{backingCreacionCursos.beanCreacionCursos.listaOfertaCapacitacion.stream().filter(o -> !o.ofcaEstado).count()}
+							</span>
+						</div>
+						<div class="stats-icon-wrapper">
+							<i class="pi pi-times-circle"></i>
+						</div>
+					</div>
+				</div>
+
+				<!-- TABLA DE CURSOS -->
+				<p:dataTable
 					value="#{backingCreacionCursos.beanCreacionCursos.listaOfertaCapacitacion}"
+					reflow="true"
 					rows="10" paginator="true"
+					widgetVar="tblCursos"
 					selection="#{backingCreacionCursos.beanCreacionCursos.ofertaCapacitacion}"
-					rowKey="#{oferta.ofcaId}" id="tablaoferta" var="oferta">
+					rowKey="#{oferta.ofcaId}"
+					id="tablaoferta"
+					var="oferta"
+					styleClass="ui-datatable shadow-sm"
+					paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+					emptyMessage="No se encontraron cursos con los filtros aplicados.">
 
+					<!-- Columna: Curso / Área / Especialidad -->
 					<p:column headerText="#{etiquetas['curso']}"
-						filterBy="#{oferta.curso.cursNombre}" filterMatchMode="contains">
+						filterBy="#{oferta.curso.cursNombre}" filterMatchMode="contains"
+						style="min-width: 260px;">
+						<div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+							<!-- Ícono representativo -->
+							<div style="width: 42px; height: 42px; border-radius: 10px; background: linear-gradient(135deg, #eff6ff, #dbeafe); border: 1px solid #bfdbfe; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">
+								<i class="pi pi-book" style="color: var(--primary-color); font-size: 1.1rem;"></i>
+							</div>
+							<div>
+								<div style="font-weight: 700; color: var(--text-main); font-size: 0.95rem; margin-bottom: 0.2rem;">
+									<p:outputLabel value="#{oferta.curso.cursNombre}" />
+								</div>
+								<div style="display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.25rem;">
+									<span style="font-size: 0.75rem; background: #f1f5f9; color: var(--text-muted); border-radius: 6px; padding: 0.15rem 0.5rem; font-weight: 600; border: 1px solid var(--border-color);">
+										<i class="pi pi-tag" style="margin-right: 3px; font-size: 0.7rem;"></i>
+										<h:outputText value="#{oferta.area.areaNombre}" />
+									</span>
+									<span style="font-size: 0.75rem; background: #fefce8; color: #92400e; border-radius: 6px; padding: 0.15rem 0.5rem; font-weight: 600; border: 1px solid #fde68a;">
+										<i class="pi pi-star" style="margin-right: 3px; font-size: 0.7rem;"></i>
+										<h:outputText value="#{oferta.especialidad.espeNombre}" />
+									</span>
+								</div>
+							</div>
+						</div>
+					</p:column>
 
-						<p:outputLabel value="#{oferta.curso.cursNombre}" />
-						<br />
-						<p:outputLabel value="#{etiquetas['area']}" style="color:green" />
-						<br />
-						<p:outputLabel value="#{oferta.area.areaNombre}" />
-						<br />
-						<p:outputLabel value="#{etiquetas['especialidad']}"
-							style="color:green" />
-						<br />
-						<p:outputLabel value="#{oferta.especialidad.espeNombre}" />
+					<!-- Columna: Estado con chip colorido -->
+					<p:column headerText="#{etiquetas['estado']}"
+						filterBy="#{oferta.ofcaEstado}" filterMatchMode="exact"
+						style="width: 130px; text-align: center;">
+						<f:facet name="filter">
+							<p:selectOneMenu onchange="PF('tblCursos').filter()" styleClass="w-full">
+								<f:selectItem itemLabel="Todos" itemValue="" noSelectionOption="true" />
+								<f:selectItem itemLabel="Activo" itemValue="true" />
+								<f:selectItem itemLabel="Inactivo" itemValue="false" />
+							</p:selectOneMenu>
+						</f:facet>
+						<!-- Chip Activo -->
+						<p:chip label="Activo" icon="pi pi-check-circle"
+							rendered="#{oferta.ofcaEstado}"
+							style="background: #d1fae5; color: #065f46; font-weight: 700; font-size: 0.78rem; border: 1px solid #a7f3d0;" />
+						<!-- Chip Inactivo -->
+						<p:chip label="Inactivo" icon="pi pi-times-circle"
+							rendered="#{!oferta.ofcaEstado}"
+							style="background: #fee2e2; color: #991b1b; font-weight: 700; font-size: 0.78rem; border: 1px solid #fca5a5;" />
 					</p:column>
-					<p:column style="width:80px" headerText="#{etiquetas['estado']}">
-						<p:chip label="Activo" icon="pi pi-check" styleClass="mr-2"
-							rendered="#{oferta.ofcaEstado==true?'true':''}" />
-						<p:chip label="Inactivo" icon="pi pi-times" styleClass="mr-2"
-							rendered="#{oferta.ofcaEstado==false?'true':''}" />
-					</p:column>
-					<p:column style="width:70px" headerText="#{etiquetas['acciones']}">
-						<p:commandLink title="#{tooltip['editar']}" process="@this "
-							update="idasignaoferta" partialSubmit="true"
-							action="#{backingCreacionCursos.editarOferta()}">
+
+					<!-- Columna: Acciones -->
+					<p:column headerText="#{etiquetas['acciones']}" style="width: 110px; text-align: center;">
+						<!-- Editar oferta -->
+						<p:commandLink
+							title="#{tooltip['editar']}"
+							process="@this"
+							update="idasignaoferta growl"
+							partialSubmit="true"
+							action="#{backingCreacionCursos.editarOferta()}"
+							style="margin-right: 10px; display: inline-block;">
 							<f:setPropertyActionListener value="#{oferta}"
-								target="#{beanCreacionCursos.ofertaCapacitacion}"></f:setPropertyActionListener>
-							<i class="pi pi-check-circle"
-								style="font-size: 1em; color: green;"></i>
+								target="#{backingCreacionCursos.beanCreacionCursos.ofertaCapacitacion}" />
+							<i class="pi pi-pencil"
+								style="font-size: 1.2rem; color: var(--primary-color); transition: transform 0.2s;"
+								onmouseover="this.style.transform='scale(1.2)';"
+								onmouseout="this.style.transform='scale(1)';"></i>
 						</p:commandLink>
 
+						<!-- Ver detalle del curso -->
+						<p:commandLink
+							title="Ver detalle del curso"
+							oncomplete="PF('dlgDetalleCurso').show();"
+							process="@this"
+							update="panelDetalleCurso"
+							style="display: inline-block;">
+							<f:setPropertyActionListener value="#{oferta}"
+								target="#{backingCreacionCursos.beanCreacionCursos.ofertaCapacitacion}" />
+							<i class="pi pi-eye"
+								style="font-size: 1.2rem; color: #64748b; transition: transform 0.2s;"
+								onmouseover="this.style.transform='scale(1.2)'; this.style.color='var(--primary-color)';"
+								onmouseout="this.style.transform='scale(1)'; this.style.color='#64748b';"></i>
+						</p:commandLink>
 					</p:column>
 
 				</p:dataTable>
 
-				<br />
-				<h:panelGrid columns="2">
-
-				</h:panelGrid>
-			</p:panel>
-
-
-		</h:form>
-		
-		<p:dialog widgetVar="dlgGrabaCurso" showEffect="fade"
-			hideEffect="fade" modal="true" appendTo="@(body)" closable="false"
-			header="#{titulos['agregaEditaCurso']}" id="iddlggrabar">
-			<p:outputPanel id="pnlCurso">
-			<p:outputLabel value="#{backingCreacionCursos.beanCreacionCursos.curso.cursNombre}"/>
-				<p:scrollPanel mode="native"
-					style="max-height:450px; max-width:300px;">
-					<div class="ui-fluid p-formgrid p-grid">
-					<div class="p-field p-col-12 p-md-12">
-					
-					<span class="ui-float-label ui-input-icon-right"
-						style="margin-top: 2em"><p:inputTextarea required="true"
-						requiredMessage="#{mensajes['campoRequerido']}"
-						value="#{backingCreacionCursos.beanCreacionCursos.curso.cursNombre}"
-						maxlength="150" id="nombrecurso">
-						<p:ajax process="@this pnlCurso" event="blur" />
-					</p:inputTextarea>
-					<p:outputLabel value="#{etiquetas['curso']}:*" />
-					</span>
+				<!-- ESTADO VACÍO (cuando no hay cursos cargados) -->
+				<h:panelGroup
+					rendered="#{backingCreacionCursos.beanCreacionCursos.listaOfertaCapacitacion == null or backingCreacionCursos.beanCreacionCursos.listaOfertaCapacitacion.size() == 0}">
+					<div style="text-align: center; padding: 5rem 2rem; background: white; border: 2px dashed var(--border-color); border-radius: 12px; margin-top: 1rem; box-shadow: var(--shadow-sm);">
+						<div style="margin-bottom: 1.5rem;">
+							<i class="pi pi-book" style="font-size: 4rem; color: #94a3b8; padding: 1.5rem; background-color: #f8fafc; border-radius: 50%;"></i>
+						</div>
+						<h3 style="font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem; font-size: 1.25rem;">Sin cursos registrados</h3>
+						<p style="color: var(--text-muted); max-width: 420px; margin: 0 auto 1.5rem auto; font-size: 0.95rem; line-height: 1.6;">
+							No existen cursos en el catálogo todavía. Usa el botón <strong>"Nuevo Curso"</strong> para comenzar a registrar el catálogo de formación.
+						</p>
+						<p:commandButton value="Crear primer curso"
+							icon="pi pi-plus"
+							styleClass="ui-button-success"
+							style="padding: 0.5rem 1.5rem !important;"
+							actionListener="#{backingCreacionCursos.nuevaOferta()}"
+							process="@this" update="idasignaoferta" />
 					</div>
-					<div class="p-field p-col-12 p-md-12">
-					<p:message for="nombrecurso" />
-					</div>
-					<div class="p-field p-col-12 p-md-12">
-					<p:commandButton value="#{botones['grabar']}"
-						process="@this pnlCurso"
-						update="tablaoferta  growl pnlCurso nombrecurso"
-						partialSubmit="true"
-						icon="#{botones['icono.grabar']}"
-						actionListener="#{backingCreacionCursos.grabarActualizarCurso()}" />
-					</div>
-					<div class="p-field p-col-12 p-md-12">
-					<p:commandButton value="#{botones['cancelar']}" process="@this"
-						oncomplete="PF('dlgGrabaCurso').hide();"
-						icon="#{botones['icono.cancelar']}" />
-					</div>
-				</div>
-				</p:scrollPanel>
+				</h:panelGroup>
 
 			</p:outputPanel>
-			
-		</p:dialog>
-		<p:dialog widgetVar="dlgGrabaOferta" showEffect="fade"
-			hideEffect="fade" modal="true" appendTo="@(body)" closable="false"
-			header="#{titulos['grabar']}" id="idgrabaoferta">
-			<p:scrollPanel mode="native"
-					style="max-height:450px; max-width:500px;">
-				<div class="ui-fluid p-formgrid p-grid">
-				<div class="p-field p-col-12 p-md-12">
-				<p:commandButton value="#{botones['grabar']}" 
-					icon="#{botones['icono.grabar']}" update="tablaoferta growl"
-					actionListener="#{backingCreacionCursos.grabarOferta()}"
-					process="@this "
-					oncomplete="PF('dlgGrabaOferta').hide(); PF('dlgNuevoCurso').hide();" />
-				</div>
-				<div class="p-field p-col-12 p-md-12">
-				<p:commandButton value="#{botones['cancelar']}" 
-					oncomplete="PF('dlgGrabaOferta').hide();"
-					icon="#{botones['icono.cancelar']}" />
-				</div>
-				</div>
-			</p:scrollPanel>
-		</p:dialog>
 
+		</h:form>
+
+		<!-- DIÁLOGO DETALLE DEL CURSO (fuera del form para appendTo body) -->
+		<h:form id="formDetalleCurso" prependId="false">
+			<p:dialog widgetVar="dlgDetalleCurso"
+				header="Detalle del Curso"
+				modal="true" responsive="true" width="540" resizable="false"
+				styleClass="ui-dialog shadow-lg" appendTo="@(body)">
+				<p:outputPanel id="panelDetalleCurso" styleClass="p-p-2">
+					<div class="ui-fluid">
+						<!-- Encabezado del curso -->
+						<div style="display: flex; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color);">
+							<div style="width: 52px; height: 52px; border-radius: 12px; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-right: 1rem; box-shadow: var(--shadow-sm);">
+								<i class="pi pi-book"></i>
+							</div>
+							<div>
+								<h3 style="margin: 0; font-weight: 700; color: var(--text-main); font-size: 1.1rem;">
+									#{backingCreacionCursos.beanCreacionCursos.ofertaCapacitacion.curso.cursNombre}
+								</h3>
+								<span style="color: var(--text-muted); font-size: 0.85rem; display: flex; align-items: center; gap: 4px; margin-top: 3px;">
+									<i class="pi pi-id-card"></i> ID: #{backingCreacionCursos.beanCreacionCursos.ofertaCapacitacion.ofcaId}
+								</span>
+							</div>
+						</div>
+
+						<!-- Dos Columnas: Área / Especialidad / Estado -->
+						<div class="p-formgrid p-grid">
+							<!-- Columna Clasificación -->
+							<div class="p-field p-col-12 p-md-6" style="margin-bottom: 1rem; padding-right: 0.5rem;">
+								<h5 style="margin-top: 0; margin-bottom: 0.75rem; color: var(--primary-color); font-weight: 700; font-size: 0.85rem; border-left: 3px solid var(--primary-color); padding-left: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Clasificación</h5>
+								<div style="display: flex; flex-direction: column; gap: 0.75rem;">
+									<div>
+										<small style="display: block; color: var(--text-muted); font-weight: 700; font-size: 0.72rem; text-transform: uppercase;">Área</small>
+										<span style="font-size: 0.9rem; color: var(--text-main); font-weight: 500;">#{backingCreacionCursos.beanCreacionCursos.ofertaCapacitacion.area.areaNombre}</span>
+									</div>
+									<div>
+										<small style="display: block; color: var(--text-muted); font-weight: 700; font-size: 0.72rem; text-transform: uppercase;">Especialidad</small>
+										<span style="font-size: 0.9rem; color: var(--text-main); font-weight: 500;">#{backingCreacionCursos.beanCreacionCursos.ofertaCapacitacion.especialidad.espeNombre}</span>
+									</div>
+								</div>
+							</div>
+
+							<!-- Columna Estado -->
+							<div class="p-field p-col-12 p-md-6" style="margin-bottom: 1rem; padding-left: 0.5rem;">
+								<h5 style="margin-top: 0; margin-bottom: 0.75rem; color: var(--primary-color); font-weight: 700; font-size: 0.85rem; border-left: 3px solid var(--primary-color); padding-left: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Estado</h5>
+								<div style="display: flex; flex-direction: column; gap: 0.75rem;">
+									<div>
+										<small style="display: block; color: var(--text-muted); font-weight: 700; font-size: 0.72rem; text-transform: uppercase; margin-bottom: 0.4rem;">Disponibilidad</small>
+										<p:chip label="Activo" icon="pi pi-check-circle"
+											rendered="#{backingCreacionCursos.beanCreacionCursos.ofertaCapacitacion.ofcaEstado}"
+											style="background: #d1fae5; color: #065f46; font-weight: 700; border: 1px solid #a7f3d0;" />
+										<p:chip label="Inactivo" icon="pi pi-times-circle"
+											rendered="#{!backingCreacionCursos.beanCreacionCursos.ofertaCapacitacion.ofcaEstado}"
+											style="background: #fee2e2; color: #991b1b; font-weight: 700; border: 1px solid #fca5a5;" />
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Pie del diálogo -->
+					<div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+						<p:commandButton value="Editar Curso"
+							icon="pi pi-pencil"
+							styleClass="ui-button-primary"
+							style="padding: 0.35rem 1.25rem !important;"
+							process="@this"
+							update="idasignaoferta growl"
+							partialSubmit="true"
+							action="#{backingCreacionCursos.editarOferta()}"
+							oncomplete="PF('dlgDetalleCurso').hide();" />
+						<p:commandButton value="Cerrar" type="button"
+							onclick="PF('dlgDetalleCurso').hide();"
+							styleClass="ui-button-outlined ui-button-secondary"
+							style="padding: 0.35rem 1.25rem !important;" />
+					</div>
+				</p:outputPanel>
+			</p:dialog>
+		</h:form>
+
+		<ui:include src="/paginas/administracion/fragmentos/dialogoGrabaCurso.xhtml" />
+		<ui:include src="/paginas/administracion/fragmentos/dialogoGrabaOferta.xhtml" />
 
 	</ui:define>
 

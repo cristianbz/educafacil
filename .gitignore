@@ -1,1 +1,7 @@
 /.metadata/
+# Ignorar directorios de compilación de Maven
+target/
+**/target/
+*.ear
+*.war
+*.jar

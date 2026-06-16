@@ -15,6 +15,9 @@
 	<link
 		href="#{facesContext.externalContext.requestContextPath}/resources/css/estilos.css"
 		rel="stylesheet" type="text/css" />
+	<link
+		href="#{facesContext.externalContext.requestContextPath}/resources/css/custom.css"
+		rel="stylesheet" type="text/css" />
 
 	<script
 		src="#{facesContext.externalContext.requestContextPath}/resources/js/bootstrap.min.js"></script>
@@ -32,28 +35,29 @@
 		name="font-awesome/5.12.0/css/all.min-jsf.css" />
 	<h:outputStylesheet library="webjars"
 		name="font-awesome/5.12.0/css/v4-shims.min-jsf.css" />
+	<!-- Google Fonts -->
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800" rel="stylesheet" />
+	
 	<style type="text/css">
 .inscrito {
 	background-color: #40e577 !important;
-	background-image: none !important;
 	color: #ffffff !important;
 }
 
 .abandonado {
 	background-color: #f28b65 !important;
-	background-image: none !important;
 	color: #ffffff !important;
 }
 
 .candidato {
 	background-color: #11ddcc !important;
-	background-image: none !important;
 	color: #ffffff !important;
 }
 
 .otraocasion {
 	background-color: #FFAB68 !important;
-	background-image: none !important;
 	color: #ffffff !important;
 }
 .colorDesertado{
@@ -65,57 +69,110 @@
 .colorCulminado{
 	background-color:#116FBF !important;	
 }
-
 </style>
 	<meta name="viewport"
 		content="width=device-width,initial-scale=1,shrink-to-fit=no" />
+		
 </h:head>
+<script>
+    (function () {
+        var mq = window.matchMedia("(max-width: 991.98px)");
+        function syncLayoutForViewport() {
+            var sidebar = document.getElementById("sidebar");
+            var backdrop = document.getElementById("sidebar-backdrop");
+            if (!mq.matches &amp;&amp; sidebar) {
+                sidebar.classList.remove("mobile-open");
+                if (backdrop) backdrop.classList.remove("active");
+                document.body.classList.remove("sidebar-mobile-open");
+            }
+        }
+        window.toggleSidebar = function () {
+            var sidebar = document.getElementById("sidebar");
+            var content = document.getElementById("content");
+            var backdrop = document.getElementById("sidebar-backdrop");
+            if (!sidebar || !content) return;
+            if (mq.matches) {
+                var open = sidebar.classList.toggle("mobile-open");
+                if (backdrop) backdrop.classList.toggle("active", open);
+                document.body.classList.toggle("sidebar-mobile-open", open);
+                var btn = document.getElementById("sidebar-toggle-btn");
+                if (btn) btn.setAttribute("aria-expanded", open ? "true" : "false");
+            } else {
+                sidebar.classList.toggle("collapsed");
+                content.classList.toggle("expanded");
+            }
+        };
+        window.closeSidebarMobile = function () {
+            if (!mq.matches) return;
+            var sidebar = document.getElementById("sidebar");
+            var backdrop = document.getElementById("sidebar-backdrop");
+            if (sidebar) sidebar.classList.remove("mobile-open");
+            if (backdrop) backdrop.classList.remove("active");
+            document.body.classList.remove("sidebar-mobile-open");
+            var btn = document.getElementById("sidebar-toggle-btn");
+            if (btn) btn.setAttribute("aria-expanded", "false");
+        };
+        if (mq.addEventListener) mq.addEventListener("change", syncLayoutForViewport);
+        else if (mq.addListener) mq.addListener(syncLayoutForViewport);
+    })();
+</script>
 <body>
-	<p:dialog widgetVar="dlgCerrar" appendTo="@parent"
-		header="#{titulos['salirSistema']}" modal="true" width="200px;"
-		closable="false">
-		<h:panelGrid columns="2">
-			<p:commandButton value="#{botones['aceptar']}"
-				icon="#{botones['icono.select']}" process="@this"
-				partialSubmit="true" action="#{backingLogin.cerrarSesion()}"
-				oncomplete="PF('dlgCerrar').hide();" />
-			<p:commandButton value="#{botones['cancelar']}"
-				icon="#{botones['icono.cancelar']}" process="@this"
-				partialSubmit="true" oncomplete="PF('dlgCerrar').hide();" />
-		</h:panelGrid>
-	</p:dialog>
-	<div class="row grow w-100">
-		<div class="col-12 bg-primary py-3">
-			<h:form>
-				<center>
-					<p:menubar model="#{backingLogin.menumodel}" >
-						<f:facet name="options">
-							<i class="pi pi-user" style="font-size: 1rem; color: green"></i>
-							
-							<p:outputLabel
-								value=" #{backingLogin.beanLogin.usuario.persona.persApellidos} #{backingLogin.beanLogin.usuario.persona.persNombres}" />	
-							<h:outputLink
-								value="#{backingFacebookLogin.authenticateWithFacebook()}"
-								target="_blank">
-								<i class="pi pi-facebook" style="font-size: 1em; color: green;"></i>
-							</h:outputLink>		
-							                
-			                <p:commandButton oncomplete="PF('dlgCerrar').show();"
-								title="#{tooltip['salirSistema']}"
-								icon="#{botones['icono.cancelar']}" process="@this"
-								value="Cerrar sesión" />
-						</f:facet>
-					</p:menubar>
+	<h:form id="logoutForm">
+		<p:dialog widgetVar="dlgCerrar" appendTo="@parent"
+			header="#{titulos['salirSistema']}" modal="true" width="200px;"
+			closable="false">
+			<h:panelGrid columns="2">
+				<p:commandButton value="#{botones['aceptar']}"
+					icon="#{botones['icono.select']}" process="@this"
+					partialSubmit="true" action="#{backingLogin.cerrarSesion()}"
+					oncomplete="PF('dlgCerrar').hide();" />
+				<p:commandButton value="#{botones['cancelar']}"
+					icon="#{botones['icono.cancelar']}" process="@this"
+					partialSubmit="true" oncomplete="PF('dlgCerrar').hide();" />
+			</h:panelGrid>
+		</p:dialog>
+    </h:form>
+        <!-- 🔵 TOP BAR -->
+        <div class="topbar">
+            <button type="button" class="toggle-btn" onclick="toggleSidebar()"
+                aria-label="Abrir o cerrar menú de navegación" aria-expanded="false" id="sidebar-toggle-btn">
+                <i class="pi pi-bars"></i>
+            </button>
 
-				</center>
-			</h:form>
-		</div>
-		<div class="main col-12 bg-light h-100 py-3">
-			<ui:insert name="contenido">
-					Contenido por defecto para que no quede en blanco...    
-				</ui:insert>
-		</div>
-	</div>
+            <div class="user-info">
+                <i class="pi pi-user"></i>
+                #{backingLogin.beanLogin.usuario.persona.persApellidos}
+                #{backingLogin.beanLogin.usuario.persona.persNombres}
+            </div>
+        </div>
+
+        <div id="sidebar-backdrop" class="sidebar-backdrop" role="presentation" onclick="closeSidebarMobile();"
+            aria-hidden="true"></div>
+
+        <!-- 🔵 SIDEBAR -->
+        <div id="sidebar" class="sidebar">
+            <p:panelMenu model="#{backingLogin.menumodel}" style="width:100%" />
+
+            <div class="logout-container">
+            	<h:form>
+	                <p:commandButton 
+	                    value="Cerrar sesión"
+	                    icon="pi pi-sign-out"
+	                    styleClass="ui-button-danger w-100"
+	                    oncomplete="PF('dlgCerrar').show();"
+	                    process="@this"/>
+               </h:form>     
+            </div>
+        </div>
+
+        <!-- 🟢 CONTENT -->
+        <div id="content" class="content">
+            <ui:insert name="contenido">
+                Contenido por defecto...
+            </ui:insert>
+        </div>
+
+
 
 </body>
 </html>

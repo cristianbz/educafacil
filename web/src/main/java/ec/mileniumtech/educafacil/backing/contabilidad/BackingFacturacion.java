@@ -7,30 +7,26 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.StreamedContent;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.contabilidad.BeanFacturacion;
-import ec.mileniumtech.educafacil.dao.impl.CatalogoItemDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.ClienteDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.EmpresaMatrizDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.EstudianteDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.FacturaDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.PersonaDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.PuntoEmisionDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.InfoAdicionalDto;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.CatalogoItem;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Cliente;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleFactura;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleNotaCredito;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DocumentoElectronico;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.EmpresaMatriz;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Estudiante;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Factura;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.NotaCredito;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Persona;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.PuntoEmision;
-import ec.mileniumtech.educafacil.service.FacturacionService;
+import ec.mileniumtech.educafacil.service.facade.FacturacionFacade;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitarios.fechas.FechaFormato;
 import jakarta.annotation.PostConstruct;
@@ -49,37 +45,19 @@ import lombok.Getter;
 public class BackingFacturacion implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger log = Logger.getLogger(BackingFacturacion.class);
+    private static final Logger log = LogManager.getLogger(BackingFacturacion.class);
 
     @EJB
-    private FacturaDaoImpl facturaDao;
+    private FacturacionFacade facturacionDataService;
 
     @EJB
-    private ClienteDaoImpl clienteDao;
+    private FacturacionFacade facturacionService;
 
     @EJB
-    private CatalogoItemDaoImpl catalogoItemDao;
-
-    @EJB
-    private PuntoEmisionDaoImpl puntoEmisionDao;
-    
-    @EJB
-    private EmpresaMatrizDaoImpl empresaMatrizDao;
-    
-    @EJB
-    private ec.mileniumtech.educafacil.dao.impl.SriformapagoDaoImpl sriformapagoDao;
-
-    @EJB
-    private EstudianteDaoImpl estudianteDao;
-
-    @EJB
-    private PersonaDaoImpl personaDao;
-
-    @EJB
-    private FacturacionService facturacionService;
-
+    private ec.mileniumtech.educafacil.service.NotaCreditoService notaCreditoService;
     @EJB
     private ec.mileniumtech.educafacil.service.AwsS3Service awsS3Service;
+
 
     @Inject
     @Getter
@@ -96,8 +74,8 @@ public class BackingFacturacion implements Serializable {
         	        	
             cargarFacturas();
             prepararNuevaFactura();            
-            getBeanFacturacion().setListaItems(catalogoItemDao.findAll());
-            getBeanFacturacion().setListaFormasPagoSri(sriformapagoDao.findAll());            
+            getBeanFacturacion().setListaItems(facturacionDataService.listarCatalogoItems());
+            getBeanFacturacion().setListaFormasPagoSri(facturacionDataService.listarFormasPago());            
         } catch (Exception e) {
             log.error("Error en init de BackingFacturacion", e);
             Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "Error al inicializar la página: " + e.getMessage());
@@ -146,7 +124,7 @@ public class BackingFacturacion implements Serializable {
                 }
             }
             // 1. Buscar en Cliente (Directo)
-            Cliente c = clienteDao.buscarPorIdentificacion(id);
+            Cliente c = facturacionDataService.buscarClientePorIdentificacion(id);
             if (c != null) {
                 getBeanFacturacion().setClienteSeleccionado(c);
                 Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Cliente Encontrado", c.getNombresCompletos());
@@ -154,7 +132,7 @@ public class BackingFacturacion implements Serializable {
             }
 
             // 2. Buscar en Estudiante
-            Estudiante e = estudianteDao.estudiantesPorCedula(id);
+            Estudiante e = facturacionDataService.buscarEstudiantePorCedula(id);
             if (e != null && e.getPersona() != null) {
                 prepararNuevoClienteDesdePersona(e.getPersona());
                 Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Datos recuperados de Estudiante", getBeanFacturacion().getClienteSeleccionado().getNombresCompletos());
@@ -162,7 +140,7 @@ public class BackingFacturacion implements Serializable {
             }
 
             // 3. Buscar en Persona (General)
-            Persona p = personaDao.buscarPersonaPorCedula(id);
+            Persona p = facturacionDataService.buscarPersonaPorCedula(id);
             if (p != null) {
                 prepararNuevoClienteDesdePersona(p);
                 Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Datos recuperados de Persona", getBeanFacturacion().getClienteSeleccionado().getNombresCompletos());
@@ -246,15 +224,15 @@ public class BackingFacturacion implements Serializable {
             
             boolean esNuevo = (item.getId() == null);
             if (esNuevo) {
-                catalogoItemDao.guardar(item);
+            	 facturacionDataService.guardarCatalogoItem(item);
                 Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Éxito", "Ítem creado correctamente.");
             } else {
-                catalogoItemDao.actualizar(item);
+            	facturacionDataService.actualizarCatalogoItem(item);
                 Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Éxito", "Ítem modificado correctamente.");
             }
             
             // Actualizar lista y seleccionar el ítem correcto
-            List<CatalogoItem> items = catalogoItemDao.findAll();
+            List<CatalogoItem> items = facturacionDataService.listarCatalogoItems();
             getBeanFacturacion().setListaItems(items);
             
             // Seleccionar el ítem correcto por referencia de la nueva lista
@@ -290,7 +268,7 @@ public class BackingFacturacion implements Serializable {
                 df.setDescuento(BigDecimal.ZERO);
             }
             
-            List<EmpresaMatriz> empresas = empresaMatrizDao.listaEmpresas();
+            List<EmpresaMatriz> empresas = facturacionDataService.listaEmpresas();
             if (empresas != null && !empresas.isEmpty()) {
                 df.setImpuestoIva(empresas.get(0).getEmpmPorcentajeIva());
             } else {
@@ -311,7 +289,13 @@ public class BackingFacturacion implements Serializable {
      * Agrega informacion adicional a la factura
      */
     public void agregarInformacionAdicional() {
-    	getBeanFacturacion().getListaInfoAdicional().add(getBeanFacturacion().getInfoAdicional());
+    	InfoAdicionalDto info = getBeanFacturacion().getInfoAdicional();
+    	if (info.getNombre() == null || info.getNombre().isBlank()
+    			|| info.getDescripcion() == null || info.getDescripcion().isBlank()) {
+    		Mensaje.verMensaje(FacesMessage.SEVERITY_WARN, "Validación", "El nombre y la descripción no pueden estar vacíos.");
+    		return;
+    	}
+    	getBeanFacturacion().getListaInfoAdicional().add(info);
     	getBeanFacturacion().setInfoAdicional(new InfoAdicionalDto());
     }
     /**
@@ -359,7 +343,7 @@ public class BackingFacturacion implements Serializable {
                 throw new Exception("El valor debe ser mayor a cero.");
             }
             
-            ec.mileniumtech.educafacil.modelo.persistencia.entity.Sriformapago sriFp = sriformapagoDao.findById(idFp).orElse(null);
+            ec.mileniumtech.educafacil.modelo.persistencia.entity.Sriformapago sriFp = facturacionDataService.buscarFormaPagoPorId(idFp);
             if (sriFp == null) throw new Exception("Forma de pago no encontrada.");
             
             fp.setSriformapagos(sriFp);
@@ -424,9 +408,9 @@ public class BackingFacturacion implements Serializable {
             
             // Si el cliente no existe en la base de datos (ID nulo), lo guardamos primero
             if (c.getId() == null) {
-                clienteDao.guardar(c);
+            	 facturacionDataService.guardarCliente(c);
             } else {
-                clienteDao.actualizar(c);
+            	facturacionDataService.actualizarCliente(c);
             }
             
             f.setCliente(c);
@@ -440,7 +424,7 @@ public class BackingFacturacion implements Serializable {
             f.setFormaPagoFacturas(formasPago);
             
             // Obtener Punto de Emisión
-            List<PuntoEmision> puntos = puntoEmisionDao.listarPuntosEmisionActivos();
+            List<PuntoEmision> puntos = facturacionDataService.listarPuntosEmisionActivos();
             if (puntos.isEmpty()) throw new Exception("No hay puntos de emisión activos.");
             PuntoEmision puem = puntos.get(0);
             f.setPuntoEmision(puem);
@@ -449,7 +433,7 @@ public class BackingFacturacion implements Serializable {
             int nuevoSec = puem.getSecuencialFactura() + 1;
             f.setNumero(String.format("001-%s-%09d", puem.getCodigo(), nuevoSec));
             puem.setSecuencialFactura(nuevoSec);
-            puntoEmisionDao.actualizar(puem);
+            facturacionDataService.actualizarPuntoEmision(puem);
             
             for (DetalleFactura df : f.getDetalles()) {
                 BigDecimal tasaImpuesto = df.getImpuestoIva().divide(
@@ -472,7 +456,7 @@ public class BackingFacturacion implements Serializable {
             f.setDescuentoTotal(totalDescuento);
             f.setListaInfoAdicional(getBeanFacturacion().getListaInfoAdicional());
 
-            facturaDao.guardar(f);
+            facturacionDataService.guardarFactura(f);
             
             // Emitir electrónicamente
             facturacionService.emitirFactura(f.getId(),getBeanFacturacion().getListaInfoAdicional());
@@ -484,7 +468,14 @@ public class BackingFacturacion implements Serializable {
             
         } catch (Exception e) {
             log.error("Error al guardar factura", e);
-            Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage());
+            if (e.getMessage() != null && e.getMessage().contains("No se pudo establecer comunicación")) {
+                Mensaje.verMensaje(FacesMessage.SEVERITY_WARN, "Advertencia", "No se pudo enviar el documento al SRI, se procesará luego.");
+                cargarFacturas();
+                Mensaje.ocultarDialogo("dlgNuevaFactura");
+                Mensaje.verDialogo("dlgErrorSri");
+            } else {
+                Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage());
+            }
         }
     }
     
@@ -494,7 +485,7 @@ public class BackingFacturacion implements Serializable {
      */
     public void cargarFacturas() {
         try {
-            getBeanFacturacion().setListaFacturas(facturaDao.listarTodasLasFacturasDelDia());
+            getBeanFacturacion().setListaFacturas(facturacionDataService.listarTodasLasFacturasDelDia());
         } catch (Exception e) {
             log.error("Error al cargar facturas", e);
             Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "No se pudieron cargar las facturas.");
@@ -516,6 +507,200 @@ public class BackingFacturacion implements Serializable {
         }
     }
 
+    /**
+     * Prepara la interfaz para generar una Nota de Crédito.
+     * @param factura Factura base.
+     */
+    public void prepararNotaCredito(Factura facturaParcial) {
+        try {
+            if (facturaParcial.getDocumentoElectronico() == null || !"AUTORIZADO".equals(facturaParcial.getDocumentoElectronico().getEstado())) {
+                Mensaje.verMensaje(FacesMessage.SEVERITY_WARN, "Aviso", "Solo se puede generar Nota de Crédito a facturas AUTORIZADAS.");
+                return;
+            }
+            
+            // Recargar la factura para asegurar que los detalles lazy se inicialicen correctamente
+            Factura factura = facturacionDataService.buscarFacturaPorId(facturaParcial.getId());
+            
+            getBeanFacturacion().setFacturaSeleccionada(factura);
+            getBeanFacturacion().setMotivoNotaCredito("");
+            
+            NotaCredito nc = new NotaCredito();
+            nc.setFactura(factura);
+            nc.setCliente(factura.getCliente());
+            nc.setPuntoEmision(factura.getPuntoEmision());
+            nc.setFechaEmision(LocalDate.now());
+            nc.setSubtotal(factura.getSubtotal());
+            nc.setTotalImpuestos(factura.getTotalImpuestos());
+            nc.setTotal(factura.getTotal());
+            BigDecimal porcentajeIva = factura.getPuntoEmision().getEstablecimientos().getEmpresaMatriz().getEmpmPorcentajeIva();
+            if (porcentajeIva == null) {
+                porcentajeIva = BigDecimal.ZERO;
+            }
+            
+            List<DetalleNotaCredito> detallesNc = new ArrayList<>();
+            for (DetalleFactura df : factura.getDetalles()) {
+                DetalleNotaCredito dnc = new DetalleNotaCredito();
+                dnc.setNotaCredito(nc);
+                dnc.setItem(df.getItem());
+                dnc.setDescripcion(df.getDescripcion());
+                dnc.setCantidad(df.getCantidad());
+                dnc.setPrecioUnitario(df.getPrecioUnitario());
+                dnc.setDescuento(df.getDescuento());
+                dnc.setImpuestoIva(porcentajeIva);
+                detallesNc.add(dnc);
+            }
+            nc.setDetalles(detallesNc);
+            
+            getBeanFacturacion().setNuevaNotaCredito(nc);
+            Mensaje.verDialogo("dlgNuevaNotaCredito");
+        } catch (Exception e) {
+            log.error("Error al preparar N.C.", e);
+            Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo preparar la Nota de Crédito.");
+        }
+    }
+    /**
+     * Genera y envía al SRI la Nota de Crédito.
+     */
+    public void generarNotaCredito() {
+        try {
+            if (getBeanFacturacion().getMotivoNotaCredito() == null || getBeanFacturacion().getMotivoNotaCredito().trim().isEmpty()) {
+                throw new Exception("El motivo es obligatorio para la Nota de Crédito.");
+            }
+            calcularTotalesNotaCredito();
+            
+            if (!validarDetallesNotaCredito()) {
+                return; // Validation failed, error messages already set
+            }
+            
+            NotaCredito nc = getBeanFacturacion().getNuevaNotaCredito();
+            nc.setMotivo(getBeanFacturacion().getMotivoNotaCredito());
+            
+            // Asignar numero secuencial
+            PuntoEmision puem = nc.getPuntoEmision();
+            int nuevoSec = puem.getSecuencialNotaCredito() != null ? puem.getSecuencialNotaCredito() + 1 : 1;
+            nc.setNumero(String.format("%03d-%03d-%09d", 
+                Integer.parseInt(puem.getEstablecimientos().getEstaCodigo()), 
+                Integer.parseInt(puem.getCodigo()), 
+                nuevoSec));
+            
+            puem.setSecuencialNotaCredito(nuevoSec);
+            facturacionDataService.actualizarPuntoEmision(puem);
+            
+            notaCreditoService.procesarNotaCreditoElectronica(nc);
+            
+            Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Éxito", "Nota de Crédito generada y procesada correctamente.");
+            Mensaje.ocultarDialogo("dlgNuevaNotaCredito");
+            cargarFacturas(); // para refrescar estados si fuera necesario
+        } catch (Exception e) {
+            log.error("Error al generar N.C.", e);
+            Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage());
+        }
+    }
+    /*
+     * Calcula los totales de la nota de credito
+     */
+    public void calcularTotalesNotaCredito() {
+        if (getBeanFacturacion().getNuevaNotaCredito() == null || getBeanFacturacion().getNuevaNotaCredito().getDetalles() == null) {
+            return;
+        }
+        BigDecimal subtotal = BigDecimal.ZERO;
+        BigDecimal descuentoTotal = BigDecimal.ZERO;
+        BigDecimal totalImpuestos = BigDecimal.ZERO;
+        for (DetalleNotaCredito dnc : getBeanFacturacion().getNuevaNotaCredito().getDetalles()) {
+            BigDecimal cant = new BigDecimal(dnc.getCantidad() != null ? dnc.getCantidad() : 0);
+            BigDecimal precio = dnc.getPrecioUnitario() != null ? dnc.getPrecioUnitario() : BigDecimal.ZERO;
+            BigDecimal desc = dnc.getDescuento() != null ? dnc.getDescuento() : BigDecimal.ZERO;
+            
+            BigDecimal subtotalItem = precio.multiply(cant).subtract(desc);
+            subtotal = subtotal.add(precio.multiply(cant));
+            descuentoTotal = descuentoTotal.add(desc);
+            
+            if (dnc.getImpuestoIva() != null && dnc.getImpuestoIva().compareTo(BigDecimal.ZERO) > 0) {
+                BigDecimal iva = dnc.getImpuestoIva().divide(new BigDecimal(100));
+                totalImpuestos = totalImpuestos.add(subtotalItem.multiply(iva).setScale(2, RoundingMode.HALF_UP));
+            }
+        }
+        
+        getBeanFacturacion().getNuevaNotaCredito().setSubtotal(subtotal);
+        getBeanFacturacion().getNuevaNotaCredito().setTotalImpuestos(totalImpuestos);
+        getBeanFacturacion().getNuevaNotaCredito().setTotal(subtotal.subtract(descuentoTotal).add(totalImpuestos));
+    }
+    /**
+     * Remueve un detalle de la nota de credito
+     * @param det
+     */
+    public void removerDetalleNotaCredito(DetalleNotaCredito det) {
+        if (getBeanFacturacion().getNuevaNotaCredito() != null && getBeanFacturacion().getNuevaNotaCredito().getDetalles() != null) {
+            getBeanFacturacion().getNuevaNotaCredito().getDetalles().remove(det);
+            calcularTotalesNotaCredito();
+        }
+    }
+    /**
+     * Valida los detalles de la nota de credito
+     * @return
+     */
+    private boolean validarDetallesNotaCredito() {
+        if (getBeanFacturacion().getNuevaNotaCredito().getDetalles() == null || getBeanFacturacion().getNuevaNotaCredito().getDetalles().isEmpty()) {
+            Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "La nota de crédito debe tener al menos un ítem.");
+            return false;
+        }
+        Factura facturaOriginal = getBeanFacturacion().getFacturaSeleccionada();
+        for (DetalleNotaCredito dnc : getBeanFacturacion().getNuevaNotaCredito().getDetalles()) {
+            DetalleFactura original = null;
+            for (DetalleFactura df : facturaOriginal.getDetalles()) {
+                if (df.getItem().getId().equals(dnc.getItem().getId())) {
+                    original = df;
+                    break;
+                }
+            }
+            if (original == null) {
+                Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error de Validación", "El ítem " + dnc.getItem().getNombre() + " no pertenece a la factura original.");
+                return false;
+            }
+            if (dnc.getCantidad() == null || dnc.getCantidad() <= 0) {
+                Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error de Validación", "La cantidad del ítem " + dnc.getItem().getNombre() + " debe ser mayor a cero.");
+                return false;
+            }
+            if (dnc.getCantidad() > original.getCantidad()) {
+                Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error de Validación", "La cantidad del ítem " + dnc.getItem().getNombre() + " (" + dnc.getCantidad() + ") no puede ser mayor a la original (" + original.getCantidad() + ").");
+                return false;
+            }
+            if (dnc.getPrecioUnitario() == null || dnc.getPrecioUnitario().compareTo(BigDecimal.ZERO) < 0) {
+                Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error de Validación", "El precio del ítem " + dnc.getItem().getNombre() + " no es válido.");
+                return false;
+            }
+            if (dnc.getPrecioUnitario().compareTo(original.getPrecioUnitario()) > 0) {
+                Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error de Validación", "El precio del ítem " + dnc.getItem().getNombre() + " no puede ser mayor al original.");
+                return false;
+            }
+            if (dnc.getDescuento() == null || dnc.getDescuento().compareTo(BigDecimal.ZERO) < 0) {
+                Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error de Validación", "El descuento del ítem " + dnc.getItem().getNombre() + " no puede ser negativo.");
+                return false;
+            }
+            BigDecimal subtotalNetoOriginal = original.getPrecioUnitario().multiply(new BigDecimal(original.getCantidad())).subtract(original.getDescuento() != null ? original.getDescuento() : BigDecimal.ZERO);
+            BigDecimal subtotalNetoNuevo = dnc.getPrecioUnitario().multiply(new BigDecimal(dnc.getCantidad())).subtract(dnc.getDescuento());
+            if (subtotalNetoNuevo.compareTo(subtotalNetoOriginal) > 0) {
+                Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error de Validación", "El subtotal neto del ítem " + dnc.getItem().getNombre() + " excede el valor original facturado.");
+                return false;
+            }
+        }
+        return true;
+    }
+    /**
+     * Obtiene el descuento total de la nota de credito
+     * @return
+     */
+    public BigDecimal getDescuentoTotalNotaCredito() {
+        BigDecimal descuentoTotal = BigDecimal.ZERO;
+        if (getBeanFacturacion().getNuevaNotaCredito() != null && getBeanFacturacion().getNuevaNotaCredito().getDetalles() != null) {
+            for (DetalleNotaCredito dnc : getBeanFacturacion().getNuevaNotaCredito().getDetalles()) {
+                if (dnc.getDescuento() != null) {
+                    descuentoTotal = descuentoTotal.add(dnc.getDescuento());
+                }
+            }
+        }
+        return descuentoTotal;
+    }
     /**
      * Genera la descarga del archivo RIDE (PDF) de la factura.
      * Si existe URL de S3, genera una pre-signed URL y redirige al cliente.
@@ -602,63 +787,44 @@ public class BackingFacturacion implements Serializable {
      * Devuelve la cantidad de facturas autorizadas en la lista actual.
      */
     public int getCantAutorizadas() {
-        int count = 0;
-        if (getBeanFacturacion().getListaFacturas() != null) {
-            for (Factura f : getBeanFacturacion().getListaFacturas()) {
-                if (f.getDocumentoElectronico() != null && "AUTORIZADO".equals(f.getDocumentoElectronico().getEstado())) {
-                    count++;
-                }
-            }
-        }
-        return count;
+    	if (getBeanFacturacion().getListaFacturas() == null) return 0;
+        return (int) getBeanFacturacion().getListaFacturas().stream()
+                .filter(f -> f.getDocumentoElectronico() != null && "AUTORIZADO".equals(f.getDocumentoElectronico().getEstado()))
+                .count();
     }
 
     /**
      * Devuelve la cantidad de facturas pendientes en la lista actual.
      */
     public int getCantPendientes() {
-        int count = 0;
-        if (getBeanFacturacion().getListaFacturas() != null) {
-            for (Factura f : getBeanFacturacion().getListaFacturas()) {
-                if (f.getDocumentoElectronico() == null || 
-                    (!"AUTORIZADO".equals(f.getDocumentoElectronico().getEstado()) && 
+        if (getBeanFacturacion().getListaFacturas() == null) return 0;
+        return (int) getBeanFacturacion().getListaFacturas().stream()
+                .filter(f -> f.getDocumentoElectronico() == null ||
+                    (!"AUTORIZADO".equals(f.getDocumentoElectronico().getEstado()) &&
                      !"RECHAZADO".equals(f.getDocumentoElectronico().getEstado()) &&
-                     !"ANULADA".equals(f.getDocumentoElectronico().getEstado()))) {
-                    count++;
-                }
-            }
-        }
-        return count;
+                     !"ANULADA".equals(f.getDocumentoElectronico().getEstado())))
+                .count();
     }
 
     /**
      * Devuelve la cantidad de facturas rechazadas en la lista actual.
      */
     public int getCantRechazadas() {
-        int count = 0;
-        if (getBeanFacturacion().getListaFacturas() != null) {
-            for (Factura f : getBeanFacturacion().getListaFacturas()) {
-                if (f.getDocumentoElectronico() != null && "RECHAZADO".equals(f.getDocumentoElectronico().getEstado())) {
-                    count++;
-                }
-            }
-        }
-        return count;
+        if (getBeanFacturacion().getListaFacturas() == null) return 0;
+        return (int) getBeanFacturacion().getListaFacturas().stream()
+                .filter(f -> f.getDocumentoElectronico() != null && "RECHAZADO".equals(f.getDocumentoElectronico().getEstado()))
+                .count();
     }
 
     /**
      * Devuelve el monto total facturado en la lista actual.
      */
     public java.math.BigDecimal getTotalFacturado() {
-        java.math.BigDecimal total = java.math.BigDecimal.ZERO;
-        if (getBeanFacturacion().getListaFacturas() != null) {
-            for (Factura f : getBeanFacturacion().getListaFacturas()) {
-                if (f.getTotal() != null && (f.getDocumentoElectronico() == null || !"ANULADA".equals(f.getDocumentoElectronico().getEstado()))) {
-                    total = total.add(f.getTotal());
-                }
-            }
-        }
-        return total;
+        if (getBeanFacturacion().getListaFacturas() == null) return java.math.BigDecimal.ZERO;
+        return getBeanFacturacion().getListaFacturas().stream()
+                .filter(f -> f.getTotal() != null && (f.getDocumentoElectronico() == null || !"ANULADA".equals(f.getDocumentoElectronico().getEstado())))
+                .map(Factura::getTotal)
+                .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
     }
 
     /**
@@ -669,18 +835,20 @@ public class BackingFacturacion implements Serializable {
         if (totalFactura == null) {
             return java.math.BigDecimal.ZERO;
         }
-        java.math.BigDecimal totalPagos = java.math.BigDecimal.ZERO;
-        if (getBeanFacturacion().getListaFormasPagoAgregadas() != null) {
-            for (ec.mileniumtech.educafacil.modelo.persistencia.entity.FormaPagoFactura fp : getBeanFacturacion().getListaFormasPagoAgregadas()) {
-                if (fp.getValor() != null) {
-                    totalPagos = totalPagos.add(fp.getValor());
-                }
-            }
-        }
+        java.math.BigDecimal totalPagos = getBeanFacturacion().getListaFormasPagoAgregadas() != null
+                ? getBeanFacturacion().getListaFormasPagoAgregadas().stream()
+                        .filter(fp -> fp.getValor() != null)
+                        .map(ec.mileniumtech.educafacil.modelo.persistencia.entity.FormaPagoFactura::getValor)
+                        .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add)
+                : java.math.BigDecimal.ZERO;
         return totalFactura.setScale(2,RoundingMode.HALF_UP).subtract(totalPagos.setScale(2,RoundingMode.HALF_UP));
     }
+    /**
+     * Dias de vigencia de la firma
+     * @return
+     */
     public long getDiasVigenciaFirma() {
-    	empresaMatriz=empresaMatrizDao.findAll().get(0);
+    	empresaMatriz=facturacionDataService.listarTodasEmpresas().get(0);
     	return FechaFormato.calcularDiasRestantesSeguro(empresaMatriz.getEmpmFirmaVigenciaHasta().toString());
     }
 

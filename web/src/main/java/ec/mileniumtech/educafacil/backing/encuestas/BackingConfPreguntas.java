@@ -7,7 +7,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.encuestas.BeanConfPreguntas;
@@ -45,7 +46,7 @@ public class BackingConfPreguntas  implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static final Logger log = Logger.getLogger(BackingConfPreguntas.class);
+	private static final Logger log = LogManager.getLogger(BackingConfPreguntas.class);
 
 	@Getter
 	@Inject

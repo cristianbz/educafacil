@@ -26,7 +26,8 @@ import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
@@ -57,13 +58,10 @@ import com.opencsv.CSVWriter;
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.estudiantes.BeanListadoEstudiantes;
 import ec.mileniumtech.educafacil.bean.usuarios.BeanLogin;
-
-import ec.mileniumtech.educafacil.dao.impl.CursoDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.MatriculaDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.OfertaCursosDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Curso;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Matricula;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.OfertaCursos;
+import ec.mileniumtech.educafacil.service.facade.MatriculaFacade;
 import ec.mileniumtech.educafacil.utilitario.GeneracionPdf;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitario.Utilitario;
@@ -80,7 +78,6 @@ import jakarta.inject.Named;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
-import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -97,14 +94,14 @@ import net.sf.jasperreports.engine.util.JRLoader;
 public class BackingListadoEstudiantes implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private static final Logger log = Logger.getLogger(BackingListadoEstudiantes.class);
+	private static final Logger log = LogManager.getLogger(BackingListadoEstudiantes.class);
 	private JasperReport jasperReport;
 
 	@Getter
 	private StreamedContent fileDownload;
 	@EJB
 	@Getter
-	private MatriculaDaoImpl matriculaServicioImpl;
+	private MatriculaFacade matriculaDataService;
 	
 	@Inject
 	@Getter
@@ -116,22 +113,13 @@ public class BackingListadoEstudiantes implements Serializable {
 	@Inject
 	@Getter	
 	private BeanLogin beanLogin;
-	
-	@EJB
-	@Getter
-	private CursoDaoImpl cursosServicio;
-	
-	@EJB
-	@Getter
-	private OfertaCursosDaoImpl ofertaCursosServicio;
-
-	
+		
 	@PostConstruct
 	public void iniciar() {
 		nuevaBusqueda();
 		try {
 			getBeanListadoEstudiantes().setListaCursos(new ArrayList<>());
-			getBeanListadoEstudiantes().setListaCursos(getCursosServicio().listaCursos());
+			getBeanListadoEstudiantes().setListaCursos(matriculaDataService.listaCursos());
 			getBeanListadoEstudiantes().setOfertaSeleccionada(new OfertaCursos());
 			getBeanListadoEstudiantes().getOfertaSeleccionada().setOcurFechaFin(new Date());
 			getBeanListadoEstudiantes().getOfertaSeleccionada().setOcurFechaInicio(new Date());
@@ -155,7 +143,7 @@ public class BackingListadoEstudiantes implements Serializable {
 
 			getBeanListadoEstudiantes().setListaMatriculas(new ArrayList<>());
 //			getBeanListadoEstudiantes().setListaMatriculas(getMatriculaServicioImpl().listaMatriculasCurso(getBeanListadoEstudiantes().getCodigoEstadoMatricula(), getBeanListadoEstudiantes().getCursoSeleccionado().getCursId()));			
-			getBeanListadoEstudiantes().setListaMatriculas(getMatriculaServicioImpl().listaMatriculadosPorOfertaCurso(getBeanListadoEstudiantes().getOfertaSeleccionada().getOcurId()));
+			getBeanListadoEstudiantes().setListaMatriculas(matriculaDataService.listaMatriculadosPorOfertaCurso(getBeanListadoEstudiantes().getOfertaSeleccionada().getOcurId()));
 			getBeanListadoEstudiantes().setListaMatriculas(getBeanListadoEstudiantes().getListaMatriculas().stream().sorted((m1,m2)-> m1.getEstudiante().getPersona().getPersApellidos().compareTo(m2.getEstudiante().getPersona().getPersApellidos())).collect(Collectors.toList()));
 			if(getBeanListadoEstudiantes().getListaMatriculas()==null || getBeanListadoEstudiantes().getListaMatriculas().isEmpty()) {
 				Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.noHayDatos"));
@@ -413,7 +401,10 @@ public class BackingListadoEstudiantes implements Serializable {
 	 * Genera el certificado en formato pdf
 	 */
 	public void generaCertificadoPdf() {
-		GeneracionPdf.generarCertificado(getBeanListadoEstudiantes().getMatriculaSeleccionada(), getBeanLogin(), getMensajesBacking());
+		jakarta.servlet.ServletContext servletContext = (jakarta.servlet.ServletContext) jakarta.faces.context.FacesContext.getCurrentInstance().getExternalContext().getContext();
+		jakarta.servlet.http.HttpServletResponse httpServletResponse = (jakarta.servlet.http.HttpServletResponse) jakarta.faces.context.FacesContext.getCurrentInstance().getExternalContext().getResponse();
+		GeneracionPdf.generarCertificado(getBeanListadoEstudiantes().getMatriculaSeleccionada(), getBeanLogin(), getMensajesBacking(), servletContext, httpServletResponse);
+
 	}
 	public void mostrarDialogoBuscar() {
 		nuevaBusqueda();
@@ -422,7 +413,7 @@ public class BackingListadoEstudiantes implements Serializable {
 	public void cargarOfertaCursos() {
 
 			getBeanListadoEstudiantes().setListaOfertaCursos(new ArrayList<>());
-			getBeanListadoEstudiantes().setListaOfertaCursos(getOfertaCursosServicio().listaOfertaCursosPorCursoAnio(getBeanListadoEstudiantes().getCursoSeleccionado().getCursId(),getBeanListadoEstudiantes().getAnioBusqueda()));
+			getBeanListadoEstudiantes().setListaOfertaCursos(matriculaDataService.listaOfertaCursosPorCursoAnio(getBeanListadoEstudiantes().getCursoSeleccionado().getCursId(),getBeanListadoEstudiantes().getAnioBusqueda()));
 			
 
 		
@@ -479,5 +470,27 @@ public class BackingListadoEstudiantes implements Serializable {
 			throw new RuntimeException(e);
         }
 	}
+	public String getEstadoLabel(String codigo) {
+		if (EnumEstadosMatricula.INSCRITO.getCodigo().equals(codigo)) return EnumEstadosMatricula.INSCRITO.getLabel();
+		if (EnumEstadosMatricula.MATRICULADO.getCodigo().equals(codigo)) return EnumEstadosMatricula.MATRICULADO.getLabel();
+		if (EnumEstadosMatricula.DESERTADO.getCodigo().equals(codigo)) return EnumEstadosMatricula.DESERTADO.getLabel();
+		if (EnumEstadosMatricula.CULMINADO.getCodigo().equals(codigo)) return EnumEstadosMatricula.CULMINADO.getLabel();
+		return "";
+	}
 
+	public String getEstadoIcon(String codigo) {
+		if (EnumEstadosMatricula.INSCRITO.getCodigo().equals(codigo)) return "pi pi-info-circle";
+		if (EnumEstadosMatricula.MATRICULADO.getCodigo().equals(codigo)) return "pi pi-file-edit";
+		if (EnumEstadosMatricula.DESERTADO.getCodigo().equals(codigo)) return "pi pi-times-circle";
+		if (EnumEstadosMatricula.CULMINADO.getCodigo().equals(codigo)) return "pi pi-check-circle";
+		return "pi pi-question";
+	}
+
+	public String getEstadoStyleClass(String codigo) {
+		if (EnumEstadosMatricula.INSCRITO.getCodigo().equals(codigo)) return "inscrito";
+		if (EnumEstadosMatricula.MATRICULADO.getCodigo().equals(codigo)) return "colorMatriculado";
+		if (EnumEstadosMatricula.DESERTADO.getCodigo().equals(codigo)) return "colorDesertado";
+		if (EnumEstadosMatricula.CULMINADO.getCodigo().equals(codigo)) return "colorCulminado";
+		return "";
+	}
 }

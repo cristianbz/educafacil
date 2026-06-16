@@ -10,7 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.model.charts.ChartData;
 import org.primefaces.model.charts.axes.cartesian.CartesianScales;
 import org.primefaces.model.charts.axes.cartesian.linear.CartesianLinearAxes;
@@ -22,14 +23,13 @@ import org.primefaces.model.charts.optionconfig.title.Title;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.estudiantes.BeanGestionVendedores;
-import ec.mileniumtech.educafacil.dao.impl.CampaniaDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.SeguimientoClientesDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.VendedorDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.SeguimientoClientes;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Vendedor;
+import ec.mileniumtech.educafacil.service.facade.MarketingFacade;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumEstadosContactoCliente;
 import jakarta.annotation.PostConstruct;
+import jakarta.ejb.EJB;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
@@ -46,7 +46,7 @@ import lombok.Setter;
 public class BackingGestionVendedores implements Serializable{
 
 	private static final long serialVersionUID = 1L;
-	private static final Logger log = Logger.getLogger(BackingGestionVendedores.class);
+	private static final Logger log = LogManager.getLogger(BackingGestionVendedores.class);
 	
 	@Inject
 	@Getter
@@ -56,17 +56,9 @@ public class BackingGestionVendedores implements Serializable{
 	@Inject
 	private BeanGestionVendedores beanGestionVendedores;
 	
+	@EJB
 	@Getter
-	@Inject
-	private CampaniaDaoImpl campaniaServicioImpl;
-	
-	@Getter
-	@Inject
-	private VendedorDaoImpl vendedorServicioImpl;
-	
-	@Getter
-	@Inject
-	private SeguimientoClientesDaoImpl seguimientoClientesServicioImpl;
+	private MarketingFacade marketingDataService;
 	
 	@Setter
 	@Getter
@@ -113,16 +105,16 @@ public class BackingGestionVendedores implements Serializable{
 			mostrarTituloPanel=false;
 			getBeanGestionVendedores().setListaCursos(new ArrayList<>());
 			getBeanGestionVendedores().setListaVendedores(new ArrayList<>());
-			getBeanGestionVendedores().setListaCursos(getCampaniaServicioImpl().listaCampaniasporCurso());
-			getBeanGestionVendedores().setListaVendedores(getVendedorServicioImpl().listaDeVendedores());
+			getBeanGestionVendedores().setListaCursos(marketingDataService.listaCampaniasporCurso());
+			getBeanGestionVendedores().setListaVendedores(marketingDataService.listaDeVendedores());
 			getBeanGestionVendedores().setListaSeguimientoClientes(new ArrayList<>());
-			getBeanGestionVendedores().setListaSeguimientoClientes(getSeguimientoClientesServicioImpl().listaSeguimientoVendedorAsignado());
+			getBeanGestionVendedores().setListaSeguimientoClientes(marketingDataService.listaSeguimientoVendedorAsignado());
 			getBeanGestionVendedores().setListaCursosReporte(new ArrayList<>());
-			getBeanGestionVendedores().setListaCursosReporte(getCampaniaServicioImpl().listaCampaniasporCurso());
+			getBeanGestionVendedores().setListaCursosReporte(marketingDataService.listaCampaniasporCurso());
 			getBeanGestionVendedores().setListaSeguimientoClientesEstado(new ArrayList<>());
-			getBeanGestionVendedores().setListaSeguimientoClientesEstado(getSeguimientoClientesServicioImpl().listaSeguimiento());
+			getBeanGestionVendedores().setListaSeguimientoClientesEstado(marketingDataService.listaSeguimiento());
 			getBeanGestionVendedores().setListaVendedoresReporte(new ArrayList<>());
-			getBeanGestionVendedores().setListaVendedoresReporte(getVendedorServicioImpl().listaDeVendedores());;
+			getBeanGestionVendedores().setListaVendedoresReporte(marketingDataService.listaDeVendedores());;
 			getBeanGestionVendedores().setVendedorSeleccionado(new Vendedor());
 			getBeanGestionVendedores().setBarModel(new BarChartModel());
 			getBeanGestionVendedores().setChartDataVendedores(new ChartData());
@@ -155,7 +147,7 @@ public class BackingGestionVendedores implements Serializable{
 				if(getBeanGestionVendedores().getListaCursos().size()==1) {
 					getBeanGestionVendedores().setCursoSeleccionado(getBeanGestionVendedores().getListaCursos().get(0));
 					getBeanGestionVendedores().setListaSeguimientoClientesSinVendedores(new ArrayList<>());
-					getBeanGestionVendedores().setListaSeguimientoClientesSinVendedores((getSeguimientoClientesServicioImpl().listaSeguimientoCampaniaVendedor(getBeanGestionVendedores().getCursoSeleccionado().getCampId())));
+					getBeanGestionVendedores().setListaSeguimientoClientesSinVendedores((marketingDataService.listaSeguimientoCampaniaVendedor(getBeanGestionVendedores().getCursoSeleccionado().getCampId())));
 					
 				}
 				
@@ -166,7 +158,7 @@ public class BackingGestionVendedores implements Serializable{
 	public void cargarClientesPotenciales() {
 	
 			getBeanGestionVendedores().setListaSeguimientoClientesSinVendedores(new ArrayList<>());
-			getBeanGestionVendedores().setListaSeguimientoClientesSinVendedores((getSeguimientoClientesServicioImpl().listaSeguimientoCampaniaVendedor(getBeanGestionVendedores().getCursoSeleccionado().getCampId())));
+			getBeanGestionVendedores().setListaSeguimientoClientesSinVendedores((marketingDataService.listaSeguimientoCampaniaVendedor(getBeanGestionVendedores().getCursoSeleccionado().getCampId())));
 			
 
 	}
@@ -178,12 +170,12 @@ public class BackingGestionVendedores implements Serializable{
 			}else {
 				for (SeguimientoClientes seClientes : getBeanGestionVendedores().getListaSeguimientoClientesSelect()) {
 					seClientes.setVendedor(getBeanGestionVendedores().getVendedorSeleccionado());
-					getSeguimientoClientesServicioImpl().actualizarSeguimiento(seClientes);
+					marketingDataService.actualizarSeguimiento(seClientes);
 				}
 				Mensaje.ocultarDialogo("dlgAsignarVendedor");
 				Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.agregar"));
 				getBeanGestionVendedores().setListaSeguimientoClientes(new ArrayList<>());
-				getBeanGestionVendedores().setListaSeguimientoClientes(getSeguimientoClientesServicioImpl().listaSeguimientoVendedorAsignado());
+				getBeanGestionVendedores().setListaSeguimientoClientes(marketingDataService.listaSeguimientoVendedorAsignado());
 			}
 
 	}
@@ -212,23 +204,23 @@ public class BackingGestionVendedores implements Serializable{
 			int codigoCamp = getBeanGestionVendedores().getCursoSeleccionadoReporte().getCampId();
 			for (String estado : getBeanGestionVendedores().getEstadosSeleccionados()) {
 				if(estado.equals(EnumEstadosContactoCliente.ENSEGUIMIENTO.getCodigo())) {
-					getBeanGestionVendedores().setTotalSeguimiento(getSeguimientoClientesServicioImpl().totalDatosCRMVendedor(estado, codigoVend, codigoCamp));
+					getBeanGestionVendedores().setTotalSeguimiento(marketingDataService.totalDatosCRMVendedor(estado, codigoVend, codigoCamp));
 					mostrarPanelTotalSeguimiento=true;
 					mostrarTituloPanel=true;
 				}else if(estado.equals(EnumEstadosContactoCliente.ABANDONADO.getCodigo())) {
-					getBeanGestionVendedores().setTotalAbandonado(getSeguimientoClientesServicioImpl().totalDatosCRMVendedor(estado, codigoVend, codigoCamp));
+					getBeanGestionVendedores().setTotalAbandonado(marketingDataService.totalDatosCRMVendedor(estado, codigoVend, codigoCamp));
 					mostrarPanelTotalAbandonado=true;
 					mostrarTituloPanel=true;
 				}else if(estado.equals(EnumEstadosContactoCliente.MATRICULADO.getCodigo())) {
-					getBeanGestionVendedores().setTotalMatriculado(getSeguimientoClientesServicioImpl().totalDatosCRMVendedor(estado, codigoVend, codigoCamp));
+					getBeanGestionVendedores().setTotalMatriculado(marketingDataService.totalDatosCRMVendedor(estado, codigoVend, codigoCamp));
 					mostrarPanelTotalMatriculado=true;
 					mostrarTituloPanel=true;
 				}else if(estado.equals(EnumEstadosContactoCliente.CANDIDATO.getCodigo())) {
-					getBeanGestionVendedores().setTotalCandidato(getSeguimientoClientesServicioImpl().totalDatosCRMVendedor(estado, codigoVend, codigoCamp));
+					getBeanGestionVendedores().setTotalCandidato(marketingDataService.totalDatosCRMVendedor(estado, codigoVend, codigoCamp));
 					mostrarPanelTotalCandidato=true;
 					mostrarTituloPanel=true;
 				}else {
-					getBeanGestionVendedores().setTotalProximaOcasion(getSeguimientoClientesServicioImpl().totalDatosCRMVendedor(estado, codigoVend, codigoCamp));
+					getBeanGestionVendedores().setTotalProximaOcasion(marketingDataService.totalDatosCRMVendedor(estado, codigoVend, codigoCamp));
 					mostrarPanelTotalProximaOcasion=true;
 					mostrarTituloPanel=true;
 				}
@@ -241,9 +233,9 @@ public class BackingGestionVendedores implements Serializable{
 	public void cargarCampaniasPasadas() {
 
 			if(getBeanGestionVendedores().isCampaniasFinalizadas()) {
-				getBeanGestionVendedores().setListaCursosReporte(getCampaniaServicioImpl().listaTodasCampanias());
+				getBeanGestionVendedores().setListaCursosReporte(marketingDataService.listaTodasCampanias());
 			}else {
-				getBeanGestionVendedores().setListaCursosReporte(getCampaniaServicioImpl().listaCampaniasporCurso());
+				getBeanGestionVendedores().setListaCursosReporte(marketingDataService.listaCampaniasporCurso());
 			}
 
 	}
@@ -261,7 +253,7 @@ public class BackingGestionVendedores implements Serializable{
 	        String codigoEstado = EnumEstadosContactoCliente.MATRICULADO.getCodigo();
 	        for (Vendedor vendedor : getBeanGestionVendedores().getListaVendedoresReporte()) {
 	            int vendedorReporte = vendedor.getVendId();
-	            BigDecimal totalVentas = getSeguimientoClientesServicioImpl().totalDatosCRMVendedor(codigoEstado, vendedorReporte, cursoReporte);
+	            BigDecimal totalVentas = marketingDataService.totalDatosCRMVendedor(codigoEstado, vendedorReporte, cursoReporte);
 	            String nombreVendedor = vendedor.getPersona().getPersNombres().concat(" ").concat(vendedor.getPersona().getPersApellidos()); 
 	            ventasPorVendedor.put(nombreVendedor, totalVentas);
 	            for (Vendedor vendedorColor : getBeanGestionVendedores().getListaVendedoresReporte()) {

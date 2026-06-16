@@ -1,20 +1,33 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
- "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-     xmlns:ui="jakarta.faces.facelets"
-      	xmlns:f="jakarta.faces.core"
-      	xmlns:h="jakarta.faces.html"
-	xmlns:p="http://primefaces.org/ui">
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui">
 
 <h:head>
-	
+	<link rel="stylesheet" type="text/css" href="#{request.contextPath}/resources/css/estilos.css" />
+	<link rel="stylesheet" type="text/css" href="#{request.contextPath}/resources/css/custom.css" />
 </h:head>
-<h:body>
-	<center>
-		<h1>Su tiempo de actividad ha caducado, si desea volver a ingresar, presione un click en el botón</h1>
-		<h:panelGrid>				
-			<h:button outcome="login" value="Volver a iniciar sesión" />
-		</h:panelGrid>
-	</center>
+<h:body style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; margin: 0; padding: 1rem; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+	<div style="background: #ffffff; border-radius: 1.5rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); padding: 3rem 2.5rem; width: 100%; max-width: 420px; text-align: center;">
+		<div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #fee2e2, #fecaca); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+			<i class="pi pi-clock" style="font-size: 2.5rem; color: #dc2626;"></i>
+		</div>
+		<div style="margin-bottom: 1.5rem;">
+			<h2 style="font-size: 1.75rem; font-weight: 800; color: #111827; margin: 0 0 0.75rem; letter-spacing: -0.025em;">Sesión Expirada</h2>
+			<p style="font-size: 1rem; color: #6b7280; line-height: 1.6; margin: 0; max-width: 320px; margin: 0 auto;">
+				Su tiempo de actividad ha caducado por seguridad. Para continuar, inicie sesión nuevamente.
+			</p>
+		</div>
+		<h:form>
+			<h:commandButton value="Volver a iniciar sesión" action="login"
+							style="background: #2563eb; border: none; border-radius: 0.75rem; padding: 0.85rem 2rem; font-weight: 600; width: 100%; color: #fff; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2); cursor: pointer; font-size: 1rem; transition: all 0.3s ease; display: inline-block; text-align: center; text-decoration: none;" />
+		</h:form>
+		<div style="margin-top: 2rem; font-size: 0.85rem; color: #9ca3af; display: flex; align-items: center; justify-content: center; gap: 0.4rem;">
+			<i class="pi pi-shield"></i>
+			<span>Su información está protegida</span>
+		</div>
+	</div>
 </h:body>
 </html>

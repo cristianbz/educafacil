@@ -17,8 +17,10 @@ import jakarta.faces.context.FacesContext;
 */
 public class Mensaje {
 	public static void verMensaje(FacesMessage.Severity s, String message, String detail) {
+		FacesContext context = FacesContext.getCurrentInstance();
+		if (context == null) return;
 		FacesMessage facesMessage = new FacesMessage(s, message, detail);
-		FacesContext.getCurrentInstance().addMessage(null, facesMessage);
+		context.addMessage(null, facesMessage);
 	}
 	/**
 	 * Visualiza un mensaje con detalles
@@ -28,8 +30,10 @@ public class Mensaje {
 	 * @param detail
 	 */
 	public static void verMensaje(String clienteId, FacesMessage.Severity s, String message, String detail) {
+		FacesContext context = FacesContext.getCurrentInstance();
+		if (context == null) return;
 		FacesMessage facesMessage = new FacesMessage(s, message, detail);
-		FacesContext.getCurrentInstance().addMessage(clienteId, facesMessage);
+		context.addMessage(clienteId, facesMessage);
 	}
 	/**
 	 * Visualiza un cuadro de dialogo
@@ -60,26 +64,25 @@ public class Mensaje {
 	 * @param mensajes
 	 */
 	public static void verErrores(List<String> errors, MensajesBacking mensajes) {
-		for (String error : errors) {
-			verMensaje(FacesMessage.SEVERITY_ERROR, mensajes.getPropiedad(error) + " " + mensajes.getPropiedad("campoRequerido"), null);
-		}
-
+		errors.forEach(error ->
+					verMensaje(FacesMessage.SEVERITY_ERROR, mensajes.getPropiedad(error) + " " + mensajes.getPropiedad("campoRequerido"), null)
+				);
 	}
 	/**
 	 * Obtiene url del servidor
 	 * @return
 	 */
 	public static String obtenerUrlServidor() {
-		String url="";
-		String serverName=FacesContext.getCurrentInstance().getExternalContext().getRequestServerName();
-		String contexto=FacesContext.getCurrentInstance().getExternalContext().getApplicationContextPath();		
-		int puerto=FacesContext.getCurrentInstance().getExternalContext().getRequestServerPort();
-		String certificado="http";
-		if(puerto==8443) {
-			certificado+="s";
+		FacesContext context = FacesContext.getCurrentInstance();
+		if (context == null) return "";
+		String serverName = context.getExternalContext().getRequestServerName();
+		String contexto = context.getExternalContext().getApplicationContextPath();		
+		int puerto = context.getExternalContext().getRequestServerPort();
+		String certificado = "http";
+		if(puerto == 8443) {
+			certificado += "s";
 		}
-		url=certificado+"://"+serverName+":"+puerto+contexto;		
-		return url;
+		return certificado + "://" + serverName + ":" + puerto + contexto;		
 	}
 }
 

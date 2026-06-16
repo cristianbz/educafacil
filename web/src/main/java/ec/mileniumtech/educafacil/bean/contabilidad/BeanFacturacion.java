@@ -8,6 +8,7 @@ import ec.mileniumtech.educafacil.modelo.persistencia.entity.CatalogoItem;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Cliente;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleFactura;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Factura;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.NotaCredito;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
 import lombok.Getter;
@@ -49,6 +50,9 @@ public class BeanFacturacion implements Serializable {
     private List<ec.mileniumtech.educafacil.modelo.persistencia.entity.FormaPagoFactura> listaFormasPagoAgregadas;
     private ec.mileniumtech.educafacil.modelo.persistencia.entity.FormaPagoFactura nuevaFormaPago;
     private Integer idFormaPagoSeleccionada;
+    // Campos para Nota de Crédito
+    private NotaCredito nuevaNotaCredito;
+    private String motivoNotaCredito;
     
     @jakarta.annotation.PostConstruct
     public void init() {
@@ -63,5 +67,7 @@ public class BeanFacturacion implements Serializable {
         listaFormasPagoSri = new java.util.ArrayList<>();
         listaFormasPagoAgregadas = new java.util.ArrayList<>();
         nuevaFormaPago = new ec.mileniumtech.educafacil.modelo.persistencia.entity.FormaPagoFactura();
+        nuevaNotaCredito = new ec.mileniumtech.educafacil.modelo.persistencia.entity.NotaCredito();
+        nuevaNotaCredito.setDetalles(new java.util.ArrayList<>());
     }
 }

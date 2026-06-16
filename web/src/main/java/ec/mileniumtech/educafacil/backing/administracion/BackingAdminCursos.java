@@ -6,7 +6,8 @@ package ec.mileniumtech.educafacil.backing.administracion;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.administracion.BeanAdminCursos;
@@ -37,7 +38,7 @@ public class BackingAdminCursos implements Serializable{
 
 
 	private static final long serialVersionUID = 1L;
-	private static final Logger log = Logger.getLogger(BackingAdminCursos.class);
+	private static final Logger log = LogManager.getLogger(BackingAdminCursos.class);
 	
 	@Inject
 	@Getter
@@ -55,6 +56,7 @@ public class BackingAdminCursos implements Serializable{
 		cargarOfertaCursosActivos();
 		cargarArea();
 		cargaTipoCapacitacion();
+		cargarTipoModalidad();
 		cargarInstructor();
 		getBeanAdminCursos().setNuevaOfertaCurso(false);
 		getBeanAdminCursos().setObjetoEvaluacion(new ObjetoEvaluacion());
@@ -117,6 +119,9 @@ public class BackingAdminCursos implements Serializable{
 	public void cargaTipoCapacitacion() {
 		getBeanAdminCursos().setListaCatalogo(administracionService.listarTipoCapacitacionOrdenados());
 	}
+	public void cargarTipoModalidad() {
+		getBeanAdminCursos().setListaModalidadEstudio(administracionService.listarTipoModalidadOrdenados());
+	}
 	/**
 	 * Permite editar una oferta de curso
 	 */
@@ -129,6 +134,7 @@ public class BackingAdminCursos implements Serializable{
 		cargarCursos();
 		getBeanAdminCursos().setCodigoCurso(getBeanAdminCursos().getOfertaCursos().getOfertaCapacitacion().getCurso().getCursId());
 		getBeanAdminCursos().setCodigoTipoCurso(getBeanAdminCursos().getOfertaCursos().getOcurTipo());
+		getBeanAdminCursos().setCodigoTipoModalidad(getBeanAdminCursos().getOfertaCursos().getOcurModalidad());
 		getBeanAdminCursos().setCodigoInstructor(getBeanAdminCursos().getOfertaCursos().getInstructor().getInstId());
 		if (! getBeanAdminCursos().getOfertaCursos().getOcurEstado().equals(EnumEstadosOfertaCurso.ANULADO.getCodigo()))
 			getBeanAdminCursos().setAnularCurso(false);
@@ -146,6 +152,7 @@ public class BackingAdminCursos implements Serializable{
 		getBeanAdminCursos().getOfertaCursos().setInstructor(instructor);
 		getBeanAdminCursos().getOfertaCursos().setOcurTipo(getBeanAdminCursos().getCodigoTipoCurso());
 		getBeanAdminCursos().getOfertaCursos().setOfertaCapacitacion(getBeanAdminCursos().getOfertaCapacitacion());
+		getBeanAdminCursos().getOfertaCursos().setOcurModalidad(getBeanAdminCursos().getCodigoTipoModalidad());
 		if(getBeanAdminCursos().isAnularCurso())
 			getBeanAdminCursos().getOfertaCursos().setOcurEstado(EnumEstadosOfertaCurso.ANULADO.getCodigo());
 		else

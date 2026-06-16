@@ -1,8 +1,8 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:f="jakarta.faces.core"
+	xmlns:h="jakarta.faces.html"
 	xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
@@ -14,12 +14,7 @@
 
 		<h:form id="form" prependId="false">
 			<p:growl id="growl" life="3000" showDetail="true" />
-			<p:dialog widgetVar="dlgEnProc" draggable="false" modal="true"
-				resizable="false" closable="false" responsive="true"
-				style="font-size: 10px;">
-				<h:graphicImage value="/resources/img/cargando.gif" width="200"
-					height="200" />
-			</p:dialog>
+
 
 			<p:breadCrumb>
 				<p:menuitem value="Categorias" url="#" />
@@ -161,10 +156,10 @@
 			<!-- Tabla de visualizacion de datos del vendedor -->
 			<br/>
 			<p:outputPanel id="pnlVendedor"  >
-			<center>
+			<div class="text-center">
 			<p:outputLabel value="#{etiquetas['clientePotencial']}" style="text-align:center" rendered="#{backingGestionVendedores.mostrarPanelVendedorCliente}"/>
-			</center>
-			<p:dataTable id="tablaVendedor" var="segc" value="#{backingGestionVendedores.beanGestionVendedores.listaSeguimientoClientes}"
+			</div>
+			<p:dataTable id="tablaVendedor" var="segc" value="#{backingGestionVendedores.beanGestionVendedores.listaSeguimientoClientes}" reflow="true"
 			paginator="true" rows="10" rendered="#{backingGestionVendedores.mostrarPanelVendedorCliente}" >
 				<p:column headerText="#{etiquetas['id']}" class="p-field p-col-12 p-md-10">
 				#{segc.segcId}
@@ -184,10 +179,10 @@
 			Panel de visualizacion de datos
 			 -->
 			<p:outputPanel id="pnlventasReport" >
-			<center>
+			<div class="text-center">
 			<p:outputLabel value="#{titulos['ventasVend']} #{backingGestionVendedores.beanGestionVendedores.vendedorSeleccionadoReporte.persona.persNombres} #{backingGestionVendedores.beanGestionVendedores.vendedorSeleccionadoReporte.persona.persApellidos}" 
 			rendered="#{backingGestionVendedores.mostrarTituloPanel}"/>
-			</center>
+			</div>
 			<div class="ui-fluid p-formgrid p-grid">
 
 			<div class="p-field p-col-12 p-md-2 p-sm-4">

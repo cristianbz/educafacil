@@ -8,12 +8,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
-import ec.mileniumtech.educafacil.dao.impl.EmpresaDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.OfertaCursosDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Empresa;
+import ec.mileniumtech.educafacil.service.facade.InstructorFacade;
+import ec.mileniumtech.educafacil.service.facade.MatriculaFacade;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
@@ -33,7 +34,7 @@ import lombok.Setter;
 public class BackingMatricula implements Serializable{
 
 	private static final long serialVersionUID = 1L;
-	private static final Logger log = Logger.getLogger(BackingMatricula.class);
+	private static final Logger log = LogManager.getLogger(BackingMatricula.class);
 	@Inject
 	@Getter
 	private ComponenteBackingMatriculaInscripcion componenteBackingMatriculaInscripcion;
@@ -43,12 +44,12 @@ public class BackingMatricula implements Serializable{
 	@Inject
 	@Getter
 	private MensajesBacking mensajesBacking;
-	@Getter
-	@EJB
-	private EmpresaDaoImpl empresaServicioImpl; 
 	@EJB
 	@Getter
-	private OfertaCursosDaoImpl ofertaCursosServicioImpl; 
+	private InstructorFacade sistemaDataService;
+	@EJB
+	@Getter
+	private MatriculaFacade matriculaDataService; 
 	
 	@PostConstruct
 	public void init() {
@@ -56,7 +57,7 @@ public class BackingMatricula implements Serializable{
 		componenteBackingMatriculaInscripcion.setEsMatricula(esMatricula);
 		cargaEmpresas();
 		
-			componenteBackingMatriculaInscripcion.getBeanInscripcionMatricula().setListaOfertaCursos(getOfertaCursosServicioImpl().listaOfertaCursosActivos());
+			componenteBackingMatriculaInscripcion.getBeanInscripcionMatricula().setListaOfertaCursos(matriculaDataService.listaOfertaCursosActivos());
 			componenteBackingMatriculaInscripcion.getBeanInscripcionMatricula().setListaOfertaCursos(componenteBackingMatriculaInscripcion.getBeanInscripcionMatricula().getListaOfertaCursos().stream().sorted((c1,c2)->c1.getOfertaCapacitacion().getCurso().getCursNombre().compareTo(c2.getOfertaCapacitacion().getCurso().getCursNombre())).collect(Collectors.toList()));
 		
 	}
@@ -89,7 +90,7 @@ public class BackingMatricula implements Serializable{
 	public void agregarEmpresa() {
 		
 			getComponenteBackingMatriculaInscripcion().getBeanInscripcionMatricula().getEmpresa().setEmprEstado(true);
-			getEmpresaServicioImpl().agregarEmpresa(getComponenteBackingMatriculaInscripcion().getBeanInscripcionMatricula().getEmpresa());
+			getSistemaDataService().agregarEmpresa(getComponenteBackingMatriculaInscripcion().getBeanInscripcionMatricula().getEmpresa());
 			getComponenteBackingMatriculaInscripcion().setNuevaEmpresa(false);
 			cargaEmpresas();
 		
@@ -100,7 +101,7 @@ public class BackingMatricula implements Serializable{
 	public void cargaEmpresas() {
 		
 			getComponenteBackingMatriculaInscripcion().getBeanInscripcionMatricula().setListaEmpresas(new ArrayList<>());
-			getComponenteBackingMatriculaInscripcion().getBeanInscripcionMatricula().setListaEmpresas(getEmpresaServicioImpl().listaEmpresas());
+			getComponenteBackingMatriculaInscripcion().getBeanInscripcionMatricula().setListaEmpresas(getSistemaDataService().listaEmpresas());
 		
 	}
 	/**
