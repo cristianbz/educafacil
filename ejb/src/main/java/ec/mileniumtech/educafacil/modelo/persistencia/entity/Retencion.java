@@ -74,6 +74,12 @@ public class Retencion implements Serializable {
 
     @Column(name = "rete_numero_autorizacion", length = 49)
     private String numeroAutorizacion;
+    
+    @Column(name = "rete_url_pdf", length = 500)
+    private String urlPdf;
+    
+    @Column(name = "rete_url_xml", length = 500)
+    private String urlXml;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "rete_fecha_autorizacion")

@@ -92,13 +92,28 @@ public class FacturacionFacade {
     public Factura buscarFacturaPorId(Integer id) {
         return facturaDao.buscarFacturaPorId(id);
     }
-
+    
+    public NotaCredito buscarNotaCreditoporId(Integer id) {
+    	return notaCreditoDao.buscarNotaCreditoPorId(id);
+    }
+    
+    public Retencion buscarRetencionporId(Integer id) {
+    	return retencionDao.buscarRetencionPorId(id);
+    }
     public List<Factura> buscarFacturasPorFiltros(LocalDate fechaInicio, LocalDate fechaFin, String identificacion, String numeroAutorizacion, String estadoAutorizacion) {
         return facturaDao.buscarFacturasPorFiltros(fechaInicio, fechaFin, identificacion, numeroAutorizacion, estadoAutorizacion);
     }
 
     public void actualizar(Factura factura) {
         facturaDao.actualizar(factura);
+    }
+    
+    public void actualizarNotaCredito(NotaCredito notaCredito) {
+    	notaCreditoDao.actualizar(notaCredito);
+    }
+    
+    public void actualizarRetencion(Retencion retencion) {
+    	retencionDao.actualizarRetencion(retencion);
     }
     
     public List<ComprobanteReporteDto> buscarComprobantesPorFiltros(
