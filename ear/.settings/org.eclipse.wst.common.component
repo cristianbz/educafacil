@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
-                                                    
+                                                        
+    
     
     
     
@@ -12,7 +13,8 @@
     
     
     <wb-module deploy-name="educafacil">
-                                                                                                        
+                                                                                                                
+        
         
         
         
@@ -25,7 +27,8 @@
         
         
         <wb-resource deploy-path="/" source-path="/target/m2e-wtp/ear-resources"/>
-                                                                                                        
+                                                                                                                
+        
         
         
         
@@ -38,7 +41,7 @@
         
         
         <wb-resource deploy-path="/" source-path="/src/main/application" tag="defaultRootSource"/>
-        <dependent-module archiveName="educafacil-ejb.jar" deploy-path="/" handle="module:/resource/educafacil-ejb/educafacil-ejb">
+        <dependent-module archiveName="educafacil-ejb.jar" deploy-path="/" handle="module:/resource/ejb/ejb">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="hibernate-core.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/org/hibernate/orm/hibernate-core/6.4.4.Final/hibernate-core-6.4.4.Final.jar">
@@ -353,7 +356,7 @@
         <dependent-module archiveName="netty-resolver.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/io/netty/netty-resolver/4.1.108.Final/netty-resolver-4.1.108.Final.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="educafacil-web.war" deploy-path="/" handle="module:/resource/educafacil-web/educafacil-web">
+        <dependent-module archiveName="educafacil-web.war" deploy-path="/" handle="module:/resource/web/web">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="batik-anim.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/org/apache/xmlgraphics/batik-anim/1.17/batik-anim-1.17.jar">
@@ -413,7 +416,8 @@
         <dependent-module archiveName="xml-apis-ext.jar" deploy-path="/lib" handle="module:/classpath/var/M2_REPO/xml-apis/xml-apis-ext/1.3.04/xml-apis-ext-1.3.04.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-                                                                                                    
+                                                                                                            
+    
     
     
     
@@ -426,7 +430,8 @@
     
     
     </wb-module>
-                                                
+                                                    
+
 
 
 
