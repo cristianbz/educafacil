@@ -184,14 +184,14 @@
                 </p:column>
                 
                 <p:column style="width: 50px; text-align: center;" exportable="false"
-                          rendered="#{fac.entityType == 'Factura'}">
+                          rendered="#{fac.tipoComprobante eq 'Factura' || fac.tipoComprobante eq 'Nota de Credito' || fac.tipoComprobante eq 'Nota de debito' || fac.tipoComprobante eq 'Retencion'}">
                     <p:menuButton icon="pi pi-chevron-down" styleClass="ui-button-flat">
                         <p:menuitem value="XML" process="@this" icon="pi pi-file-excel" 
-                        	update=":formReporte:growl" action="#{backingReporteFacturas.descargarXml(fac)}"/>                                                   
+                        	update=":formReporte:growl" action="#{backingReporteFacturas.descargarDocumento(fac,'xml')}"/>                                                   
                         <p:menuitem value="RIDE" process="@this" icon="pi pi-file-pdf" update=":formReporte:growl"
-                        	action="#{backingReporteFacturas.descargarRide(fac)}">
+                        	action="#{backingReporteFacturas.descargarDocumento(fac,'pdf')}">
                         </p:menuitem>
-                        <p:menuitem value="Anular" actionListener="#{backingReporteFacturas.anularFactura(fac)}" 
+                        <p:menuitem value="Anular" actionListener="#{backingReporteFacturas.anularComprobante(fac)}" 
                         			disabled="#{fac.estado == 'ANULADA'}"
                                     update=":formReporte:growl" icon="pi pi-times-circle" />
                         <p:menuitem value="Envío por correo" actionListener="#{backingReporteFacturas.enviarCorreo(fac)}" 
