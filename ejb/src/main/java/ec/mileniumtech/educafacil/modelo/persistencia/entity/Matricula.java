@@ -99,6 +99,9 @@ public class Matricula implements Serializable {
 	@Column(name="matr_trabaja_en_area")
 	private boolean matrTrabajaEnArea;
 	
+	@Column(name="matr_motivacion_curso")
+	private String matrMotivacionCurso;
+	
 	@Transient
 	private double totalPagadoCurso;
 	
