@@ -194,3 +194,215 @@
 .btn-secondary-modern:hover {
     background: #e5e7eb !important;
 }
+/* ==========================================================================
+   Contenedor Principal Responsivo (Estructura Base)
+   ========================================================================== */
+.login-container-split {
+    display: flex;
+    flex-direction: column; /* Diseño vertical por defecto (Móviles) */
+    max-width: 450px;       /* Ancho ideal para tarjetas compactas tipo celular */
+    margin: 5% auto;
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ==========================================================================
+   Columnas / Secciones (Izquierda y Derecha)
+   ========================================================================== */
+.login-left-side {
+    width: 100%;
+    padding: 2.5rem 2rem 1rem 2rem; /* Menos padding abajo para juntar el contenido */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.login-right-side {
+    width: 100%;
+    padding: 0rem 2rem 2.5rem 2rem; /* Sin padding arriba para eliminar la distancia */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;    /* Fuerza a los elementos a alinearse hacia arriba */
+    align-items: center;
+}
+
+/* ==========================================================================
+   Cabecera y Textos (Sección Bienvenida)
+   ========================================================================== */
+.login-header-modern {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 0px !important;  /* Eliminamos margen inferior del bloque de texto */
+}
+
+.login-logo {
+    max-width: 120px;
+    height: auto;
+    margin-bottom: 1rem;
+}
+
+.login-header-modern h2 {
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: #111625;
+    margin: 0 0 0.4rem 0;
+    letter-spacing: 0.5px;
+}
+
+.login-header-modern p {
+    color: #666;
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* ==========================================================================
+   Reseteo Crítico de PrimeFaces (Elimina espacios ocultos)
+   ========================================================================== */
+.ui-panel.custom-login-panel {
+    border: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important; /* Elimina cualquier separación externa del panel */
+    width: 100%;
+}
+
+.ui-panel.custom-login-panel .ui-panel-content {
+    border: none !important;
+    background: transparent !important;
+    padding: 0 !important; /* Quita el espacio interno superior e inferior nativo de PF */
+    margin: 0 !important;
+}
+
+/* ==========================================================================
+   Formularios, Inputs y Componentes
+   ========================================================================== */
+.field-spacing {
+    margin-bottom: 1.2rem;
+}
+
+.icon-label-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.icon-blue {
+    color: #2196f3;
+    margin-right: 0.6rem;
+    font-size: 1.1rem;
+}
+
+.label-bold {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 0.95rem;
+}
+
+.input-modern {
+    border-radius: 12px !important;
+    padding: 0.8rem 1rem !important;
+    border: 1px solid #e2e8f0 !important;
+    background-color: #f8fafc !important;
+    font-size: 1rem;
+    color: #334155;
+    transition: all 0.2s ease;
+}
+
+.input-modern:focus {
+    border-color: #2196f3 !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1) !important;
+}
+
+/* Botón Validar (Estilo exacto a tu imagen) */
+.btn-modern-blue {
+    background: #2196f3 !important;
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 0.85rem !important;
+    font-size: 1.1rem !important;
+    font-weight: 700 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(33, 150, 243, 0.3) !important;
+    transition: background-color 0.2s ease !important;
+}
+
+.btn-modern-blue:hover {
+    background: #1976d2 !important;
+}
+
+/* Enlace inferior */
+.link-reset-password {
+    color: #2196f3 !important;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 0.95rem;
+    display: inline-block;
+    margin-top: 0.5rem;
+}
+
+.link-reset-password:hover {
+    text-decoration: underline;
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* ==========================================================================
+   MEDIA QUERY: Comportamiento en Computadoras / Laptops (Vista Horizontal)
+   ========================================================================== */
+@media screen and (min-width: 768px) {
+    .login-container-split {
+        flex-direction: row;     /* Cambia a dos columnas de lado a lado */
+        max-width: 850px;        /* Se estira para dar espacio horizontal */
+    }
+    
+    .login-left-side {
+        flex: 1;
+        padding: 3.5rem 2.5rem;   /* Padding equilibrado en PC */
+    }
+    
+    .login-right-side {
+        flex: 1;
+        padding: 3.5rem 2.5rem;   /* Padding equilibrado en PC */
+        border-left: 1px solid #f1f5f9; /* Línea divisoria central sutil */
+    }
+
+    .login-header-modern h2 {
+        font-size: 2.1rem;
+    }
+}
+/* ==========================================================================
+   Corrección del Botón Regresar (Legibilidad y Estilo Moderno)
+   ========================================================================== */
+.login-right-side .ui-button.ui-button-secondary {
+    background: transparent !important;
+    border: 2px solid #e2e8f0 !important; /* Borde sutil */
+    border-radius: 12px !important;
+    padding: 0.85rem !important;
+    font-size: 1.1rem !important;
+    font-weight: 600 !important;
+    color: #64748b !important; /* Texto gris oscuro legible */
+    box-shadow: none !important;
+    transition: all 0.2s ease !important;
+}
+
+/* Efecto Hover para el botón Regresar */
+.login-right-side .ui-button.ui-button-secondary:hover {
+    background: #f8fafc !important; /* Fondo gris muy suave al pasar el mouse */
+    border-color: #cbd5e1 !important;
+    color: #334155 !important;      /* Texto un poco más oscuro */
+}
+
+/* Ajuste para el ícono dentro del botón Regresar */
+.login-right-side .ui-button.ui-button-secondary .ui-button-icon-left {
+    color: #64748b !important;
+}
+.login-right-side .ui-button.ui-button-secondary:hover .ui-button-icon-left {
+    color: #334155 !important;
+}

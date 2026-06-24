@@ -2,192 +2,170 @@
  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="jakarta.faces.facelets"
-      	xmlns:f="jakarta.faces.core"
-      	xmlns:h="jakarta.faces.html"
-    xmlns:p="http://primefaces.org/ui">
+      xmlns:f="jakarta.faces.core"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/WEB-INF/templates/templateLogin.xhtml">
 	<ui:define name="contenido">
 		<h:form id="loginForm">
 			<p:growl id="growl" life="3000" showDetail="true"/>
 			
-			<div class="login-card-modern">
-				<div class="login-header-modern">
-					<h:graphicImage value="/imagenes/logotipo/logoPequenio.png" alt="Logo" styleClass="login-logo"  rendered="#{not empty '/imagenes/logotipo/logoPequenio.png'}"/>
-					<h2>BIENVENIDO</h2>
-					<p>Ingrese sus datos</p>
+			<div class="login-container-split">
+				
+				<div class="login-left-side">
+					<div class="login-header-modern">
+						<h:graphicImage value="/imagenes/logotipo/logoPequenio.png" alt="Logo" styleClass="login-logo" rendered="#{not empty '/imagenes/logotipo/logoPequenio.png'}"/>
+						<h2>BIENVENIDO</h2>
+						<p>Ingrese sus datos</p>
+					</div>
 				</div>
 
-				<p:outputPanel id="panelContenedor">
-					
-					<!-- Panel Documento Identidad -->
-					<p:panel id="panelDocumento" rendered="#{backingLogin.beanLogin.panelDocumento}">
-						<div class="ui-fluid">
-							<div class="p-field">
-								<div class="icon-label-group">
-									<i class="pi pi-user"></i>
-									<p:outputLabel value="#{etiquetas['usuario']}" for="docIdentidad"/>
+				<div class="login-right-side">
+					<p:outputPanel id="panelContenedor">
+						
+						<p:panel id="panelDocumento" rendered="#{backingLogin.beanLogin.panelDocumento}" styleClass="custom-login-panel">
+							<div class="ui-fluid">
+								<div class="p-field field-spacing">
+									<div class="icon-label-group">
+										<i class="pi pi-user icon-blue"></i>
+										<p:outputLabel value="#{etiquetas['usuario']}" for="docIdentidad" styleClass="label-bold"/>
+									</div>
+									<p:inputText id="docIdentidad" value="#{backingLogin.beanLogin.documentoIdentidad}" 
+												 title="#{tooltip['usuario']}" required="true" 
+												 requiredMessage="#{mensajes['campoRequerido']}"
+												 placeholder="Identificación" styleClass="input-modern"/>
 								</div>
-								<p:inputText id="docIdentidad" value="#{backingLogin.beanLogin.documentoIdentidad}" 
-											 title="#{tooltip['usuario']}" required="true" 
-											 requiredMessage="#{mensajes['campoRequerido']}"
-											 placeholder="Identificación"/>
-							</div>
-							
-							<div class="p-field">
-								<p:commandButton value="#{botones['validar']}" 
-												 process="@this panelDocumento" 
-												 ajax="true"
-												 icon="pi pi-check-circle" 
-												 update="panelContenedor growl" 
-												 action="#{backingLogin.validarDocumentoIdentidadUsuario()}"/>
-							</div>
-							
-							<div class="p-field" style="margin-top: 1rem; text-align: center;">
-								<p:commandLink value="#{titulos['reseteoClave']}" 
-											  process="@this" 
-											  update="panelContenedor" 
-											  partialSubmit="true"
-											  style="color: var(--primary-color); font-weight: 600; text-decoration: none;">
-									<f:setPropertyActionListener value="true" target="#{backingLogin.beanLogin.panelCambiaClave}"/>
-									<f:setPropertyActionListener value="false" target="#{backingLogin.beanLogin.panelDocumento}"/>
-								</p:commandLink>
-							</div>
-						</div>	
-					</p:panel>
-
-					<!-- Panel Validación Clave -->
-					<p:panel id="panelValidacion" rendered="#{backingLogin.beanLogin.panelValida}">
-						<div class="ui-fluid">
-							<div class="p-field" style="text-align: center; margin-bottom: 2rem;">
-								<p:avatar icon="pi pi-user" size="xlarge" shape="circle" style="background-color: var(--primary-color); color: #fff; margin-bottom: 1rem;"/>
-								<div style="font-size: 1.1rem; font-weight: 700; color: var(--text-main);">
-									<p:outputLabel value="#{backingLogin.beanLogin.usuario.persona.persNombres} #{backingLogin.beanLogin.usuario.persona.persApellidos}"/>
+								
+								<div class="p-field field-spacing">
+									<p:commandButton value="#{botones['validar']}" 
+													 process="@this panelDocumento" 
+													 ajax="true"
+													 icon="pi pi-check-circle" 
+													 update="panelContenedor growl" 
+													 action="#{backingLogin.validarDocumentoIdentidadUsuario()}"
+													 styleClass="btn-modern-blue"/>
 								</div>
-								<div style="color: var(--text-muted); font-size: 0.9rem;">#{backingLogin.beanLogin.documentoIdentidad}</div>
-							</div>
-
-							<div class="p-field"> 
-								<div class="icon-label-group">
-									<i class="pi pi-key"></i>
-									<p:outputLabel value="#{etiquetas['clave']}" for="passwordField"/>
+								
+								<div class="p-field field-spacing text-center">
+									<p:commandLink value="#{titulos['reseteoClave']}" 
+												  process="@this" 
+												  update="panelContenedor" 
+												  partialSubmit="true"
+												  styleClass="link-reset-password">
+										<f:setPropertyActionListener value="true" target="#{backingLogin.beanLogin.panelCambiaClave}"/>
+										<f:setPropertyActionListener value="false" target="#{backingLogin.beanLogin.panelDocumento}"/>
+									</p:commandLink>
 								</div>
-								<p:password id="passwordField" value="#{backingLogin.beanLogin.clave}" 
-											title="#{tooltip['clave']}" required="true" 
-											requiredMessage="#{mensajes['campoRequerido']}"
-											toggleMask="true" redisplay="true"
-											placeholder="Ingrese su clave"/>
-							</div>
+							</div>	
+						</p:panel>
 
-							<div class="p-field">												
-								<p:commandButton value="#{botones['validar']}" 
-												 partialSubmit="true"
-												 icon="pi pi-sign-in" 
-												 process="@this panelValidacion" 
-												 update="panelContenedor growl" 
-												 action="#{backingLogin.validarUsuario()}"/>
-							</div>
-							
-							<div class="p-field">
-								<p:commandButton value="#{botones['regresar']}" 
-												 partialSubmit="true"
-												 icon="pi pi-arrow-left" 
-												 process="@this" 
-												 update="panelContenedor" 
-												 actionListener="#{backingLogin.retornarLogin()}"
-												 styleClass="btn-secondary-modern"/>
-							</div>
-						</div>			
-					</p:panel>
-
-					<!-- Panel Reseteo Clave -->
-					<p:panel id="panelReseteoClave" rendered="#{backingLogin.beanLogin.panelCambiaClave}">
-						<div class="ui-fluid">
-							<div class="p-field">
-								<div class="icon-label-group">
-									<i class="pi pi-envelope"></i>
-									<p:outputLabel value="#{etiquetas['correo']}" for="emailField"/>
+						<p:panel id="panelValidacion" rendered="#{backingLogin.beanLogin.panelValida}" styleClass="custom-login-panel">
+							<div class="ui-fluid">
+								<div class="p-field text-center field-spacing">
+									<p:avatar icon="pi pi-user" size="xlarge" shape="circle" style="background-color: #1e88e5; color: #fff; margin-bottom: 1rem;"/>
+									<div style="font-size: 1.1rem; font-weight: 700; color: #333;">
+										<p:outputLabel value="#{backingLogin.beanLogin.usuario.persona.persNombres} #{backingLogin.beanLogin.usuario.persona.persApellidos}"/>
+									</div>
+									<div style="color: #757575; font-size: 0.9rem;">#{backingLogin.beanLogin.documentoIdentidad}</div>
 								</div>
-								<p:inputText id="emailField" value="#{backingLogin.beanLogin.correo}" 
-											 required="true" requiredMessage="#{mensajes['campoRequerido']}"
-											 placeholder="ejemplo@correo.com"/>
-							</div>
 
-							<div class="p-field">
-								<div class="icon-label-group">
-									<i class="pi pi-id-card"></i>
-									<p:outputLabel value="#{etiquetas['cedularuc']}" for="cedulaField"/>
+								<div class="p-field field-spacing"> 
+									<div class="icon-label-group">
+										<i class="pi pi-key icon-blue"></i>
+										<p:outputLabel value="#{etiquetas['clave']} " for="passwordField" styleClass="label-bold"/>
+									</div>
+									<p:password id="passwordField" value="#{backingLogin.beanLogin.clave}" 
+												title="#{tooltip['clave']}" required="true" 
+												requiredMessage="#{mensajes['campoRequerido']}"
+												toggleMask="true" redisplay="true"
+												placeholder="Ingrese su clave" styleClass="input-modern"/>
 								</div>
-								<p:inputText id="cedulaField" value="#{backingLogin.beanLogin.cedula}" 
-											 required="true" requiredMessage="#{mensajes['campoRequerido']}"
-											 placeholder="Cédula o RUC"/>
-							</div>
 
-							<div class="p-field">
-								<p:commandButton value="#{botones['validar']}" 
-												 partialSubmit="true"
-												 icon="pi pi-check-circle" 
-												 process="@this panelReseteoClave" 
-												 update="panelContenedor growl" 
-												 action="#{backingLogin.validarCambioClave()}"/>
-							</div>
+								<div class="p-field field-spacing">												
+									<p:commandButton value="#{botones['validar']}" 
+													 partialSubmit="true"
+													 icon="pi pi-sign-in" 
+													 process="@this panelValidacion" 
+													 update="panelContenedor growl" 
+													 action="#{backingLogin.validarUsuario()}"
+													 styleClass="btn-modern-blue"/>
+								</div>
+								
+								<div class="p-field field-spacing">
+									<p:commandButton value="#{botones['regresar']}" 
+													 partialSubmit="true"
+													 icon="pi pi-arrow-left" 
+													 process="@this" 
+													 update="panelContenedor" 
+												 	 actionListener="#{backingLogin.retornarLogin()}"
+													 styleClass="ui-button-secondary input-modern"/>
+								</div>
+							</div>			
+						</p:panel>
 
-							<div class="p-field">
-								<p:commandButton value="#{botones['regresar']}" 
-												 partialSubmit="true"
-												 icon="pi pi-arrow-left" 
-												 process="@this" 
-												 update="panelContenedor" 
-												 actionListener="#{backingLogin.retornarLogin()}"
-												 styleClass="btn-secondary-modern">
-									<f:setPropertyActionListener value="false" target="#{backingLogin.beanLogin.panelCambiaClave}"/>
-									<f:setPropertyActionListener value="true" target="#{backingLogin.beanLogin.panelDocumento}"/>
-								</p:commandButton>
-							</div>
-						</div>			
-					</p:panel>
-				</p:outputPanel>
+						<p:panel id="panelReseteoClave" rendered="#{backingLogin.beanLogin.panelCambiaClave}" styleClass="custom-login-panel">
+							<div class="ui-fluid">
+								<div class="p-field field-spacing">
+									<div class="icon-label-group">
+										<i class="pi pi-envelope icon-blue"></i>
+										<p:outputLabel value="#{etiquetas['correo']} *" for="emailField" styleClass="label-bold"/>
+									</div>
+									<p:inputText id="emailField" value="#{backingLogin.beanLogin.correo}" 
+												 required="true" requiredMessage="#{mensajes['campoRequerido']}"
+												 placeholder="ejemplo@correo.com" styleClass="input-modern"/>
+								</div>
+
+								<div class="p-field field-spacing">
+									<div class="icon-label-group">
+										<i class="pi pi-id-card icon-blue"></i>
+										<p:outputLabel value="#{etiquetas['cedularuc']} *" for="cedulaField" styleClass="label-bold"/>
+									</div>
+									<p:inputText id="cedulaField" value="#{backingLogin.beanLogin.cedula}" 
+												 required="true" requiredMessage="#{mensajes['campoRequerido']}"
+												 placeholder="Cédula o RUC" styleClass="input-modern"/>
+								</div>
+
+								<div class="p-field field-spacing">
+									<p:commandButton value="#{botones['validar']}" 
+													 partialSubmit="true"
+													 icon="pi pi-check-circle" 
+													 process="@this panelReseteoClave" 
+													 update="panelContenedor growl" 
+													 action="#{backingLogin.validarCambioClave()}"
+													 styleClass="btn-modern-blue"/>
+								</div>
+
+								<div class="p-field field-spacing">
+									<p:commandButton value="#{botones['regresar']}" 
+													 partialSubmit="true"
+													 icon="pi pi-arrow-left" 
+													 process="@this" 
+													 update="panelContenedor" 
+													 actionListener="#{backingLogin.retornarLogin()}"
+													 styleClass="ui-button-secondary input-modern">
+										<f:setPropertyActionListener value="false" target="#{backingLogin.beanLogin.panelCambiaClave}"/>
+										<f:setPropertyActionListener value="true" target="#{backingLogin.beanLogin.panelDocumento}"/>
+									</p:commandButton>
+								</div>
+							</div>			
+						</p:panel>
+					</p:outputPanel>
+				</div>
+				
 			</div>
 		</h:form>
-		<p:dialog id="dialogoModulos" widgetVar="dialogoModulos" 
-				  header="Seleccione un Módulo" 
-				  modal="true" 
-				  closable="true"
-				  resizable="false"
-				  responsive="true"
-				  width="400"
-				  styleClass="login-dialog-modern">
+
+		<p:dialog id="dialogoModulos" widgetVar="dialogoModulos" header="Seleccione un Módulo" modal="true" closable="true" resizable="false" responsive="true" width="400">
 			<h:form id="formDialogoModulos">
 				<div class="ui-fluid">
-					<div class="p-field" style="margin-bottom: 1rem;">
-						<p:commandButton value="Facturación Electrónica" 
-										 icon="pi pi-file" 
-										 action="/paginas/contabilidad/facturacion.cap?faces-redirect=true"
-										 styleClass="btn-primary-modern"/>
-					</div>
-					<div class="p-field" style="margin-bottom: 1rem;">
-						<p:commandButton value="Seguimiento a Clientes" 
-										 icon="pi pi-users" 
-										 action="/paginas/estudiantes/seguimientocliente.cap?faces-redirect=true"
-										 styleClass="btn-primary-modern"/>
-					</div>
-					<div class="p-field" style="margin-bottom: 1rem;">
-						<p:commandButton value="Registro de Pagos" 
-										 icon="pi pi-money-bill" 
-										 action="/paginas/contabilidad/pagosCurso.cap?faces-redirect=true"
-										 styleClass="btn-primary-modern"/>
-					</div>
-					<div class="p-field" style="margin-bottom: 1rem;">
-						<p:commandButton value="Voy a decidir luego" 
-										 icon="pi pi-money-bill" 
-										 action="/paginas/index.cap?faces-redirect=true"
-										 styleClass="btn-primary-modern"/>
-					</div>
+					<div class="p-field" style="margin-bottom: 1rem;"><p:commandButton value="Facturación Electrónica" icon="pi pi-file" action="/paginas/contabilidad/facturacion.cap?faces-redirect=true"/></div>
+					<div class="p-field" style="margin-bottom: 1rem;"><p:commandButton value="Seguimiento a Clientes" icon="pi pi-users" action="/paginas/estudiantes/seguimientocliente.cap?faces-redirect=true"/></div>
+					<div class="p-field" style="margin-bottom: 1rem;"><p:commandButton value="Registro de Pagos" icon="pi pi-money-bill" action="/paginas/contabilidad/pagosCurso.cap?faces-redirect=true"/></div>
+					<div class="p-field" style="margin-bottom: 1rem;"><p:commandButton value="Voy a decidir luego" icon="pi pi-money-bill" action="/paginas/index.cap?faces-redirect=true"/></div>
 				</div>
 			</h:form>
 		</p:dialog>
 	</ui:define>
-
 </ui:composition>
-
 </html>
