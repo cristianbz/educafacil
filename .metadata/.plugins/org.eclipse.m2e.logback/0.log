@@ -8680,3 +8680,42 @@ Caused by: org.codehaus.plexus.util.xml.pull.XmlPullParserException: end tag nam
 2026-06-15 21:07:52,300 [Worker-22: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 1 resource from src\test\resources to target\test-classes
 2026-06-15 21:07:52,308 [Worker-22: Building] INFO  o.e.m.w.i.f.ResourceFilteringBuildParticipant - Changed resources require a complete clean of filtered resources of web
 2026-06-15 21:07:52,309 [Worker-22: Building] INFO  o.e.m.w.i.f.ResourceFilteringBuildParticipant - Executing resource filtering for web
+2026-06-18 11:10:42,429 [Worker-11: Loading available Gradle versions] INFO  o.e.b.c.i.u.g.PublishedGradleVersions - Gradle version information cache is up-to-date. Trying to read.
+2026-06-18 11:10:54,138 [Worker-5: Building] INFO  o.e.m.c.i.p.WorkspaceClassifierResolverManager - Resolving P/ejb: ec.mileniumtech:educafacil-ejb:0.0.1-SNAPSHOT with classifier  to /ejb/target/classes
+2026-06-18 11:10:54,308 [Worker-5: Building] INFO  o.e.m.c.i.p.WorkspaceClassifierResolverManager - Resolving P/web: ec.mileniumtech:educafacil-web:0.0.1-SNAPSHOT with classifier  to /web/target/classes
+2026-06-18 11:10:54,500 [Worker-5: Building] INFO  o.e.m.w.i.f.ResourceFilteringBuildParticipant - Changed resources require a complete clean of filtered resources of ear
+2026-06-18 11:10:54,502 [Worker-5: Building] INFO  o.e.m.w.i.f.ResourceFilteringBuildParticipant - Executing resource filtering for ear
+2026-06-18 11:10:55,536 [Worker-5: Building] INFO  o.e.m.c.i.p.WorkspaceClassifierResolverManager - Resolving P/ejb: ec.mileniumtech:educafacil-ejb:0.0.1-SNAPSHOT with classifier  to /ejb/target/classes
+2026-06-18 11:10:55,687 [Worker-5: Building] INFO  o.e.m.c.i.p.WorkspaceClassifierResolverManager - Resolving P/web: ec.mileniumtech:educafacil-web:0.0.1-SNAPSHOT with classifier  to /web/target/classes
+2026-06-18 11:10:56,603 [Worker-5: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - Generating application.xml
+2026-06-18 11:10:56,859 [Worker-5: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - skip non existing resourceDirectory C:\Users\christian\eclipse-workspace\educafacil\ear\src\main\resources
+2026-06-18 11:11:14,161 [Worker-11: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 6 resources from src\main\resources to target\classes
+2026-06-18 11:11:14,192 [Worker-11: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 1 resource from src\test\resources to target\test-classes
+2026-06-18 11:11:53,971 [Worker-4: Building] INFO  o.e.m.c.i.p.WorkspaceClassifierResolverManager - Resolving P/ejb: ec.mileniumtech:educafacil-ejb:0.0.1-SNAPSHOT with classifier  to /ejb/target/classes
+2026-06-18 11:11:54,662 [Worker-4: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 15 resources from src\main\resources to target\classes
+2026-06-18 11:11:55,103 [Worker-4: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 1 resource from src\test\resources to target\test-classes
+2026-06-18 11:11:55,113 [Worker-4: Building] INFO  o.e.m.w.i.f.ResourceFilteringBuildParticipant - Changed resources require a complete clean of filtered resources of web
+2026-06-18 11:11:55,113 [Worker-4: Building] INFO  o.e.m.w.i.f.ResourceFilteringBuildParticipant - Executing resource filtering for web
+2026-06-18 11:15:56,785 [Worker-12: Loading available Gradle versions] INFO  o.e.b.c.i.u.g.PublishedGradleVersions - Gradle version information cache is up-to-date. Trying to read.
+2026-06-18 11:16:59,718 [Worker-10: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 6 resources from src\main\resources to target\classes
+2026-06-18 11:16:59,743 [Worker-10: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 1 resource from src\test\resources to target\test-classes
+2026-06-18 11:17:06,025 [Worker-22: Building] INFO  o.e.m.c.i.p.WorkspaceClassifierResolverManager - Resolving P/ejb: ec.mileniumtech:educafacil-ejb:0.0.1-SNAPSHOT with classifier  to /ejb/target/classes
+2026-06-18 11:17:57,363 [Worker-15: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 6 resources from src\main\resources to target\classes
+2026-06-18 11:17:57,389 [Worker-15: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 1 resource from src\test\resources to target\test-classes
+2026-06-18 11:18:10,826 [Worker-24: Cleaning all projects] INFO  o.e.m.c.i.p.WorkspaceClassifierResolverManager - Resolving P/ejb: ec.mileniumtech:educafacil-ejb:0.0.1-SNAPSHOT with classifier  to /ejb/target/classes
+2026-06-18 11:18:10,996 [Worker-24: Cleaning all projects] INFO  o.e.m.c.i.p.WorkspaceClassifierResolverManager - Resolving P/web: ec.mileniumtech:educafacil-web:0.0.1-SNAPSHOT with classifier  to /web/target/classes
+2026-06-18 11:18:11,074 [Worker-24: Cleaning all projects] INFO  o.e.m.w.i.f.ResourceFilteringBuildParticipant - Cleaning filtered folder for ear
+2026-06-18 11:18:11,654 [Worker-24: Cleaning all projects] INFO  o.e.m.w.i.f.ResourceFilteringBuildParticipant - Cleaning filtered folder for web
+2026-06-18 11:18:19,749 [Worker-22: Building] INFO  o.e.m.w.i.f.ResourceFilteringBuildParticipant - Changed resources require a complete clean of filtered resources of ear
+2026-06-18 11:18:19,750 [Worker-22: Building] INFO  o.e.m.w.i.f.ResourceFilteringBuildParticipant - Executing resource filtering for ear
+2026-06-18 11:18:20,835 [Worker-22: Building] INFO  o.e.m.c.i.p.WorkspaceClassifierResolverManager - Resolving P/ejb: ec.mileniumtech:educafacil-ejb:0.0.1-SNAPSHOT with classifier  to /ejb/target/classes
+2026-06-18 11:18:20,995 [Worker-22: Building] INFO  o.e.m.c.i.p.WorkspaceClassifierResolverManager - Resolving P/web: ec.mileniumtech:educafacil-web:0.0.1-SNAPSHOT with classifier  to /web/target/classes
+2026-06-18 11:18:21,685 [Worker-22: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - Generating application.xml
+2026-06-18 11:18:21,755 [Worker-22: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - skip non existing resourceDirectory C:\Users\christian\eclipse-workspace\educafacil\ear\src\main\resources
+2026-06-18 11:18:25,804 [Worker-5: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 6 resources from src\main\resources to target\classes
+2026-06-18 11:18:25,822 [Worker-5: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 1 resource from src\test\resources to target\test-classes
+2026-06-18 11:18:29,655 [Worker-19: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 15 resources from src\main\resources to target\classes
+2026-06-18 11:18:29,703 [Worker-19: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 1 resource from src\test\resources to target\test-classes
+2026-06-18 11:18:29,706 [Worker-19: Building] INFO  o.e.m.w.i.f.ResourceFilteringBuildParticipant - Changed resources require a complete clean of filtered resources of web
+2026-06-18 11:18:29,706 [Worker-19: Building] INFO  o.e.m.w.i.f.ResourceFilteringBuildParticipant - Executing resource filtering for web
+2026-06-24 12:13:53,019 [Worker-7: Loading available Gradle versions] INFO  o.e.b.c.i.u.g.PublishedGradleVersions - Gradle version information cache is up-to-date. Trying to read.
