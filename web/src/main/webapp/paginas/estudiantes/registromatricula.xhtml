@@ -11,21 +11,7 @@
 					<f:event listener="#{backingLogin.validarSesion()}" type="preRenderView" />
 			<h:form prependId="false">
 		<p:growl id="growl" life="3000" showDetail="true" />
-		<p:dialog widgetVar="dlgCerrar" appendTo="@parent"
-			header="#{titulos['grabar']}" modal="true" width="200px;"
-			closable="false">
-			<h:panelGrid columns="2">
-				<p:commandButton value="Procesar"
-					process="@this panelPersona panelfin"
-					actionListener="#{backingMatriculaOnline.matricular()}"
-					partialSubmit="true" update="panelPersona panelfin growl"
-					icon="#{botones['icono.select']}"
-					oncomplete="PF('dlgCerrar').hide();" />
-				<p:commandButton value="#{botones['cancelar']}"
-					icon="#{botones['icono.cancelar']}" process="@this"
-					partialSubmit="true" oncomplete="PF('dlgCerrar').hide();" />
-			</h:panelGrid>
-		</p:dialog>
+
 
 		<div class="container">
 			<div class="text-center">
