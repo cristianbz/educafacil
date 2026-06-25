@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
+
+	<ui:define name="contenido">
+		<f:event listener="#{backingLogin.validarSesion()}"
+			type="preRenderView" />
+
+		<!-- ============================================================
+		     FORMULARIO PRINCIPAL – tabla de usuarios y diálogos CRUD
+		     ============================================================ -->
+		<h:form id="formUsuarios" prependId="false">
+			<p:growl id="growl" life="3500" showDetail="true" />
+
+			<!-- DIÁLOGO DE CARGA -->
+			<p:dialog widgetVar="dlgCargando" header="Por favor espere.."
+				draggable="false" modal="true" resizable="false" closable="false" responsive="true"
+				style="font-size: 11px;">
+				<h:graphicImage value="/resources/img/cargando.gif" width="200" height="200"/>
+			</p:dialog>
+
+			<!-- ── BREADCRUMB ──────────────────────────────────────────── -->
+			<p:breadCrumb styleClass="ui-breadcrumb p-mb-3"
+				style="border: none; background: transparent; padding-left: 0;">
+				<p:menuitem value="Inicio" outcome="/paginas/index?faces-redirect=true" icon="pi pi-home" />
+				<p:menuitem value="Accesos" url="#" />
+				<p:menuitem value="Gestión de Usuarios" url="#" />
+			</p:breadCrumb>
+							<div class="page-title">
+					<h2>Gestión usuarios</h2>
+					<small>Gestión de usuarios y asignación roles</small>
+					
+				</div>
+
+			<!-- ── ESTILOS PERSONALIZADOS ──────────────────────────────── -->
+			<style type="text/css">
+				.user-avatar {
+					width: 40px;
+					height: 40px;
+					border-radius: 50%;
+					background: linear-gradient(135deg, #6366f1, #4f46e5);
+					color: white;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					font-weight: 700;
+					font-size: 0.9rem;
+					flex-shrink: 0;
+				}
+				.custom-table {
+					width: 100%;
+					border-collapse: separate;
+					border-spacing: 0;
+					background: #ffffff;
+					border: 1px solid var(--border-color);
+					border-radius: 12px;
+					overflow: hidden;
+					box-shadow: var(--shadow-sm);
+				}
+				.custom-table th {
+					background: #f8fafc;
+					color: #64748b;
+					font-weight: 700;
+					font-size: 0.78rem;
+					text-transform: uppercase;
+					letter-spacing: 0.05em;
+					padding: 1rem 1.5rem;
+					border-bottom: 1px solid var(--border-color);
+					text-align: left;
+				}
+				.custom-table td {
+					padding: 1.1rem 1.5rem;
+					border-bottom: 1px solid var(--border-color);
+					color: var(--text-main);
+					font-size: 0.92rem;
+					vertical-align: middle;
+				}
+				.custom-table tr:last-child td {
+					border-bottom: none;
+				}
+				.custom-table tr {
+					transition: background 0.2s ease;
+				}
+				.custom-table tr:hover {
+					background: #f8fafc;
+				}
+				.search-input:focus {
+					border-color: #2563eb !important;
+					box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
+					outline: none;
+				}
+				.status-select {
+					height: 48px;
+					border-radius: 8px;
+					border: 1px solid #cbd5e1;
+					background: white;
+					padding: 0 1rem;
+					font-size: 0.9rem;
+					color: #334155;
+					min-width: 180px;
+					outline: none;
+					transition: border-color 0.2s;
+				}
+				.status-select:focus {
+					border-color: #2563eb;
+				}
+			</style>
+
+			<!-- ── BUSCADOR Y ACCIÓN DE CREACIÓN ────────────────────────── -->
+			<div class="search-header-container" style="background: #ffffff; padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-sm); flex-wrap: wrap;">
+				<div style="position: relative; flex-grow: 1; max-width: 600px; min-width: 250px;">
+					<i class="pi pi-search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 1.1rem; z-index: 10;" />
+					<p:inputText id="searchUsuario"
+						value="#{beanAccesoUsuario.filtro}"
+						placeholder="Buscar usuarios por nombre o email..."
+						style="width: 100%; padding-left: 2.75rem; height: 48px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.95rem; box-shadow: none;"
+						styleClass="search-input">
+						<p:ajax event="keyup" delay="200" update="panelStats tableContainer" />
+					</p:inputText>
+				</div>
+				
+				<div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+					<!-- Filtro de estado dropdown -->
+					<h:selectOneMenu id="stateFilter" 
+						value="#{beanAccesoUsuario.filtroEstado}" 
+						styleClass="status-select">
+						<f:selectItem itemLabel="Todos los estados" itemValue="TODOS" />
+						<f:selectItem itemLabel="Activo" itemValue="ACTIVOS" />
+						<f:selectItem itemLabel="Inactivo" itemValue="INACTIVOS" />
+						<p:ajax event="change" update="panelStats tableContainer" />
+					</h:selectOneMenu>
+
+					<p:commandButton value="Nuevo Usuario"
+						icon="pi pi-plus"
+						styleClass="ui-button"
+						style="background-color: #1066eb; border: none; padding: 0 1.5rem !important; height: 48px; border-radius: 8px; font-weight: 600; color: white; display: flex; align-items: center; justify-content: center;"
+						actionListener="#{backingAccesoUsuario.nuevoUsuario()}"
+						process="@this" update="growl" />
+				</div>
+			</div>
+
+			<!-- ── STATS CARDS ────────────────────────────────────────── -->
+			<p:outputPanel id="panelStats">
+				<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+					
+					<!-- Card 1: Total Usuarios -->
+					<div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 1.25rem; box-shadow: var(--shadow-sm);">
+						<div style="width: 48px; height: 48px; border-radius: 10px; background-color: #eff6ff; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+							<i class="pi pi-users" style="color: #2563eb; font-size: 1.5rem;" />
+						</div>
+						<div>
+							<div style="font-size: 0.85rem; color: #64748b; font-weight: 500; margin-bottom: 0.25rem;">Total Usuarios</div>
+							<div style="font-size: 1.75rem; font-weight: 700; color: #0f172a; line-height: 1;">
+								#{beanAccesoUsuario.listaUsuarios != null ? beanAccesoUsuario.listaUsuarios.size() : 0}
+							</div>
+						</div>
+					</div>
+
+					<!-- Card 2: Activos -->
+					<div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 1.25rem; box-shadow: var(--shadow-sm);">
+						<div style="width: 48px; height: 48px; border-radius: 10px; background-color: #ecfdf5; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+							<i class="pi pi-check-circle" style="color: #10b981; font-size: 1.5rem;" />
+						</div>
+						<div>
+							<div style="font-size: 0.85rem; color: #64748b; font-weight: 500; margin-bottom: 0.25rem;">Usuarios Activos</div>
+							<div style="font-size: 1.75rem; font-weight: 700; color: #0f172a; line-height: 1;">
+								#{backingAccesoUsuario.countActivos}
+							</div>
+						</div>
+					</div>
+
+					<!-- Card 3: Inactivos -->
+					<div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 1.25rem; box-shadow: var(--shadow-sm);">
+						<div style="width: 48px; height: 48px; border-radius: 10px; background-color: #fef2f2; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+							<i class="pi pi-times-circle" style="color: #ef4444; font-size: 1.5rem;" />
+						</div>
+						<div>
+							<div style="font-size: 0.85rem; color: #64748b; font-weight: 500; margin-bottom: 0.25rem;">Usuarios Inactivos</div>
+							<div style="font-size: 1.75rem; font-weight: 700; color: #0f172a; line-height: 1;">
+								#{backingAccesoUsuario.countInactivos}
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</p:outputPanel>
+
+			<!-- ── TABLA DE USUARIOS ────────────────────────────── -->
+			<p:outputPanel id="tableContainer">
+				<h:panelGroup rendered="#{not empty backingAccesoUsuario.usuariosFiltrados}">
+					<table class="custom-table">
+						<thead>
+							<tr>
+								<th style="width: 280px;">Usuario</th>
+								<th>Email</th>
+								<th>Roles</th>
+								<th style="width: 120px;">Estado</th>
+								<th style="width: 120px; text-align: center;">Acciones</th>
+							</tr>
+						</thead>
+						<tbody>
+							<ui:repeat value="#{backingAccesoUsuario.usuariosFiltrados}" var="usr">
+								<tr>
+									<!-- Columna: Usuario (Avatar + Nombre) -->
+									<td>
+										<div style="display: flex; align-items: center; gap: 0.75rem;">
+											<div class="user-avatar">
+												#{backingAccesoUsuario.obtenerIniciales(usr.persona)}
+											</div>
+											<div style="min-width: 0; line-height: 1.3;">
+												<div style="font-weight: 700; color: #0f172a;">
+													#{usr.persona.persNombres} #{usr.persona.persApellidos}
+												</div>
+												<span style="font-size: 0.78rem; color: #64748b;">
+													CI: #{usr.persona.persDocumentoIdentidad}
+												</span>
+											</div>
+										</div>
+									</td>
+
+									<!-- Columna: Email -->
+									<td>
+										<h:outputText value="#{usr.persona.persCorreoElectronico}" />
+									</td>
+
+									<!-- Columna: Roles (Chips) -->
+									<td>
+										<div style="display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center;">
+											<ui:repeat value="#{backingAccesoUsuario.obtenerRolesDeUsuarioPorId(usr.usuaId)}" var="ur">
+												<span style="background: #eff6ff; color: #2563eb; font-weight: 600; font-size: 0.78rem; padding: 0.25rem 0.6rem; border-radius: 9999px; border: 1px solid #bfdbfe; display: inline-flex; align-items: center; gap: 0.25rem;">
+													<i class="pi pi-user" style="font-size: 0.65rem; color: #3b82f6;" />
+													<h:outputText value="#{ur.rol.rolNombre}" />
+												</span>
+											</ui:repeat>
+
+											<!-- Botón para gestionar roles de usuario -->
+											<p:commandLink
+												title="Gestionar roles"
+												process="@this"
+												update="panelDialogoRoles growl"
+												partialSubmit="true"
+												actionListener="#{backingAccesoUsuario.gestionarRoles(usr)}"
+												style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: #f1f5f9; border: 1px solid #cbd5e1; transition: background 0.2s;"
+												onmouseover="this.style.backgroundColor='#e2e8f0';"
+												onmouseout="this.style.backgroundColor='#f1f5f9';">
+												<i class="pi pi-plus" style="font-size: 0.75rem; color: #64748b;" />
+											</p:commandLink>
+
+											<h:panelGroup rendered="#{empty backingAccesoUsuario.obtenerRolesDeUsuarioPorId(usr.usuaId)}">
+												<span style="font-size: 0.8rem; color: #94a3b8; font-style: italic; display: flex; align-items: center; gap: 0.3rem;">
+													<i class="pi pi-info-circle" /> Sin roles asignados
+												</span>
+											</h:panelGroup>
+										</div>
+									</td>
+
+									<!-- Columna: Estado (Badge) -->
+									<td>
+										<h:panelGroup rendered="#{usr.usuaEstado}">
+											<span style="font-size: 0.78rem; font-weight: 700; background-color: #d1fae5; color: #065f46; padding: 0.25rem 0.6rem; border-radius: 9999px; border: 1px solid #a7f3d0; display: inline-flex; align-items: center; gap: 0.3rem;">
+												<i class="pi pi-check" style="font-size: 0.65rem;" /> Activo
+											</span>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{!usr.usuaEstado}">
+											<span style="font-size: 0.78rem; font-weight: 700; background-color: #fee2e2; color: #ef4444; padding: 0.25rem 0.6rem; border-radius: 9999px; border: 1px solid #fca5a5; display: inline-flex; align-items: center; gap: 0.3rem;">
+												<i class="pi pi-times" style="font-size: 0.65rem;" /> Inactivo
+											</span>
+										</h:panelGroup>
+									</td>
+
+									<!-- Columna: Acciones -->
+									<td style="text-align: center;">
+										<div style="display: flex; align-items: center; justify-content: center; gap: 0.75rem;">
+											<!-- Editar usuario -->
+											<p:commandLink
+												title="Editar usuario"
+												process="@this"
+												update="growl :formDialogoUsuario"
+												partialSubmit="true"
+												actionListener="#{backingAccesoUsuario.editarUsuario(usr)}"
+												style="text-decoration: none;">
+												<i class="pi pi-pencil"
+													style="font-size: 1.1rem; color: #64748b; transition: transform 0.2s, color 0.2s;"
+													onmouseover="this.style.transform='scale(1.25)'; this.style.color='var(--primary-color)';"
+													onmouseout="this.style.transform='scale(1)'; this.style.color='#64748b';"></i>
+											</p:commandLink>
+
+											<!-- Desactivar usuario (con confirmación) -->
+											<p:commandLink
+												title="Desactivar usuario"
+												rendered="#{usr.usuaEstado}"
+												process="@this"
+												update="tableContainer panelStats growl"
+												partialSubmit="true"
+												actionListener="#{backingAccesoUsuario.eliminarLogicoUsuario(usr)}"
+												onclick="return confirm('¿Deseas desactivar al usuario \'' + '#{usr.persona.persNombres}' + ' ' + '#{usr.persona.persApellidos}' + '\'? Esta acción es reversible desde la edición.');"
+												style="text-decoration: none;">
+												<i class="pi pi-trash"
+													style="font-size: 1.1rem; color: #ef4444; transition: transform 0.2s, color 0.2s;"
+													onmouseover="this.style.transform='scale(1.25)'; this.style.color='#dc2626';"
+													onmouseout="this.style.transform='scale(1)'; this.style.color='#ef4444';"></i>
+											</p:commandLink>
+										</div>
+									</td>
+								</tr>
+							</ui:repeat>
+						</tbody>
+					</table>
+				</h:panelGroup>
+
+				<!-- Estado vacío para la búsqueda -->
+				<h:panelGroup rendered="#{empty backingAccesoUsuario.usuariosFiltrados}">
+					<div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: 16px; padding: 3rem 2rem; text-align: center; box-shadow: var(--shadow-sm);">
+						<div style="margin-bottom: 1.5rem;">
+							<i class="pi pi-search" style="font-size: 3.5rem; color: #94a3b8; padding: 1.25rem; background-color: #f8fafc; border-radius: 50%;" />
+						</div>
+						<h3 style="margin: 0 0 0.5rem 0; font-weight: 700; color: var(--text-main);">No se encontraron usuarios</h3>
+						<p style="color: var(--text-muted); max-width: 480px; margin: 0 auto 1.5rem auto; font-size: 0.95rem;">
+							No hay usuarios que coincidan con la búsqueda de "#{beanAccesoUsuario.filtro}" y el estado seleccionado. Intente de nuevo o cree uno nuevo.
+						</p>
+						<p:commandButton value="Limpiar búsqueda"
+							icon="pi pi-filter-slash"
+							styleClass="ui-button-outlined ui-button-secondary"
+							actionListener="#{beanAccesoUsuario.setFiltro(null)}"
+							process="@this" update="panelStats tableContainer searchUsuario" />
+					</div>
+				</h:panelGroup>
+			</p:outputPanel>
+		</h:form>
+
+		<!-- ============================================================
+		     DIÁLOGO: CREAR / EDITAR USUARIO
+		     ============================================================ -->
+		<p:dialog id="dlgUsuario"
+			widgetVar="dlgUsuario"
+			header="#{backingAccesoUsuario.beanAccesoUsuario.esNuevo ? 'Nuevo Usuario' : 'Editar Usuario'}"
+			modal="true" width="50%" height="85vh" responsive="true" fitViewport="true" resizable="false"
+			styleClass="ui-dialog shadow-lg" appendTo="@(body)">
+
+			<h:form id="formDialogoUsuario">
+				<div class="ui-fluid">
+
+					<div style="display: flex; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color);">
+						<div style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-right: 1rem; box-shadow: var(--shadow-sm);">
+							<i class="pi pi-user-plus"></i>
+						</div>
+						<div>
+							<h3 style="margin: 0; font-weight: 700; color: var(--text-main); font-size: 1rem;">
+								#{backingAccesoUsuario.beanAccesoUsuario.esNuevo ? 'Registrar nuevo usuario' : 'Actualizar datos del usuario'}
+							</h3>
+							<span style="color: var(--text-muted); font-size: 0.82rem;">Complete los campos obligatorios (*)</span>
+						</div>
+					</div>
+
+					<!-- Fila: Cédula/DNI -->
+					<div class="p-field" style="margin-bottom: 1.1rem;">
+						<label style="display: block; font-weight: 600; color: var(--text-main); font-size: 0.85rem; margin-bottom: 0.4rem;">
+							<i class="pi pi-id-card" style="margin-right: 5px; color: var(--primary-color);"></i> Cédula / DNI *
+						</label>
+						<p:inputText id="userCedula"
+							value="#{beanAccesoUsuario.usuario.persona.persDocumentoIdentidad}"
+							placeholder="Ej. 1712345678"
+							required="true"
+							requiredMessage="El documento de identidad es obligatorio." />
+					</div>
+
+					<!-- Fila: Nombres -->
+					<div class="p-field" style="margin-bottom: 1.1rem;">
+						<label style="display: block; font-weight: 600; color: var(--text-main); font-size: 0.85rem; margin-bottom: 0.4rem;">
+							<i class="pi pi-user" style="margin-right: 5px; color: var(--primary-color);"></i> Nombres *
+						</label>
+						<p:inputText id="userNombres"
+							value="#{beanAccesoUsuario.usuario.persona.persNombres}"
+							placeholder="Ej. Juan..."
+							required="true"
+							requiredMessage="Los nombres son obligatorios." />
+					</div>
+
+					<!-- Fila: Apellidos -->
+					<div class="p-field" style="margin-bottom: 1.1rem;">
+						<label style="display: block; font-weight: 600; color: var(--text-main); font-size: 0.85rem; margin-bottom: 0.4rem;">
+							<i class="pi pi-user" style="margin-right: 5px; color: var(--primary-color);"></i> Apellidos *
+						</label>
+						<p:inputText id="userApellidos"
+							value="#{beanAccesoUsuario.usuario.persona.persApellidos}"
+							placeholder="Ej. Pérez..."
+							required="true"
+							requiredMessage="Los apellidos son obligatorios." />
+					</div>
+
+					<!-- Fila: Correo / Username -->
+					<div class="p-field" style="margin-bottom: 1.1rem;">
+						<label style="display: block; font-weight: 600; color: var(--text-main); font-size: 0.85rem; margin-bottom: 0.4rem;">
+							<i class="pi pi-envelope" style="margin-right: 5px; color: var(--primary-color);"></i> Correo Electrónico (Login) *
+						</label>
+						<p:inputText id="userCorreo"
+							value="#{beanAccesoUsuario.usuario.persona.persCorreoElectronico}"
+							placeholder="Ej. juan.perez@empresa.com"
+							required="true"
+							requiredMessage="El correo electrónico es obligatorio." />
+					</div>
+
+					<!-- Fila: Contraseña (Requerida solo si es nuevo) -->
+					<div class="p-field" style="margin-bottom: 1.1rem;">
+						<label style="display: block; font-weight: 600; color: var(--text-main); font-size: 0.85rem; margin-bottom: 0.4rem;">
+							<i class="pi pi-lock" style="margin-right: 5px; color: var(--primary-color);"></i> Contraseña #{backingAccesoUsuario.beanAccesoUsuario.esNuevo ? '*' : ''}
+						</label>
+						<p:password id="userPassword"
+							value="#{beanAccesoUsuario.usuario.usuaClave}"
+							placeholder="Dejar en blanco para no modificar"
+							required="#{backingAccesoUsuario.beanAccesoUsuario.esNuevo}"
+							requiredMessage="La contraseña es obligatoria."
+							redisplay="false" />
+					</div>
+
+					<!-- Fila: Estado -->
+					<div class="p-field" style="margin-bottom: 1rem;">
+						<label style="display: block; font-weight: 600; color: var(--text-main); font-size: 0.85rem; margin-bottom: 0.4rem;">
+							<i class="pi pi-power-off" style="margin-right: 5px; color: var(--primary-color);"></i> Estado
+						</label>
+						<div style="display: flex; align-items: center; gap: 0.75rem;">
+							<p:toggleSwitch id="userEstado" value="#{beanAccesoUsuario.usuario.usuaEstado}" />
+							<span style="font-size: 0.88rem; color: var(--text-muted);">
+								#{beanAccesoUsuario.usuario.usuaEstado ? 'Usuario Activo' : 'Usuario Inactivo'}
+							</span>
+						</div>
+					</div>
+
+					<hr style="border: none; border-top: 1px solid var(--border-color); margin: 1.25rem 0;" />
+
+					<div style="display: flex; justify-content: flex-end; gap: 0.6rem;">
+						<p:commandButton value="Guardar"
+							icon="pi pi-check"
+							styleClass="ui-button-success"
+							process="@form"
+							update="@form :formUsuarios:tableContainer :formUsuarios:panelStats :formUsuarios:growl"
+							actionListener="#{backingAccesoUsuario.guardarUsuario()}" 
+							oncomplete="if (!args.validationFailed) PF('dlgUsuario').hide();"/>
+
+						<p:commandButton value="Cancelar"
+							type="button"
+							icon="pi pi-times"
+							onclick="PF('dlgUsuario').hide();"
+							styleClass="ui-button-outlined ui-button-secondary" />
+					</div>
+
+				</div>
+			</h:form>
+		</p:dialog>
+
+		<!-- ============================================================
+		     DIÁLOGO: GESTIONAR ROLES DEL USUARIO
+		     ============================================================ -->
+		<h:form id="formDialogoRoles" prependId="false">
+			<p:outputPanel id="panelDialogoRoles">
+				<p:dialog id="dlgRolesAsignacion"
+					widgetVar="dlgRolesAsignacion"
+					header="Asignación de Roles"
+					modal="true" responsive="true" width="680" resizable="false"
+					styleClass="ui-dialog shadow-lg" appendTo="@(body)">
+
+					<div class="ui-fluid">
+
+						<!-- Encabezado del diálogo roles -->
+						<div style="display: flex; align-items: center;
+							margin-bottom: 1.25rem; padding-bottom: 1rem;
+							border-bottom: 1px solid var(--border-color);">
+							<div style="width: 48px; height: 48px; border-radius: 12px;
+								background: linear-gradient(135deg, #7c3aed, #5b21b6);
+								color: white; display: flex; align-items: center;
+								justify-content: center; font-size: 1.4rem;
+								margin-right: 1rem; box-shadow: var(--shadow-sm);">
+								<i class="pi pi-user-edit"></i>
+							</div>
+							<div>
+								<h3 style="margin: 0; font-weight: 700; color: var(--text-main); font-size: 1rem;">
+									Gestionar roles:
+									<span style="color: #7c3aed;">
+										#{beanAccesoUsuario.usuarioSeleccionado != null
+											? beanAccesoUsuario.usuarioSeleccionado.persona.persNombres : ''}
+										#{beanAccesoUsuario.usuarioSeleccionado != null
+											? beanAccesoUsuario.usuarioSeleccionado.persona.persApellidos : ''}
+									</span>
+								</h3>
+								<span style="color: var(--text-muted); font-size: 0.82rem;">
+									Asigna o remueve los roles para este usuario.
+								</span>
+							</div>
+						</div>
+
+						<!-- Contador de selección -->
+						<div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+							<p:chip
+								label="#{beanAccesoUsuario.rolesDelUsuario != null
+									? beanAccesoUsuario.rolesDelUsuario.size() : 0} asignados"
+								icon="pi pi-check-square"
+								style="background: #d1fae5; color: #065f46; font-weight: 700;
+									font-size: 0.8rem; border: 1px solid #a7f3d0;" />
+							<p:chip
+								label="#{beanAccesoUsuario.listaRoles != null
+									? beanAccesoUsuario.listaRoles.size() : 0} disponibles"
+								icon="pi pi-list"
+								style="background: #f1f5f9; color: var(--text-muted); font-weight: 700;
+									font-size: 0.8rem; border: 1px solid var(--border-color);" />
+						</div>
+
+						<!-- Grid de roles (scrollable) -->
+						<div style="max-height: 380px; overflow-y: auto; padding-right: 4px;">
+							<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+								gap: 0.6rem;">
+
+								<ui:repeat value="#{beanAccesoUsuario.listaRoles}" var="rol">
+									<div style="display: flex; align-items: center; gap: 0.75rem;
+										padding: 0.6rem 0.9rem;
+										border-radius: 10px;
+										border: 2px solid #{backingAccesoUsuario.rolAsignado(rol.rolId)
+											? '#a78bfa' : 'var(--border-color)'};
+										background: #{backingAccesoUsuario.rolAsignado(rol.rolId)
+											? '#f5f3ff' : '#fafafa'};
+										cursor: pointer;
+										transition: border-color 0.2s, background 0.2s;">
+
+										<!-- Checkbox visual -->
+										<p:commandLink
+											process="@this"
+											update="panelDialogoRoles tableContainer growl"
+											partialSubmit="true"
+											actionListener="#{backingAccesoUsuario.toggleRol(rol)}"
+											style="display: flex; align-items: center; gap: 0.65rem;
+												text-decoration: none; flex: 1;">
+
+											<i class="#{backingAccesoUsuario.rolAsignado(rol.rolId)
+												? 'pi pi-check-square' : 'pi pi-stop'}"
+												style="font-size: 1.3rem;
+												color: #{backingAccesoUsuario.rolAsignado(rol.rolId)
+													? '#7c3aed' : '#cbd5e1'};
+												flex-shrink: 0; transition: color 0.2s;"></i>
+
+											<div style="min-width: 0;">
+												<div style="font-weight: 600; font-size: 0.88rem;
+													color: var(--text-main); white-space: nowrap;
+													overflow: hidden; text-overflow: ellipsis;">
+													<i class="pi pi-user"
+														style="margin-right: 5px;
+														color: #{backingAccesoUsuario.rolAsignado(rol.rolId)
+															? '#7c3aed' : 'var(--text-muted)'};
+														font-size: 0.85rem;"></i>
+													<h:outputText value="#{rol.rolNombre}" />
+												</div>
+												<div style="font-size: 0.75rem; color: var(--text-muted);
+													white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+													<h:outputText value="#{rol.rolDescripcion}" />
+												</div>
+											</div>
+
+										</p:commandLink>
+									</div>
+								</ui:repeat>
+
+							</div>
+
+							<!-- Estado vacío roles -->
+							<h:panelGroup
+								rendered="#{empty beanAccesoUsuario.listaRoles}"
+								layout="block"
+								style="text-align: center; padding: 2rem; color: var(--text-muted);">
+								<i class="pi pi-info-circle" style="font-size: 2rem; display: block; margin-bottom: 0.5rem;"></i>
+								No hay roles activos configurados en el sistema.
+							</h:panelGroup>
+
+						</div>
+
+						<!-- Separador -->
+						<hr style="border: none; border-top: 1px solid var(--border-color); margin: 1.25rem 0 1rem;" />
+
+						<!-- Botones del diálogo roles -->
+						<div style="display: flex; justify-content: flex-end; gap: 0.6rem;">
+							<p:commandButton value="Cerrar"
+								type="button"
+								icon="pi pi-times"
+								onclick="PF('dlgRolesAsignacion').hide();"
+								styleClass="ui-button-outlined ui-button-secondary"
+								style="padding: 0.4rem 1.25rem !important;" />
+						</div>
+
+					</div>
+				</p:dialog>
+			</p:outputPanel>
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>
+
+</html>
