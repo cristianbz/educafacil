@@ -199,4 +199,19 @@ public class UsuarioDaoImpl extends GenericoDaoImpl<Usuario, Long>{
 			throw new SystemException("Error al consultar lista de usuario por rol", "USUA-LIST-ERR", e);
 		}
 	}
+
+	/**
+	 * Lista todos los usuarios con su persona asociada, ordenados por apellidos y nombres.
+	 */
+	public List<Usuario> listarTodosUsuarios() {
+		try {
+			return getEntityManager()
+					.createQuery("SELECT u FROM Usuario u JOIN FETCH u.persona ORDER BY u.persona.persApellidos, u.persona.persNombres", Usuario.class)
+					.getResultList();
+		} catch (NoResultException e) {
+			return new ArrayList<>();
+		} catch (Exception e) {
+			throw new SystemException("Error al listar todos los usuarios", "USUA-LIST-ALL-ERR", e);
+		}
+	}
 }

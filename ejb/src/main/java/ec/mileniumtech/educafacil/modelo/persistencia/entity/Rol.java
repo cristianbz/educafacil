@@ -52,5 +52,8 @@ public class Rol implements Serializable {
 	
 	@OneToMany(mappedBy="rol", fetch=FetchType.LAZY,cascade={CascadeType.PERSIST,CascadeType.MERGE})
 	private List<UsuarioRol> usuarioRol;
+	
+	@OneToMany (mappedBy="rol", fetch=FetchType.LAZY)
+	private List<RolPerfil> rolPerfil;
 
 }
