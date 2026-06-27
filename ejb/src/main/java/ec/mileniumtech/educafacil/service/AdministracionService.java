@@ -3,6 +3,7 @@
  */
 package ec.mileniumtech.educafacil.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,6 +42,7 @@ import ec.mileniumtech.educafacil.modelo.persistencia.entity.Pagos;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Perfil;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.PerfilAccion;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Persona;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.PlanificacionCurso;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.PuntoEmision;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Rol;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.RolPerfil;
@@ -54,6 +56,7 @@ import ec.mileniumtech.educafacil.modelo.persistencia.dto.PersonaDto;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.MatriculaDto;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.DtoMapper;
 import ec.mileniumtech.educafacil.dao.impl.PersonaDaoImpl;
+import ec.mileniumtech.educafacil.dao.impl.PlanificacionCursoDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.PuntoEmisionDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.RolDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.RolPerfilDaoImpl;
@@ -97,6 +100,9 @@ public class AdministracionService {
 
     @EJB
     private CursoDaoImpl cursoDao;
+    
+    @EJB
+    private PlanificacionCursoDaoImpl planificacionCursoDao;
 
     @EJB
     private EspecialidadDaoImpl especialidadDao;
@@ -709,5 +715,49 @@ public class AdministracionService {
                 usuarioRolDao.actualizar(existente);
             }
         }
+    }
+
+    // =========================================================
+    // Métodos de Planificación de Cursos (Calendario)
+    // =========================================================
+
+    /**
+     * Lista todas las planificaciones de cursos ordenadas por fecha e hora de inicio.
+     */
+    public List<PlanificacionCurso> listarPlanificacionesCursos() {
+        return planificacionCursoDao.listarTodas();
+    }
+
+    /**
+     * Lista las planificaciones de cursos en un rango de fechas dado (vista semanal).
+     *
+     * @param fechaInicio inicio del rango
+     * @param fechaFin    fin del rango
+     */
+    public List<PlanificacionCurso> listarPlanificacionesPorSemana(LocalDate fechaInicio, LocalDate fechaFin) {
+        return planificacionCursoDao.listarPorRangoFechas(fechaInicio, fechaFin);
+    }
+
+    /**
+     * Guarda o actualiza una planificación de curso.
+     * Si el ID es null o 0, se crea; de lo contrario, se actualiza.
+     *
+     * @param planificacion entidad a persistir o actualizar
+     */
+    public void guardarPlanificacionCurso(PlanificacionCurso planificacion) {
+        if (planificacion.getPlcuId() == null || planificacion.getPlcuId() == 0) {
+            planificacionCursoDao.agregarPlanificacion(planificacion);
+        } else {
+            planificacionCursoDao.actualizarPlanificacion(planificacion);
+        }
+    }
+
+    /**
+     * Elimina una planificación de curso por su ID.
+     *
+     * @param plcuId identificador de la planificación a eliminar
+     */
+    public void eliminarPlanificacionCurso(Integer plcuId) {
+        planificacionCursoDao.eliminarPlanificacion(plcuId);
     }
 }

@@ -266,7 +266,15 @@ public class BackingAplicarEncuesta implements Serializable{
 			e.printStackTrace();
 		}
 	}
-	
+	/**
+	 * Retorna el porcentaje de progreso de la encuesta (0-100) para la barra visual.
+	 */
+	public int getPorcentajeProgreso() {
+		if (tamanio == 0) return 0;
+		int completadas = getBeanAplicarEncuesta().getPosicionPregunta();
+		return (int) Math.round((completadas * 100.0) / tamanio);
+	}
+
 //	Clase para armar el arbol	
 	public class NodoEvaluacion{
 		@Getter
