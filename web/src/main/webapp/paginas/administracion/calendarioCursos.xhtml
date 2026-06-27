@@ -11,8 +11,12 @@
         <f:event listener="#{backingLogin.validarSesion()}" type="preRenderView" />
 
         <!-- Tooltip en eventos del schedule v\u00eda FullCalendar API (post-init) -->
+        <h:outputScript name="locales/locale-es.js" library="primefaces" />
         <script type="text/javascript">
 // <![CDATA[
+            function extenderSchedule() {
+                this.cfg.options.firstDay = 1;
+            }
             (function() {
                 function setupTooltip(calendar) {
                     if (calendar._educaTooltipDone) return;
@@ -102,31 +106,7 @@
 								</h:outputText>
                             </span>
 
-                            <!-- Botón anterior -->
-                            <p:commandButton icon="pi pi-chevron-left"
-                                             title="Semana anterior"
-                                             styleClass="cal-nav-btn"
-                                             partialSubmit="true"
-                                             process="@this"
-                                             actionListener="#{backingCalendarioCursos.semanaAnterior()}"
-                                             update=":scheduleCursos :growl" />
-
-                            <!-- Botón Hoy -->
-                            <p:commandButton value="Hoy"
-                                             styleClass="cal-btn-hoy"
-                                             partialSubmit="true"
-                                             process="@this"
-                                             actionListener="#{backingCalendarioCursos.irHoy()}"
-                                             update=":scheduleCursos :growl" />
-
-                            <!-- Botón siguiente -->
-                            <p:commandButton icon="pi pi-chevron-right"
-                                             title="Semana siguiente"
-                                             styleClass="cal-nav-btn"
-                                             partialSubmit="true"
-                                             process="@this"
-                                             actionListener="#{backingCalendarioCursos.semanaSiguiente()}"
-                                             update=":scheduleCursos :growl" />
+                           
                         </div>
                     </div>
 
@@ -135,9 +115,14 @@
                                         value="#{backingCalendarioCursos.beanCalendarioCursos.eventModel}"
                                         widgetVar="myschedule"
                                         view="timeGridWeek"
-                                        showHeader="false"
+                                        showHeader="true"
+                                        leftHeaderTemplate="prev,next today"
+            							centerHeaderTemplate="title"
+            							rightHeaderTemplate="dayGridMonth,timeGridWeek,timeGridDay,listWeek"
                                         allDaySlot="false"
-                                        initialDate="#{backingCalendarioCursos.beanCalendarioCursos.inicioSemana}"
+                                        locale="es"
+                                        extender="extenderSchedule"
+                                        
                                         minTime="07:00:00"
                                         maxTime="21:00:00">
                             <p:ajax event="dateSelect" listener="#{backingCalendarioCursos.onDateSelect}" update="panelDlgPlanificacion" oncomplete="PF('wDlgPlanificacion').show();" />
