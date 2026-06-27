@@ -49,4 +49,7 @@ public class Curso implements Serializable {
 	
 	@OneToMany(mappedBy="curso", fetch=FetchType.LAZY)
 	private List<Campania> campania;
+	
+	@OneToMany(mappedBy="curso", fetch=FetchType.LAZY)
+	private List<PlanificacionCurso> planificacionCurso;
 }

@@ -1,7 +1,19 @@
-/.metadata/
-# Ignorar directorios de compilación de Maven
+# Eclipse
+.metadata/
+.project
+.classpath
+.settings/
+.factorypath
+
+# Maven
 target/
 **/target/
 *.ear
 *.war
 *.jar
+*.class
+log/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db

@@ -8,105 +8,229 @@
 <ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
 
 	<ui:define name="contenido">
-		<style type="text/css">
-.contenedor {
-	width: 100%;
-	display: flex;
-	flex-direction: row;
-}
-
-.columna-izquierda {
-	width: 30%;
-}
-.columna-derecha{
-	width: 70%;
-}
-</style>
 
 		<f:event listener="#{backingLogin.validarSesion()}"
 			type="preRenderView" />
 
+
 		<h:form id="form" prependId="false">
-			<p:growl id="growl" life="3000" showDetail="true" />
+			<p:growl id="growl" life="3500" showDetail="true" />
 
+			<!-- ── BREADCRUMB ──────────────────────────────────── -->
+			<p:breadCrumb styleClass="ui-breadcrumb p-mb-3"
+				style="border: none; background: transparent; padding-left: 0; margin-bottom: 1.25rem;">
+				<p:menuitem value="Inicio" outcome="/paginas/index?faces-redirect=true" icon="pi pi-home" />
+				<p:menuitem value="Evaluaciones" url="#" />
+				<p:menuitem value="Aplicar Encuesta" url="#" />
+			</p:breadCrumb>
 
-			<div class="ui-fluid p-formgrid p-grid">
-						<div class="p-field p-col-12 p-md-4">
-					<p:outputLabel value="#{titulos['encuestasDisponibles']}" rendered="#{backingAplicarEncuesta.encuDisponibles}"/>
-					<p:tree id="cursos" value="#{backingAplicarEncuesta.beanAplicarEncuesta.raiz}" var="cursos" selectionMode="single"
-			                selection="#{backingAplicarEncuesta.beanAplicarEncuesta.nodoSeleccionado}" dynamic="true">
-			            <p:treeNode expandedIcon="pi pi-folder-open" collapsedIcon="pi pi-folder">
-			                <h:outputText value="#{cursos.nombre}"/>
-			            </p:treeNode>
-					</p:tree>
-					<p:contextMenu for="cursos">
-			            <p:menuitem value="#{etiquetas['visualizar']}" update="pnlEncuesta growl " partialSubmit="true" process="@this  cursos " 
-			            			action="#{backingAplicarEncuesta.cargarEncuesta()}"
-			                        icon="pi pi-search"/>
-			        </p:contextMenu>
+			<!-- ── PAGE HEADER ─────────────────────────────────── -->
+			<div class="page-header" style="margin-bottom: 1.75rem;">
+				<div class="page-title">
+					<div class="estado-seleccionar">
+									<div class="icon-wrapper">
+										<i class="pi pi-list" />
+									</div>
+									<h3>Selecciona una encuesta</h3>
+									<p>Haz clic derecho sobre una encuesta del árbol de la izquierda y elige <strong>Visualizar encuesta</strong> para comenzar.</p>
+								</div>
 				</div>
-				<div class="p-field p-col-12 p-md-5" style="text-align">
-				<p:chip label="#{titulos['encuestasMatriculasN']}" 
-								rendered="#{!backingAplicarEncuesta.encuDisponibles}" 
-								styleClass="fondoRojo"
-								style="text-align: center; color: white;"/>		
-				</div>
-				<div class="p-field p-col-12 p-md-8">	
-					<p:outputPanel id="pnlEncuesta" >
-						<div class="ui-fluid p-formgrid p-grid">
-							<div class="p-field p-col-12 p-md-3">
-							</div>					
-							<div class="p-field p-col-12 p-md-9">
-								<p:outputLabel value="#{backingAplicarEncuesta.beanAplicarEncuesta.nombreCursoSeleccionado}" rendered="#{backingAplicarEncuesta.mostrarEncuestas}"/>
-							</div>	
-							<div class="p-field p-col-12 p-md-3">
-							</div>					
-							<div class="p-field p-col-12 p-md-9">
-								<p:outputLabel value="#{backingAplicarEncuesta.beanAplicarEncuesta.nombreEncuestaSeleccionada}" rendered="#{backingAplicarEncuesta.mostrarEncuestas}"/>
-							</div>
-							<p:divider />
-							<div class="p-field p-col-12 p-md-3">
-							</div>					
-							<div class="p-field p-col-12 p-md-9">	
-									<p:chip label="#{backingAplicarEncuesta.posicion}" icon="pi pi-question-circle" styleClass="mr-2" rendered="#{backingAplicarEncuesta.mostrarEncuestas}"/>								
-									<p:outputLabel value="#{backingAplicarEncuesta.beanAplicarEncuesta.nombrePregunta}" rendered="#{backingAplicarEncuesta.mostrarEncuestas}"/>
-							</div>
-							<div class="p-field p-col-12 p-md-3">
-							</div>					
-							<div class="p-field p-col-12 p-md-9">									
-								<p:selectOneRadio id="res" value="#{backingAplicarEncuesta.beanAplicarEncuesta.codigoRespuesta}" 									
-									required="true" requiredMessage="#{mensajes['campoRequerido']}"  layout="grid" 
-									columns="2" rendered="#{backingAplicarEncuesta.mostrarEncuestas}">
-						            <f:selectItems value="#{backingAplicarEncuesta.beanAplicarEncuesta.listaRespuestas}" 						            	
-						            	var="res" itemLabel="#{res.respDescripcion}" itemValue="#{res.respId}"/>
-						            
-						        </p:selectOneRadio>
-						        <p:message for="res"/>						       
-						    </div>
-						    <div class="p-field p-col-12 p-md-3">
-							</div>
-							<div class="p-field p-col-12 p-md-3">
-							<p:commandButton value="#{botones['reiniciar']}" icon="#{botones['icono.reiniciarEncu']}" process="@this pnlEncuesta" 
-								actionListener="#{backingAplicarEncuesta.cargarEncuesta()}" update="pnlEncuesta growl" partialSubmit="true"
-								title="#{tooltip['reiniciarEncuesta']}"
-								rendered="#{backingAplicarEncuesta.mostrarEncuestas}"/>
-							</div>
-							<div class="p-field p-col-12 p-md-3">
-								<p:commandButton value="#{botones['siguiente']}" icon="#{botones['icono.siguiente']}" process="@this pnlEncuesta" 
-									actionListener="#{backingAplicarEncuesta.siguientePregunta()}" update="pnlEncuesta growl" partialSubmit="true"
-									title="#{tooltip['siguiente']}"
-									disabled="#{not backingAplicarEncuesta.abrirBoton}" 
-									rendered="#{backingAplicarEncuesta.mostrarEncuestas}"/>
-							</div>
-							<div class="p-field p-col-12 p-md-3">
-								<p:commandButton value="#{botones['finalizar']}" icon="#{botones['icono.grabar']}" update="growl pnlEncuesta" process="@this pnlEncuesta" styleClass="ui-button-success" rendered="#{backingAplicarEncuesta.mostrarEncuestas}"
-								title="#{tooltip['grabar']}" id="btnGrabar"
-								disabled="#{backingAplicarEncuesta.abrirBoton}" action="#{backingAplicarEncuesta.guardarEncuesta()}" partialSubmit="true"/>
-							</div>    
-						</div>		
-					</p:outputPanel>
-				</div>				
 			</div>
+
+			<!-- ── ESTADO: SIN ENCUESTAS DISPONIBLES ───────────── -->
+			<h:panelGroup rendered="#{!backingAplicarEncuesta.encuDisponibles}" layout="block">
+				<div class="estado-sin-encuestas">
+					<div class="icon-wrapper">
+						<i class="pi pi-ban" />
+					</div>
+					<h3>Sin encuestas disponibles</h3>
+					<p>No tienes encuestas asignadas en este momento. Comunícate con tu instructor o administrador para que te asigne una encuesta pendiente.</p>
+				</div>
+			</h:panelGroup>
+
+			<!-- ── LAYOUT PRINCIPAL (árbol + encuesta) ─────────── -->
+			<h:panelGroup rendered="#{backingAplicarEncuesta.encuDisponibles}" layout="block">
+				<div class="encuesta-layout">
+
+					<!-- COLUMNA IZQUIERDA: árbol de encuestas -->
+					<div class="panel-arbol">
+						<div class="panel-arbol-header">
+							<i class="pi pi-sitemap" />
+							<span>Encuestas Disponibles</span>
+						</div>
+						<div class="panel-arbol-body encuesta-tree">
+							<p:tree id="cursos"
+								value="#{backingAplicarEncuesta.beanAplicarEncuesta.raiz}"
+								var="cursos"
+								selectionMode="single"
+								selection="#{backingAplicarEncuesta.beanAplicarEncuesta.nodoSeleccionado}"
+								dynamic="true"
+								style="width: 100%;">
+								<p:treeNode expandedIcon="pi pi-folder-open" collapsedIcon="pi pi-folder">
+									<h:outputText value="#{cursos.nombre}" />
+								</p:treeNode>
+							</p:tree>
+
+							<p:contextMenu for="cursos">
+								<p:menuitem value="Visualizar encuesta"
+									update="pnlEncuesta growl"
+									partialSubmit="true"
+									process="@this cursos"
+									action="#{backingAplicarEncuesta.cargarEncuesta()}"
+									icon="pi pi-eye" />
+							</p:contextMenu>
+						</div>
+
+						<!-- Pista de uso -->
+						<div style="padding: 0.65rem 1rem; border-top: 1px solid var(--border-color); background: #f8fafc;">
+							<span class="hint-text">
+								<i class="pi pi-info-circle" style="color: #2563eb;" />
+								Clic derecho sobre una encuesta para abrirla
+							</span>
+						</div>
+					</div>
+
+					<!-- COLUMNA DERECHA: contenido de la encuesta -->
+					<div class="panel-encuesta">
+						<p:outputPanel id="pnlEncuesta">
+
+							<!-- Contenido activo de la encuesta -->
+							<h:panelGroup rendered="#{backingAplicarEncuesta.mostrarEncuestas}" layout="block">
+
+								<!-- Meta-badges: curso y nombre de encuesta -->
+								<div class="pregunta-meta" style="margin-bottom: 1rem;">
+									<span class="badge-curso">
+										<i class="pi pi-book" />
+										<h:outputText value="#{backingAplicarEncuesta.beanAplicarEncuesta.nombreCursoSeleccionado}" />
+									</span>
+									<span class="badge-encuesta">
+										<i class="pi pi-clipboard" />
+										<h:outputText value="#{backingAplicarEncuesta.beanAplicarEncuesta.nombreEncuestaSeleccionada}" />
+									</span>
+								</div>
+
+								<!-- Barra de progreso -->
+								<div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: 14px; padding: 1rem 1.25rem; margin-bottom: 1rem; box-shadow: var(--shadow-sm);">
+									<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+										<span style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">
+											<i class="pi pi-chart-line" style="color: #2563eb; margin-right: 4px;" />
+											Progreso de la encuesta
+										</span>
+										<span style="font-size: 0.78rem; font-weight: 700; color: var(--primary-color);">
+											<h:outputText value="#{backingAplicarEncuesta.posicion}" />
+										</span>
+									</div>
+									<div class="encuesta-progress-bar-bg">
+										<div class="encuesta-progress-bar-fill"
+											style="width: #{backingAplicarEncuesta.porcentajeProgreso}%;" />
+									</div>
+								</div>
+
+								<!-- Tarjeta de pregunta -->
+								<div class="pregunta-card">
+
+									<!-- Header de la pregunta -->
+									<div class="pregunta-card-header">
+										<div style="display: flex; align-items: flex-start; gap: 0.85rem;">
+											<div class="pregunta-numero">
+												<i class="pi pi-question" />
+											</div>
+											<div style="flex: 1;">
+												<div style="font-size: 0.72rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.35rem;">
+													Pregunta actual
+												</div>
+												<div class="pregunta-titulo">
+													<h:outputText value="#{backingAplicarEncuesta.beanAplicarEncuesta.nombrePregunta}" />
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<!-- Cuerpo: opciones de respuesta -->
+									<div class="pregunta-card-body encuesta-opciones">
+										<div class="opciones-label">
+											<i class="pi pi-check-circle" style="color: #2563eb;" />
+											Selecciona una opción
+										</div>
+
+										<p:selectOneRadio id="res"
+											value="#{backingAplicarEncuesta.beanAplicarEncuesta.codigoRespuesta}"
+											required="true"
+											requiredMessage="#{mensajes['campoRequerido']}"
+											layout="grid"
+											columns="1"
+											style="width: 100%;">
+											<f:selectItems
+												value="#{backingAplicarEncuesta.beanAplicarEncuesta.listaRespuestas}"
+												var="res"
+												itemLabel="#{res.respDescripcion}"
+												itemValue="#{res.respId}" />
+										</p:selectOneRadio>
+										<p:message for="res" style="margin-top: 0.5rem;" />
+									</div>
+
+									<!-- Footer: botones de acción -->
+									<div class="pregunta-card-footer">
+										<div class="hint-text">
+											<i class="pi pi-info-circle" />
+											Responde y avanza a la siguiente pregunta
+										</div>
+
+										<div class="acciones-group">
+											<!-- Reiniciar encuesta -->
+											<p:commandButton
+												value="#{botones['reiniciar']}"
+												icon="#{botones['icono.reiniciarEncu']}"
+												process="@this pnlEncuesta"
+												actionListener="#{backingAplicarEncuesta.cargarEncuesta()}"
+												update="pnlEncuesta growl"
+												partialSubmit="true"
+												title="#{tooltip['reiniciarEncuesta']}"
+												styleClass="ui-button-outlined ui-button-secondary"
+												style="height: 40px;" />
+
+											<!-- Siguiente pregunta -->
+											<p:commandButton
+												value="#{botones['siguiente']}"
+												icon="#{botones['icono.siguiente']}"
+												process="@this pnlEncuesta"
+												actionListener="#{backingAplicarEncuesta.siguientePregunta()}"
+												update="pnlEncuesta growl"
+												partialSubmit="true"
+												title="#{tooltip['siguiente']}"
+												disabled="#{not backingAplicarEncuesta.abrirBoton}"
+												style="height: 40px;" />
+
+											<!-- Finalizar / guardar -->
+											<p:commandButton
+												id="btnGrabar"
+												value="#{botones['finalizar']}"
+												icon="#{botones['icono.grabar']}"
+												update="growl pnlEncuesta"
+												process="@this pnlEncuesta"
+												styleClass="ui-button-success"
+												title="#{tooltip['grabar']}"
+												disabled="#{backingAplicarEncuesta.abrirBoton}"
+												action="#{backingAplicarEncuesta.guardarEncuesta()}"
+												partialSubmit="true"
+												style="height: 40px;" />
+										</div>
+									</div>
+
+								</div>
+								<!-- /pregunta-card -->
+
+							</h:panelGroup>
+							<!-- /mostrarEncuestas -->
+
+						</p:outputPanel>
+					</div>
+					<!-- /panel-encuesta -->
+
+				</div>
+				<!-- /encuesta-layout -->
+			</h:panelGroup>
+
 		</h:form>
 	</ui:define>
 </ui:composition>

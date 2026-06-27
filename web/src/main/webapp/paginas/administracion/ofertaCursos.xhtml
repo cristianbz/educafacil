@@ -309,17 +309,13 @@
 								<p:outputLabel value="#{etiquetas['objetoEvaluacion']} *" for="cmbOe"
 									style="display: block; font-weight: 600; color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.5rem;" />
 								<div class="p-grid p-align-center" style="margin: 0;">
-									<div class="p-col-10" style="padding: 0;">
+									<div class="p-col-12" style="padding: 0;">
 										<p:selectOneMenu value="#{backingAdminCursos.beanAdminCursos.objetoEvaluacion}" id="cmbOe" converter="selectOneMenuConverter" required="true" requiredMessage="#{mensajes['campoRequerido']}">
 											<f:selectItems value="#{backingAdminCursos.beanAdminCursos.listaObjetoEvaluacion}" var="oe" itemLabel="#{oe.objeNombre}" itemValue="#{oe}" />
 											<p:ajax event="change" process="@this" listener="#{backingAdminCursos.cargaTiposEncuestas()}" update="tblencuestasTE growl tblevaluacionesAsig" partialSubmit="true"/>								
 										</p:selectOneMenu>
 									</div>
-									<div class="p-col-2" style="padding: 0 0 0 8px; text-align: right;">
-										<p:commandButton icon="#{botones['icono.select']}" title="#{tooltip['asignar']}" partialSubmit="true"
-											process="@this tblencuestasTE cmbOe" action="#{backingAdminCursos.asignarEvaluacionesCurso}"
-											update="growl datosEncuestasCurso tblevaluacionesAsig cmbOe" styleClass="ui-button-success" style="width: 100%; height: 38px; display: flex; align-items: center; justify-content: center;" />
-									</div>
+									
 								</div>
 								<p:message for="cmbOe" style="margin-top: 0.25rem;" />
 							</div>
@@ -335,6 +331,11 @@
 										#{oeSelect.tipeDescripcion}
 									</p:column>	
 								</p:dataTable>
+							</div>
+							<div class="p-col-12" style="padding: 0 0 0 8px; text-align: right;">
+										<p:commandButton icon="#{botones['icono.select']}" title="#{tooltip['asignar']}" partialSubmit="true" value="Asignar Encuesta"
+											process="@this tblencuestasTE cmbOe" action="#{backingAdminCursos.asignarEvaluacionesCurso}"
+											update="growl datosEncuestasCurso tblevaluacionesAsig cmbOe" styleClass="ui-button-success" style="width: 100%; height: 38px; display: flex; align-items: center; justify-content: center;" />
 							</div>
 							
 							<!-- Encuestas Asignadas -->

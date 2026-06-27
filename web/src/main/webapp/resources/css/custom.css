@@ -960,3 +960,804 @@ body.sidebar-mobile-open {
     }
 }
 
+/* =========================================================
+   Aplicar Encuestas – paginas/evaluaciones/aplicarEncuestas
+   ========================================================= */
+
+/* Layout principal en dos columnas */
+.encuesta-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+@media (max-width: 900px) {
+    .encuesta-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Panel lateral – árbol de encuestas */
+.panel-arbol {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    animation: slideInUp 0.4s ease-out;
+}
+.panel-arbol-header {
+    padding: 1.1rem 1.25rem;
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+.panel-arbol-header i {
+    font-size: 1.15rem;
+}
+.panel-arbol-header span {
+    font-size: 0.92rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+}
+.panel-arbol-body {
+    padding: 0.75rem;
+}
+
+/* Panel derecho – contenido de la encuesta */
+.panel-encuesta {
+    animation: slideInUp 0.4s ease-out 0.1s backwards;
+}
+
+/* Estado: sin encuestas asignadas */
+.estado-sin-encuestas {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    box-shadow: var(--shadow-sm);
+    padding: 3.5rem 2rem;
+    text-align: center;
+}
+.estado-sin-encuestas .icon-wrapper {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: #fef2f2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem auto;
+}
+.estado-sin-encuestas .icon-wrapper i {
+    font-size: 2rem;
+    color: #ef4444;
+}
+.estado-sin-encuestas h3 {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text-main);
+    margin: 0 0 0.5rem 0;
+}
+.estado-sin-encuestas p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    max-width: 380px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* Estado: selección pendiente */
+.estado-seleccionar {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    box-shadow: var(--shadow-sm);
+    padding: 3.5rem 2rem;
+    text-align: center;
+}
+.estado-seleccionar .icon-wrapper {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: #eff6ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem auto;
+}
+.estado-seleccionar .icon-wrapper i {
+    font-size: 2rem;
+    color: #2563eb;
+}
+.estado-seleccionar h3 {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text-main);
+    margin: 0 0 0.5rem 0;
+}
+.estado-seleccionar p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    max-width: 380px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* Barra de progreso de la encuesta */
+.encuesta-progress-bar-bg {
+    background: #e2e8f0;
+    border-radius: 9999px;
+    height: 6px;
+    width: 100%;
+    overflow: hidden;
+}
+.encuesta-progress-bar-fill {
+    height: 6px;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, #2563eb, #38bdf8);
+    transition: width 0.5s ease;
+}
+
+/* Card de pregunta activa */
+.pregunta-card {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    animation: fadeIn 0.35s ease-out;
+}
+.pregunta-card-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+.pregunta-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.85rem;
+}
+.badge-curso {
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.65rem;
+    border-radius: 9999px;
+    border: 1px solid #bfdbfe;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+.badge-encuesta {
+    background: #f5f3ff;
+    color: #7c3aed;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.65rem;
+    border-radius: 9999px;
+    border: 1px solid #ddd6fe;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+.pregunta-numero {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    font-weight: 700;
+    font-size: 0.82rem;
+    flex-shrink: 0;
+}
+.pregunta-titulo {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text-main);
+    line-height: 1.4;
+}
+.pregunta-card-body {
+    padding: 1.5rem;
+}
+
+/* Etiqueta de opciones de respuesta */
+.opciones-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+/* Radio buttons PrimeFaces – overrides visuales */
+.encuesta-opciones .ui-selectoneradio table {
+    width: 100%;
+}
+.encuesta-opciones .ui-selectoneradio td {
+    padding: 0.35rem 0.5rem;
+}
+.encuesta-opciones .ui-radiobutton-label {
+    font-size: 0.92rem;
+    color: var(--text-main);
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.encuesta-opciones .ui-radiobutton-label:hover {
+    color: var(--primary-color);
+}
+
+/* Footer de la card de pregunta */
+.pregunta-card-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border-color);
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+.acciones-group {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+/* Árbol PrimeFaces – overrides */
+.encuesta-tree .ui-tree {
+    border: none !important;
+    padding: 0.25rem !important;
+    background: transparent !important;
+}
+.encuesta-tree .ui-treenode-content {
+    border-radius: 8px !important;
+    transition: background 0.2s !important;
+    padding: 0.35rem 0.5rem !important;
+}
+.encuesta-tree .ui-treenode-content:hover {
+    background: #eff6ff !important;
+}
+.encuesta-tree .ui-treenode-content.ui-state-highlight {
+    background: #dbeafe !important;
+    color: #1d4ed8 !important;
+}
+.encuesta-tree .ui-treenode-label {
+    font-size: 0.88rem;
+    font-weight: 500;
+}
+
+/* Texto de pista / ayuda */
+.hint-text {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+/* Animación de entrada */
+@keyframes slideInUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+/* ================================================================
+   MÓDULO: CALENDARIO DE CURSOS
+   ================================================================ */
+
+/* ---- Contenedor principal ---- */
+.cal-wrapper {
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    animation: slideInUp 0.35s ease;
+}
+
+/* ---- Barra de encabezado del calendario ---- */
+.cal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    background: linear-gradient(135deg, #1e293b 0%, #2563eb 100%);
+    color: #ffffff;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.cal-header-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.cal-header-brand i {
+    font-size: 1.4rem;
+    color: #93c5fd;
+}
+
+.cal-header-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.cal-range-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #e2e8f0;
+    min-width: 180px;
+    text-align: center;
+}
+
+/* Botones de navegación del calendario */
+.cal-nav-btn {
+    background: rgba(255,255,255,0.12) !important;
+    border: 1px solid rgba(255,255,255,0.2) !important;
+    color: #ffffff !important;
+    border-radius: 8px !important;
+    padding: 0.4rem 0.7rem !important;
+    transition: background 0.2s !important;
+    cursor: pointer;
+}
+
+.cal-nav-btn:hover {
+    background: rgba(255,255,255,0.25) !important;
+}
+
+.cal-btn-hoy {
+    background: rgba(255,255,255,0.15) !important;
+    border: 1px solid rgba(255,255,255,0.35) !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+    padding: 0.4rem 1rem !important;
+    font-size: 0.85rem !important;
+    transition: background 0.2s !important;
+}
+
+.cal-btn-hoy:hover {
+    background: rgba(255,255,255,0.3) !important;
+}
+
+.cal-btn-nuevo {
+    background: #10b981 !important;
+    border: none !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    border-radius: 10px !important;
+    padding: 0.45rem 1.1rem !important;
+    font-size: 0.85rem !important;
+    box-shadow: 0 2px 8px rgba(16,185,129,0.35) !important;
+    transition: background 0.2s, transform 0.15s !important;
+}
+
+.cal-btn-nuevo:hover {
+    background: #059669 !important;
+    transform: translateY(-1px) !important;
+}
+
+/* ---- Cabecera de días ---- */
+.cal-dias-header {
+    display: grid;
+    grid-template-columns: 60px repeat(7, 1fr);
+    border-bottom: 2px solid var(--border-color);
+    background: #f8fafc;
+}
+
+.cal-dia-col-header {
+    padding: 0.8rem 0.5rem;
+    text-align: center;
+    border-right: 1px solid var(--border-color);
+}
+
+.cal-dia-col-header:last-child {
+    border-right: none;
+}
+
+.cal-dia-nombre {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.cal-dia-numero {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-top: 0.25rem;
+    transition: background 0.2s, color 0.2s;
+}
+
+.cal-dia-hoy .cal-dia-numero {
+    background: var(--primary-color);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(37,99,235,0.35);
+}
+
+.cal-dia-hoy .cal-dia-nombre {
+    color: var(--primary-color);
+}
+
+/* ---- Cuerpo del calendario (scroll vertical) ---- */
+.cal-body {
+    display: grid;
+    grid-template-columns: 60px repeat(7, 1fr);
+    overflow-y: auto;
+    max-height: 600px;
+    position: relative;
+}
+
+/* Columna de horas */
+.cal-hora-col {
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--border-color);
+    background: #f8fafc;
+    position: sticky;
+    left: 0;
+    z-index: 10;
+}
+
+.cal-hora-slot {
+    height: 60px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding: 4px 8px 0 0;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border-color);
+    box-sizing: border-box;
+}
+
+/* Columnas de días */
+.cal-dia-col {
+    position: relative;
+    border-right: 1px solid var(--border-color);
+    min-height: 840px; /* 14 horas × 60px */
+}
+
+.cal-dia-col:last-child {
+    border-right: none;
+}
+
+.cal-dia-col-hoy {
+    background: rgba(37,99,235,0.03);
+}
+
+/* Líneas de horas dentro de cada columna */
+.cal-hora-linea {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 60px;
+    border-bottom: 1px solid #f1f5f9;
+    box-sizing: border-box;
+}
+
+.cal-hora-linea:nth-child(even) {
+    background: rgba(248,250,252,0.5);
+}
+
+/* ---- Eventos (bloques de cursos) ---- */
+.cal-evento {
+    position: absolute;
+    left: 4px;
+    right: 4px;
+    border-radius: 8px;
+    padding: 6px 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    overflow: hidden;
+    transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
+    z-index: 5;
+    box-sizing: border-box;
+    line-height: 1.3;
+}
+
+.cal-evento:hover {
+    transform: scale(1.02) translateY(-1px);
+    box-shadow: var(--shadow-md);
+    filter: brightness(0.96);
+    z-index: 20;
+}
+
+.cal-evento-titulo {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 700;
+    font-size: 0.78rem;
+}
+
+.cal-evento-hora {
+    display: block;
+    font-size: 0.68rem;
+    opacity: 0.75;
+    margin-top: 2px;
+}
+
+.cal-evento-instructor {
+    display: block;
+    font-size: 0.67rem;
+    opacity: 0.7;
+    margin-top: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Variantes de color por día */
+.cal-evento-blue {
+    background: #dbeafe;
+    border-left-color: #2563eb;
+    color: #1e40af;
+}
+
+.cal-evento-purple {
+    background: #ede9fe;
+    border-left-color: #7c3aed;
+    color: #5b21b6;
+}
+
+.cal-evento-yellow {
+    background: #fef9c3;
+    border-left-color: #ca8a04;
+    color: #92400e;
+}
+
+.cal-evento-red {
+    background: #fee2e2;
+    border-left-color: #dc2626;
+    color: #991b1b;
+}
+
+.cal-evento-teal {
+    background: #ccfbf1;
+    border-left-color: #0d9488;
+    color: #065f46;
+}
+
+.cal-evento-orange {
+    background: #ffedd5;
+    border-left-color: #ea580c;
+    color: #9a3412;
+}
+
+.cal-evento-indigo {
+    background: #e0e7ff;
+    border-left-color: #4338ca;
+    color: #312e81;
+}
+
+/* ---- Acciones del evento (hover overlay) ---- */
+.cal-evento-acciones {
+    display: none;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    gap: 3px;
+}
+
+.cal-evento:hover .cal-evento-acciones {
+    display: flex;
+}
+
+.cal-accion-btn {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    cursor: pointer;
+    border: none;
+    transition: background 0.15s;
+}
+
+.cal-accion-edit {
+    background: rgba(37,99,235,0.15);
+    color: #1d4ed8;
+}
+
+.cal-accion-edit:hover {
+    background: rgba(37,99,235,0.3);
+}
+
+.cal-accion-del {
+    background: rgba(239,68,68,0.15);
+    color: #dc2626;
+}
+
+.cal-accion-del:hover {
+    background: rgba(239,68,68,0.3);
+}
+
+/* ---- Estado vacío ---- */
+.cal-empty {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    color: var(--text-muted);
+    gap: 0.75rem;
+}
+
+.cal-empty i {
+    font-size: 3.5rem;
+    color: #cbd5e1;
+}
+
+.cal-empty h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+/* ---- Diálogo de planificación ---- */
+.cal-dialog-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 1.25rem;
+}
+
+.cal-dialog-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    box-shadow: var(--shadow-sm);
+    flex-shrink: 0;
+}
+
+.cal-dialog-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0;
+}
+
+.cal-dialog-subtitle {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+/* Campo de formulario dentro del diálogo */
+.cal-field {
+    margin-bottom: 1.1rem;
+}
+
+.cal-field label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.35rem;
+}
+
+/* Línea de horas en el borde izquierdo del slot de horas */
+.cal-hora-label {
+    padding-right: 6px;
+    color: #94a3b8;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---- Leyenda de colores ---- */
+.cal-leyenda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    padding: 0.75rem 1.5rem;
+    border-top: 1px solid var(--border-color);
+    background: #f8fafc;
+}
+
+.cal-leyenda-item {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.cal-leyenda-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+}
+
+/* Responsive: colapsa la grid en móvil */
+@media (max-width: 768px) {
+    .cal-dias-header,
+    .cal-body {
+        grid-template-columns: 40px repeat(7, minmax(80px, 1fr));
+        overflow-x: auto;
+    }
+
+    .cal-wrapper {
+        border-radius: 10px;
+    }
+
+    .cal-header {
+        padding: 0.75rem 1rem;
+        gap: 0.5rem;
+    }
+}
+
+/* ---- Tooltip personalizado para eventos del calendario ---- */
+.cal-event-tooltip {
+    position: fixed;
+    z-index: 99999;
+    background: #1e293b;
+    color: #f1f5f9;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    pointer-events: none;
+    max-width: 320px;
+    white-space: nowrap;
+}
+.cal-tt-titulo {
+    font-weight: 700;
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+    color: #ffffff;
+}
+.cal-tt-row {
+    margin-top: 2px;
+}
+.cal-tt-label {
+    color: #94a3b8;
+    font-weight: 600;
+}
+
+
+

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
+
+    <ui:define name="contenido">
+        <f:event listener="#{backingLogin.validarSesion()}" type="preRenderView" />
+
+        <!-- Tooltip en eventos del schedule v\u00eda FullCalendar API (post-init) -->
+        <script type="text/javascript">
+// <![CDATA[
+            (function() {
+                function setupTooltip(calendar) {
+                    if (calendar._educaTooltipDone) return;
+                    calendar._educaTooltipDone = true;
+                    calendar.on('eventMouseEnter', function(info) {
+                        var desc = info.event.extendedProps && info.event.extendedProps.description;
+                        if (!desc) return;
+                        var tip = document.createElement('div');
+                        tip.className = 'cal-event-tooltip';
+                        tip.innerHTML = desc;
+                        document.body.appendChild(tip);
+                        var r = info.el.getBoundingClientRect();
+                        var t = r.bottom + 6;
+                        if (t + tip.offsetHeight > window.innerHeight) t = r.top - tip.offsetHeight - 6;
+                        tip.style.cssText = 'position:fixed;left:' + Math.max(4, r.left) + 'px;top:' + t + 'px;';
+                    });
+                    calendar.on('eventMouseLeave', function() {
+                        var tips = document.querySelectorAll('.cal-event-tooltip');
+                        for (var i = 0; i < tips.length; i++) tips[i].remove();
+                    });
+                }
+                (function poll() {
+                    var w;
+                    try { w = PF('myschedule'); } catch(e) {}
+                    if (w && w.calendar) setupTooltip(w.calendar);
+                    setTimeout(poll, 500);
+                })();
+            })();
+// ]]>
+        </script>
+
+        <!-- =====================================================
+             FORM PRINCIPAL
+             ===================================================== -->
+        <h:form id="formCalendario" prependId="false">
+            <p:growl id="growl" life="3500" showDetail="true" />
+
+            <!-- BREADCRUMB -->
+            <p:breadCrumb styleClass="ui-breadcrumb p-mb-3"
+                          style="border:none;background:transparent;padding-left:0;">
+                <p:menuitem value="Inicio"
+                            outcome="/paginas/index?faces-redirect=true"
+                            icon="pi pi-home" />
+                <p:menuitem value="Administración" url="#" />
+                <p:menuitem value="Calendario de Cursos" url="#" />
+            </p:breadCrumb>
+
+            <!-- ENCABEZADO DE PÁGINA -->
+            <div class="page-title">
+                <h2>Calendario de Cursos</h2>
+                <small>Planificación semanal de clases, webinars y charlas</small>
+            </div>
+
+            <div class="search-header-container" style="background: #ffffff; padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: flex-end; gap: 1rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-sm);">
+                <p:commandButton value="Agregar curso"
+                                 icon="pi pi-plus"
+                                 styleClass="ui-button"
+                                 style="background-color: #1066eb; border: none; padding: 0 1.5rem !important; height: 48px; border-radius: 8px; font-weight: 600; color: white; display: flex; align-items: center; justify-content: center;"
+                                 partialSubmit="true"
+                                 process="@this"
+                                 actionListener="#{backingCalendarioCursos.nuevaPlanificacion()}"
+                                 update="panelDlgPlanificacion growl" />
+            </div>
+
+            <!-- =====================================================
+                 PANEL PRINCIPAL: CALENDARIO SEMANAL
+                 ===================================================== -->
+            <p:outputPanel id="panelCalendario">
+                <div class="cal-wrapper">
+
+                    <!--  CABECERA DEL CALENDARIO  -->
+                    <div class="cal-header">
+                        <!-- Marca / ícono -->
+                        <div class="cal-header-brand">
+                            <i class="pi pi-calendar"></i>
+                            <span>Horario de Cursos</span>
+                        </div>
+
+                        <!-- Navegación de semana -->
+                        <div class="cal-header-nav">
+                            <!-- Etiqueta de rango -->
+                            <span class="cal-range-label">
+                               <h:outputText value="#{backingCalendarioCursos.beanCalendarioCursos.inicioSemana}">
+								    <f:convertDateTime type="localDate" pattern="d" />
+								</h:outputText>&#8211;<h:outputText value="#{backingCalendarioCursos.beanCalendarioCursos.finSemana}">
+								    <f:convertDateTime type="localDate" pattern="d 'de' MMMM yyyy" locale="es" />
+								</h:outputText>
+                            </span>
+
+                            <!-- Botón anterior -->
+                            <p:commandButton icon="pi pi-chevron-left"
+                                             title="Semana anterior"
+                                             styleClass="cal-nav-btn"
+                                             partialSubmit="true"
+                                             process="@this"
+                                             actionListener="#{backingCalendarioCursos.semanaAnterior()}"
+                                             update=":scheduleCursos :growl" />
+
+                            <!-- Botón Hoy -->
+                            <p:commandButton value="Hoy"
+                                             styleClass="cal-btn-hoy"
+                                             partialSubmit="true"
+                                             process="@this"
+                                             actionListener="#{backingCalendarioCursos.irHoy()}"
+                                             update=":scheduleCursos :growl" />
+
+                            <!-- Botón siguiente -->
+                            <p:commandButton icon="pi pi-chevron-right"
+                                             title="Semana siguiente"
+                                             styleClass="cal-nav-btn"
+                                             partialSubmit="true"
+                                             process="@this"
+                                             actionListener="#{backingCalendarioCursos.semanaSiguiente()}"
+                                             update=":scheduleCursos :growl" />
+                        </div>
+                    </div>
+
+                    <div style="padding: 1rem;">
+                        <p:schedule id="scheduleCursos"
+                                        value="#{backingCalendarioCursos.beanCalendarioCursos.eventModel}"
+                                        widgetVar="myschedule"
+                                        view="timeGridWeek"
+                                        showHeader="false"
+                                        allDaySlot="false"
+                                        initialDate="#{backingCalendarioCursos.beanCalendarioCursos.inicioSemana}"
+                                        minTime="07:00:00"
+                                        maxTime="21:00:00">
+                            <p:ajax event="dateSelect" listener="#{backingCalendarioCursos.onDateSelect}" update="panelDlgPlanificacion" oncomplete="PF('wDlgPlanificacion').show();" />
+                            <p:ajax event="eventSelect" listener="#{backingCalendarioCursos.onEventSelect}" update="panelDlgPlanificacion" oncomplete="PF('wDlgPlanificacion').show();" />
+                        </p:schedule>
+                    </div>
+
+                </div><!-- /cal-wrapper -->
+            </p:outputPanel>
+
+        </h:form><!-- /formCalendario -->
+
+        <!-- =====================================================
+             DIÁLOGO: CREAR / EDITAR PLANIFICACIÓN
+             ===================================================== -->
+        <p:dialog id="dlgPlanificacion"
+                  widgetVar="wDlgPlanificacion"
+                  header="Planificación de Curso"
+                  modal="true" width="50%" height="85vh" responsive="true" fitViewport="true" resizable="false"
+                  styleClass="shadow-lg"
+                  appendTo="@(body)">
+            <h:form id="formDlgPlanificacion" prependId="false">
+
+                <p:outputPanel id="panelDlgPlanificacion" styleClass="p-p-2">
+                    <div class="ui-fluid">
+
+                        <!-- Encabezado visual del diálogo -->
+                        <div style="display: flex; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color);">
+                            <div style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-right: 1rem; box-shadow: var(--shadow-sm);">
+                                <i class="pi pi-calendar-plus"></i>
+                            </div>
+                            <div>
+                                <h3 style="margin: 0; font-weight: 700; color: var(--text-main); font-size: 1rem;">
+                                    <h:outputText
+                                        value="#{backingCalendarioCursos.beanCalendarioCursos.planificacionSeleccionada.plcuId == null
+                                                  or backingCalendarioCursos.beanCalendarioCursos.planificacionSeleccionada.plcuId == 0
+                                                  ? 'Nueva Planificación' : 'Editar Planificación'}" />
+                                </h3>
+                                <span style="color: var(--text-muted); font-size: 0.82rem;">Complete los datos del curso planificado (*)</span>
+                            </div>
+                        </div>
+
+                        <!-- Fila 1: Curso e Instructor -->
+                        <div class="p-formgrid p-grid">
+                            <div class="p-field p-col-12 p-md-6" style="margin-bottom: 1.1rem;">
+                                <div>
+                                    <label style="display: block; font-weight: 600; color: var(--text-main); font-size: 0.85rem; margin-bottom: 0.4rem;">
+                                        <i class="pi pi-book" style="margin-right: 5px; color: var(--primary-color);"></i> Curso *
+                                    </label>
+                                    <p:selectOneMenu id="selCurso"
+                                                     value="#{backingCalendarioCursos.beanCalendarioCursos.cursId}"
+                                                     filter="true" filterMatchMode="contains"
+                                                     style="width:100%;">
+                                        <f:selectItem itemLabel="-- Seleccione --" itemValue="#{null}"
+                                                      noSelectionOption="true" />
+                                        <f:selectItems
+                                            value="#{backingCalendarioCursos.beanCalendarioCursos.listaCursos}"
+                                            var="c"
+                                            itemLabel="#{c.cursNombre}"
+                                            itemValue="#{c.cursId}" />
+                                    </p:selectOneMenu>
+                                </div>
+                            </div>
+                            <div class="p-field p-col-12 p-md-6" style="margin-bottom: 1.1rem;">
+                                <div>
+                                    <label style="display: block; font-weight: 600; color: var(--text-main); font-size: 0.85rem; margin-bottom: 0.4rem;">
+                                        <i class="pi pi-user" style="margin-right: 5px; color: var(--primary-color);"></i> Instructor
+                                    </label>
+                                    <p:selectOneMenu id="selInstructor"
+                                                     value="#{backingCalendarioCursos.beanCalendarioCursos.instId}"
+                                                     style="width:100%;">
+                                        <f:selectItem itemLabel="-- Seleccione --" itemValue="#{null}"
+                                                      noSelectionOption="true" />
+                                        <f:selectItems
+                                            value="#{backingCalendarioCursos.beanCalendarioCursos.listaInstructores}"
+                                            var="i"
+                                            itemLabel="#{i.persona.persApellidos} #{i.persona.persNombres}"
+                                            itemValue="#{i.instId}" />
+                                    </p:selectOneMenu>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Fila 2: Fecha de inicio, Hora de inicio y Duración -->
+                        <div class="p-formgrid p-grid">
+                            <div class="p-field p-col-12 p-md-4" style="margin-bottom: 1.1rem;">
+                                <div>
+                                    <label style="display: block; font-weight: 600; color: var(--text-main); font-size: 0.85rem; margin-bottom: 0.4rem;">
+                                        <i class="pi pi-calendar" style="margin-right: 5px; color: var(--primary-color);"></i> Fecha inicio *
+                                    </label>
+                                    <p:datePicker id="fechaInicio"
+                                                  value="#{backingCalendarioCursos.beanCalendarioCursos.planificacionSeleccionada.plcuFechaInicio}"
+                                                  pattern="dd/MM/yyyy"
+                                                  locale="es"
+                                                  showIcon="true"
+                                                  style="width:100%;" />
+                                </div>
+                            </div>
+                            <div class="p-field p-col-12 p-md-4" style="margin-bottom: 1.1rem;">
+                                <div>
+                                    <label style="display: block; font-weight: 600; color: var(--text-main); font-size: 0.85rem; margin-bottom: 0.4rem;">
+                                        <i class="pi pi-clock" style="margin-right: 5px; color: var(--primary-color);"></i> Hora inicio *
+                                    </label>
+                                    <p:spinner id="horaInicio"
+                                               value="#{backingCalendarioCursos.beanCalendarioCursos.planificacionSeleccionada.plcuHoraInicio}"
+                                               min="0" max="23" stepFactor="1"
+                                               style="width:100%;" />
+                                </div>
+                            </div>
+                            <div class="p-field p-col-12 p-md-4" style="margin-bottom: 1.1rem;">
+                                <div>
+                                    <label style="display: block; font-weight: 600; color: var(--text-main); font-size: 0.85rem; margin-bottom: 0.4rem;">
+                                        <i class="pi pi-hourglass" style="margin-right: 5px; color: var(--primary-color);"></i> Duración (h) *
+                                    </label>
+                                    <p:inputNumber id="duracion"
+                                                   value="#{backingCalendarioCursos.beanCalendarioCursos.planificacionSeleccionada.plcuTiempoDuracion}"
+                                                   minValue="0.5" maxValue="24"
+                                                   decimalPlaces="2"
+                                                   style="width:100%;" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Fila 3: Ubicación / Modalidad -->
+                        <div class="p-field" style="margin-bottom: 1.1rem;">
+                            <div>
+                                <label style="display: block; font-weight: 600; color: var(--text-main); font-size: 0.85rem; margin-bottom: 0.4rem;">
+                                    <i class="pi pi-map-marker" style="margin-right: 5px; color: var(--primary-color);"></i> Ubicación / Modalidad
+                                </label>
+                                <p:inputText id="ubicacion"
+                                             value="#{backingCalendarioCursos.beanCalendarioCursos.planificacionSeleccionada.plcuUbicacion}"
+                                             placeholder="Ej: Aula 3, Zoom, Teams…"
+                                             style="width:100%;" maxlength="200" />
+                            </div>
+                        </div>
+
+                        <!-- Fila 4: Webinar / Charla -->
+                        <div class="p-field" style="margin-bottom: 1.1rem;">
+                            <div>
+                                <label style="display: block; font-weight: 600; color: var(--text-main); font-size: 0.85rem; margin-bottom: 0.4rem;">
+                                    <i class="pi pi-video" style="margin-right: 5px; color: var(--primary-color);"></i> Webinar / Charla
+                                </label>
+                                <p:inputText id="webinar"
+                                             value="#{backingCalendarioCursos.beanCalendarioCursos.planificacionSeleccionada.plcuWebinarCharla}"
+                                             placeholder="Descripción del webinar o charla (opcional)"
+                                             style="width:100%;" maxlength="200" />
+                            </div>
+                        </div>
+
+                        <hr style="border: none; border-top: 1px solid var(--border-color); margin: 1.25rem 0;" />
+                        <!-- Pie del diálogo: Guardar / Cancelar -->
+                        <div style="display: flex; justify-content: flex-end; gap: 0.6rem;">
+                            <p:commandButton value="Guardar"
+                                             icon="pi pi-check"
+                                             styleClass="ui-button-success"
+                                             partialSubmit="true"
+                                             process="formDlgPlanificacion"
+                                             update=":scheduleCursos :growl"
+                                             actionListener="#{backingCalendarioCursos.guardarPlanificacion()}"
+                                             oncomplete="if(!args.validationFailed) PF('wDlgPlanificacion').hide();" />
+                            <p:commandButton value="Cancelar"
+                                             type="button"
+                                             icon="pi pi-times"
+                                             styleClass="ui-button-outlined ui-button-secondary"
+                                             onclick="PF('wDlgPlanificacion').hide();" />
+                        </div>
+
+                    </div>
+                </p:outputPanel>
+            </h:form>
+        </p:dialog>
+
+        <!-- =====================================================
+             DIÁLOGO: CONFIRMACIÓN DE ELIMINACIÓN
+             ===================================================== -->
+        <h:form id="formDlgEliminar" prependId="false">
+            <p:dialog id="dlgConfirmarEliminar"
+                      widgetVar="wDlgConfirmarEliminar"
+                      header="Confirmar eliminación"
+                      modal="true" responsive="true"
+                      width="380" resizable="false"
+                      styleClass="shadow-lg"
+                      appendTo="@(body)">
+
+                <div style="padding:0.5rem;">
+                    <!-- Ícono de advertencia -->
+                    <div style="text-align:center;margin-bottom:1rem;">
+                        <div style="width:56px;height:56px;border-radius:50%;
+                                    background:#fee2e2;border:2px solid #fca5a5;
+                                    display:inline-flex;align-items:center;justify-content:center;">
+                            <i class="pi pi-exclamation-triangle"
+                               style="font-size:1.6rem;color:#dc2626;"></i>
+                        </div>
+                    </div>
+                    <p style="text-align:center;font-size:0.9rem;color:var(--text-main);
+                               font-weight:600;margin:0 0 0.5rem 0;">
+                        ¿Desea eliminar la planificación?
+                    </p>
+                    <p style="text-align:center;font-size:0.82rem;color:var(--text-muted);margin:0 0 1.25rem 0;">
+                        <strong>
+                            <h:outputText value="#{backingCalendarioCursos.beanCalendarioCursos.planificacionSeleccionada.curso != null
+                                                   ? backingCalendarioCursos.beanCalendarioCursos.planificacionSeleccionada.curso.cursNombre
+                                                   : 'Esta planificación'}" />
+                        </strong><br/>
+                        Esta acción no se puede deshacer.
+                    </p>
+
+                    <div style="display:flex;justify-content:center;gap:0.75rem;">
+                        <p:commandButton value="Sí, eliminar"
+                                         icon="pi pi-trash"
+                                         styleClass="ui-button-danger"
+                                         style="padding:0.4rem 1.1rem !important;font-weight:700;"
+                                         partialSubmit="true"
+                                         process="@this"
+                                         update=":scheduleCursos :growl"
+                                         actionListener="#{backingCalendarioCursos.eliminarPlanificacion()}"
+                                         oncomplete="PF('wDlgConfirmarEliminar').hide();" />
+                        <p:commandButton value="Cancelar"
+                                         type="button"
+                                         icon="pi pi-times"
+                                         styleClass="ui-button-outlined ui-button-secondary"
+                                         style="padding:0.4rem 1rem !important;"
+                                         onclick="PF('wDlgConfirmarEliminar').hide();" />
+                    </div>
+                </div>
+
+            </p:dialog>
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>
+
+</html>

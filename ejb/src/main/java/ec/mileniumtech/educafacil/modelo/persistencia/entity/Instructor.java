@@ -109,4 +109,7 @@ public class Instructor implements Serializable {
 	
 	@OneToMany(mappedBy="instructor", fetch=FetchType.LAZY)
 	private List<Formacion> formaciones;
+	
+	@OneToMany(mappedBy="instructor", fetch=FetchType.LAZY)
+	private List<PlanificacionCurso> planificacionCurso;
 }
