@@ -12,10 +12,40 @@
 
         <!-- Tooltip en eventos del schedule v\u00eda FullCalendar API (post-init) -->
         <h:outputScript name="locales/locale-es.js" library="primefaces" />
+        <style>
+            *, *::before, *::after { box-sizing: border-box; }
+            .cal-wrapper { overflow: visible; overflow-x: auto; }
+            .cal-padding-wrap { min-width: 640px; }
+            @media (max-width: 640px) {
+                .cal-dlg-header { flex-direction: column !important; text-align: center !important; }
+                .cal-dlg-icon { margin-right: 0 !important; margin-bottom: 0.5rem !important; }
+                .cal-dlg-btns { flex-direction: column !important; }
+                .cal-dlg-btns button { width: 100% !important; }
+                .cal-search-header .ui-button { width: 100% !important; }
+            }
+            @media (max-width: 768px) {
+                .cal-search-header { flex-wrap: wrap !important; justify-content: center !important; }
+            }
+        </style>
         <script type="text/javascript">
 // <![CDATA[
             function extenderSchedule() {
                 this.cfg.options.firstDay = 1;
+                this.cfg.options.datesSet = function(info) {
+                    cargarEventosCmd([
+                        {name: 'startDate', value: info.startStr},
+                        {name: 'endDate', value: info.endStr}
+                    ]);
+                };
+            }
+            function cargarEventosCalendario(eventos) {
+                if (!eventos) return;
+                var calendar = PF('myschedule').calendar;
+                if (!calendar) return;
+                calendar.removeAllEvents();
+                eventos.forEach(function(e) {
+                    calendar.addEvent(e);
+                });
             }
             (function() {
                 function setupTooltip(calendar) {
@@ -70,7 +100,7 @@
                 <small>Planificación semanal de clases, webinars y charlas</small>
             </div>
 
-            <div class="search-header-container" style="background: #ffffff; padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: flex-end; gap: 1rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-sm);">
+            <div class="search-header-container cal-search-header" style="background: #ffffff; padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: flex-end; gap: 1rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-sm);">
                 <p:commandButton value="Agregar curso"
                                  icon="pi pi-plus"
                                  styleClass="ui-button"
@@ -110,29 +140,33 @@
                         </div>
                     </div>
 
-                    <div style="padding: 1rem;">
-                        <p:schedule id="scheduleCursos"
-                                        value="#{backingCalendarioCursos.beanCalendarioCursos.eventModel}"
-                                        widgetVar="myschedule"
-                                        view="timeGridWeek"
-                                        showHeader="true"
-                                        leftHeaderTemplate="prev,next today"
-            							centerHeaderTemplate="title"
-            							rightHeaderTemplate="dayGridMonth,timeGridWeek,timeGridDay,listWeek"
-                                        allDaySlot="false"
-                                        locale="es"
-                                        extender="extenderSchedule"
-                                        
-                                        minTime="07:00:00"
-                                        maxTime="21:00:00">
-                            <p:ajax event="dateSelect" listener="#{backingCalendarioCursos.onDateSelect}" update="panelDlgPlanificacion" oncomplete="PF('wDlgPlanificacion').show();" />
-                            <p:ajax event="eventSelect" listener="#{backingCalendarioCursos.onEventSelect}" update="panelDlgPlanificacion" oncomplete="PF('wDlgPlanificacion').show();" />
-                        </p:schedule>
-                    </div>
+                    <div class="cal-padding-wrap" style="padding: 1rem;">
+						<p:schedule id="scheduleCursos"
+							value="#{backingCalendarioCursos.beanCalendarioCursos.eventModel}"
+							widgetVar="myschedule" view="timeGridWeek" showHeader="true"
+							leftHeaderTemplate="prev,next today" centerHeaderTemplate="title"
+							rightHeaderTemplate="dayGridMonth,timeGridWeek,timeGridDay,listWeek"
+							allDaySlot="false" locale="es" extender="extenderSchedule"
+							minTime="07:00:00" maxTime="21:00:00">
+
+							<p:ajax event="dateSelect"
+								listener="#{backingCalendarioCursos.onDateSelect}"
+								update="panelDlgPlanificacion"
+								oncomplete="PF('wDlgPlanificacion').show();" />
+							<p:ajax event="eventSelect"
+								listener="#{backingCalendarioCursos.onEventSelect}"
+								update="panelDlgPlanificacion"
+								oncomplete="PF('wDlgPlanificacion').show();" />
+						</p:schedule>
+					</div>
 
                 </div><!-- /cal-wrapper -->
             </p:outputPanel>
 
+        <p:remoteCommand id="cargarEventosCmd" name="cargarEventosCmd"
+            actionListener="#{backingCalendarioCursos.cargarEventos}"
+            update="@none"
+            process="@this" />
         </h:form><!-- /formCalendario -->
 
         <!-- =====================================================
@@ -141,7 +175,8 @@
         <p:dialog id="dlgPlanificacion"
                   widgetVar="wDlgPlanificacion"
                   header="Planificación de Curso"
-                  modal="true" width="50%" height="85vh" responsive="true" fitViewport="true" resizable="false"
+                  modal="true" width="auto" style="max-width:600px;"
+                  responsive="true" fitViewport="true" resizable="false"
                   styleClass="shadow-lg"
                   appendTo="@(body)">
             <h:form id="formDlgPlanificacion" prependId="false">
@@ -150,8 +185,8 @@
                     <div class="ui-fluid">
 
                         <!-- Encabezado visual del diálogo -->
-                        <div style="display: flex; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color);">
-                            <div style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-right: 1rem; box-shadow: var(--shadow-sm);">
+                        <div class="cal-dlg-header" style="display: flex; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color);">
+                            <div class="cal-dlg-icon" style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-right: 1rem; box-shadow: var(--shadow-sm);">
                                 <i class="pi pi-calendar-plus"></i>
                             </div>
                             <div>
@@ -175,15 +210,17 @@
                                     <p:selectOneMenu id="selCurso"
                                                      value="#{backingCalendarioCursos.beanCalendarioCursos.cursId}"
                                                      filter="true" filterMatchMode="contains"
+                                                     required="true" requiredMessage="El curso es obligatorio"
                                                      style="width:100%;">
                                         <f:selectItem itemLabel="-- Seleccione --" itemValue="#{null}"
-                                                      noSelectionOption="true" />
+                                                       noSelectionOption="true" />
                                         <f:selectItems
                                             value="#{backingCalendarioCursos.beanCalendarioCursos.listaCursos}"
                                             var="c"
                                             itemLabel="#{c.cursNombre}"
                                             itemValue="#{c.cursId}" />
                                     </p:selectOneMenu>
+                                    <p:message for="selCurso" display="text" />
                                 </div>
                             </div>
                             <div class="p-field p-col-12 p-md-6" style="margin-bottom: 1.1rem;">
@@ -193,15 +230,17 @@
                                     </label>
                                     <p:selectOneMenu id="selInstructor"
                                                      value="#{backingCalendarioCursos.beanCalendarioCursos.instId}"
+                                                     required="true" requiredMessage="El instructor es obligatorio"
                                                      style="width:100%;">
                                         <f:selectItem itemLabel="-- Seleccione --" itemValue="#{null}"
-                                                      noSelectionOption="true" />
+                                                       noSelectionOption="true" />
                                         <f:selectItems
                                             value="#{backingCalendarioCursos.beanCalendarioCursos.listaInstructores}"
                                             var="i"
                                             itemLabel="#{i.persona.persApellidos} #{i.persona.persNombres}"
                                             itemValue="#{i.instId}" />
                                     </p:selectOneMenu>
+                                    <p:message for="selInstructor" display="text" />
                                 </div>
                             </div>
                         </div>
@@ -214,11 +253,13 @@
                                         <i class="pi pi-calendar" style="margin-right: 5px; color: var(--primary-color);"></i> Fecha inicio *
                                     </label>
                                     <p:datePicker id="fechaInicio"
-                                                  value="#{backingCalendarioCursos.beanCalendarioCursos.planificacionSeleccionada.plcuFechaInicio}"
-                                                  pattern="dd/MM/yyyy"
-                                                  locale="es"
-                                                  showIcon="true"
-                                                  style="width:100%;" />
+                                                   value="#{backingCalendarioCursos.beanCalendarioCursos.planificacionSeleccionada.plcuFechaInicio}"
+                                                   pattern="dd/MM/yyyy"
+                                                   locale="es"
+                                                   showIcon="true"
+                                                   required="true" requiredMessage="La fecha de inicio es obligatoria"
+                                                   style="width:100%;" />
+                                    <p:message for="fechaInicio" display="text" />
                                 </div>
                             </div>
                             <div class="p-field p-col-12 p-md-4" style="margin-bottom: 1.1rem;">
@@ -227,9 +268,11 @@
                                         <i class="pi pi-clock" style="margin-right: 5px; color: var(--primary-color);"></i> Hora inicio *
                                     </label>
                                     <p:spinner id="horaInicio"
-                                               value="#{backingCalendarioCursos.beanCalendarioCursos.planificacionSeleccionada.plcuHoraInicio}"
-                                               min="0" max="23" stepFactor="1"
-                                               style="width:100%;" />
+                                                value="#{backingCalendarioCursos.beanCalendarioCursos.planificacionSeleccionada.plcuHoraInicio}"
+                                                min="0" max="23" stepFactor="1"
+                                                required="true" requiredMessage="La hora de inicio es obligatoria"
+                                                style="width:100%;" />
+                                    <p:message for="horaInicio" display="text" />
                                 </div>
                             </div>
                             <div class="p-field p-col-12 p-md-4" style="margin-bottom: 1.1rem;">
@@ -274,13 +317,13 @@
 
                         <hr style="border: none; border-top: 1px solid var(--border-color); margin: 1.25rem 0;" />
                         <!-- Pie del diálogo: Guardar / Cancelar -->
-                        <div style="display: flex; justify-content: flex-end; gap: 0.6rem;">
+                        <div class="cal-dlg-btns" style="display: flex; justify-content: flex-end; gap: 0.6rem;">
                             <p:commandButton value="Guardar"
                                              icon="pi pi-check"
                                              styleClass="ui-button-success"
                                              partialSubmit="true"
                                              process="formDlgPlanificacion"
-                                             update=":scheduleCursos :growl"
+                                              update=":scheduleCursos :growl panelDlgPlanificacion"
                                              actionListener="#{backingCalendarioCursos.guardarPlanificacion()}"
                                              oncomplete="if(!args.validationFailed) PF('wDlgPlanificacion').hide();" />
                             <p:commandButton value="Cancelar"
@@ -303,7 +346,7 @@
                       widgetVar="wDlgConfirmarEliminar"
                       header="Confirmar eliminación"
                       modal="true" responsive="true"
-                      width="380" resizable="false"
+                      width="auto" style="max-width:420px;" resizable="false"
                       styleClass="shadow-lg"
                       appendTo="@(body)">
 

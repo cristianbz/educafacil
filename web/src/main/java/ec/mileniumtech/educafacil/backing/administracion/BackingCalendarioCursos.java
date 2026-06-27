@@ -11,12 +11,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 import java.time.temporal.TemporalAdjusters;
-
 import java.time.LocalDateTime;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.event.ActionEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultScheduleEvent;
 import org.primefaces.model.DefaultScheduleModel;
@@ -36,6 +36,7 @@ import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import lombok.Getter;
+import org.primefaces.PrimeFaces;
 
 /**
  * Backing bean para el módulo de Calendario de Cursos (vista semanal).
@@ -152,6 +153,7 @@ public class BackingCalendarioCursos implements Serializable {
                     String descripcion = armarTooltip(pc, start, end, title);
 
                     DefaultScheduleEvent<?> event = DefaultScheduleEvent.builder()
+                            .id(String.valueOf(pc.getPlcuId()))
                             .title(title)
                             .startDate(start)
                             .endDate(end)
@@ -401,6 +403,61 @@ public class BackingCalendarioCursos implements Serializable {
     }
 
     // =========================================================
+    // Serialización JSON de eventos para actualización cliente vía FullCalendar API
+    // =========================================================
+
+    private String buildEventosJson(List<PlanificacionCurso> planificaciones) {
+        if (planificaciones == null || planificaciones.isEmpty()) return "[]";
+
+        StringBuilder sb = new StringBuilder("[");
+        boolean first = true;
+        for (PlanificacionCurso pc : planificaciones) {
+            if (pc.getPlcuFechaInicio() == null || pc.getPlcuHoraInicio() == null || pc.getPlcuTiempoDuracion() == null) {
+                continue;
+            }
+            if (!first) sb.append(",");
+            first = false;
+
+            LocalDateTime start = pc.getPlcuFechaInicio().atTime(pc.getPlcuHoraInicio(), 0);
+            long minutosDuracion = (long) (pc.getPlcuTiempoDuracion().doubleValue() * 60);
+            LocalDateTime end = start.plusMinutes(minutosDuracion);
+
+            String title = pc.getCurso() != null && pc.getCurso().getCursNombre() != null
+                    ? pc.getCurso().getCursNombre() : "Sin curso";
+            if (pc.getInstructor() != null && pc.getInstructor().getPersona() != null
+                    && pc.getInstructor().getPersona().getPersApellidos() != null) {
+                title += " - " + pc.getInstructor().getPersona().getPersApellidos();
+            }
+
+            String descripcion = armarTooltip(pc, start, end, title);
+            String colorClass = getClaseColorEvento(pc);
+
+            sb.append("{");
+            sb.append("\"id\":\"").append(escJson(String.valueOf(pc.getPlcuId()))).append("\",");
+            sb.append("\"title\":\"").append(escJson(title)).append("\",");
+            sb.append("\"start\":\"").append(start.toString()).append("\",");
+            sb.append("\"end\":\"").append(end.toString()).append("\",");
+            sb.append("\"extendedProps\":{\"description\":\"").append(escJson(descripcion)).append("\"},");
+            sb.append("\"classNames\":[\"").append(escJson(colorClass)).append("\"]");
+            sb.append("}");
+        }
+        sb.append("]");
+        return sb.toString();
+    }
+
+    private String escJson(String value) {
+        if (value == null) return "";
+        return value.replace("\\", "\\\\")
+                    .replace("</", "<\\/")
+                    .replace("\"", "\\\"")
+                    .replace("\r", "\\r")
+                    .replace("\n", "\\n")
+                    .replace("\t", "\\t")
+                    .replace("\b", "\\b")
+                    .replace("\f", "\\f");
+    }
+
+    // =========================================================
     // Helpers de formato de fechas (LocalDate → String)
     // =========================================================
 
@@ -462,5 +519,31 @@ public class BackingCalendarioCursos implements Serializable {
         getBeanCalendarioCursos().setPlanificacionSeleccionada(nueva);
         getBeanCalendarioCursos().setCursId(null);
         getBeanCalendarioCursos().setInstId(null);
+    }
+ // =========================================================
+ // Listener de navegación en el Schedule
+ // =========================================================
+
+    public void cargarEventos(ActionEvent actionEvent) {
+        try {
+            FacesContext fc = FacesContext.getCurrentInstance();
+            String startDateStr = fc.getExternalContext().getRequestParameterMap().get("startDate");
+            String endDateStr = fc.getExternalContext().getRequestParameterMap().get("endDate");
+            if (startDateStr == null || endDateStr == null) return;
+
+            LocalDate fechaInicioVisible = LocalDate.parse(startDateStr.length() > 10 ? startDateStr.substring(0, 10) : startDateStr);
+            LocalDate fechaFinVisible = LocalDate.parse(endDateStr.length() > 10 ? endDateStr.substring(0, 10) : endDateStr);
+            
+            getBeanCalendarioCursos().setInicioSemana(fechaInicioVisible);
+            getBeanCalendarioCursos().setFinSemana(fechaFinVisible);
+            
+            cargarPlanificacionesSemana();
+            
+            String eventosJson = buildEventosJson(getBeanCalendarioCursos().getListaPlanificaciones());
+            PrimeFaces.current().executeScript("cargarEventosCalendario(" + eventosJson + ");");
+            
+        } catch (Exception e) {
+            log.error("Error al cargar eventos del calendario", e);
+        }
     }
 }
