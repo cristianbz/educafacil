@@ -3,7 +3,8 @@
 	xmlns:ui="jakarta.faces.facelets"
       	xmlns:f="jakarta.faces.core"
       	xmlns:h="jakarta.faces.html"
-	xmlns:p="http://primefaces.org/ui">
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pt="jakarta.faces.passthrough">
 
 <!-- 
 		Replace path to template, title, header and body
@@ -22,9 +23,9 @@
 				<h:panelGrid columns="2">
 					<p:commandButton value="#{botones['si']}"
 						actionListener="#{backingPagos.grabarPago()}"
-						process="@this formapago panelpagos"
+						process="@this"
 						partialSubmit="true"
-						update="growl  tablaDetalle panelpagos"
+						update="@([id$=panelpagos]) @([id$=growl]) @([id$=nombrecurso])"
 						styleClass="ui-confirmdialog-yes"
 						icon="#{botones['icono.select']}" />
 					<p:commandButton value="#{botones['no']}"
@@ -32,6 +33,104 @@
 						styleClass="ui-confirmdialog-no"
 						icon="#{botones['icono.cancelar']}" />
 				</h:panelGrid>
+			</p:dialog>
+			
+			<p:dialog id="dlgCuotas" widgetVar="dlgCuotas" header="Administrar Cuotas" modal="true"
+				responsive="true" resizable="false" fitViewport="true" style="font-size: 10px; width: auto;">
+				<p:outputPanel id="panelCuotas">
+					<div class="ui-fluid p-formgrid p-grid" style="font-size: 10px;">
+						<div class="p-field p-col-12 p-md-12">
+							<p:outputLabel value="Estudiante: #{backingPagos.beanPagos.matricula.estudiante.persona.persApellidos} #{backingPagos.beanPagos.matricula.estudiante.persona.persNombres}" style="color:red;" />
+						</div>
+						<div class="p-field p-col-12 p-md-3">
+							<p:outputLabel value="N° Cuotas:" />
+						</div>
+						<div class="p-field p-col-12 p-md-3">
+							<p:inputNumber value="#{backingPagos.numeroCuotas}" min="1" max="24" style="width:100%;" />
+						</div>
+						<div class="p-field p-col-12 p-md-3">
+							<p:commandButton value="Generar Cuotas" icon="pi pi-plus"
+								styleClass="ui-button-sm"
+								process="@([id$=panelCuotas])"
+								update="@([id$=panelCuotas]) @([id$=growl])"
+								actionListener="#{backingPagos.generarCuotasManual()}" />
+						</div>
+						<div class="p-field p-col-12 p-md-3">
+							<p:commandButton value="Guardar Cambios" icon="pi pi-save"
+								styleClass="ui-button-sm"
+								process="@([id$=panelCuotas])"
+								update="@([id$=panelCuotas]) @([id$=growl])"
+								actionListener="#{backingPagos.guardarCambiosCuotas()}" />
+						</div>
+						<div class="p-field p-col-12 p-md-12">
+							<p:scrollPanel mode="native" style="max-height:300px;">
+								<p:dataTable id="tablaCuotas" widgetVar="tablaCuotasWV" var="cuo" reflow="true"
+								    value="#{backingPagos.beanPagos.listaCuotas}"
+								    selection="#{backingPagos.beanPagos.listaCuotasSeleccionadas}"
+								    rowKey="#{cuo.cuoId}"
+								    disabledSelection="#{cuo.cuoEstado eq 'CUOTA02'}"
+								    rowStyleClass="#{cuo.cuoEstado eq 'CUOTA02' ? 'fila-deshabilitada' : null}">
+									<p:ajax event="rowSelectCheckbox" oncomplete="actualizarResumen()" />
+								    <p:ajax event="rowUnselectCheckbox" oncomplete="actualizarResumen()" />
+								    <p:ajax event="toggleSelect" oncomplete="actualizarResumen()" /> 
+									<p:column selectionMode="multiple" style="width:30px;" />
+									<p:column headerText="N°">
+										<p:outputLabel value="#{cuo.cuoNumero}" />
+									</p:column>
+									<p:column headerText="Valor">
+									    <span class="cuota-valor" data-valor="#{cuo.cuoValor}">$ #{cuo.cuoValor}</span>
+									</p:column>
+									<p:column headerText="Fecha Límite">
+										<p:calendar value="#{cuo.cuoFechaLimite}" pattern="yyyy-MM-dd"
+											disabled="#{cuo.cuoEstado eq 'CUOTA02'}"
+											readonlyInput="false" showOn="button" style="max-width:130px;">
+										</p:calendar>
+									</p:column>
+									<p:column headerText="Estado">
+										<p:outputLabel value="#{backingPagos.obtenerLabelEstadoCuota(cuo.cuoEstado)}"
+											style="#{backingPagos.obtenerStyleCuota(cuo.cuoEstado)}" />
+									</p:column>
+									<p:column headerText="Fecha Pago">
+										<p:outputLabel value="#{cuo.cuoFechaPago}" id="fecPagCuo">
+											<f:convertDateTime for="fecPagCuo" pattern="yyyy-MM-dd" />
+										</p:outputLabel>
+									</p:column>
+									<p:column headerText="Acción" style="text-align:center;">
+										<p:commandButton icon="pi pi-trash"
+											disabled="#{cuo.cuoEstado eq 'CUOTA02'}"
+											style="background-color: #dc3545; border-color: #dc3545; color: white; font-size: 10px; width: 24px; height: 24px;"
+											process="@this"
+											update="@([id$=panelCuotas]) @([id$=growl])"
+											actionListener="#{backingPagos.eliminarCuota(cuo)}"
+											title="Eliminar cuota">
+										</p:commandButton>
+									</p:column>
+								</p:dataTable>
+							</p:scrollPanel>
+						</div>
+						<div class="p-field p-col-12 p-md-12" style="text-align: right; font-size: 11px;">
+							<p:outputPanel id="resumenCuotas">
+								<span id="resumenText" style="font-weight: bold; margin-right: 12px;">
+									Seleccionadas: 0 cuotas (Total: $ 0.00)
+								</span>
+							</p:outputPanel>
+							<p:commandButton value="Pagar cuotas seleccionadas" icon="pi pi-check"
+								styleClass="ui-button-sm ui-button-success"
+								process="@([id$=panelCuotas])"
+								update="@([id$=panelCuotas]) @([id$=growl]) @([id$=panelpagos]) @([id$=ticketTermicoPanel])"
+								oncomplete="imprimirTicket()"
+								actionListener="#{backingPagos.pagarCuotasSeleccionadas()}" />
+						</div>
+						<div class="p-field p-col-12 p-md-12" style="text-align: center; border-top: 1px solid #dee2e6; padding-top: 8px;">
+							<p:commandButton value="Cerrar" icon="pi pi-times-circle"
+								styleClass="ui-button-sm"
+								process="@this"
+								update="@([id$=growl])"
+								oncomplete="PF('dlgCuotas').hide()"
+								actionListener="#{backingPagos.cerrarDialogoCuotas()}" />
+						</div>
+					</div>
+				</p:outputPanel>
 			</p:dialog>
 			
 			<p:dialog widgetVar="dlgresumenPagos" header="#{titulos['resumenpagos']}" modal="true">
@@ -65,7 +164,7 @@
 											<p:outputLabel value="#{det.depaValor}" />
 										</p:column>
 										<p:column headerText="Ticket" style="width:70px; text-align: center;">
-											<p:commandLink process="@this" action="#{backingPagos.imprimirTicketTermico(det)}" update=":form:ticketTermicoPanel" oncomplete="imprimirTicket()">
+											<p:commandLink process="@this" action="#{backingPagos.imprimirTicketTermico(det)}" update="@form" oncomplete="imprimirTicket()">
 												<i class="pi pi-print" style="font-size: 1.2em; color: #3b82f6;"></i>
 											</p:commandLink>
 										</p:column>
@@ -97,7 +196,7 @@
 					<p:commandButton value="#{botones['selCurso']}" 
 					action="#{backingPagos.mostrarSeleccionCurso()}" 
 					styleClass="ui-button-success"
-					process="@this" icon="pi pi-check" resetValues="true" update="idcurso"/>
+					process="@this" icon="pi pi-check" resetValues="true" update="@form"/>
 					
 					<!-- Acciones secundarias -->
 					<p:menuButton value="Más acciones" icon="pi pi-ellipsis-v">
@@ -135,21 +234,31 @@
 					<p:column headerText="#{etiquetas['valor']}" style="width:80px;">
 						<p:outputLabel value="#{mat.ofertaCursos.ocurValor}" style="color:green"/>
 					</p:column>
-					<p:column style="width:70px;" headerText="#{etiquetas['acciones']}">
+					<p:column headerText="Cuotas" style="width:100px;">
+						<p:outputLabel value="#{backingPagos.contarCuotasPendientes(mat)} pendientes" style="color:orange; font-weight:bold;" />
+					</p:column>
+					<p:column style="width:100px;" headerText="#{etiquetas['acciones']}">
 						
 						<p:commandLink process="@this" disabled="#{mat.matrEstado.equals('INSMAT03')?true:false}"							
-							partialSubmit="true" update=":form:panelRegPagos" title="#{etiquetas['registroPago']}"
+							partialSubmit="true" update="@form" title="#{etiquetas['registroPago']}"
 							action="#{backingPagos.mostrarDialogoRegPago()}" >
 							<f:setPropertyActionListener value="#{mat}" target="#{backingPagos.beanPagos.matricula}"></f:setPropertyActionListener>
 							<i class="pi pi-wallet" style="font-size: 1em; color: green;"></i>							
 						</p:commandLink>
 												
 						<p:commandLink  process="@this" title="#{tooltip['verPagos']}" 
-							partialSubmit="true" update=":form:tablapagos :form:nombreEstudiante" 
+							partialSubmit="true" update="@form" 
 							action="#{backingPagos.mostrarDialogoResumenPago()}" >
 							<f:setPropertyActionListener value="#{mat}" target="#{backingPagos.beanPagos.matricula}"></f:setPropertyActionListener>
 							<i class="pi pi-chart-bar" style="font-size: 1em; color: green;"></i>
-						</p:commandLink>	
+						</p:commandLink>
+
+						<p:commandLink process="@this" title="Administrar cuotas"
+							partialSubmit="true" update="@form"
+							action="#{backingPagos.mostrarDialogoCuotas()}">
+							<f:setPropertyActionListener value="#{mat}" target="#{backingPagos.beanPagos.matricula}"></f:setPropertyActionListener>
+							<i class="pi pi-list" style="font-size: 1em; color: blue;"></i>
+						</p:commandLink>
 					</p:column>					
 				</p:dataTable>
 				</p:outputPanel>
@@ -166,6 +275,7 @@
 								<div><strong>FECHA:</strong> #{backingPagos.ticketFecha}</div>
 								<div><strong>TICKET:</strong> #{backingPagos.ticketNumero}</div>
 								<div><strong>CLIENTE:</strong> #{backingPagos.ticketCliente}</div>
+								<div><strong>REFERENCIA:</strong> #{backingPagos.beanPagos.nombreCurso}</div>
 							</div>
 							<span>--------------------------------</span><br/>
 							<div style="text-align: left; margin: 5px 0;">
@@ -209,6 +319,31 @@
 
 				<script type="text/javascript">
 					//<![CDATA[
+					function actualizarResumen() {
+					    var table = PF('tablaCuotasWV');
+					    if (!table) return;
+					    
+					    var count = 0;
+					    var total = 0;
+					    
+					    // Buscamos todas las filas de la tabla que estén seleccionadas
+					    table.getJQ().find('tbody tr').each(function() {
+					        var row = jQuery(this);
+					        // Verificamos si el checkbox de esta fila está marcado
+					        var isChecked = row.find('.ui-chkbox-box').hasClass('ui-state-active') || row.hasClass('ui-state-highlight');
+					        
+					        if (isChecked) {
+					            count++;
+					            var valorText = row.find('.cuota-valor').attr('data-valor');
+					            total += parseFloat(valorText) || 0;
+					        }
+					    });
+					    
+					    var el = document.querySelector('[id$="resumenText"]');
+					    if (el) {
+					        el.textContent = 'Seleccionadas: ' + count + ' cuotas (Total: $ ' + total.toFixed(2) + ')';
+					    }
+					}
 					function imprimirTicket() {
 						var ticketDiv = document.getElementById('ticketTermico');
 						if (!ticketDiv) {

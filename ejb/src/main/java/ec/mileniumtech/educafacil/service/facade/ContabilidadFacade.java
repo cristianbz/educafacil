@@ -3,10 +3,12 @@ package ec.mileniumtech.educafacil.service.facade;
 import java.util.Date;
 import java.util.List;
 
+import ec.mileniumtech.educafacil.dao.impl.CuotaDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.EgresoDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.PagosDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.ProveedorDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.DtoFlujoDinero;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.Cuota;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetallePagos;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Egresos;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Pagos;
@@ -27,6 +29,31 @@ public class ContabilidadFacade {
 
     @EJB
     private PagosDaoImpl pagosDao;
+
+    @EJB
+    private CuotaDaoImpl cuotaDao;
+
+    // ========== Cuotas ==========
+
+    public List<Cuota> listarCuotasPorMatricula(int codigoMatricula) {
+        return cuotaDao.listarCuotasPorMatricula(codigoMatricula);
+    }
+
+    public List<Cuota> listarCuotasPendientesPorMatricula(int codigoMatricula) {
+        return cuotaDao.listarCuotasPendientesPorMatricula(codigoMatricula);
+    }
+
+    public void guardarCuota(Cuota cuota) {
+        cuotaDao.guardarCuota(cuota);
+    }
+
+    public void actualizarCuota(Cuota cuota) {
+        cuotaDao.actualizarCuota(cuota);
+    }
+    
+    public void eliminarCuota(Cuota cuota) {
+        cuotaDao.eliminarCuota(cuota);
+    }
 
     // ========== Egresos ==========
 

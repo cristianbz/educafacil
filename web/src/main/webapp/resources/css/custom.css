@@ -1758,6 +1758,13 @@ body.sidebar-mobile-open {
     color: #94a3b8;
     font-weight: 600;
 }
-
+.fila-deshabilitada {
+    opacity: 0.6; /* Hace la fila más transparente */
+    cursor: not-allowed; /* Cambia el cursor del mouse */
+    background-color: #f8f9fa !important; /* Le da un fondo gris sutil */
+}
+.fila-deshabilitada .ui-chkbox-box {
+    display: none !important; /* Oculta por completo el checkbox para evitar confusiones */
+}
 
 

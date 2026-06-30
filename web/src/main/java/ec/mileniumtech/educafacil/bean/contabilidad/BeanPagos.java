@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Catalogo;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.Cuota;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Curso;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetallePagos;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Estudiante;
@@ -49,4 +50,6 @@ public class BeanPagos implements Serializable{
 	private OfertaCursos cursoSeleccionado;
 	private String nombreCurso;
 	private boolean cursosFinalizados;
+	private List<Cuota> listaCuotas;
+	private List<Cuota> listaCuotasSeleccionadas;
 }
