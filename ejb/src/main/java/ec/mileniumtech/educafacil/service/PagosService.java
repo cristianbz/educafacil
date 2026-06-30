@@ -1,10 +1,6 @@
 package ec.mileniumtech.educafacil.service;
 
-import java.util.List;
-
-import ec.mileniumtech.educafacil.dao.impl.EmpresaMatrizDaoImpl;
 import ec.mileniumtech.educafacil.dao.impl.PagosDaoImpl;
-import ec.mileniumtech.educafacil.modelo.persistencia.entity.EmpresaMatriz;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Pagos;
 import jakarta.ejb.EJB;
 import jakarta.ejb.LocalBean;

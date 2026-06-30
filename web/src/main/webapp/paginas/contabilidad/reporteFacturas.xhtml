@@ -174,7 +174,7 @@
                 </p:column>
                 
                 <p:column headerText="Clave de acceso/ Nro. Autorización">
-                    <h:outputText value="#{fac.numeroAutorizacion != null ? fac.numeroAutorizacion : fac.claveAcceso}" />
+                    <p:outputLabel value="#{fac.numeroAutorizacion != null ? fac.numeroAutorizacion : fac.claveAcceso}" style="font-size: 11px; display: block; max-width: 150px; word-break: break-all;"/>
                 </p:column>
                 
                 <p:column headerText="Valor total" style="text-align: right;">

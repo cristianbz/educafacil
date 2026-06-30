@@ -126,4 +126,7 @@ public class Matricula implements Serializable {
 	
 	@OneToMany(mappedBy="matricula", fetch=FetchType.LAZY)
 	private List<Seguimiento> seguimientos;
+	
+	@OneToMany(mappedBy="matricula", fetch=FetchType.LAZY)
+	private List<Cuota> cuotas;
 }
