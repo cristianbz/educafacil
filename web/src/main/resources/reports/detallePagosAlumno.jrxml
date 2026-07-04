@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="detallePagosAlumno" pageWidth="530" pageHeight="842" columnWidth="530" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="6a1b3c5d-7e8f-4a2b-9c1d-3e4f5a6b7c8d">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<field name="fechaPago" class="java.util.Date">
+		<fieldDescription><![CDATA[pagos.pagoFecha]]></fieldDescription>
+	</field>
+	<field name="depaObservacion" class="java.lang.String"/>
+	<field name="depaValor" class="java.lang.Double"/>
+	<columnHeader>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="120" height="18" uuid="b0b1b2b3-1111-2222-3333-444444444444"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="130" y="0" width="250" height="18" uuid="b0b1b2b3-5555-6666-7777-888888888888"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Detalle / Observación]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="390" y="0" width="90" height="18" uuid="b0b1b2b3-9999-aaaa-bbbb-cccccccccccc"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Valor Pagado]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="18" width="500" height="1" uuid="b0b1b2b3-dddd-eeee-ffff-000000000000"/>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="18" splitType="Stretch">
+			<textField pattern="yyyy-MM-dd">
+				<reportElement x="0" y="0" width="120" height="16" uuid="c0c1c2c3-1111-2222-3333-444444444444"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fechaPago}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="130" y="0" width="250" height="16" uuid="c0c1c2c3-5555-6666-7777-888888888888"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{depaObservacion}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="390" y="0" width="90" height="16" uuid="c0c1c2c3-9999-aaaa-bbbb-cccccccccccc"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{depaValor}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>
