@@ -1,7 +1,5 @@
 package ec.mileniumtech.educafacil.backing.contabilidad;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -16,14 +14,13 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.PrimeFaces;
-import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.backing.estudiantes.ComponenteBuscaEstudiante;
 import ec.mileniumtech.educafacil.bean.contabilidad.BeanPagos;
 import ec.mileniumtech.educafacil.bean.usuarios.BeanLogin;
-import ec.mileniumtech.educafacil.modelo.persistencia.entity.Catalogo;
+import ec.mileniumtech.educafacil.modelo.persistencia.dto.DtoDeudorCurso;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Cuota;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetallePagos;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.EmpresaMatriz;
@@ -42,11 +39,14 @@ import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumTipoCatalogo;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
 import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import lombok.Setter;
+import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -61,8 +61,13 @@ public class BackingPagos implements Serializable{
     private static final long serialVersionUID = 1L;
     private static final Logger log = LogManager.getLogger(BackingPagos.class);
     private JasperReport jasperReport;
+    private JasperReport jasperReportDeudores;
+    private JasperReport jasperSubreportDetalle;
     @Getter
     private StreamedContent fileDownload;
+    @Getter
+    @Setter
+    private List<DtoDeudorCurso> listaDeudores;
     @Inject
     @Getter
     private ComponenteBuscaEstudiante componenteBuscaEstudiante;
@@ -156,6 +161,20 @@ public class BackingPagos implements Serializable{
             getBeanPagos().setListaCursos(matriculaDataService.listaOfertaCursosActivos());
             InputStream reportStream = getClass().getResourceAsStream("/reports/pagosAlumnosCurso.jasper");
             jasperReport = (JasperReport) JRLoader.loadObject(reportStream);
+            InputStream subreportStream = getClass().getResourceAsStream("/reports/detallePagosAlumno.jasper");
+            if (subreportStream != null) {
+                jasperSubreportDetalle = (JasperReport) JRLoader.loadObject(subreportStream);
+            } else {
+                InputStream jrxmlSubreport = getClass().getResourceAsStream("/reports/detallePagosAlumno.jrxml");
+                jasperSubreportDetalle = JasperCompileManager.compileReport(jrxmlSubreport);
+            }
+            InputStream reportStreamDeudores = getClass().getResourceAsStream("/reports/reporteDeudoresCurso.jasper");
+            if (reportStreamDeudores != null) {
+                jasperReportDeudores = (JasperReport) JRLoader.loadObject(reportStreamDeudores);
+            } else {
+                InputStream jrxmlDeudores = getClass().getResourceAsStream("/reports/reporteDeudoresCurso.jrxml");
+                jasperReportDeudores = JasperCompileManager.compileReport(jrxmlDeudores);
+            }
         }catch(Exception e) {
             e.printStackTrace();
         }
@@ -606,20 +625,85 @@ public class BackingPagos implements Serializable{
     public void generarReporte() {
         Map<String, Object> params = new HashMap<>();
         params.put("parametroCurso", getBeanPagos().getNombreCurso());
-        JRBeanCollectionDataSource datasource = new JRBeanCollectionDataSource(getBeanPagos().getListaCursosMatriculados());
+        params.put("subreportDetallePagos", jasperSubreportDetalle);
+        List<Matricula> matriculas = getBeanPagos().getListaCursosMatriculados();
+        Map<Integer, List<DetallePagos>> detallesPorMatricula = new HashMap<>();
+        if (matriculas != null) {
+            for (Matricula mat : matriculas) {
+                if (mat.getMatrId() != null) {
+                    List<DetallePagos> detalles = getContabilidadDataService().buscaPagosPorMatricula(mat.getMatrId());
+                    detallesPorMatricula.put(mat.getMatrId(), detalles != null ? detalles : new ArrayList<>());
+                }
+            }
+        }
+        params.put("detallesPorMatricula", detallesPorMatricula);
+        JRBeanCollectionDataSource datasource = new JRBeanCollectionDataSource(matriculas);
         try {
             JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params, datasource);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            JasperExportManager.exportReportToPdfStream(jasperPrint, baos);
-            
-            DefaultStreamedContent.Builder builder = DefaultStreamedContent.builder()
-                    .stream(() -> new ByteArrayInputStream(baos.toByteArray()))
-                    .contentType("application/pdf")
-                    .name("reportePagos.pdf");
-                fileDownload = builder.build();
+            HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "attachment; filename=\"reportePagos.pdf\"");
+            JasperExportManager.exportReportToPdfStream(jasperPrint, response.getOutputStream());
+            FacesContext.getCurrentInstance().responseComplete();
         } catch (Exception e) {
             log.error("Error al generar reporte de pagos", e);
             throw new RuntimeException(e);
+        }
+    }
+
+    public void cargarDeudores() {
+        listaDeudores = new ArrayList<>();
+        if (getBeanPagos().getListaCursosMatriculados() == null || getBeanPagos().getListaCursosMatriculados().isEmpty()) {
+            Mensaje.verMensaje(FacesMessage.SEVERITY_WARN, "Aviso", "Debe seleccionar un curso primero");
+            PrimeFaces.current().executeScript("PF('dlgDeudores').hide()");
+            return;
+        }
+        for (Matricula mat : getBeanPagos().getListaCursosMatriculados()) {
+            double valorCurso = mat.getOfertaCursos().getOcurValor();
+            double descuento = mat.getOfertaCursos().getOcurDescuento();
+            double valorFinal = valorCurso - descuento;
+            double totalPagado = mat.getTotalPagadoCurso();
+            double deuda = valorFinal - totalPagado;
+            if (deuda > 0.01) {
+                String cedula = mat.getEstudiante().getPersona().getPersDocumentoIdentidad() != null
+                        ? mat.getEstudiante().getPersona().getPersDocumentoIdentidad() : "";
+                listaDeudores.add(DtoDeudorCurso.builder()
+                        .apellidos(mat.getEstudiante().getPersona().getPersApellidos())
+                        .nombres(mat.getEstudiante().getPersona().getPersNombres())
+                        .cedula(cedula)
+                        .valorCurso(valorFinal)
+                        .totalPagado(totalPagado)
+                        .deuda(Math.round(deuda * 100.0) / 100.0)
+                        .build());
+            }
+        }
+    }
+
+    public void mostrarDialogoDeudores() {
+        cargarDeudores();
+        if (listaDeudores.isEmpty()) {
+            Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), "No hay estudiantes con deudas pendientes");
+            return;
+        }
+        Mensaje.verDialogo("dlgDeudores");
+    }
+
+    public void generarReporteDeudores() {
+        cargarDeudores();
+        if (listaDeudores == null || listaDeudores.isEmpty()) return;
+        Map<String, Object> params = new HashMap<>();
+        params.put("parametroCurso", getBeanPagos().getNombreCurso());
+        JRBeanCollectionDataSource datasource = new JRBeanCollectionDataSource(listaDeudores);
+        try {
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReportDeudores, params, datasource);
+            HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "attachment; filename=\"reporteDeudores.pdf\"");
+            JasperExportManager.exportReportToPdfStream(jasperPrint, response.getOutputStream());
+            FacesContext.getCurrentInstance().responseComplete();
+        } catch (Exception e) {
+            log.error("Error al generar reporte de deudores", e);
+            throw new RuntimeException("Error al generar reporte de deudores", e);
         }
     }
 

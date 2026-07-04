@@ -192,22 +192,26 @@
 				</div>
 				<div class="page-actions">
 
-					<!-- Acción primaria -->
+					<!-- Acciones primarias -->
 					<p:commandButton value="#{botones['selCurso']}" 
 					action="#{backingPagos.mostrarSeleccionCurso()}" 
 					styleClass="ui-button-success"
 					process="@this" icon="pi pi-check" resetValues="true" update="@form"/>
 					
+					<p:commandButton value="Deudores" 
+					styleClass="ui-button-warning" type="button"
+					icon="pi pi-exclamation-triangle"
+					onclick="PF('dlgDeudores').show()"/>
+					
 					<!-- Acciones secundarias -->
 					<p:menuButton value="Más acciones" icon="pi pi-ellipsis-v">
 
-						<p:menuitem value="Reporte PDF"  
-	                         action="#{backingPagos.generarReporte()}" 
-	                         ajax="false"
-	                         icon="pi pi-file-pdf" >        
-	        				<p:fileDownload value="#{backingPagos.fileDownload}" />
-	        			</p:menuitem>
-					</p:menuButton>
+							<p:menuitem value="Reporte cuotas pagadas"  
+			                         action="#{backingPagos.generarReporte()}" 
+			                         ajax="false" immediate="true"
+			                         icon="pi pi-file-pdf" />
+						</p:menuButton>
+					
 
 				</div>
 
@@ -229,7 +233,11 @@
 							
 					</p:column>
 					<p:column headerText="#{etiquetas['totalPagado']}" style="width:100px;">						
-						<p:badge value="#{mat.totalPagadoCurso}" styleClass="mr-2"></p:badge>
+						<span class="ui-badge ui-widget mr-2">
+					        $ <h:outputText value="#{mat.totalPagadoCurso}">
+					            <f:convertNumber minFractionDigits="2" maxFractionDigits="2" />
+					        </h:outputText>
+					    </span>
 					</p:column>
 					<p:column headerText="#{etiquetas['valor']}" style="width:80px;">
 						<p:outputLabel value="#{mat.ofertaCursos.ocurValor}" style="color:green"/>
@@ -381,6 +389,70 @@
 					//]]>
 				</script>
 			
+		</h:form>
+
+		<h:form id="formDeudores">
+			<p:remoteCommand name="rcCargarDeudores" action="#{backingPagos.cargarDeudores()}"
+				update="@([id$=panelDeudores]) @([id$=growlDeudores])"
+				process="@this" />
+			<p:growl id="growlDeudores" life="3000" showDetail="true" />
+			<p:dialog id="dlgDeudores" widgetVar="dlgDeudores" header="Estudiantes con deuda" modal="true"
+				responsive="true" resizable="false" fitViewport="true" width="900" style="font-size: 10px;"
+				onShow="rcCargarDeudores()">
+				<p:scrollPanel mode="native" style="max-height:400px;">
+					<p:outputPanel id="panelDeudores">
+						<div class="ui-fluid p-formgrid p-grid" style="margin: 0;">
+							<div class="p-field p-col-12"
+								style="background: #fff3cd; border-radius: 4px; padding: 8px; margin-bottom: 8px; border-left: 4px solid #ffc107;">
+								<span style="font-weight: bold; font-size: 11px;">Curso:</span>
+								<span style="margin-left: 4px; color: #856404;">#{backingPagos.beanPagos.nombreCurso}</span>
+								<span style="margin-left: 20px; font-weight: bold; font-size: 11px;">Total deudores:</span>
+								<span style="margin-left: 4px; color: #dc3545; font-weight: bold;">#{backingPagos.listaDeudores.size()}</span>
+							</div>
+							<div class="p-field p-col-12">
+								<p:dataTable id="tablaDeudores" var="deudor" reflow="true"
+									value="#{backingPagos.listaDeudores}" emptyMessage="No hay estudiantes con deudas"
+									style="font-size: 10px; width: 100%;">
+									<p:column headerText="Apellidos" style="width:20%;">
+										<p:outputLabel value="#{deudor.apellidos}" />
+									</p:column>
+									<p:column headerText="Nombres" style="width:20%;">
+										<p:outputLabel value="#{deudor.nombres}" />
+									</p:column>
+									<p:column headerText="Cédula" style="width:15%;">
+										<p:outputLabel value="#{deudor.cedula}" />
+									</p:column>
+									<p:column headerText="Valor Curso" style="width:15%;">
+										<p:outputLabel value="$ " style="color:green;" />
+									    <p:outputLabel value="#{deudor.valorCurso}" style="color:green;">
+									        <f:convertNumber type="number" minFractionDigits="2" maxFractionDigits="2" />
+									    </p:outputLabel>
+									</p:column>
+									<p:column headerText="Total Pagado" style="width:15%;">
+										<p:outputLabel value="$ " style="color:blue;" />
+									    <p:outputLabel value="#{deudor.totalPagado}" style="color:blue;">
+									        <f:convertNumber type="number" minFractionDigits="2" maxFractionDigits="2" />
+									    </p:outputLabel>
+									</p:column>
+									<p:column headerText="Deuda" style="width:15%;">
+										<p:outputLabel value="$ #{deudor.deuda}" style="color:red; font-weight:bold;" />
+									</p:column>
+								</p:dataTable>
+							</div>
+							<div class="p-field p-col-12" style="text-align: center; border-top: 1px solid #dee2e6; padding-top: 12px;">
+								<p:commandButton value="Descargar PDF" icon="pi pi-file-pdf"
+									styleClass="ui-button-sm ui-button-danger"
+									action="#{backingPagos.generarReporteDeudores()}"
+									ajax="false"
+									onclick="PF('dlgDeudores').hide()" />
+								<p:commandButton value="Cerrar" icon="pi pi-times-circle"
+									styleClass="ui-button-sm" style="margin-left: 8px;"
+									onclick="PF('dlgDeudores').hide()" type="button" />
+							</div>
+						</div>
+					</p:outputPanel>
+				</p:scrollPanel>
+			</p:dialog>
 		</h:form>
 	</ui:define>
 </ui:composition>

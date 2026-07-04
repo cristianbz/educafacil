@@ -40,9 +40,11 @@
          -->
          
        <property name="hibernate.cache.use_second_level_cache" value="false" />    
-<property name="hibernate.cache.region.factory_class" value="org.hibernate.cache.infinispan.JndiInfinispanRegionFactory" />
-<property name="hibernate.cache.infinispan.cachemanager" value="java:CacheManager" />
-
+		<property name="hibernate.cache.region.factory_class" value="org.hibernate.cache.infinispan.JndiInfinispanRegionFactory" />
+		<property name="hibernate.cache.infinispan.cachemanager" value="java:CacheManager" />
+		<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+        
+        
          <!-- Properties for Hibernate -->
          <property name="hibernate.show_sql" value="false" />
          
