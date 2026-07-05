@@ -13,6 +13,8 @@ import ec.mileniumtech.educafacil.service.sri.recepcion.RespuestaSolicitud;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.xml.ws.BindingProvider;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Servicio para el consumo de los Web Services del SRI en sus ambientes de pruebas y producción.
@@ -21,11 +23,7 @@ import jakarta.xml.ws.BindingProvider;
 @LocalBean
 public class SriWebServiceService {
 
-//    private static final String WS_RECEPCION_PRUEBAS = "https://celcer.sri.gob.ec/comprobantes-electronicos-ws/RecepcionComprobantesOffline?wsdl";
-//    private static final String WS_AUTORIZACION_PRUEBAS = "https://celcer.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantesOffline?wsdl";
-//    
-//    private static final String WS_RECEPCION_PRODUCCION = "https://cel.sri.gob.ec/comprobantes-electronicos-ws/RecepcionComprobantesOffline?wsdl";
-//    private static final String WS_AUTORIZACION_PRODUCCION = "https://cel.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantesOffline?wsdl";
+    private static final Logger log = LogManager.getLogger(SriWebServiceService.class);
 
     /**
      * Envía un comprobante firmado al SRI para su recepción.
@@ -66,21 +64,12 @@ public class SriWebServiceService {
         bp.getRequestContext().put("com.sun.xml.ws.request.timeout", 10000);
         RespuestaComprobante respuesta = port.autorizacionComprobante(claveAcceso);
 
-        // ── DIAGNÓSTICO ──────────────────────────────────────────────────
-//        if (respuesta.getAutorizaciones() != null &&
-//            !respuesta.getAutorizaciones().getAutorizacion().isEmpty()) {
-//            
-//            Autorizacion aut = respuesta.getAutorizaciones().getAutorizacion().get(0);
-//            String compXml = aut.getComprobante(); // ← el XML que devuelve el SRI
-//            
-//            if (compXml != null) {
-//                System.out.println("=== COMPROBANTE SRI PRIMEROS 100 ===");
-//                System.out.println(compXml.substring(0, Math.min(100, compXml.length())));
-//                System.out.println("Char[0] hex: " + Integer.toHexString((int) compXml.charAt(0)));
-//                System.out.println("====================================");
-//            }
-//        }
-        // ─────────────────────────────────────────────────────────────────
+        if (log.isDebugEnabled() && respuesta.getAutorizaciones() != null
+                && !respuesta.getAutorizaciones().getAutorizacion().isEmpty()) {
+            Autorizacion aut = respuesta.getAutorizaciones().getAutorizacion().get(0);
+            log.debug("Respuesta SRI para claveAcceso={}: estado={}, numAutorizacion={}",
+                    claveAcceso, aut.getEstado(), aut.getNumeroAutorizacion());
+        }
 
         return respuesta;
     }

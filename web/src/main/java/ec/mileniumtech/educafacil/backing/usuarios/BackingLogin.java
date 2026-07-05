@@ -176,7 +176,7 @@ public class BackingLogin implements Serializable{
 //	    try {
 //			ec.redirect(ec.getRequestContextPath() + "/login.cap");
 //		} catch (IOException e) {
-//			e.printStackTrace();
+			// Se elimina printStackTrace, el error se registra vía Logger arriba
 //		}
 	    
 		try {

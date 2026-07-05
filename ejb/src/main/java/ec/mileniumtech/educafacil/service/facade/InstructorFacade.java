@@ -1,13 +1,16 @@
 package ec.mileniumtech.educafacil.service.facade;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.List;
 
-import ec.mileniumtech.educafacil.dao.impl.CapacitacionDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.CatalogoDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.ConfiguracionesDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.EmpresaDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.FormacionDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.InstructorDaoImpl;
+import ec.mileniumtech.educafacil.dao.CapacitacionDao;
+import ec.mileniumtech.educafacil.dao.CatalogoDao;
+import ec.mileniumtech.educafacil.dao.ConfiguracionesDao;
+import ec.mileniumtech.educafacil.dao.EmpresaDao;
+import ec.mileniumtech.educafacil.dao.FormacionDao;
+import ec.mileniumtech.educafacil.dao.InstructorDao;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Capacitacion;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Catalogo;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Configuraciones;
@@ -22,23 +25,25 @@ import jakarta.ejb.Stateless;
 @LocalBean
 public class InstructorFacade {
 
-    @EJB
-    private InstructorDaoImpl instructorDao;
+    private static final Logger log = LogManager.getLogger(InstructorFacade.class);
 
     @EJB
-    private FormacionDaoImpl formacionDao;
+    private InstructorDao instructorDao;
 
     @EJB
-    private CapacitacionDaoImpl capacitacionDao;
+    private FormacionDao formacionDao;
 
     @EJB
-    private ConfiguracionesDaoImpl configuracionesDao;
+    private CapacitacionDao capacitacionDao;
 
     @EJB
-    private CatalogoDaoImpl catalogoDao;
+    private ConfiguracionesDao configuracionesDao;
 
     @EJB
-    private EmpresaDaoImpl empresaDao;
+    private CatalogoDao catalogoDao;
+
+    @EJB
+    private EmpresaDao empresaDao;
 
     // ========== Instructor ==========
 
@@ -104,3 +109,4 @@ public class InstructorFacade {
         empresaDao.agregarEmpresa(empresa);
     }
 }
+

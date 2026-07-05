@@ -1,6 +1,9 @@
 package ec.mileniumtech.educafacil.service;
 
-import ec.mileniumtech.educafacil.dao.impl.NotaCreditoDaoImpl;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import ec.mileniumtech.educafacil.dao.NotaCreditoDao;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.NotaCredito;
 import ec.mileniumtech.educafacil.service.strategy.NotaCreditoSriStrategy;
 import ec.mileniumtech.educafacil.service.strategy.ProcesadorDocumentosElectronicos;
@@ -12,8 +15,10 @@ import jakarta.ejb.Stateless;
 @LocalBean
 public class NotaCreditoService {
 
+    private static final Logger log = LogManager.getLogger(NotaCreditoService.class);
+
     @EJB
-    private NotaCreditoDaoImpl notaCreditoDao;
+    private NotaCreditoDao notaCreditoDao;
 
     @EJB
     private ProcesadorDocumentosElectronicos procesador;
@@ -26,4 +31,5 @@ public class NotaCreditoService {
         procesador.procesar(notaCreditoEntity, notaCreditoStrategy);
     }
 }
+
 

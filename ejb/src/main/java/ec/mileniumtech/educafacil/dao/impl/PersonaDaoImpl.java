@@ -3,7 +3,8 @@
  */
 package ec.mileniumtech.educafacil.dao.impl;
 
-import java.util.List;
+
+import ec.mileniumtech.educafacil.dao.PersonaDao;import java.util.List;
 
 import org.hibernate.Hibernate;
 
@@ -23,7 +24,7 @@ import jakarta.persistence.Query;
 */
 @LocalBean
 @Stateless
-public class PersonaDaoImpl extends GenericoDaoImpl<Persona, Long>{
+public class PersonaDaoImpl extends GenericoDaoImpl<Persona, Long> implements PersonaDao{
 	public PersonaDaoImpl() {
 		
 	}

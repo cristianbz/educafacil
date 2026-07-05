@@ -3,7 +3,8 @@
  */
 package ec.mileniumtech.educafacil.dao.impl;
 
-import java.util.List;
+
+import ec.mileniumtech.educafacil.dao.VendedorDao;import java.util.List;
 
 import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Vendedor;
@@ -19,7 +20,7 @@ import jakarta.persistence.Query;
 */
 @LocalBean
 @Stateless
-public class VendedorDaoImpl extends GenericoDaoImpl<Vendedor,Long>{
+public class VendedorDaoImpl extends GenericoDaoImpl<Vendedor,Long> implements VendedorDao{
 	public VendedorDaoImpl() {
 		
 	}

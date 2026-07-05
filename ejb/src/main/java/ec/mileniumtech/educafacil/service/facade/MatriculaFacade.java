@@ -1,21 +1,24 @@
 package ec.mileniumtech.educafacil.service.facade;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import ec.mileniumtech.educafacil.dao.impl.AreaDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.CursoDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.EspecialidadDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.EstudianteDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.MatriculaDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.MedioInformacionDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.OfertaCapacitacionDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.OfertaCursosDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.PersonaDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.UsuarioDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.UsuarioRolDaoImpl;
+import ec.mileniumtech.educafacil.dao.AreaDao;
+import ec.mileniumtech.educafacil.dao.CursoDao;
+import ec.mileniumtech.educafacil.dao.EspecialidadDao;
+import ec.mileniumtech.educafacil.dao.EstudianteDao;
+import ec.mileniumtech.educafacil.dao.MatriculaDao;
+import ec.mileniumtech.educafacil.dao.MedioInformacionDao;
+import ec.mileniumtech.educafacil.dao.OfertaCapacitacionDao;
+import ec.mileniumtech.educafacil.dao.OfertaCursosDao;
+import ec.mileniumtech.educafacil.dao.PersonaDao;
+import ec.mileniumtech.educafacil.dao.UsuarioDao;
+import ec.mileniumtech.educafacil.dao.UsuarioRolDao;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.DtoMatriculasCurso;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.ObjetosMenuDto;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Area;
@@ -37,38 +40,40 @@ import jakarta.ejb.Stateless;
 @LocalBean
 public class MatriculaFacade {
 
-    @EJB
-    private MatriculaDaoImpl matriculaDao;
+    private static final Logger log = LogManager.getLogger(MatriculaFacade.class);
 
     @EJB
-    private EstudianteDaoImpl estudianteDao;
+    private MatriculaDao matriculaDao;
 
     @EJB
-    private PersonaDaoImpl personaDao;
+    private EstudianteDao estudianteDao;
 
     @EJB
-    private OfertaCursosDaoImpl ofertaCursosDao;
+    private PersonaDao personaDao;
 
     @EJB
-    private OfertaCapacitacionDaoImpl ofertaCapacitacionDao;
+    private OfertaCursosDao ofertaCursosDao;
 
     @EJB
-    private UsuarioDaoImpl usuarioDao;
+    private OfertaCapacitacionDao ofertaCapacitacionDao;
 
     @EJB
-    private UsuarioRolDaoImpl usuarioRolDao;
+    private UsuarioDao usuarioDao;
 
     @EJB
-    private CursoDaoImpl cursoDao;
+    private UsuarioRolDao usuarioRolDao;
 
     @EJB
-    private AreaDaoImpl areaDao;
+    private CursoDao cursoDao;
 
     @EJB
-    private EspecialidadDaoImpl especialidadDao;
+    private AreaDao areaDao;
 
     @EJB
-    private MedioInformacionDaoImpl medioInformacionDao;
+    private EspecialidadDao especialidadDao;
+
+    @EJB
+    private MedioInformacionDao medioInformacionDao;
 
     // ========== Matricula ==========
 
@@ -341,3 +346,4 @@ public class MatriculaFacade {
     
 
 }
+

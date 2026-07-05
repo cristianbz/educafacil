@@ -3,7 +3,8 @@
  */
 package ec.mileniumtech.educafacil.dao.impl;
 
-import java.util.List;
+
+import ec.mileniumtech.educafacil.dao.CursoDao;import java.util.List;
 
 import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Curso;
@@ -19,7 +20,7 @@ import jakarta.persistence.Query;
 */
 @LocalBean
 @Stateless
-public class CursoDaoImpl extends GenericoDaoImpl<Curso, Long>{
+public class CursoDaoImpl extends GenericoDaoImpl<Curso, Long> implements CursoDao{
 	public CursoDaoImpl() {
 		
 	}

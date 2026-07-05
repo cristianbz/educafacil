@@ -14,7 +14,7 @@ import ec.mileniumtech.educafacil.modelo.persistencia.entity.Persona;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Rol;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Usuario;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.UsuarioRol;
-import ec.mileniumtech.educafacil.service.AdministracionService;
+import ec.mileniumtech.educafacil.service.SeguridadService;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
@@ -46,7 +46,7 @@ public class BackingAccesoUsuario implements Serializable {
     private BeanAccesoUsuario beanAccesoUsuario;
 
     @EJB
-    private AdministracionService administracionService;
+    private SeguridadService seguridadService;
 
     private String passwordOriginal;
 
@@ -57,7 +57,7 @@ public class BackingAccesoUsuario implements Serializable {
     @PostConstruct
     public void init() {
         cargarUsuarios();
-        getBeanAccesoUsuario().setListaRoles(administracionService.listarRolesActivos());
+        getBeanAccesoUsuario().setListaRoles(seguridadService.listarRolesActivos());
         Usuario u = new Usuario();
         u.setPersona(new Persona());
         getBeanAccesoUsuario().setUsuario(u);
@@ -120,7 +120,7 @@ public class BackingAccesoUsuario implements Serializable {
             // El usuaUsuario (username para login/consulta) será igual al correo electrónico de la persona
             usuario.setUsuaUsuario(usuario.getPersona().getPersDocumentoIdentidad());
 
-            administracionService.guardarUsuario(usuario);
+            seguridadService.guardarUsuario(usuario);
             cargarUsuarios();
             Mensaje.ocultarDialogo("dlgUsuario");
             Mensaje.verMensaje(FacesMessage.SEVERITY_INFO,
@@ -142,7 +142,7 @@ public class BackingAccesoUsuario implements Serializable {
     public void eliminarLogicoUsuario(Usuario usuario) {
         try {
             if (usuario != null && usuario.getUsuaId() != null) {
-                administracionService.eliminarLogicoUsuario(usuario.getUsuaId());
+                seguridadService.eliminarLogicoUsuario(usuario.getUsuaId());
                 cargarUsuarios();
                 Mensaje.verMensaje(FacesMessage.SEVERITY_WARN,
                         getMensajesBacking().getPropiedad("info"),
@@ -169,7 +169,7 @@ public class BackingAccesoUsuario implements Serializable {
         if (usuario != null && usuario.getUsuaId() != null) {
             getBeanAccesoUsuario().setUsuarioSeleccionado(usuario);
             getBeanAccesoUsuario().setRolesDelUsuario(
-                    administracionService.listarRolesPorUsuarioActivos(usuario.getUsuaId()));
+                    seguridadService.listarRolesPorUsuarioActivos(usuario.getUsuaId()));
             Mensaje.verDialogo("dlgRolesAsignacion");
         } else {
             Mensaje.verMensaje(FacesMessage.SEVERITY_WARN,
@@ -205,13 +205,13 @@ public class BackingAccesoUsuario implements Serializable {
             Integer rolId = rol.getRolId();
 
             if (rolAsignado(rolId)) {
-                administracionService.quitarRolDeUsuario(usuarioId, rolId);
+                seguridadService.quitarRolDeUsuario(usuarioId, rolId);
             } else {
-                administracionService.asignarRolAUsuario(usuarioId, rolId);
+                seguridadService.asignarRolAUsuario(usuarioId, rolId);
             }
             // Refrescar roles asignados
             getBeanAccesoUsuario().setRolesDelUsuario(
-                    administracionService.listarRolesPorUsuarioActivos(usuarioId));
+                    seguridadService.listarRolesPorUsuarioActivos(usuarioId));
 
         } catch (Exception e) {
             log.error("Error al alternar rol del usuario", e);
@@ -243,7 +243,7 @@ public class BackingAccesoUsuario implements Serializable {
      */
     public java.util.List<UsuarioRol> obtenerRolesDeUsuarioPorId(Integer usuarioId) {
         if (usuarioId == null) return new java.util.ArrayList<>();
-        return administracionService.listarRolesPorUsuarioActivos(usuarioId);
+        return seguridadService.listarRolesPorUsuarioActivos(usuarioId);
     }
 
     /**
@@ -305,7 +305,7 @@ public class BackingAccesoUsuario implements Serializable {
     // =========================================================
 
     private void cargarUsuarios() {
-        getBeanAccesoUsuario().setListaUsuarios(administracionService.listarUsuarios());
+        getBeanAccesoUsuario().setListaUsuarios(seguridadService.listarUsuarios());
     }
 
     /**

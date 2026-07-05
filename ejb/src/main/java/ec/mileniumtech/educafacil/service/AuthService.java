@@ -1,6 +1,6 @@
 package ec.mileniumtech.educafacil.service;
 
-import ec.mileniumtech.educafacil.dao.impl.UsuarioDaoImpl;
+import ec.mileniumtech.educafacil.dao.UsuarioDao;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Usuario;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.UsuarioRol;
 import ec.mileniumtech.educafacil.utilitarios.encriptacion.Encriptar;
@@ -10,16 +10,20 @@ import jakarta.ejb.Stateless;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
- * Servicio para manejar la autenticación y validación de usuarios.
+ * Servicio para manejar la autenticaciÃ³n y validaciÃ³n de usuarios.
  */
 @Stateless
 @LocalBean
 public class AuthService {
 
+    private static final Logger log = LogManager.getLogger(AuthService.class);
+
 	 @EJB
-	    private UsuarioDaoImpl usuarioDao;
+	    private UsuarioDao usuarioDao;
 
 	    public Usuario autenticar(String username, String password) {
 	        Usuario usuario = usuarioDao.consultarUsuarioPorDocumento(username);
@@ -55,3 +59,4 @@ public class AuthService {
 	        return new ArrayList<>();
 	    }
 	}
+

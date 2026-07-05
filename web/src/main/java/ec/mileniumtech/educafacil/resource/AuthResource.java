@@ -6,6 +6,7 @@ import ec.mileniumtech.educafacil.modelo.persistencia.entity.Usuario;
 import ec.mileniumtech.educafacil.service.AuthService;
 import ec.mileniumtech.educafacil.utilitarios.seguridad.JwtUtil;
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -32,7 +33,7 @@ public class AuthResource {
     @Operation(summary = "Inicia sesión y obtiene un token JWT", description = "Valida las credenciales de un usuario y retorna un token válido por 8 horas.")
     @APIResponse(responseCode = "200", description = "Autenticación exitosa")
     @APIResponse(responseCode = "401", description = "Credenciales inválidas")
-    public Response login(AuthDto authDto) {
+    public Response login(@Valid AuthDto authDto) {
         Usuario usuario = authService.autenticar(authDto.getUsername(), authDto.getPassword());
 
         if (usuario != null) {

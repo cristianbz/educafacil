@@ -5,10 +5,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import ec.mileniumtech.educafacil.dao.impl.ClienteDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.FacturaDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.PuntoEmisionDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.CatalogoItemDaoImpl;
+import ec.mileniumtech.educafacil.dao.ClienteDao;
+import ec.mileniumtech.educafacil.dao.FacturaDao;
+import ec.mileniumtech.educafacil.dao.PuntoEmisionDao;
+import ec.mileniumtech.educafacil.dao.CatalogoItemDao;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Cliente;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleFactura;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetallePagos;
@@ -17,31 +17,36 @@ import ec.mileniumtech.educafacil.modelo.persistencia.entity.Pagos;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.PagosFacturados;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.PuntoEmision;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.InfoAdicionalDto;
+import ec.mileniumtech.educafacil.dao.excepciones.BusinessException;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.CatalogoItem;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Persona;
 import jakarta.ejb.EJB;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.transaction.Transactional;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
- * Servicio orquestador para el manejo de la entidad Factura y su integración con el SRI.
+ * Servicio orquestador para el manejo de la entidad Factura y su integraciÃ³n con el SRI.
  */
 @Stateless
 @LocalBean
 public class FacturacionService {
 
-    @EJB
-    private FacturaDaoImpl facturaDao;
+    private static final Logger log = LogManager.getLogger(FacturacionService.class);
 
     @EJB
-    private ClienteDaoImpl clienteDao;
+    private FacturaDao facturaDao;
 
     @EJB
-    private PuntoEmisionDaoImpl puntoEmisionDao;
+    private ClienteDao clienteDao;
 
     @EJB
-    private CatalogoItemDaoImpl catalogoItemDao;
+    private PuntoEmisionDao puntoEmisionDao;
+
+    @EJB
+    private CatalogoItemDao catalogoItemDao;
 
     @EJB
     private IntegracionSriService integracionSriService;
@@ -50,17 +55,17 @@ public class FacturacionService {
     private AwsS3Service awsS3Service;
 
     /**
-     * Crea una factura a partir de un registro de pago y procesa la facturación electrónica.
+     * Crea una factura a partir de un registro de pago y procesa la facturaciÃ³n electrÃ³nica.
      * 
      * @param pago Entidad Pagos.
      * @throws Exception Si ocurre un error en el proceso.
      */
     @Transactional
     public void crearFacturaDesdePago(Pagos pago) throws Exception {
-        // 1. Obtener Punto de Emisión activo
+        // 1. Obtener Punto de EmisiÃ³n activo
         List<PuntoEmision> puntos = puntoEmisionDao.listarPuntosEmisionActivos();
         if (puntos.isEmpty()) {
-            throw new Exception("No hay puntos de emisión activos configurados.");
+            throw new BusinessException("No hay puntos de emisiÃ³n activos configurados.", "BIZ-FACT-NO-PUNTO");
         }
         PuntoEmision puem = puntos.get(0);
 
@@ -70,7 +75,7 @@ public class FacturacionService {
         if (cliente == null) {
             cliente = new Cliente();
             cliente.setNumeroIdentificacion(persona.getPersDocumentoIdentidad());
-            cliente.setTipoIdentificacion(5); // Cédula por defecto
+            cliente.setTipoIdentificacion(5); // CÃ©dula por defecto
             cliente.setNombresCompletos(persona.getPersApellidos() + " " + persona.getPersNombres());
             cliente.setCorreo(persona.getPersCorreoElectronico());
             cliente.setDireccion(persona.getPersDomicilio() != null ? persona.getPersDomicilio() : "QUITO");
@@ -85,7 +90,7 @@ public class FacturacionService {
         factura.setPuntoEmision(puem);
         factura.setFechaEmision(LocalDate.now());
         
-        // Generar número secuencial (Formato: EST-PTO-SEC)
+        // Generar nÃºmero secuencial (Formato: EST-PTO-SEC)
         int nuevoSecuencial = puem.getSecuencialFactura() + 1;
         String numeroFactura = String.format("%03d-%03d-%09d", 
                 Integer.parseInt(puem.getEstablecimientos().getEstaCodigo()), 
@@ -93,7 +98,7 @@ public class FacturacionService {
                 nuevoSecuencial);
         factura.setNumero(numeroFactura);
         
-        // Actualizar secuencial en Punto de Emisión
+        // Actualizar secuencial en Punto de EmisiÃ³n
         puem.setSecuencialFactura(nuevoSecuencial);
         puntoEmisionDao.actualizar(puem);
 
@@ -101,7 +106,7 @@ public class FacturacionService {
         List<DetalleFactura> detalles = new ArrayList<>();
         BigDecimal subtotal = BigDecimal.ZERO;
         
-        // Intentar obtener un ítem de catálogo para servicios
+        // Intentar obtener un Ã­tem de catÃ¡logo para servicios
         CatalogoItem itemDefecto = catalogoItemDao.buscarPorCodigo("SERV");
         if (itemDefecto == null) {
             // Si no existe, usamos el primero que encontremos o creamos uno ficticio para el ejemplo
@@ -126,7 +131,7 @@ public class FacturacionService {
         factura.setDetalles(detalles);
         factura.setSubtotal(subtotal);
         factura.setDescuentoTotal(BigDecimal.ZERO);
-        factura.setTotalImpuestos(BigDecimal.ZERO); // Educación suele ser 0%
+        factura.setTotalImpuestos(BigDecimal.ZERO); // EducaciÃ³n suele ser 0%
         factura.setTotal(subtotal);
         factura.setNotas(pago.getPagoObservacion() != null ? pago.getPagoObservacion() : "Generada desde Pago ID: " + pago.getPagoId());
 
@@ -136,7 +141,7 @@ public class FacturacionService {
         pafa.setFactura(factura);
         pafa.setFecha(LocalDate.now());
         pafa.setMonto(new BigDecimal(pago.getDetallePagos().stream().mapToDouble(DetallePagos::getDepaValor).sum()));
-        pafa.setMetodo("01"); // Sin utilización del sistema financiero por defecto
+        pafa.setMetodo("01"); // Sin utilizaciÃ³n del sistema financiero por defecto
         pafa.setReferencia("PAGO-" + pago.getPagoId());
         pagosFact.add(pafa);
         factura.setPagos(pagosFact);
@@ -144,25 +149,23 @@ public class FacturacionService {
         // 6. Persistir Factura
         facturaDao.guardar(factura);
         
-        // 7. Disparar Facturación Electrónica
+        // 7. Disparar FacturaciÃ³n ElectrÃ³nica
         try {
             integracionSriService.procesarFacturaElectronica(factura);
         } catch (Exception e) {
-            // El error en el SRI no debería revertir la creación de la factura en DB
-            // pero informamos al usuario
-            System.err.println("Error SRI: " + e.getMessage());
+            log.error("Error al procesar factura electrÃ³nica para facturaId={}. La factura se creÃ³ en BD pero no se emitiÃ³ electrÃ³nicamente.", factura.getId(), e);
         }
     }
 
     /**
-     * Procesa la emisión electrónica de una factura existente.
+     * Procesa la emisiÃ³n electrÃ³nica de una factura existente.
      * @param facturaId ID de la factura.
      * @throws Exception Si ocurre un error.
      */
     public void emitirFactura(Integer facturaId,List<InfoAdicionalDto> informacionAdicional) throws Exception {
         Factura factura = facturaDao.buscarFacturaPorId(facturaId);
         if (factura == null) {
-            throw new Exception("No se encontró la factura con ID: " + facturaId);
+            throw new BusinessException("No se encontrÃ³ la factura con ID: " + facturaId, "BIZ-FACT-NOT-FOUND");
         }
         factura.setListaInfoAdicional(informacionAdicional);
         integracionSriService.procesarFacturaElectronica(factura);
@@ -170,7 +173,7 @@ public class FacturacionService {
 
     /**
      * Sube manualmente los documentos (PDF y XML) de una factura ya autorizada a AWS S3.
-     * Útil para migrar facturas existentes que tienen bytes en BD pero no tienen URLs de S3.
+     * Ãštil para migrar facturas existentes que tienen bytes en BD pero no tienen URLs de S3.
      *
      * @param facturaId ID de la factura a migrar.
      * @throws Exception Si no se puede subir alguno de los documentos.
@@ -178,15 +181,15 @@ public class FacturacionService {
     public void subirDocumentosFacturaAws(Integer facturaId) throws Exception {
         Factura factura = facturaDao.buscarFacturaPorId(facturaId);
         if (factura == null) {
-            throw new Exception("No se encontró la factura con ID: " + facturaId);
+            throw new BusinessException("No se encontrÃ³ la factura con ID: " + facturaId, "BIZ-FACT-NOT-FOUND");
         }
 
         ec.mileniumtech.educafacil.modelo.persistencia.entity.DocumentoElectronico doc = factura.getDocumentoElectronico();
         if (doc == null) {
-            throw new Exception("La factura no tiene un documento electrónico asociado.");
+            throw new BusinessException("La factura no tiene un documento electrÃ³nico asociado.", "BIZ-FACT-NO-DOC");
         }
         if (!"AUTORIZADO".equals(doc.getEstado())) {
-            throw new Exception("Solo se pueden subir documentos de facturas en estado AUTORIZADO.");
+            throw new BusinessException("Solo se pueden subir documentos de facturas en estado AUTORIZADO.", "BIZ-FACT-NOT-AUT");
         }
 
         String numeroFactura = factura.getNumero().replace("/", "-");
@@ -223,7 +226,8 @@ public class FacturacionService {
         facturaDao.actualizarFactura(factura);
 
         if (huboError) {
-            throw new Exception("Se completó parcialmente: " + errMsg.toString().trim());
+            throw new BusinessException("Se completÃ³ parcialmente: " + errMsg.toString().trim(), "BIZ-FACT-PARTIAL");
         }
     }
 }
+

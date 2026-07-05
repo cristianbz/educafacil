@@ -1,6 +1,8 @@
 package ec.mileniumtech.educafacil.modelo.persistencia.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -23,30 +25,38 @@ public class Factura {
     @Column(name = "fact_id")
     private Integer id;
 
+    @NotNull(message = "{factura.cliente.required}")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "clie_id", nullable = false)
     private Cliente cliente;
 
     // Asumiendo que existe una entidad PuntoEmision ya creada
+    @NotNull(message = "{factura.puntoEmision.required}")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "puem_id", nullable = false)
     private PuntoEmision puntoEmision;
 
+    @NotBlank(message = "{factura.numero.required}")
     @Column(name = "fact_numero", length = 20, nullable = false)
     private String numero;
 
+    @NotNull(message = "{factura.fechaEmision.required}")
     @Column(name = "fact_fecha_emision", nullable = false)
     private LocalDate fechaEmision;
 
+    @NotNull(message = "{factura.subtotal.required}")
     @Column(name = "fact_subtotal", precision = 6, scale = 2, nullable = false)
     private BigDecimal subtotal;
 
+    @NotNull(message = "{factura.descuentoTotal.required}")
     @Column(name = "fact_descuento_total", precision = 6, scale = 2, nullable = false)
     private BigDecimal descuentoTotal;
 
+    @NotNull(message = "{factura.totalImpuestos.required}")
     @Column(name = "fact_total_impuestos", precision = 6, scale = 2, nullable = false)
     private BigDecimal totalImpuestos;
 
+    @NotNull(message = "{factura.total.required}")
     @Column(name = "fact_total", precision = 6, scale = 2, nullable = false)
     private BigDecimal total;
 

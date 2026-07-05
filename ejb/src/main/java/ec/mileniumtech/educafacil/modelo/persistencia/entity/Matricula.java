@@ -18,6 +18,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -65,6 +67,7 @@ public class Matricula implements Serializable {
 	@Column(name="matr_id")
 	private Integer matrId;
    
+	@NotBlank(message = "{matricula.estado.required}")
 	@Column(name="matr_estado")
 	private String matrEstado;
 	
@@ -105,6 +108,7 @@ public class Matricula implements Serializable {
 	@Transient
 	private double totalPagadoCurso;
 	
+	@NotNull(message = "{matricula.estudiante.required}")
 	@ManyToOne(optional = false)
 	@JoinColumn(name="estu_id")
 	private Estudiante estudiante;

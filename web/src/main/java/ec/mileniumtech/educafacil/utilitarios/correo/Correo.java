@@ -17,11 +17,15 @@ import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 /**
 *@author christian  Jul 7, 2024
 *
 */
 public class Correo extends Thread {
+
+    private static final Logger log = LogManager.getLogger(Correo.class);
 
 	private String asunto;
 	private String rutaArchivo;
@@ -178,14 +182,14 @@ public class Correo extends Thread {
 			return true;
 
 		} catch (MessagingException mex) {
-			mex.printStackTrace();
+			log.error("Error al enviar correo. Asunto: {}, Destinatario: {}", subject, to, mex);
 			Exception ex = null;
 			if ((ex = mex.getNextException()) != null) {
-				ex.printStackTrace();
+				log.error("Error anidado en envío de correo", ex);
 			}
 			return false;
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error("Error de E/S al enviar correo. Asunto: {}", subject, e);
 			return false;
 		}
 	}

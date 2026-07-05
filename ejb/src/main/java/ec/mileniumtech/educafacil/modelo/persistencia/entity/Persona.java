@@ -16,6 +16,9 @@ import jakarta.persistence.NamedQueries;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -48,12 +51,18 @@ public class Persona implements Serializable {
 	@Column(name="pers_id")
 	private int persId;
    
+	@NotBlank(message = "{persona.nombres.required}")
+	@Size(min = 2, max = 100, message = "{persona.nombres.size}")
 	@Column(name="pers_nombres")
 	private String persNombres;
 	
+	@NotBlank(message = "{persona.apellidos.required}")
+	@Size(min = 2, max = 100, message = "{persona.apellidos.size}")
 	@Column(name="pers_apellidos")
 	private String persApellidos;
 	
+	@NotBlank(message = "{persona.documentoIdentidad.required}")
+	@Size(min = 10, max = 13, message = "{persona.documentoIdentidad.size}")
 	@Column(name="pers_documento_identidad")
 	private String persDocumentoIdentidad;
 	
@@ -63,6 +72,7 @@ public class Persona implements Serializable {
 	@Column(name="pers_telefono_casa")
 	private String persTelefonoCasa;
 	
+	@Email(message = "{persona.correoElectronico.email}")
 	@Column(name="pers_correo_electronico")
 	private String persCorreoElectronico;
 	

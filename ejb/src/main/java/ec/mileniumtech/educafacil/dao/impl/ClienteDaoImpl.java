@@ -1,6 +1,7 @@
 package ec.mileniumtech.educafacil.dao.impl;
 
-import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
+
+import ec.mileniumtech.educafacil.dao.ClienteDao;import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Cliente;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
@@ -14,7 +15,7 @@ import java.util.List;
  */
 @LocalBean
 @Stateless
-public class ClienteDaoImpl extends GenericoDaoImpl<Cliente, Integer> {
+public class ClienteDaoImpl extends GenericoDaoImpl<Cliente, Integer> implements ClienteDao {
 
     public ClienteDaoImpl() {
         super();

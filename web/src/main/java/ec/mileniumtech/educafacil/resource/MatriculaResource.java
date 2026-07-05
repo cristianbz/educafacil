@@ -1,7 +1,7 @@
 package ec.mileniumtech.educafacil.resource;
 
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.MatriculaDto;
-import ec.mileniumtech.educafacil.service.AdministracionService;
+import ec.mileniumtech.educafacil.service.PersonaService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -20,11 +20,11 @@ import java.util.List;
 public class MatriculaResource {
 
     @Inject
-    private AdministracionService administracionService;
+    private PersonaService personaService;
 
     @GET
     @Path("/estudiante/{id}")
     public List<MatriculaDto> listarPorEstudiante(@PathParam("id") int idEstudiante) {
-        return administracionService.listarMatriculasEstudianteDto(idEstudiante);
+        return personaService.listarMatriculasEstudianteDto(idEstudiante);
     }
 }

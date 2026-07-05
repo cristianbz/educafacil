@@ -17,6 +17,8 @@ import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -49,11 +51,15 @@ public class Usuario implements Serializable {
 	
 	@Getter
 	@Setter
+	@NotBlank(message = "{usuario.usuario.required}")
+	@Size(min = 3, max = 50, message = "{usuario.usuario.size}")
 	@Column(name="usua_usuario")
 	private String usuaUsuario;
 	
 	@Getter
 	@Setter
+	@NotBlank(message = "{usuario.clave.required}")
+	@Size(min = 6, max = 200, message = "{usuario.clave.size}")
 	@Column(name="usua_clave")
 	private String usuaClave;
 	

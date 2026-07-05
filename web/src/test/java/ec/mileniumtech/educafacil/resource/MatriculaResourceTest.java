@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.MatriculaDto;
-import ec.mileniumtech.educafacil.service.AdministracionService;
+import ec.mileniumtech.educafacil.service.PersonaService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,7 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class MatriculaResourceTest {
 
     @Mock
-    private AdministracionService administracionService;
+    private PersonaService personaService;
 
     @InjectMocks
     private MatriculaResource matriculaResource;
@@ -26,11 +26,11 @@ class MatriculaResourceTest {
     @Test
     void listarPorEstudianteDelegaEnServicio() {
         List<MatriculaDto> matriculas = Collections.singletonList(new MatriculaDto());
-        when(administracionService.listarMatriculasEstudianteDto(42)).thenReturn(matriculas);
+        when(personaService.listarMatriculasEstudianteDto(42)).thenReturn(matriculas);
 
         List<MatriculaDto> resultado = matriculaResource.listarPorEstudiante(42);
 
         assertSame(matriculas, resultado);
-        verify(administracionService).listarMatriculasEstudianteDto(42);
+        verify(personaService).listarMatriculasEstudianteDto(42);
     }
 }

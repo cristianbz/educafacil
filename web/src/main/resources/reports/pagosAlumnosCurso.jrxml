@@ -5,11 +5,14 @@
 	<parameter name="parametroCurso" class="java.lang.String"/>
 	<parameter name="detallesPorMatricula" class="java.util.Map"/>
 	<parameter name="subreportDetallePagos" class="net.sf.jasperreports.engine.JasperReport"/>
-	<field name="totalPagadoCurso" class="java.lang.Double"/>
-	<field name="matrId" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
 	<field name="estudiante" class="ec.mileniumtech.educafacil.modelo.persistencia.entity.Estudiante">
 		<fieldDescription><![CDATA[estudiante]]></fieldDescription>
 	</field>
+	<field name="totalPagadoCurso" class="java.lang.Double"/>
+	<field name="matrId" class="java.lang.Integer"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>

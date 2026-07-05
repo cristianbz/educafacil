@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="30">
+    <Properties>
+        <Property name="logPattern">%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%c{1}:%L] %m%n</Property>
+        <Property name="logDir">${sys:jboss.server.log.dir:-logs}</Property>
+        <Property name="appName">educafacil-ejb</Property>
+    </Properties>
+
+    <Appenders>
+        <!-- Consola: WildFly capturará estas salidas en su log principal -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${logPattern}"/>
+        </Console>
+
+        <!-- Archivo rotativo para logging específico de la aplicación -->
+        <RollingFile name="FileAppender"
+                     fileName="${logDir}/${appName}.log"
+                     filePattern="${logDir}/${appName}-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="${logPattern}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <!-- Logger general de la aplicación -->
+        <Logger name="ec.mileniumtech" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="FileAppender"/>
+        </Logger>
+
+        <!-- Loggers de librerías (reducir ruido) -->
+        <Logger name="org.hibernate" level="WARN" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger name="org.jboss" level="WARN" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+
+        <!-- Root logger -->
+        <Root level="INFO">
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>

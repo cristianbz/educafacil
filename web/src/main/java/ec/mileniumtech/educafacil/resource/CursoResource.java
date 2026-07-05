@@ -1,8 +1,9 @@
 package ec.mileniumtech.educafacil.resource;
 
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.CursoDto;
-import ec.mileniumtech.educafacil.service.AdministracionService;
+import ec.mileniumtech.educafacil.service.OfertaService;
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -27,27 +28,27 @@ import java.util.List;
 public class CursoResource {
 
     @Inject
-    private AdministracionService administracionService;
+    private OfertaService ofertaService;
 
     @GET
     @Operation(summary = "Lista todos los cursos disponibles", description = "Retorna una lista de cursos en formato DTO")
     @APIResponse(responseCode = "200", description = "Lista de cursos encontrada")
     public List<CursoDto> listarTodos() {
-        return administracionService.listarCursosDto();
+        return ofertaService.listarCursosDto();
     }
     @POST
     @Operation(summary = "Crea un nuevo curso", description = "Persiste un nuevo curso en la base de datos")
     @APIResponse(responseCode = "201", description = "Curso creado exitosamente")
-    public Response crearCurso(CursoDto cursoDto) {
-        CursoDto nuevoCurso = administracionService.guardarCurso(cursoDto);
+    public Response crearCurso(@Valid CursoDto cursoDto) {
+        CursoDto nuevoCurso = ofertaService.guardarCurso(cursoDto);
         return Response.status(Response.Status.CREATED).entity(nuevoCurso).build();
     }
 
     @PUT
     @Operation(summary = "Actualiza un curso existente", description = "Modifica los datos de un curso según su ID")
     @APIResponse(responseCode = "200", description = "Curso actualizado")
-    public Response actualizarCurso(CursoDto cursoDto) {
-        CursoDto cursoActualizado = administracionService.actualizarCursoDto(cursoDto);
+    public Response actualizarCurso(@Valid CursoDto cursoDto) {
+        CursoDto cursoActualizado = ofertaService.actualizarCursoDto(cursoDto);
         return Response.ok(cursoActualizado).build();
     }
     
@@ -56,7 +57,7 @@ public class CursoResource {
     @Operation(summary = "Elimina un curso", description = "Borra un curso de la base de datos según su ID")
     @APIResponse(responseCode = "204", description = "Curso eliminado")
     public Response eliminarCurso(@PathParam("id") int id) {
-        administracionService.eliminarCurso(id);
+        ofertaService.eliminarCurso(id);
         return Response.noContent().build();
     }
 }

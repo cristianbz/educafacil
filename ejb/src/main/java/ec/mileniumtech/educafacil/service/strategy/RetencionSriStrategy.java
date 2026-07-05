@@ -7,8 +7,8 @@ import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ThreadLocalRandom;
 
-import ec.mileniumtech.educafacil.dao.impl.ConfiguracionesDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.RetencionDaoImpl;
+import ec.mileniumtech.educafacil.dao.ConfiguracionesDao;
+import ec.mileniumtech.educafacil.dao.RetencionDao;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleRetencion;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.EmpresaMatriz;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Retencion;
@@ -22,10 +22,15 @@ import ec.mileniumtech.educafacil.utilitarios.sri.ClaveAccesoGenerator;
 import jakarta.ejb.EJB;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Stateless
 @LocalBean
 public class RetencionSriStrategy implements DocumentoElectronicoStrategy {
+
+    private static final Logger log = LogManager.getLogger(RetencionSriStrategy.class);
+
 
     @EJB
     private ClaveAccesoGenerator claveAccesoGenerator;
@@ -37,10 +42,10 @@ public class RetencionSriStrategy implements DocumentoElectronicoStrategy {
     private RetencionRideService retencionRideService;
 
     @EJB
-    private RetencionDaoImpl retencionDao;
+    private RetencionDao retencionDao;
 
     @EJB
-    private ConfiguracionesDaoImpl configuracionesDao;
+    private ConfiguracionesDao configuracionesDao;
 
     @Override
     public String getCodigoDocumento() {
@@ -166,3 +171,4 @@ public class RetencionSriStrategy implements DocumentoElectronicoStrategy {
         return ret.getNumero().replace("/", "-");
     }
 }
+

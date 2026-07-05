@@ -82,7 +82,7 @@ class DtoClassesTest {
 
     @Test
     void errorDtoConstructorConParametros() {
-        ErrorDto dto = new ErrorDto("Error interno", "ERR-001", null);
+        ErrorDto dto = new ErrorDto("Error interno", "ERR-001", null, null);
         assertEquals("Error interno", dto.getMensaje());
         assertEquals("ERR-001", dto.getCodigo());
     }

@@ -5,6 +5,7 @@ import java.time.Duration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -67,7 +68,7 @@ public class AwsS3Service {
 
         } catch (Exception e) {
             log.error("Error al subir archivo a S3: " + claveObjeto, e);
-            throw new Exception("Error al subir archivo a AWS S3: " + e.getMessage(), e);
+            throw new SystemException("Error al subir archivo a AWS S3: " + e.getMessage(), "SYS-S3-UPLOAD-ERR", e);
         }
     }
 
@@ -103,7 +104,7 @@ public class AwsS3Service {
 
         } catch (Exception e) {
             log.error("Error al generar pre-signed URL para: " + claveObjeto, e);
-            throw new Exception("Error al generar URL de descarga desde S3: " + e.getMessage(), e);
+            throw new SystemException("Error al generar URL de descarga desde S3: " + e.getMessage(), "SYS-S3-URL-ERR", e);
         }
     }
 
@@ -132,7 +133,7 @@ public class AwsS3Service {
     private String obtenerBucketName() throws Exception {
         String bucketName = System.getenv("AWS_S3_BUCKET_NAME");
         if (bucketName == null || bucketName.trim().isEmpty()) {
-            throw new Exception("La variable de entorno AWS_S3_BUCKET_NAME no está configurada en el servidor.");
+            throw new SystemException("La variable de entorno AWS_S3_BUCKET_NAME no está configurada en el servidor.", "SYS-S3-NO-BUCKET");
         }
         return bucketName.trim();
     }
@@ -140,11 +141,10 @@ public class AwsS3Service {
     private Region obtenerRegion() throws Exception {
         String regionStr = System.getenv("AWS_REGION");
         if (regionStr == null || regionStr.trim().isEmpty()) {
-            // Intentar con la variable alternativa
             regionStr = System.getenv("AWS_DEFAULT_REGION");
         }
         if (regionStr == null || regionStr.trim().isEmpty()) {
-            throw new Exception("La variable de entorno AWS_REGION no está configurada en el servidor.");
+            throw new SystemException("La variable de entorno AWS_REGION no está configurada en el servidor.", "SYS-S3-NO-REGION");
         }
         return Region.of(regionStr.trim());
     }

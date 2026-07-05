@@ -17,6 +17,7 @@ import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleRetencion;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Egresos;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Retencion;
 import ec.mileniumtech.educafacil.service.RetencionService;
+import ec.mileniumtech.educafacil.dao.excepciones.BusinessException;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
@@ -185,7 +186,7 @@ public class BackingRetencion implements Serializable {
     public void guardarRetencion() {
         try {
             if (getBeanRetencion().getNuevaRetencion().getDetalles().isEmpty()) {
-                throw new Exception("Debe agregar al menos un detalle de retención.");
+                throw new BusinessException("Debe agregar al menos un detalle de retención.", "BIZ-RET-NO-DET");
             }
             retencionService.guardarYEmitirRetencion(getBeanRetencion().getNuevaRetencion());
             cargarRetenciones();

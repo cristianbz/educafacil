@@ -15,6 +15,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -33,6 +34,7 @@ public class DocumentoElectronico {
     @Column(name = "doel_id")
     private Integer id;
 
+    @NotNull(message = "{documentoElectronico.factura.required}")
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fact_id", nullable = false)
     @EqualsAndHashCode.Exclude

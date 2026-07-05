@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.CursoDto;
-import ec.mileniumtech.educafacil.service.AdministracionService;
+import ec.mileniumtech.educafacil.service.OfertaService;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class CursoResourceTest {
 
     @Mock
-    private AdministracionService administracionService;
+    private OfertaService ofertaService;
 
     @InjectMocks
     private CursoResource cursoResource;
@@ -28,20 +28,20 @@ class CursoResourceTest {
     @Test
     void listarTodosDelegaEnServicio() {
         CursoDto dto = new CursoDto(1, "Java");
-        when(administracionService.listarCursosDto()).thenReturn(Arrays.asList(dto));
+        when(ofertaService.listarCursosDto()).thenReturn(Arrays.asList(dto));
 
         List<CursoDto> resultado = cursoResource.listarTodos();
 
         assertEquals(1, resultado.size());
         assertEquals("Java", resultado.get(0).getNombre());
-        verify(administracionService).listarCursosDto();
+        verify(ofertaService).listarCursosDto();
     }
 
     @Test
     void crearCursoRetorna201() {
         CursoDto entrada = new CursoDto(0, "Nuevo curso");
         CursoDto creado = new CursoDto(10, "Nuevo curso");
-        when(administracionService.guardarCurso(entrada)).thenReturn(creado);
+        when(ofertaService.guardarCurso(entrada)).thenReturn(creado);
 
         Response response = cursoResource.crearCurso(entrada);
 
@@ -52,7 +52,7 @@ class CursoResourceTest {
     @Test
     void actualizarCursoRetorna200() {
         CursoDto dto = new CursoDto(5, "Actualizado");
-        when(administracionService.actualizarCursoDto(dto)).thenReturn(dto);
+        when(ofertaService.actualizarCursoDto(dto)).thenReturn(dto);
 
         Response response = cursoResource.actualizarCurso(dto);
 
@@ -65,6 +65,6 @@ class CursoResourceTest {
         Response response = cursoResource.eliminarCurso(7);
 
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
-        verify(administracionService).eliminarCurso(7);
+        verify(ofertaService).eliminarCurso(7);
     }
 }

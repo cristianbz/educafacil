@@ -3,7 +3,8 @@
  */
 package ec.mileniumtech.educafacil.dao.impl;
 
-import java.text.DateFormat;
+
+import ec.mileniumtech.educafacil.dao.EgresoDao;import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,7 +29,7 @@ import jakarta.persistence.TemporalType;
 */
 @LocalBean
 @Stateless
-public class EgresoDaoImpl extends GenericoDaoImpl<Egresos, Long> {
+public class EgresoDaoImpl extends GenericoDaoImpl<Egresos, Long> implements EgresoDao {
 	public EgresoDaoImpl() {
 		
 	}

@@ -3,7 +3,8 @@
  */
 package ec.mileniumtech.educafacil.dao.impl;
 
-import java.util.Iterator;
+
+import ec.mileniumtech.educafacil.dao.CategoriaRespuestaDao;import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.Hibernate;
@@ -25,7 +26,7 @@ import jakarta.persistence.Query;
 */
 @LocalBean
 @Stateless
-public class CategoriaRespuestaDaoImpl extends GenericoDaoImpl<CategoriaRespuesta,Long>{
+public class CategoriaRespuestaDaoImpl extends GenericoDaoImpl<CategoriaRespuesta,Long> implements CategoriaRespuestaDao{
 	public CategoriaRespuestaDaoImpl() {
 		
 	}

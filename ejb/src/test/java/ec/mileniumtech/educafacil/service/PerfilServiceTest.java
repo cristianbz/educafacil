@@ -15,30 +15,36 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import ec.mileniumtech.educafacil.dao.impl.PerfilAccionDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.PerfilDaoImpl;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Accion;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Perfil;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.PerfilAccion;
-import jakarta.persistence.EntityManager;
 
 /**
- * Tests unitarios para los métodos de gestión de Perfiles y Acciones
- * en AdministracionService. Usa JUnit 5 + Mockito.
+ * Tests unitarios para los m&eacute;todos de gesti&oacute;n de Perfiles y Acciones
+ * a trav&eacute;s de la fachada {@link AdministracionService}.
  *
  * @author christian
  */
-@DisplayName("AdministracionService — Gestión de Perfiles y Acciones")
+@DisplayName("AdministracionService — Perfiles y Acciones (delegado a SeguridadService)")
 class PerfilServiceTest {
 
     @Mock
-    private PerfilDaoImpl perfilDao;
+    private SeguridadService seguridadService;
 
     @Mock
-    private PerfilAccionDaoImpl perfilAccionDao;
+    private OfertaService ofertaService;
 
     @Mock
-    private EntityManager entityManager;
+    private EvaluacionService evaluacionService;
+
+    @Mock
+    private EmpresaService empresaService;
+
+    @Mock
+    private PlanificacionCursoService planificacionCursoService;
+
+    @Mock
+    private PersonaService personaService;
 
     @InjectMocks
     private AdministracionService administracionService;
@@ -47,10 +53,6 @@ class PerfilServiceTest {
     void setUp() {
         MockitoAnnotations.initMocks(this);
     }
-
-    // =========================================================
-    // Helpers de fábrica
-    // =========================================================
 
     private Perfil crearPerfil(Integer id, String nombre, Boolean estado) {
         Perfil p = new Perfil();
@@ -81,10 +83,6 @@ class PerfilServiceTest {
         return pa;
     }
 
-    // =========================================================
-    // Listar Perfiles
-    // =========================================================
-
     @Nested
     @DisplayName("listarPerfiles()")
     class ListarPerfiles {
@@ -97,93 +95,72 @@ class PerfilServiceTest {
                     crearPerfil(2, "Docente", true),
                     crearPerfil(3, "Secretaría", false)
             );
-            when(perfilDao.listarTodosPerfiles()).thenReturn(esperados);
+            when(seguridadService.listarPerfiles()).thenReturn(esperados);
 
             List<Perfil> resultado = administracionService.listarPerfiles();
 
             assertNotNull(resultado);
             assertEquals(3, resultado.size());
-            verify(perfilDao, times(1)).listarTodosPerfiles();
+            verify(seguridadService, times(1)).listarPerfiles();
         }
 
         @Test
         @DisplayName("Retorna lista vacía cuando no hay perfiles")
         void listarPerfiles_retornaListaVacia() {
-            when(perfilDao.listarTodosPerfiles()).thenReturn(Collections.emptyList());
+            when(seguridadService.listarPerfiles()).thenReturn(Collections.emptyList());
 
             List<Perfil> resultado = administracionService.listarPerfiles();
 
             assertNotNull(resultado);
             assertTrue(resultado.isEmpty());
+            verify(seguridadService, times(1)).listarPerfiles();
         }
     }
-
-    // =========================================================
-    // Guardar Perfil
-    // =========================================================
 
     @Nested
     @DisplayName("guardarPerfil()")
     class GuardarPerfil {
 
         @Test
-        @DisplayName("Llama a guardar() del DAO cuando el id es null (nuevo)")
+        @DisplayName("Delega en SeguridadService cuando el id es null (nuevo)")
         void guardarPerfil_nuevo_llamaGuardar() {
             Perfil nuevo = crearPerfil(null, "Auditor", true);
-            when(perfilDao.guardar(nuevo)).thenReturn(nuevo);
 
             administracionService.guardarPerfil(nuevo);
 
-            verify(perfilDao, times(1)).guardar(nuevo);
-            verify(perfilDao, never()).actualizar(any());
+            verify(seguridadService, times(1)).guardarPerfil(nuevo);
         }
 
         @Test
-        @DisplayName("Llama a actualizar() del DAO cuando el id tiene valor (edición)")
+        @DisplayName("Delega en SeguridadService cuando el id tiene valor (edición)")
         void guardarPerfil_edicion_llamaActualizar() {
             Perfil existente = crearPerfil(5, "Auditor", true);
-            when(perfilDao.actualizar(existente)).thenReturn(existente);
 
             administracionService.guardarPerfil(existente);
 
-            verify(perfilDao, times(1)).actualizar(existente);
-            verify(perfilDao, never()).guardar(any());
+            verify(seguridadService, times(1)).guardarPerfil(existente);
         }
     }
-
-    // =========================================================
-    // Eliminación lógica
-    // =========================================================
 
     @Nested
     @DisplayName("eliminarLogicoPerfil()")
     class EliminarLogicoPerfil {
 
         @Test
-        @DisplayName("Pone estado=false y llama a actualizar cuando el perfil existe")
+        @DisplayName("Delega en SeguridadService cuando el perfil existe")
         void eliminarLogicoPerfil_perfilExiste_desactiva() {
-            Perfil perfil = crearPerfil(3, "Secretaría", true);
-            when(perfilDao.buscarPerfilPorId(3)).thenReturn(perfil);
-
             administracionService.eliminarLogicoPerfil(3);
 
-            assertFalse(perfil.getEstado(), "El estado debe quedar en false");
-            verify(perfilDao, times(1)).actualizar(perfil);
+            verify(seguridadService, times(1)).eliminarLogicoPerfil(3);
         }
 
         @Test
-        @DisplayName("No lanza excepción ni llama a actualizar cuando el perfil no existe")
+        @DisplayName("Delega en SeguridadService incluso cuando el perfil no existe")
         void eliminarLogicoPerfil_perfilNoExiste_noHaceNada() {
-            when(perfilDao.buscarPerfilPorId(999)).thenReturn(null);
-
             assertDoesNotThrow(() -> administracionService.eliminarLogicoPerfil(999));
-            verify(perfilDao, never()).actualizar(any());
+            verify(seguridadService, times(1)).eliminarLogicoPerfil(999);
         }
     }
-
-    // =========================================================
-    // Listar Acciones
-    // =========================================================
 
     @Nested
     @DisplayName("listarAcciones()")
@@ -197,93 +174,41 @@ class PerfilServiceTest {
                     crearAccion("ACC02", "Cursos"),
                     crearAccion("ACC03", "Estudiantes")
             );
-            when(perfilAccionDao.listarTodasAcciones()).thenReturn(esperadas);
+            when(seguridadService.listarAcciones()).thenReturn(esperadas);
 
             List<Accion> resultado = administracionService.listarAcciones();
 
             assertNotNull(resultado);
             assertEquals(3, resultado.size());
+            verify(seguridadService, times(1)).listarAcciones();
         }
     }
-
-    // =========================================================
-    // Asignar Acción a Perfil
-    // =========================================================
 
     @Nested
     @DisplayName("asignarAccionAPerfil()")
     class AsignarAccionAPerfil {
 
         @Test
-        @DisplayName("Crea nueva PerfilAccion cuando no existe asociación previa")
-        void asignarAccion_sinAsociacionPrevia_creaRegistro() {
-            Perfil perfil = crearPerfil(1, "Administrador", true);
-            Accion accion = crearAccion("ACC01", "Dashboard");
-
-            when(perfilAccionDao.buscarPerfilAccion(1, "ACC01")).thenReturn(null);
-            when(perfilDao.buscarPerfilPorId(1)).thenReturn(perfil);
-            when(perfilAccionDao.getEntityManager()).thenReturn(entityManager);
-            when(entityManager.find(Accion.class, "ACC01")).thenReturn(accion);
-            when(perfilAccionDao.siguienteId()).thenReturn(10);
-
+        @DisplayName("Delega en SeguridadService")
+        void asignarAccion_delegaEnSeguridadService() {
             administracionService.asignarAccionAPerfil(1, "ACC01");
 
-            verify(perfilAccionDao, times(1)).guardar(any(PerfilAccion.class));
-            verify(perfilAccionDao, never()).actualizar(any());
-        }
-
-        @Test
-        @DisplayName("Reactiva asociación existente cuando estaba inactiva")
-        void asignarAccion_asociacionExistente_reactiva() {
-            Perfil perfil = crearPerfil(1, "Administrador", true);
-            Accion accion = crearAccion("ACC01", "Dashboard");
-            PerfilAccion existente = crearPerfilAccion(5, perfil, accion);
-            existente.setEstado(false);
-
-            when(perfilAccionDao.buscarPerfilAccion(1, "ACC01")).thenReturn(existente);
-
-            administracionService.asignarAccionAPerfil(1, "ACC01");
-
-            assertTrue(existente.getEstado(), "La asociación debe quedar activa");
-            verify(perfilAccionDao, times(1)).actualizar(existente);
-            verify(perfilAccionDao, never()).guardar(any());
-        }
-
-        @Test
-        @DisplayName("No persiste si el perfil no existe en la base de datos")
-        void asignarAccion_perfilInexistente_noGuarda() {
-            when(perfilAccionDao.buscarPerfilAccion(999, "ACC01")).thenReturn(null);
-            when(perfilDao.buscarPerfilPorId(999)).thenReturn(null);
-            when(perfilAccionDao.getEntityManager()).thenReturn(entityManager);
-            when(entityManager.find(Accion.class, "ACC01")).thenReturn(crearAccion("ACC01", "Dashboard"));
-
-            assertDoesNotThrow(() -> administracionService.asignarAccionAPerfil(999, "ACC01"));
-            verify(perfilAccionDao, never()).guardar(any());
+            verify(seguridadService, times(1)).asignarAccionAPerfil(1, "ACC01");
         }
     }
-
-    // =========================================================
-    // Quitar Acción de Perfil
-    // =========================================================
 
     @Nested
     @DisplayName("quitarAccionDePerfil()")
     class QuitarAccionDePerfil {
 
         @Test
-        @DisplayName("Llama a eliminarPorPerfilYAccion del DAO con los parámetros correctos")
-        void quitarAccion_llamaDao() {
-            doNothing().when(perfilAccionDao).eliminarPorPerfilYAccion(1, "ACC01");
-
+        @DisplayName("Delega en SeguridadService con los parámetros correctos")
+        void quitarAccion_delegaEnSeguridadService() {
             administracionService.quitarAccionDePerfil(1, "ACC01");
 
-            verify(perfilAccionDao, times(1)).eliminarPorPerfilYAccion(1, "ACC01");
+            verify(seguridadService, times(1)).quitarAccionDePerfil(1, "ACC01");
         }
     }
-
-    // =========================================================
-    // Listar Acciones por Perfil
-    // =========================================================
 
     @Nested
     @DisplayName("listarAccionesPorPerfil()")
@@ -300,24 +225,26 @@ class PerfilServiceTest {
                     crearPerfilAccion(1, perfil, accion1),
                     crearPerfilAccion(2, perfil, accion2)
             );
-            when(perfilAccionDao.listarAccionesPorPerfil(2)).thenReturn(esperadas);
+            when(seguridadService.listarAccionesPorPerfil(2)).thenReturn(esperadas);
 
             List<PerfilAccion> resultado = administracionService.listarAccionesPorPerfil(2);
 
             assertNotNull(resultado);
             assertEquals(2, resultado.size());
             assertEquals("ACC02", resultado.get(0).getAccion().getId());
+            verify(seguridadService, times(1)).listarAccionesPorPerfil(2);
         }
 
         @Test
         @DisplayName("Retorna lista vacía cuando el perfil no tiene acciones asignadas")
         void listarAccionesPorPerfil_sinAcciones_retornaVacio() {
-            when(perfilAccionDao.listarAccionesPorPerfil(5)).thenReturn(Collections.emptyList());
+            when(seguridadService.listarAccionesPorPerfil(5)).thenReturn(Collections.emptyList());
 
             List<PerfilAccion> resultado = administracionService.listarAccionesPorPerfil(5);
 
             assertNotNull(resultado);
             assertTrue(resultado.isEmpty());
+            verify(seguridadService, times(1)).listarAccionesPorPerfil(5);
         }
     }
 }

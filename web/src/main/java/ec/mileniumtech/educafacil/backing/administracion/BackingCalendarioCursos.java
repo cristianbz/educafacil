@@ -27,7 +27,8 @@ import ec.mileniumtech.educafacil.bean.administracion.BeanCalendarioCursos;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Curso;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Instructor;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.PlanificacionCurso;
-import ec.mileniumtech.educafacil.service.AdministracionService;
+import ec.mileniumtech.educafacil.service.OfertaService;
+import ec.mileniumtech.educafacil.service.PlanificacionCursoService;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
@@ -60,7 +61,10 @@ public class BackingCalendarioCursos implements Serializable {
     private BeanCalendarioCursos beanCalendarioCursos;
 
     @EJB
-    private AdministracionService administracionService;
+    private OfertaService ofertaService;
+
+    @EJB
+    private PlanificacionCursoService planificacionCursoService;
 
     // =========================================================
     // Inicialización
@@ -74,8 +78,8 @@ public class BackingCalendarioCursos implements Serializable {
         getBeanCalendarioCursos().setFinSemana(hoy.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)));
 
         // Cargar datos de soporte
-        getBeanCalendarioCursos().setListaCursos(administracionService.listarTodosCursosOrdenados());
-        getBeanCalendarioCursos().setListaInstructores(administracionService.listarInstructoresOrdenados());
+        getBeanCalendarioCursos().setListaCursos(ofertaService.listarTodosCursosOrdenados());
+        getBeanCalendarioCursos().setListaInstructores(ofertaService.listarInstructoresOrdenados());
 
         // Cargar planificaciones de la semana actual
         cargarPlanificacionesSemana();
@@ -128,7 +132,7 @@ public class BackingCalendarioCursos implements Serializable {
     private void cargarPlanificacionesSemana() {
         DefaultScheduleModel model = new DefaultScheduleModel();
         try {
-            List<PlanificacionCurso> planificaciones = administracionService.listarPlanificacionesPorSemana(
+            List<PlanificacionCurso> planificaciones = planificacionCursoService.listarPlanificacionesPorSemana(
                     getBeanCalendarioCursos().getInicioSemana(),
                     getBeanCalendarioCursos().getFinSemana());
             getBeanCalendarioCursos().setListaPlanificaciones(planificaciones);
@@ -232,7 +236,7 @@ public class BackingCalendarioCursos implements Serializable {
                 pc.setInstructor(instructor);
             }
 
-            administracionService.guardarPlanificacionCurso(pc);
+            planificacionCursoService.guardarPlanificacionCurso(pc);
             cargarPlanificacionesSemana();
             Mensaje.ocultarDialogo("wDlgPlanificacion");
             Mensaje.verMensaje(FacesMessage.SEVERITY_INFO,
@@ -264,7 +268,7 @@ public class BackingCalendarioCursos implements Serializable {
         try {
             PlanificacionCurso pc = getBeanCalendarioCursos().getPlanificacionSeleccionada();
             if (pc != null && pc.getPlcuId() != null) {
-                administracionService.eliminarPlanificacionCurso(pc.getPlcuId());
+                planificacionCursoService.eliminarPlanificacionCurso(pc.getPlcuId());
                 cargarPlanificacionesSemana();
                 Mensaje.ocultarDialogo("wDlgConfirmarEliminar");
                 Mensaje.verMensaje(FacesMessage.SEVERITY_INFO,

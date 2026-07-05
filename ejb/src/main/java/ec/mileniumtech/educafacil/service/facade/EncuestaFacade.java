@@ -1,15 +1,18 @@
 package ec.mileniumtech.educafacil.service.facade;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.List;
 
-import ec.mileniumtech.educafacil.dao.impl.CategoriaRespuestaDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.DetalleEvaluaCursoDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.EvaluacionCursoDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.ObjetoEvaluacionDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.PreguntaDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.RespuestasDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.TipoEncuestaDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.TipoEncuestaPreguntaDaoImpl;
+import ec.mileniumtech.educafacil.dao.CategoriaRespuestaDao;
+import ec.mileniumtech.educafacil.dao.DetalleEvaluaCursoDao;
+import ec.mileniumtech.educafacil.dao.EvaluacionCursoDao;
+import ec.mileniumtech.educafacil.dao.ObjetoEvaluacionDao;
+import ec.mileniumtech.educafacil.dao.PreguntaDao;
+import ec.mileniumtech.educafacil.dao.RespuestasDao;
+import ec.mileniumtech.educafacil.dao.TipoEncuestaDao;
+import ec.mileniumtech.educafacil.dao.TipoEncuestaPreguntaDao;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.DtoEncuestas;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.CategoriaRespuesta;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleEvaluaCurso;
@@ -27,29 +30,31 @@ import jakarta.ejb.Stateless;
 @LocalBean
 public class EncuestaFacade {
 
-    @EJB
-    private ObjetoEvaluacionDaoImpl objetoEvaluacionDao;
+    private static final Logger log = LogManager.getLogger(EncuestaFacade.class);
 
     @EJB
-    private CategoriaRespuestaDaoImpl categoriaRespuestaDao;
+    private ObjetoEvaluacionDao objetoEvaluacionDao;
 
     @EJB
-    private RespuestasDaoImpl respuestasDao;
+    private CategoriaRespuestaDao categoriaRespuestaDao;
 
     @EJB
-    private TipoEncuestaDaoImpl tipoEncuestaDao;
+    private RespuestasDao respuestasDao;
 
     @EJB
-    private PreguntaDaoImpl preguntaDao;
+    private TipoEncuestaDao tipoEncuestaDao;
 
     @EJB
-    private TipoEncuestaPreguntaDaoImpl tipoEncuestaPreguntaDao;
+    private PreguntaDao preguntaDao;
 
     @EJB
-    private EvaluacionCursoDaoImpl evaluacionCursoDao;
+    private TipoEncuestaPreguntaDao tipoEncuestaPreguntaDao;
 
     @EJB
-    private DetalleEvaluaCursoDaoImpl detalleEvaluaCursoDao;
+    private EvaluacionCursoDao evaluacionCursoDao;
+
+    @EJB
+    private DetalleEvaluaCursoDao detalleEvaluaCursoDao;
 
     // ========== ObjetoEvaluacion ==========
 
@@ -171,3 +176,4 @@ public class EncuestaFacade {
         detalleEvaluaCursoDao.guardarEncuesta(detalle);
     }
 }
+

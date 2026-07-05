@@ -3,7 +3,8 @@
  */
 package ec.mileniumtech.educafacil.dao.impl;
 
-import java.text.DateFormat;
+
+import ec.mileniumtech.educafacil.dao.PagosDao;import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -30,7 +31,7 @@ import jakarta.persistence.TemporalType;
 */
 @LocalBean
 @Stateless
-public class PagosDaoImpl extends GenericoDaoImpl<Pagos, Long>{
+public class PagosDaoImpl extends GenericoDaoImpl<Pagos, Long> implements PagosDao{
 	public PagosDaoImpl() {
 		
 	}

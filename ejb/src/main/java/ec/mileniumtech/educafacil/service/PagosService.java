@@ -1,20 +1,25 @@
 package ec.mileniumtech.educafacil.service;
 
-import ec.mileniumtech.educafacil.dao.impl.PagosDaoImpl;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import ec.mileniumtech.educafacil.dao.PagosDao;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Pagos;
 import jakarta.ejb.EJB;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 
 /**
- * Servicio para manejar la lógica de pagos y su vinculación con la facturación electrónica.
+ * Servicio para manejar la lÃ³gica de pagos y su vinculaciÃ³n con la facturaciÃ³n electrÃ³nica.
  */
 @Stateless
 @LocalBean
 public class PagosService {
 
+    private static final Logger log = LogManager.getLogger(PagosService.class);
+
     @EJB
-    private PagosDaoImpl pagosDao;
+    private PagosDao pagosDao;
 
     /**
      * Registra un pago en el sistema.
@@ -27,3 +32,4 @@ public class PagosService {
         pagosDao.agregarPago(pago);
     }
 }
+

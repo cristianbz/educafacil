@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.PersonaDto;
-import ec.mileniumtech.educafacil.service.AdministracionService;
+import ec.mileniumtech.educafacil.service.PersonaService;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class PersonaResourceTest {
 
     @Mock
-    private AdministracionService administracionService;
+    private PersonaService personaService;
 
     @InjectMocks
     private PersonaResource personaResource;
@@ -24,7 +24,7 @@ class PersonaResourceTest {
     @Test
     void getPersonaPorCedulaCorreoEncontrada() {
         PersonaDto dto = new PersonaDto();
-        when(administracionService.buscarPersonaDto("1710034065", "correo@test.com")).thenReturn(dto);
+        when(personaService.buscarPersonaDto("1710034065", "correo@test.com")).thenReturn(dto);
 
         Response response = personaResource.getPersonaPorCedulaCorreo("1710034065", "correo@test.com");
 
@@ -34,7 +34,7 @@ class PersonaResourceTest {
 
     @Test
     void getPersonaPorCedulaCorreoNoEncontrada() {
-        when(administracionService.buscarPersonaDto("000", "x@y.com")).thenReturn(null);
+        when(personaService.buscarPersonaDto("000", "x@y.com")).thenReturn(null);
 
         Response response = personaResource.getPersonaPorCedulaCorreo("000", "x@y.com");
 
@@ -45,7 +45,7 @@ class PersonaResourceTest {
     void crearPersonaRetorna201() {
         PersonaDto entrada = new PersonaDto();
         PersonaDto creada = new PersonaDto();
-        when(administracionService.guardarPersona(entrada)).thenReturn(creada);
+        when(personaService.guardarPersona(entrada)).thenReturn(creada);
 
         Response response = personaResource.crearPersona(entrada);
 
@@ -58,6 +58,6 @@ class PersonaResourceTest {
         Response response = personaResource.eliminarPersona(3);
 
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
-        verify(administracionService).eliminarPersona(3);
+        verify(personaService).eliminarPersona(3);
     }
 }

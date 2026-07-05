@@ -1,5 +1,8 @@
 package ec.mileniumtech.educafacil.service;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -21,6 +24,8 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 @Stateless
 @LocalBean
 public class RetencionRideService {
+
+    private static final Logger log = LogManager.getLogger(RetencionRideService.class);
 
     /**
      * Genera el PDF de la retención.

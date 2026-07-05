@@ -3,7 +3,8 @@
  */
 package ec.mileniumtech.educafacil.dao.impl;
 
-import java.util.ArrayList;
+
+import ec.mileniumtech.educafacil.dao.PerfilDao;import java.util.ArrayList;
 import java.util.List;
 
 import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
@@ -21,7 +22,7 @@ import jakarta.persistence.TypedQuery;
  */
 @LocalBean
 @Stateless
-public class PerfilDaoImpl extends GenericoDaoImpl<Perfil, Integer> {
+public class PerfilDaoImpl extends GenericoDaoImpl<Perfil, Integer> implements PerfilDao {
 
     public PerfilDaoImpl() {
     }

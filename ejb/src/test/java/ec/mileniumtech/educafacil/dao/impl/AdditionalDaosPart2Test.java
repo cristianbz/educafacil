@@ -92,7 +92,7 @@ class AdditionalDaosPart2Test {
     void setUp() {
         MockitoAnnotations.initMocks(this);
         instructorDao = new InstructorDaoImpl(entityManager, Instructor.class);
-        medioInformacionDao = new MedioInformacionDaoImpl(entityManager, MedioInformacionDaoImpl.class);
+        medioInformacionDao = new MedioInformacionDaoImpl(entityManager, MedioInformacion.class);
         objetoEvaluacionDao = new ObjetoEvaluacionDaoImpl(entityManager, ObjetoEvaluacion.class);
         ofertaCapacitacionDao = new OfertaCapacitacionDaoImpl(entityManager, OfertaCapacitacion.class);
         ofertaCursosDao = new OfertaCursosDaoImpl(entityManager, OfertaCursos.class);

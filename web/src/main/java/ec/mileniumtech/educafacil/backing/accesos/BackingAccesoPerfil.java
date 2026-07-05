@@ -12,7 +12,7 @@ import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.accesos.BeanAccesoPerfil;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Accion;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Perfil;
-import ec.mileniumtech.educafacil.service.AdministracionService;
+import ec.mileniumtech.educafacil.service.SeguridadService;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
@@ -44,7 +44,7 @@ public class BackingAccesoPerfil implements Serializable {
     private BeanAccesoPerfil beanAccesoPerfil;
 
     @EJB
-    private AdministracionService administracionService;
+    private SeguridadService seguridadService;
 
     // =========================================================
     // Inicialización
@@ -53,7 +53,7 @@ public class BackingAccesoPerfil implements Serializable {
     @PostConstruct
     public void init() {
         cargarPerfiles();
-        getBeanAccesoPerfil().setListaAcciones(administracionService.listarAcciones());
+        getBeanAccesoPerfil().setListaAcciones(seguridadService.listarAcciones());
         getBeanAccesoPerfil().setPerfil(new Perfil());
         getBeanAccesoPerfil().setEsNuevo(true);
     }
@@ -98,7 +98,7 @@ public class BackingAccesoPerfil implements Serializable {
             if (getBeanAccesoPerfil().isEsNuevo() && perfil.getEstado() == null) {
                 perfil.setEstado(true);
             }
-            administracionService.guardarPerfil(perfil);
+            seguridadService.guardarPerfil(perfil);
             cargarPerfiles();
             Mensaje.ocultarDialogo("dlgPerfil");
             Mensaje.verMensaje(FacesMessage.SEVERITY_INFO,
@@ -120,7 +120,7 @@ public class BackingAccesoPerfil implements Serializable {
     public void eliminarLogicoPerfil(Perfil perfil) {
         try {
             if (perfil != null && perfil.getId() != null) {
-                administracionService.eliminarLogicoPerfil(perfil.getId());
+                seguridadService.eliminarLogicoPerfil(perfil.getId());
                 cargarPerfiles();
                 Mensaje.verMensaje(FacesMessage.SEVERITY_WARN,
                         getMensajesBacking().getPropiedad("info"),
@@ -147,7 +147,7 @@ public class BackingAccesoPerfil implements Serializable {
         if (perfil != null && perfil.getId() != null) {
             getBeanAccesoPerfil().setPerfilSeleccionado(perfil);
             getBeanAccesoPerfil().setAccionesDelPerfil(
-                    administracionService.listarAccionesPorPerfil(perfil.getId()));
+                    seguridadService.listarAccionesPorPerfil(perfil.getId()));
             Mensaje.verDialogo("dlgAcciones");
         } else {
             Mensaje.verMensaje(FacesMessage.SEVERITY_WARN,
@@ -183,13 +183,13 @@ public class BackingAccesoPerfil implements Serializable {
             String accionId = accion.getId();
 
             if (accionAsignada(accionId)) {
-                administracionService.quitarAccionDePerfil(perfilId, accionId);
+                seguridadService.quitarAccionDePerfil(perfilId, accionId);
             } else {
-                administracionService.asignarAccionAPerfil(perfilId, accionId);
+                seguridadService.asignarAccionAPerfil(perfilId, accionId);
             }
             // Refrescar acciones asignadas
             getBeanAccesoPerfil().setAccionesDelPerfil(
-                    administracionService.listarAccionesPorPerfil(perfilId));
+                    seguridadService.listarAccionesPorPerfil(perfilId));
 
         } catch (Exception e) {
             log.error("Error al alternar acción del perfil", e);
@@ -222,7 +222,7 @@ public class BackingAccesoPerfil implements Serializable {
     public java.util.List<ec.mileniumtech.educafacil.modelo.persistencia.entity.PerfilAccion>
             obtenerAccionesDePerfilPorId(Integer perfilId) {
         if (perfilId == null) return new java.util.ArrayList<>();
-        return administracionService.listarAccionesPorPerfil(perfilId);
+        return seguridadService.listarAccionesPorPerfil(perfilId);
     }
 
     /**
@@ -250,6 +250,6 @@ public class BackingAccesoPerfil implements Serializable {
     // =========================================================
 
     private void cargarPerfiles() {
-        getBeanAccesoPerfil().setListaPerfiles(administracionService.listarPerfiles());
+        getBeanAccesoPerfil().setListaPerfiles(seguridadService.listarPerfiles());
     }
 }

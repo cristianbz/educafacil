@@ -7,8 +7,8 @@ import java.math.RoundingMode;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ThreadLocalRandom;
 
-import ec.mileniumtech.educafacil.dao.impl.ConfiguracionesDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.NotaCreditoDaoImpl;
+import ec.mileniumtech.educafacil.dao.ConfiguracionesDao;
+import ec.mileniumtech.educafacil.dao.NotaCreditoDao;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleNotaCredito;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.EmpresaMatriz;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.NotaCredito;
@@ -22,10 +22,15 @@ import ec.mileniumtech.educafacil.utilitarios.sri.ClaveAccesoGenerator;
 import jakarta.ejb.EJB;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Stateless
 @LocalBean
 public class NotaCreditoSriStrategy implements DocumentoElectronicoStrategy {
+
+    private static final Logger log = LogManager.getLogger(NotaCreditoSriStrategy.class);
+
 
     @EJB
     private ClaveAccesoGenerator claveAccesoGenerator;
@@ -37,10 +42,10 @@ public class NotaCreditoSriStrategy implements DocumentoElectronicoStrategy {
     private RideGeneratorService rideGeneratorService;
 
     @EJB
-    private NotaCreditoDaoImpl notaCreditoDao;
+    private NotaCreditoDao notaCreditoDao;
 
     @EJB
-    private ConfiguracionesDaoImpl configuracionesDao;
+    private ConfiguracionesDao configuracionesDao;
 
     @Override
     public String getCodigoDocumento() {
@@ -218,3 +223,4 @@ public class NotaCreditoSriStrategy implements DocumentoElectronicoStrategy {
         return "0";
     }
 }
+

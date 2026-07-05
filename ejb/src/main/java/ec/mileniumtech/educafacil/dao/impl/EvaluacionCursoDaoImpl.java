@@ -3,7 +3,8 @@
  */
 package ec.mileniumtech.educafacil.dao.impl;
 
-import java.util.List;
+
+import ec.mileniumtech.educafacil.dao.EvaluacionCursoDao;import java.util.List;
 
 import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.dao.util.JpaDaoSupport;
@@ -23,7 +24,7 @@ import jakarta.validation.ConstraintViolationException;
 */
 @LocalBean
 @Stateless
-public class EvaluacionCursoDaoImpl extends GenericoDaoImpl<EvaluacionCurso, Long>{
+public class EvaluacionCursoDaoImpl extends GenericoDaoImpl<EvaluacionCurso, Long> implements EvaluacionCursoDao{
 	public EvaluacionCursoDaoImpl() {
 		
 	}

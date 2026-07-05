@@ -3,6 +3,8 @@ package ec.mileniumtech.educafacil.dao;
 import java.util.List;
 import java.util.Optional;
 
+import jakarta.persistence.EntityManager;
+
 /**
  * @author [ Christian Baez ]cbaez
  *
@@ -21,4 +23,10 @@ public interface GenericoDao <T,K> {
 	boolean validarCadenaNula(String label);
 	
 	List<T> findAll();
+	
+	/**
+	 * Obtiene el EntityManager para consultas nativas o de entidades relacionadas.
+	 * @return EntityManager de JPA
+	 */
+	EntityManager getEntityManager();
 }

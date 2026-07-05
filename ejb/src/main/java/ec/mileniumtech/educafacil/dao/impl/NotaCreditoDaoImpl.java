@@ -1,6 +1,7 @@
 package ec.mileniumtech.educafacil.dao.impl;
 
-import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
+
+import ec.mileniumtech.educafacil.dao.NotaCreditoDao;import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.NotaCredito;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
@@ -12,7 +13,7 @@ import jakarta.persistence.TypedQuery;
  */
 @LocalBean
 @Stateless
-public class NotaCreditoDaoImpl extends GenericoDaoImpl<NotaCredito, Integer> {
+public class NotaCreditoDaoImpl extends GenericoDaoImpl<NotaCredito, Integer> implements NotaCreditoDao {
     public NotaCreditoDaoImpl() {
         super();
     }

@@ -3,7 +3,8 @@
  */
 package ec.mileniumtech.educafacil.dao.impl;
 
-import java.math.BigDecimal;
+
+import ec.mileniumtech.educafacil.dao.MatriculaDao;import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -36,7 +37,7 @@ import lombok.Getter;
 */
 @LocalBean
 @Stateless
-public class MatriculaDaoImpl extends GenericoDaoImpl<Matricula, Long>{
+public class MatriculaDaoImpl extends GenericoDaoImpl<Matricula, Long> implements MatriculaDao{
 	@EJB
 	@Getter
 	private UsuarioDaoImpl usuarioDaoImpl;

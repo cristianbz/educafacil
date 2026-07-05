@@ -17,15 +17,21 @@ import ec.mileniumtech.educafacil.service.XadesSignatureService;
 import ec.mileniumtech.educafacil.service.sri.autorizacion.Autorizacion;
 import ec.mileniumtech.educafacil.service.sri.autorizacion.RespuestaComprobante;
 import ec.mileniumtech.educafacil.service.sri.recepcion.RespuestaSolicitud;
+import ec.mileniumtech.educafacil.dao.excepciones.BusinessException;
+import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.utilitarios.ValidacionUtil;
 import ec.mileniumtech.educafacil.utilitarios.encriptacion.CriptografiaUtil;
 import jakarta.ejb.EJB;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Stateless
 @LocalBean
 public class ProcesadorDocumentosElectronicos {
+
+    private static final Logger log = LogManager.getLogger(ProcesadorDocumentosElectronicos.class);
 
     @EJB
     private XadesSignatureService xadesSignatureService;
@@ -47,7 +53,7 @@ public class ProcesadorDocumentosElectronicos {
         try {
             empresa = resolverEmpresa(entidad);
         } catch (Exception e) {
-            throw new Exception("La entidad no tiene una empresa matriz asociada.", e);
+            throw new BusinessException("La entidad no tiene una empresa matriz asociada.", "BIZ-SRI-NO-EMPRESA", e);
         }
 
         Object jaxbObject = strategy.construirJaxb(entidad, empresa, context);
@@ -59,7 +65,7 @@ public class ProcesadorDocumentosElectronicos {
         String password = CriptografiaUtil.desencriptar(empresa.getEmpmPasswordCertificado());
 
         if (pkcs12 == null || password == null) {
-            throw new Exception("Certificado o contraseña no configurados en la empresa.");
+            throw new BusinessException("Certificado o contraseña no configurados en la empresa.", "BIZ-SRI-NO-CERT");
         }
 
         byte[] xmlFirmado = xadesSignatureService.firmarDocumento(
@@ -72,14 +78,14 @@ public class ProcesadorDocumentosElectronicos {
                 : configuraciones.getConf_wsRecepcionPruebas();
 
         if (!ValidacionUtil.verificarConexion(urlWsdl, 5000)) {
-            throw new Exception("No se pudo establecer comunicación con los servidores del SRI. Verifique su conexión a internet.");
+            throw new SystemException("No se pudo establecer comunicación con los servidores del SRI. Verifique su conexión a internet.", "SYS-SRI-NO-CONN");
         }
 
         RespuestaSolicitud respuestaEnvio;
         try {
             respuestaEnvio = sriWebServiceService.enviarComprobante(xmlFirmado, esProduccion, configuraciones);
         } catch (Exception e) {
-            throw new Exception("Error al comunicar con el SRI: " + e.getMessage());
+            throw new SystemException("Error al comunicar con el SRI.", "SYS-SRI-COMM-ERR", e);
         }
 
         if ("RECIBIDA".equals(respuestaEnvio.getEstado())) {
@@ -98,8 +104,9 @@ public class ProcesadorDocumentosElectronicos {
                     byte[] pdfContent = strategy.generarRide(jaxbObject, empresa, context);
                     context.setPdfContent(pdfContent);
 
+                    String identifier = null;
                     try {
-                        String identifier = strategy.getEntityIdentifier(entidad);
+                        identifier = strategy.getEntityIdentifier(entidad);
 
                         if (pdfContent != null) {
                         	 String documento = resolverDocumento(entidad);
@@ -115,7 +122,7 @@ public class ProcesadorDocumentosElectronicos {
                         context.setUrlXml(claveXml);
 
                     } catch (Exception e3) {
-                        System.err.println("[AwsS3] Error al subir documentos a S3: " + e3.getMessage());
+                        log.error("Error al subir documentos a S3 para identifier: {}", identifier, e3);
                     }
 
                     if (pdfContent != null) {
@@ -141,7 +148,7 @@ public class ProcesadorDocumentosElectronicos {
             }
             strategy.actualizarEntidad(entidad, context);
             strategy.persistir(entidad);
-            throw new Exception("Error en envío al SRI: " + context.getMensajeSri());
+            throw new SystemException("Error en envío al SRI: " + context.getMensajeSri(), "SYS-SRI-SEND-ERR");
         }
 
         strategy.actualizarEntidad(entidad, context);

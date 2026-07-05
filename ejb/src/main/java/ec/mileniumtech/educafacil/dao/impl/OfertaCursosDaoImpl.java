@@ -3,7 +3,8 @@
  */
 package ec.mileniumtech.educafacil.dao.impl;
 
-import java.util.Iterator;
+
+import ec.mileniumtech.educafacil.dao.OfertaCursosDao;import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.Hibernate;
@@ -28,7 +29,7 @@ import lombok.Getter;
 */
 @LocalBean
 @Stateless
-public class OfertaCursosDaoImpl extends GenericoDaoImpl<OfertaCursos, Long>{
+public class OfertaCursosDaoImpl extends GenericoDaoImpl<OfertaCursos, Long> implements OfertaCursosDao{
 	public OfertaCursosDaoImpl() {
 		
 	}
