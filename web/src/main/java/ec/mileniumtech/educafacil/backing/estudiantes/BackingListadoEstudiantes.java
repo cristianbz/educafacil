@@ -182,9 +182,10 @@ public class BackingListadoEstudiantes implements Serializable {
 			inscripcionMatriculaDto.setCurso(getBeanListadoEstudiantes().getMatriculaSeleccionada().getOfertaCursos().getOfertaCapacitacion().getCurso().getCursNombre());
 			inscripcionMatriculaDto.setFechaInicioCurso(getBeanListadoEstudiantes().getMatriculaSeleccionada().getOfertaCursos().getOcurFechaInicio());
 			inscripcionMatriculaDto.setFechaFinCurso(getBeanListadoEstudiantes().getMatriculaSeleccionada().getOfertaCursos().getOcurFechaFin());
-			System.out.println(getBeanListadoEstudiantes().getCodigoEstadoMatricula());
-			System.out.println(getBeanListadoEstudiantes().getMatriculaSeleccionada().getMatrEstado());
-			System.out.println(EnumEstadosMatricula.INSCRITO.getCodigo());
+			log.debug("Estado matrícula - código: {}, estado: {}, inscrito: {}", 
+			    getBeanListadoEstudiantes().getCodigoEstadoMatricula(),
+			    getBeanListadoEstudiantes().getMatriculaSeleccionada().getMatrEstado(),
+			    EnumEstadosMatricula.INSCRITO.getCodigo());
 			if(getBeanListadoEstudiantes().getMatriculaSeleccionada().getMatrEstado().equals(EnumEstadosMatricula.INSCRITO.getCodigo()))
 				inscripcionMatriculaDto.setFechaMatriculaInscripcion(getBeanListadoEstudiantes().getMatriculaSeleccionada().getMatrFechaInscripcion());
 			else

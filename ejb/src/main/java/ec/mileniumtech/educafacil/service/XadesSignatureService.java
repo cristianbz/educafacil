@@ -44,8 +44,11 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Servicio para realizar la firma electrónica de documentos XML usando el estándar XAdES-BES.
@@ -61,6 +64,8 @@ import jakarta.ejb.Stateless;
 @Stateless
 @LocalBean
 public class XadesSignatureService {
+
+    private static final Logger log = LogManager.getLogger(XadesSignatureService.class);
 
     private static final String XADES_NS = "http://uri.etsi.org/01903/v1.3.2#";
     private static final String DSIG_NS  = "http://www.w3.org/2000/09/xmldsig#";
@@ -103,7 +108,7 @@ public class XadesSignatureService {
             String current = aliases.nextElement();
             if (ks.isKeyEntry(current)) { alias = current; break; }
         }
-        if (alias == null) throw new Exception("No se encontró llave privada en el certificado.");
+        if (alias == null) throw new SystemException("No se encontró llave privada en el certificado.", "SYS-XADES-NO-KEY");
 
         PrivateKey      privateKey = (PrivateKey)      ks.getKey(alias, password.toCharArray());
         X509Certificate cert       = (X509Certificate) ks.getCertificate(alias);
@@ -222,22 +227,6 @@ public class XadesSignatureService {
 //        TransformerFactory tf = TransformerFactory.newInstance();
 //        Transformer transformer = tf.newTransformer();
 //        transformer.setOutputProperty(OutputKeys.ENCODING,             "UTF-8");
-//        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-//        transformer.setOutputProperty(OutputKeys.INDENT,               "no");
-//        
-//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//        transformer.transform(new DOMSource(doc), new StreamResult(baos));
-//     // ── AQUÍ: ya tienes el XML final en el baos ──────────────────────────
-//        String xmlFirmadoFinal = baos.toString("UTF-8")
-//        	    .replace("\r\n", "")
-//        	    .replace("\n", "")
-//        	    .replace("\r", "");
-//        System.out.println("=== XML FINAL QUE SE ENVÍA AL SRI ===");
-//        System.out.println(xmlFirmadoFinal);
-//        System.out.println("=====================================");
-//        // ─────────────────────────────────────────────────────────────────────
-//        
-//        return baos.toByteArray();
      // ── 9. Serializar ────────────────────────────────────────────────────
         TransformerFactory tf = TransformerFactory.newInstance();
         Transformer transformer = tf.newTransformer();

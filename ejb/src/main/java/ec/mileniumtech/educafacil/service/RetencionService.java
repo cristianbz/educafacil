@@ -2,9 +2,10 @@ package ec.mileniumtech.educafacil.service;
 
 import java.util.List;
 
-import ec.mileniumtech.educafacil.dao.impl.CodigoSriRetencionDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.PuntoEmisionDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.RetencionDaoImpl;
+import ec.mileniumtech.educafacil.dao.excepciones.BusinessException;
+import ec.mileniumtech.educafacil.dao.CodigoSriRetencionDao;
+import ec.mileniumtech.educafacil.dao.PuntoEmisionDao;
+import ec.mileniumtech.educafacil.dao.RetencionDao;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.CodigoSriRetencion;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.PuntoEmision;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Retencion;
@@ -13,28 +14,32 @@ import jakarta.ejb.EJB;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.transaction.Transactional;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
- * Servicio de negocio para la gestión de Comprobantes de Retención.
+ * Servicio de negocio para la gestiÃ³n de Comprobantes de RetenciÃ³n.
  */
 @Stateless
 @LocalBean
 public class RetencionService {
 
-    @EJB
-    private RetencionDaoImpl retencionDao;
+    private static final Logger log = LogManager.getLogger(RetencionService.class);
 
     @EJB
-    private PuntoEmisionDaoImpl puntoEmisionDao;
+    private RetencionDao retencionDao;
 
     @EJB
-    private CodigoSriRetencionDaoImpl codigoSriRetencionDao;
+    private PuntoEmisionDao puntoEmisionDao;
+
+    @EJB
+    private CodigoSriRetencionDao codigoSriRetencionDao;
 
     @EJB
     private RetencionIntegracionService retencionIntegracionService;
 
     /**
-     * Guarda una retención y procesa su envío al SRI.
+     * Guarda una retenciÃ³n y procesa su envÃ­o al SRI.
      * 
      * @param retencion Entidad con cabecera y detalles.
      * @throws Exception Si ocurre un error.
@@ -45,12 +50,12 @@ public class RetencionService {
         PuntoEmision puem = retencion.getPuntoEmision();
         if (puem == null) {
             List<PuntoEmision> puntos = puntoEmisionDao.listarPuntosEmisionActivos();
-            if (puntos.isEmpty()) throw new Exception("No hay puntos de emisión activos.");
+            if (puntos.isEmpty()) throw new BusinessException("No hay puntos de emisiÃ³n activos.", "BIZ-RET-NO-PUNTO");
             puem = puntos.get(0);
             retencion.setPuntoEmision(puem);
         }
 
-        // Generar número secuencial
+        // Generar nÃºmero secuencial
         int nuevoSecuencial = puem.getSecuencialRetencion() + 1;
         String numero = String.format("%03d-%03d-%09d", 
                 Integer.parseInt(puem.getEstablecimientos().getEstaCodigo()), 
@@ -58,12 +63,12 @@ public class RetencionService {
                 nuevoSecuencial);
         retencion.setNumero(numero);
         
-        // Actualizar secuencial en el punto de emisión
+        // Actualizar secuencial en el punto de emisiÃ³n
         puem.setSecuencialRetencion(nuevoSecuencial);
         puntoEmisionDao.actualizar(puem);
 
         // 2. Persistir en base de datos
-        // Asegurar relación bidireccional para JPA
+        // Asegurar relaciÃ³n bidireccional para JPA
         if (retencion.getDetalles() != null) {
             for (DetalleRetencion det : retencion.getDetalles()) {
                 det.setRetencion(retencion);
@@ -72,24 +77,23 @@ public class RetencionService {
         
         retencionDao.guardar(retencion);
 
-        // 3. Procesar electrónicamente
+        // 3. Procesar electrÃ³nicamente
         try {
             retencionIntegracionService.procesarRetencionElectronica(retencion);
         } catch (Exception e) {
-            // Loguear error pero no revertir transacción si la retención ya se guardó en DB
-            System.err.println("Error al emitir retención al SRI: " + e.getMessage());
+            log.error("Error al emitir retenciÃ³n {} al SRI. La retenciÃ³n se guardÃ³ en BD pero no se autorizÃ³.", retencion.getNumero(), e);
         }
     }
 
     /**
-     * Intenta emitir nuevamente una retención que quedó en estado PENDIENTE o RECHAZADO.
+     * Intenta emitir nuevamente una retenciÃ³n que quedÃ³ en estado PENDIENTE o RECHAZADO.
      * 
-     * @param retencionId ID de la retención.
+     * @param retencionId ID de la retenciÃ³n.
      * @throws Exception Si falla el proceso.
      */
     public void reemitirRetencion(Integer retencionId) throws Exception {
         Retencion ret = retencionDao.buscarRetencionPorId(retencionId);
-        if (ret == null) throw new Exception("Retención no encontrada.");
+        if (ret == null) throw new BusinessException("RetenciÃ³n no encontrada.", "BIZ-RET-NOT-FOUND");
         retencionIntegracionService.procesarRetencionElectronica(ret);
     }
 
@@ -102,8 +106,8 @@ public class RetencionService {
     }
 
     /**
-     * Lista los códigos SRI activos para un tipo de impuesto.
-     * Se invoca al cambiar el selector de tipo de impuesto en el diálogo.
+     * Lista los cÃ³digos SRI activos para un tipo de impuesto.
+     * Se invoca al cambiar el selector de tipo de impuesto en el diÃ¡logo.
      *
      * @param tipoImpuesto "1" (Renta), "2" (IVA) o "6" (ISD)
      * @return Lista de CodigoSriRetencion activos.
@@ -113,7 +117,7 @@ public class RetencionService {
     }
 
     /**
-     * Busca códigos SRI por tipo de impuesto y texto libre (para p:autoComplete).
+     * Busca cÃ³digos SRI por tipo de impuesto y texto libre (para p:autoComplete).
      *
      * @param tipoImpuesto Tipo de impuesto seleccionado.
      * @param query        Texto escrito por el usuario.
@@ -124,12 +128,13 @@ public class RetencionService {
     }
 
     /**
-     * Busca un código SRI por su ID (usado por el Converter del autoComplete).
+     * Busca un cÃ³digo SRI por su ID (usado por el Converter del autoComplete).
      *
-     * @param id ID del código SRI.
+     * @param id ID del cÃ³digo SRI.
      * @return CodigoSriRetencion encontrado, o null si no existe.
      */
     public CodigoSriRetencion buscarCodigoSriPorId(Integer id) {
         return codigoSriRetencionDao.findById(id).orElse(null);
     }
 }
+

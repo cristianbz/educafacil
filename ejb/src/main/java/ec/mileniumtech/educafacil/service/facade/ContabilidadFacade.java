@@ -1,12 +1,15 @@
 package ec.mileniumtech.educafacil.service.facade;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.Date;
 import java.util.List;
 
-import ec.mileniumtech.educafacil.dao.impl.CuotaDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.EgresoDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.PagosDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.ProveedorDaoImpl;
+import ec.mileniumtech.educafacil.dao.CuotaDao;
+import ec.mileniumtech.educafacil.dao.EgresoDao;
+import ec.mileniumtech.educafacil.dao.PagosDao;
+import ec.mileniumtech.educafacil.dao.ProveedorDao;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.DtoFlujoDinero;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Cuota;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetallePagos;
@@ -21,17 +24,19 @@ import jakarta.ejb.Stateless;
 @LocalBean
 public class ContabilidadFacade {
 
-    @EJB
-    private EgresoDaoImpl egresoDao;
+    private static final Logger log = LogManager.getLogger(ContabilidadFacade.class);
 
     @EJB
-    private ProveedorDaoImpl proveedorDao;
+    private EgresoDao egresoDao;
 
     @EJB
-    private PagosDaoImpl pagosDao;
+    private ProveedorDao proveedorDao;
 
     @EJB
-    private CuotaDaoImpl cuotaDao;
+    private PagosDao pagosDao;
+
+    @EJB
+    private CuotaDao cuotaDao;
 
     // ========== Cuotas ==========
 
@@ -101,3 +106,4 @@ public class ContabilidadFacade {
         return pagosDao.listarTodosLosPagos();
     }
 }
+

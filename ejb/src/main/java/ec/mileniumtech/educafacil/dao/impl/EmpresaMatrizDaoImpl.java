@@ -1,6 +1,7 @@
 package ec.mileniumtech.educafacil.dao.impl;
 
-import java.util.ArrayList;
+
+import ec.mileniumtech.educafacil.dao.EmpresaMatrizDao;import java.util.ArrayList;
 import java.util.List;
 
 import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
@@ -19,7 +20,7 @@ import jakarta.persistence.Query;
 */
 @LocalBean
 @Stateless
-public class EmpresaMatrizDaoImpl extends GenericoDaoImpl<EmpresaMatriz, Long>{
+public class EmpresaMatrizDaoImpl extends GenericoDaoImpl<EmpresaMatriz, Long> implements EmpresaMatrizDao{
 	public EmpresaMatrizDaoImpl() {
 		
 	}

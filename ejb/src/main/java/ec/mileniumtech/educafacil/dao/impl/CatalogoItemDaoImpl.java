@@ -1,6 +1,7 @@
 package ec.mileniumtech.educafacil.dao.impl;
 
-import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
+
+import ec.mileniumtech.educafacil.dao.CatalogoItemDao;import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.CatalogoItem;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
@@ -14,7 +15,7 @@ import java.util.List;
  */
 @LocalBean
 @Stateless
-public class CatalogoItemDaoImpl extends GenericoDaoImpl<CatalogoItem, Integer> {
+public class CatalogoItemDaoImpl extends GenericoDaoImpl<CatalogoItem, Integer> implements CatalogoItemDao {
 
     public CatalogoItemDaoImpl() {
         super();

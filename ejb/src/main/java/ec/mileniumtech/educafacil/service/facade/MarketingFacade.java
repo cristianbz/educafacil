@@ -1,15 +1,18 @@
 package ec.mileniumtech.educafacil.service.facade;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 
-import ec.mileniumtech.educafacil.dao.impl.CampaniaDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.DetalleSeguimientoDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.SeguimientoClientesDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.SeguimientoDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.VendedorDaoImpl;
+import ec.mileniumtech.educafacil.dao.CampaniaDao;
+import ec.mileniumtech.educafacil.dao.DetalleSeguimientoDao;
+import ec.mileniumtech.educafacil.dao.SeguimientoClientesDao;
+import ec.mileniumtech.educafacil.dao.SeguimientoDao;
+import ec.mileniumtech.educafacil.dao.VendedorDao;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.DtoMatriculasCurso;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Campania;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleSeguimiento;
@@ -24,20 +27,22 @@ import jakarta.ejb.Stateless;
 @LocalBean
 public class MarketingFacade {
 
-    @EJB
-    private SeguimientoClientesDaoImpl seguimientoClientesDao;
+    private static final Logger log = LogManager.getLogger(MarketingFacade.class);
 
     @EJB
-    private DetalleSeguimientoDaoImpl detalleSeguimientoDao;
+    private SeguimientoClientesDao seguimientoClientesDao;
 
     @EJB
-    private SeguimientoDaoImpl seguimientoDao;
+    private DetalleSeguimientoDao detalleSeguimientoDao;
 
     @EJB
-    private CampaniaDaoImpl campaniaDao;
+    private SeguimientoDao seguimientoDao;
 
     @EJB
-    private VendedorDaoImpl vendedorDao;
+    private CampaniaDao campaniaDao;
+
+    @EJB
+    private VendedorDao vendedorDao;
 
     // ========== Seguimiento Clientes ==========
 
@@ -119,7 +124,7 @@ public class MarketingFacade {
         return detalleSeguimientoDao.listaDetalle(seguimiento);
     }
 
-    // ========== Seguimiento (Matrícula) ==========
+    // ========== Seguimiento (MatrÃ­cula) ==========
 
     public void agregarActualizarSeguimiento(Seguimiento seguimiento) {
         seguimientoDao.agregarActualizarSeguimiento(seguimiento);
@@ -129,7 +134,7 @@ public class MarketingFacade {
         return seguimientoDao.listaSeguimientoMatricula(matricula);
     }
 
-    // ========== Campañas ==========
+    // ========== CampaÃ±as ==========
 
     public List<Campania> listaCampanias() {
         return campaniaDao.listaCampanias();
@@ -161,3 +166,4 @@ public class MarketingFacade {
         return vendedorDao.listaDeVendedores();
     }
 }
+

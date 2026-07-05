@@ -14,6 +14,8 @@ import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -38,6 +40,8 @@ public class Curso implements Serializable {
 	@Column(name="curs_id")
 	private int cursId;
 	
+	@NotBlank(message = "{curso.nombre.required}")
+	@Size(min = 3, max = 200, message = "{curso.nombre.size}")
 	@Column(name="curs_nombre")
 	private String cursNombre;
    

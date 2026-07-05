@@ -1,6 +1,7 @@
 package ec.mileniumtech.educafacil.dao.impl;
 
-import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
+
+import ec.mileniumtech.educafacil.dao.CodigoSriRetencionDao;import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.CodigoSriRetencion;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
@@ -15,7 +16,7 @@ import java.util.List;
  */
 @LocalBean
 @Stateless
-public class CodigoSriRetencionDaoImpl extends GenericoDaoImpl<CodigoSriRetencion, Integer> {
+public class CodigoSriRetencionDaoImpl extends GenericoDaoImpl<CodigoSriRetencion, Integer> implements CodigoSriRetencionDao {
 
     public CodigoSriRetencionDaoImpl() {
         super();

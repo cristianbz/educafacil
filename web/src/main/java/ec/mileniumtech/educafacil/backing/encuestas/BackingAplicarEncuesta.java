@@ -113,7 +113,7 @@ public class BackingAplicarEncuesta implements Serializable{
 				Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.noEstudiante"));
 			}
 		}catch(Exception e ) {
-			e.printStackTrace();
+			log.error("Error al cargar evaluaciones", e);
 		}
 	}
 	
@@ -198,7 +198,7 @@ public class BackingAplicarEncuesta implements Serializable{
 				Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.encuestaNoValida"));
 			}
 		}catch(Exception e) {
-			e.printStackTrace();
+			log.error("Error al validar encuesta", e);
 		}
 	}
 	
@@ -207,7 +207,7 @@ public class BackingAplicarEncuesta implements Serializable{
 			getBeanAplicarEncuesta().setListaRespuestas(new ArrayList<>());
 			getBeanAplicarEncuesta().setListaRespuestas(encuestaDataService.listaRespuestasPorCategoria(codigoCategoria));
 		}catch(Exception e) {
-			e.printStackTrace();
+			log.error("Error al cargar respuestas para categoria {}", codigoCategoria, e);
 		}
 	}
 	
@@ -263,7 +263,7 @@ public class BackingAplicarEncuesta implements Serializable{
 			Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.grabar"));
 			
 		}catch(Exception e) {
-			e.printStackTrace();
+			log.error("Error al guardar encuesta", e);
 		}
 	}
 	/**

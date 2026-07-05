@@ -1,6 +1,9 @@
 package ec.mileniumtech.educafacil.dao.impl;
 
+
 import java.util.ArrayList;
+
+import ec.mileniumtech.educafacil.dao.CuotaDao;
 import java.util.List;
 
 import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
@@ -12,7 +15,7 @@ import jakarta.persistence.Query;
 
 @LocalBean
 @Stateless
-public class CuotaDaoImpl extends GenericoDaoImpl<Cuota, Long> {
+public class CuotaDaoImpl extends GenericoDaoImpl<Cuota, Long> implements CuotaDao {
 
     public CuotaDaoImpl() {
     }
@@ -67,3 +70,5 @@ public class CuotaDaoImpl extends GenericoDaoImpl<Cuota, Long> {
         }
     }
 }
+
+

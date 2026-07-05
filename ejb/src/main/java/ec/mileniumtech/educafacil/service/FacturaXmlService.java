@@ -1,5 +1,8 @@
 package ec.mileniumtech.educafacil.service;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.StringWriter;
 
 import ec.mileniumtech.educafacil.modelo.sri.Factura;
@@ -15,6 +18,8 @@ import jakarta.xml.bind.Marshaller;
 @Stateless
 @LocalBean
 public class FacturaXmlService {
+
+    private static final Logger log = LogManager.getLogger(FacturaXmlService.class);
 
     /**
      * Convierte un objeto Factura a su representación XML en una cadena de texto.

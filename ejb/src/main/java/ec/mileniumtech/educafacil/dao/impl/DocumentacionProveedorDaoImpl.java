@@ -4,7 +4,8 @@
 package ec.mileniumtech.educafacil.dao.impl;
 
 
-import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
+
+import ec.mileniumtech.educafacil.dao.DocumentacionProveedorDao;import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.dao.util.JpaDaoSupport;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DocumentacionProveedor;
 import jakarta.ejb.LocalBean;
@@ -20,7 +21,7 @@ import jakarta.persistence.Query;
 */
 @LocalBean
 @Stateless
-public class DocumentacionProveedorDaoImpl extends GenericoDaoImpl<DocumentacionProveedor, Long>{
+public class DocumentacionProveedorDaoImpl extends GenericoDaoImpl<DocumentacionProveedor, Long> implements DocumentacionProveedorDao{
 	public DocumentacionProveedorDaoImpl() {
 		
 	}

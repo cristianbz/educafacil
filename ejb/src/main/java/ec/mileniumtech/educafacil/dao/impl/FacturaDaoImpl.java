@@ -1,6 +1,7 @@
 package ec.mileniumtech.educafacil.dao.impl;
 
-import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
+
+import ec.mileniumtech.educafacil.dao.FacturaDao;import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleFactura;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Establecimiento;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Factura;
@@ -18,7 +19,7 @@ import jakarta.persistence.TypedQuery;
  */
 @LocalBean
 @Stateless
-public class FacturaDaoImpl extends GenericoDaoImpl<Factura, Integer> {
+public class FacturaDaoImpl extends GenericoDaoImpl<Factura, Integer> implements FacturaDao {
 
     public FacturaDaoImpl() {
         super();

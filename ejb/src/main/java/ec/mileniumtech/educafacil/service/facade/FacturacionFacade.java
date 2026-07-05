@@ -5,16 +5,16 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import ec.mileniumtech.educafacil.dao.impl.CatalogoItemDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.ClienteDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.EmpresaMatrizDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.EstudianteDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.FacturaDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.NotaCreditoDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.PersonaDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.PuntoEmisionDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.RetencionDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.SriformapagoDaoImpl;
+import ec.mileniumtech.educafacil.dao.CatalogoItemDao;
+import ec.mileniumtech.educafacil.dao.ClienteDao;
+import ec.mileniumtech.educafacil.dao.EmpresaMatrizDao;
+import ec.mileniumtech.educafacil.dao.EstudianteDao;
+import ec.mileniumtech.educafacil.dao.FacturaDao;
+import ec.mileniumtech.educafacil.dao.NotaCreditoDao;
+import ec.mileniumtech.educafacil.dao.PersonaDao;
+import ec.mileniumtech.educafacil.dao.PuntoEmisionDao;
+import ec.mileniumtech.educafacil.dao.RetencionDao;
+import ec.mileniumtech.educafacil.dao.SriformapagoDao;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.ComprobanteReporteDto;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.InfoAdicionalDto;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.CatalogoItem;
@@ -32,40 +32,45 @@ import ec.mileniumtech.educafacil.modelo.persistencia.entity.Persona;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.PuntoEmision;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Retencion;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Sriformapago;
+import ec.mileniumtech.educafacil.dao.excepciones.BusinessException;
 import ec.mileniumtech.educafacil.service.AwsS3Service;
 import ec.mileniumtech.educafacil.service.IntegracionSriService;
 import jakarta.ejb.EJB;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.transaction.Transactional;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Stateless
 @LocalBean
 public class FacturacionFacade {
 
-    @EJB
-    private FacturaDaoImpl facturaDao;
+    private static final Logger log = LogManager.getLogger(FacturacionFacade.class);
 
     @EJB
-    private ClienteDaoImpl clienteDao;
+    private FacturaDao facturaDao;
 
     @EJB
-    private CatalogoItemDaoImpl catalogoItemDao;
+    private ClienteDao clienteDao;
 
     @EJB
-    private PuntoEmisionDaoImpl puntoEmisionDao;
+    private CatalogoItemDao catalogoItemDao;
 
     @EJB
-    private EmpresaMatrizDaoImpl empresaMatrizDao;
+    private PuntoEmisionDao puntoEmisionDao;
 
     @EJB
-    private SriformapagoDaoImpl sriformapagoDao;
+    private EmpresaMatrizDao empresaMatrizDao;
 
     @EJB
-    private EstudianteDaoImpl estudianteDao;
+    private SriformapagoDao sriformapagoDao;
 
     @EJB
-    private PersonaDaoImpl personaDao;
+    private EstudianteDao estudianteDao;
+
+    @EJB
+    private PersonaDao personaDao;
 
     @EJB
     private IntegracionSriService integracionSriService;
@@ -74,10 +79,10 @@ public class FacturacionFacade {
     private AwsS3Service awsS3Service;
     
     @EJB
-    private NotaCreditoDaoImpl notaCreditoDao;
+    private NotaCreditoDao notaCreditoDao;
 
     @EJB
-    private RetencionDaoImpl retencionDao;
+    private RetencionDao retencionDao;
 
     // ========== Factura CRUD ==========
 
@@ -220,7 +225,7 @@ public class FacturacionFacade {
         return clienteDao.actualizar(cliente);
     }
 
-    // ========== Catálogo ==========
+    // ========== CatÃ¡logo ==========
 
     public List<CatalogoItem> listarCatalogoItems() {
         return catalogoItemDao.findAll();
@@ -234,7 +239,7 @@ public class FacturacionFacade {
         return catalogoItemDao.actualizar(item);
     }
 
-    // ========== Punto Emisión ==========
+    // ========== Punto EmisiÃ³n ==========
 
     public List<PuntoEmision> listarPuntosEmisionActivos() {
         return puntoEmisionDao.listarPuntosEmisionActivos();
@@ -274,13 +279,13 @@ public class FacturacionFacade {
         return personaDao.buscarPersonaPorCedula(cedula);
     }
 
-    // ========== Lógica de Negocio Facturación ==========
+    // ========== LÃ³gica de Negocio FacturaciÃ³n ==========
 
     @Transactional
     public void crearFacturaDesdePago(Pagos pago) throws Exception {
         List<PuntoEmision> puntos = puntoEmisionDao.listarPuntosEmisionActivos();
         if (puntos.isEmpty()) {
-            throw new Exception("No hay puntos de emisión activos configurados.");
+            throw new BusinessException("No hay puntos de emisiÃ³n activos configurados.", "BIZ-FACADE-NO-PUNTO");
         }
         PuntoEmision puem = puntos.get(0);
 
@@ -357,14 +362,14 @@ public class FacturacionFacade {
         try {
             integracionSriService.procesarFacturaElectronica(factura);
         } catch (Exception e) {
-            System.err.println("Error SRI: " + e.getMessage());
+            log.error("Error al procesar factura electrÃ³nica en FacturacionFacade para facturaId={}", factura.getId(), e);
         }
     }
 
     public void emitirFactura(Integer facturaId, List<InfoAdicionalDto> informacionAdicional) throws Exception {
         Factura factura = facturaDao.buscarFacturaPorId(facturaId);
         if (factura == null) {
-            throw new Exception("No se encontró la factura con ID: " + facturaId);
+            throw new BusinessException("No se encontrÃ³ la factura con ID: " + facturaId, "BIZ-FACADE-NOT-FOUND");
         }
         factura.setListaInfoAdicional(informacionAdicional);
         integracionSriService.procesarFacturaElectronica(factura);
@@ -373,15 +378,15 @@ public class FacturacionFacade {
     public void subirDocumentosFacturaAws(Integer facturaId) throws Exception {
         Factura factura = facturaDao.buscarFacturaPorId(facturaId);
         if (factura == null) {
-            throw new Exception("No se encontró la factura con ID: " + facturaId);
+            throw new BusinessException("No se encontrÃ³ la factura con ID: " + facturaId, "BIZ-FACADE-NOT-FOUND");
         }
 
         ec.mileniumtech.educafacil.modelo.persistencia.entity.DocumentoElectronico doc = factura.getDocumentoElectronico();
         if (doc == null) {
-            throw new Exception("La factura no tiene un documento electrónico asociado.");
+            throw new BusinessException("La factura no tiene un documento electrÃ³nico asociado.", "BIZ-FACADE-NO-DOC");
         }
         if (!"AUTORIZADO".equals(doc.getEstado())) {
-            throw new Exception("Solo se pueden subir documentos de facturas en estado AUTORIZADO.");
+            throw new BusinessException("Solo se pueden subir documentos de facturas en estado AUTORIZADO.", "BIZ-FACADE-NOT-AUT");
         }
 
         String numeroFactura = factura.getNumero().replace("/", "-");
@@ -416,7 +421,8 @@ public class FacturacionFacade {
         facturaDao.actualizarFactura(factura);
 
         if (huboError) {
-            throw new Exception("Se completó parcialmente: " + errMsg.toString().trim());
+            throw new BusinessException("Se completÃ³ parcialmente: " + errMsg.toString().trim(), "BIZ-FACADE-PARTIAL");
         }
     }
 }
+

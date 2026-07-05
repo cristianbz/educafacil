@@ -13,7 +13,7 @@ import ec.mileniumtech.educafacil.bean.accesos.BeanAccesoRol;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Perfil;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Rol;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.RolPerfil;
-import ec.mileniumtech.educafacil.service.AdministracionService;
+import ec.mileniumtech.educafacil.service.SeguridadService;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
@@ -45,7 +45,7 @@ public class BackingAccesoRol implements Serializable {
     private BeanAccesoRol beanAccesoRol;
 
     @EJB
-    private AdministracionService administracionService;
+    private SeguridadService seguridadService;
 
     // =========================================================
     // Inicialización
@@ -54,7 +54,7 @@ public class BackingAccesoRol implements Serializable {
     @PostConstruct
     public void init() {
         cargarRoles();
-        getBeanAccesoRol().setListaPerfiles(administracionService.listarPerfilesActivos());
+        getBeanAccesoRol().setListaPerfiles(seguridadService.listarPerfilesActivos());
         getBeanAccesoRol().setRol(new Rol());
         getBeanAccesoRol().setEsNuevo(true);
     }
@@ -99,7 +99,7 @@ public class BackingAccesoRol implements Serializable {
             if (getBeanAccesoRol().isEsNuevo() && rol.getRolEstado() == null) {
                 rol.setRolEstado(true);
             }
-            administracionService.guardarRol(rol);
+            seguridadService.guardarRol(rol);
             cargarRoles();
             Mensaje.ocultarDialogo("dlgRol");
             Mensaje.verMensaje(FacesMessage.SEVERITY_INFO,
@@ -121,7 +121,7 @@ public class BackingAccesoRol implements Serializable {
     public void eliminarLogicoRol(Rol rol) {
         try {
             if (rol != null && rol.getRolId() != null) {
-                administracionService.eliminarLogicoRol(rol.getRolId());
+                seguridadService.eliminarLogicoRol(rol.getRolId());
                 cargarRoles();
                 Mensaje.verMensaje(FacesMessage.SEVERITY_WARN,
                         getMensajesBacking().getPropiedad("info"),
@@ -148,7 +148,7 @@ public class BackingAccesoRol implements Serializable {
         if (rol != null && rol.getRolId() != null) {
             getBeanAccesoRol().setRolSeleccionado(rol);
             getBeanAccesoRol().setPerfilesDelRol(
-                    administracionService.listarPerfilesPorRol(rol.getRolId()));
+                    seguridadService.listarPerfilesPorRol(rol.getRolId()));
             Mensaje.verDialogo("dlgPerfiles");
         } else {
             Mensaje.verMensaje(FacesMessage.SEVERITY_WARN,
@@ -184,13 +184,13 @@ public class BackingAccesoRol implements Serializable {
             Integer perfilId = perfil.getId();
 
             if (perfilAsignado(perfilId)) {
-                administracionService.quitarPerfilDeRol(rolId, perfilId);
+                seguridadService.quitarPerfilDeRol(rolId, perfilId);
             } else {
-                administracionService.asignarPerfilARol(rolId, perfilId);
+                seguridadService.asignarPerfilARol(rolId, perfilId);
             }
             // Refrescar perfiles asignados
             getBeanAccesoRol().setPerfilesDelRol(
-                    administracionService.listarPerfilesPorRol(rolId));
+                    seguridadService.listarPerfilesPorRol(rolId));
 
         } catch (Exception e) {
             log.error("Error al alternar perfil del rol", e);
@@ -222,7 +222,7 @@ public class BackingAccesoRol implements Serializable {
      */
     public java.util.List<RolPerfil> obtenerPerfilesDeRolPorId(Integer rolId) {
         if (rolId == null) return new java.util.ArrayList<>();
-        return administracionService.listarPerfilesPorRol(rolId);
+        return seguridadService.listarPerfilesPorRol(rolId);
     }
 
     /**
@@ -250,6 +250,6 @@ public class BackingAccesoRol implements Serializable {
     // =========================================================
 
     private void cargarRoles() {
-        getBeanAccesoRol().setListaRoles(administracionService.listarRoles());
+        getBeanAccesoRol().setListaRoles(seguridadService.listarRoles());
     }
 }

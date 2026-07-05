@@ -16,7 +16,7 @@ import ec.mileniumtech.educafacil.modelo.persistencia.dto.CertificateInfoDto;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.EmpresaMatriz;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Establecimiento;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.PuntoEmision;
-import ec.mileniumtech.educafacil.service.AdministracionService;
+import ec.mileniumtech.educafacil.service.EmpresaService;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import ec.mileniumtech.educafacil.utilitarios.encriptacion.CriptografiaUtil;
 import ec.mileniumtech.educafacil.utilitarios.encriptacion.Encriptar;
@@ -48,7 +48,7 @@ public class BackingEmpresa implements Serializable{
     private BeanEmpresa beanEmpresa;
 
     @EJB
-    private AdministracionService administracionService;
+    private EmpresaService empresaService;
     
 
     @PostConstruct
@@ -60,7 +60,7 @@ public class BackingEmpresa implements Serializable{
      * Carga los datos de la empresa desde la base de datos.
      */
     public void cargarEmpresa() {
-        getBeanEmpresa().setListaEmpresas(administracionService.listarEmpresas());
+        getBeanEmpresa().setListaEmpresas(empresaService.listarEmpresas());
         if (getBeanEmpresa().getListaEmpresas() != null && !getBeanEmpresa().getListaEmpresas().isEmpty()) {
             getBeanEmpresa().setEmpresa(getBeanEmpresa().getListaEmpresas().get(0));
             cargarEstablecimientos();
@@ -76,7 +76,7 @@ public class BackingEmpresa implements Serializable{
      * Carga los establecimientos de la empresa actual.
      */
     public void cargarEstablecimientos() {
-        getBeanEmpresa().setListaEstablecimientos(administracionService.listarEstablecimientosPorEmpresa(getBeanEmpresa().getEmpresa().getEmpmId()));
+        getBeanEmpresa().setListaEstablecimientos(empresaService.listarEstablecimientosPorEmpresa(getBeanEmpresa().getEmpresa().getEmpmId()));
     }
 
     /**
@@ -84,7 +84,7 @@ public class BackingEmpresa implements Serializable{
      */
     public void onEstablecimientoChange() {
         if (getBeanEmpresa().getEstablecimientoSelect() != null && getBeanEmpresa().getEstablecimientoSelect().getEstaId() != null) {
-            getBeanEmpresa().setListaPuntosEmision(administracionService.listarPuntosEmisionPorEstablecimiento(getBeanEmpresa().getEstablecimientoSelect().getEstaId()));
+            getBeanEmpresa().setListaPuntosEmision(empresaService.listarPuntosEmisionPorEstablecimiento(getBeanEmpresa().getEstablecimientoSelect().getEstaId()));
         } else {
             getBeanEmpresa().setListaPuntosEmision(new ArrayList<>());
         }
@@ -116,7 +116,7 @@ public class BackingEmpresa implements Serializable{
     public void guardarEstablecimiento() {
         try {
         	getBeanEmpresa().getEstablecimientoSelect().setEmpresaMatriz(getBeanEmpresa().getEmpresa());
-        	administracionService.guardarEstablecimiento(getBeanEmpresa().getEstablecimientoSelect());
+        	empresaService.guardarEstablecimiento(getBeanEmpresa().getEstablecimientoSelect());
         	cargarEstablecimientos();
         	Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.grabar"));
         } catch (Exception e) {
@@ -153,8 +153,8 @@ public class BackingEmpresa implements Serializable{
     public void guardarPuntoEmision() {
         try {
         	if(getBeanEmpresa().getEstablecimientoSelect().getEstaId()==null)
-        		administracionService.guardarEstablecimiento(getBeanEmpresa().getEstablecimientoSelect());
-            administracionService.guardarPuntoEmision(getBeanEmpresa().getPuntoEmisionSelect());
+        		empresaService.guardarEstablecimiento(getBeanEmpresa().getEstablecimientoSelect());
+            empresaService.guardarPuntoEmision(getBeanEmpresa().getPuntoEmisionSelect());
             onEstablecimientoChange();
             Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.grabar"));
         } catch (Exception e) {
@@ -173,7 +173,7 @@ public class BackingEmpresa implements Serializable{
                 getBeanEmpresa().getEmpresa().setEmpmPasswordCertificado(CriptografiaUtil.encriptar(claveOriginal));
             }
 
-            administracionService.guardarEmpresa(getBeanEmpresa().getEmpresa());
+            empresaService.guardarEmpresa(getBeanEmpresa().getEmpresa());
             
             // Restauramos la clave original en el bean para que el usuario no la vea cifrada en la UI si sigue editando
             getBeanEmpresa().getEmpresa().setEmpmPasswordCertificado(claveOriginal);

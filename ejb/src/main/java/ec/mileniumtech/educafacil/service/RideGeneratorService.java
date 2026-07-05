@@ -1,5 +1,8 @@
 package ec.mileniumtech.educafacil.service;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -31,6 +34,8 @@ import java.io.ByteArrayOutputStream;
 @Stateless
 @LocalBean
 public class RideGeneratorService {
+
+    private static final Logger log = LogManager.getLogger(RideGeneratorService.class);
 
     /**
      * Genera el PDF de la factura.

@@ -3,7 +3,8 @@
  */
 package ec.mileniumtech.educafacil.dao.impl;
 
-import java.time.LocalDate;
+
+import ec.mileniumtech.educafacil.dao.PlanificacionCursoDao;import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +22,7 @@ import jakarta.persistence.TypedQuery;
  */
 @LocalBean
 @Stateless
-public class PlanificacionCursoDaoImpl extends GenericoDaoImpl<PlanificacionCurso, Integer> {
+public class PlanificacionCursoDaoImpl extends GenericoDaoImpl<PlanificacionCurso, Integer> implements PlanificacionCursoDao {
 
     public PlanificacionCursoDaoImpl() {
     }

@@ -1,5 +1,8 @@
 package ec.mileniumtech.educafacil.service;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.StringWriter;
 
 import ec.mileniumtech.educafacil.modelo.sri.ComprobanteRetencion;
@@ -14,6 +17,8 @@ import jakarta.xml.bind.Marshaller;
 @Stateless
 @LocalBean
 public class RetencionXmlService {
+
+    private static final Logger log = LogManager.getLogger(RetencionXmlService.class);
 
     /**
      * Convierte un objeto ComprobanteRetencion a su representación XML en una cadena de texto.

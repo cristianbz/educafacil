@@ -3,7 +3,8 @@
  */
 package ec.mileniumtech.educafacil.dao.impl;
 
-import java.util.ArrayList;
+
+import ec.mileniumtech.educafacil.dao.UsuarioDao;import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,7 +26,7 @@ import jakarta.persistence.Query;
 */
 @LocalBean
 @Stateless
-public class UsuarioDaoImpl extends GenericoDaoImpl<Usuario, Long>{
+public class UsuarioDaoImpl extends GenericoDaoImpl<Usuario, Long> implements UsuarioDao{
 	public UsuarioDaoImpl() {
 		
 	}

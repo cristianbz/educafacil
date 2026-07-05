@@ -3,7 +3,10 @@
  */
 package ec.mileniumtech.educafacil.dao.impl;
 
+
 import java.util.List;
+
+import ec.mileniumtech.educafacil.dao.MedioInformacionDao;
 
 
 import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
@@ -20,11 +23,11 @@ import jakarta.persistence.Query;
 */
 @LocalBean
 @Stateless
-public class MedioInformacionDaoImpl extends GenericoDaoImpl<MedioInformacionDaoImpl, Long>{
+public class MedioInformacionDaoImpl extends GenericoDaoImpl<MedioInformacion, Long> implements MedioInformacionDao{
 	public MedioInformacionDaoImpl() {
 		
 	}
-	public MedioInformacionDaoImpl(EntityManager em, Class<MedioInformacionDaoImpl> entityClass) {
+	public MedioInformacionDaoImpl(EntityManager em, Class<MedioInformacion> entityClass) {
 		super(em, entityClass);
 		// TODO Auto-generated constructor stub
 	}

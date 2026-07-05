@@ -1,6 +1,7 @@
 package ec.mileniumtech.educafacil.dao.impl;
 
-import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
+
+import ec.mileniumtech.educafacil.dao.EstablecimientoDao;import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.dao.util.JpaDaoSupport;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Establecimiento;
 import jakarta.ejb.LocalBean;
@@ -15,7 +16,7 @@ import java.util.List;
  */
 @LocalBean
 @Stateless
-public class EstablecimientoDaoImpl extends GenericoDaoImpl<Establecimiento, Integer> {
+public class EstablecimientoDaoImpl extends GenericoDaoImpl<Establecimiento, Integer> implements EstablecimientoDao {
 
     public EstablecimientoDaoImpl() {
         super();

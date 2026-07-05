@@ -3,7 +3,8 @@
  */
 package ec.mileniumtech.educafacil.dao.impl;
 
-import java.util.List;
+
+import ec.mileniumtech.educafacil.dao.UsuarioRolDao;import java.util.List;
 
 
 import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
@@ -22,7 +23,7 @@ import jakarta.persistence.Query;
 */
 @LocalBean
 @Stateless
-public class UsuarioRolDaoImpl extends GenericoDaoImpl<UsuarioRol, Long>{
+public class UsuarioRolDaoImpl extends GenericoDaoImpl<UsuarioRol, Long> implements UsuarioRolDao{
 	public UsuarioRolDaoImpl() {
 		
 	}

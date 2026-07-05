@@ -1,5 +1,7 @@
 package ec.mileniumtech.educafacil.backing.contabilidad;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -14,6 +16,7 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.PrimeFaces;
+import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
@@ -21,13 +24,14 @@ import ec.mileniumtech.educafacil.backing.estudiantes.ComponenteBuscaEstudiante;
 import ec.mileniumtech.educafacil.bean.contabilidad.BeanPagos;
 import ec.mileniumtech.educafacil.bean.usuarios.BeanLogin;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.DtoDeudorCurso;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.Catalogo;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Cuota;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetallePagos;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.EmpresaMatriz;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Matricula;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.OfertaCursos;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Pagos;
-import ec.mileniumtech.educafacil.service.AdministracionService;
+import ec.mileniumtech.educafacil.service.EmpresaService;
 import ec.mileniumtech.educafacil.service.PagosService;
 import ec.mileniumtech.educafacil.service.facade.ContabilidadFacade;
 import ec.mileniumtech.educafacil.service.facade.InstructorFacade;
@@ -84,7 +88,7 @@ public class BackingPagos implements Serializable{
     private PagosService pagosService;
 
     @EJB
-    private AdministracionService administracionService;
+    private EmpresaService empresaService;
 
     @Getter
     @Setter
@@ -175,12 +179,12 @@ public class BackingPagos implements Serializable{
                 InputStream jrxmlDeudores = getClass().getResourceAsStream("/reports/reporteDeudoresCurso.jrxml");
                 jasperReportDeudores = JasperCompileManager.compileReport(jrxmlDeudores);
             }
-        }catch(Exception e) {
-            e.printStackTrace();
+            }catch(Exception e) {
+                log.error("Error al compilar reporte de deudores", e);
+            }
         }
-    }
-
-    public void agregarServicio() {
+    
+        public void agregarServicio() {
         Double valor = getBeanPagos().getDetallePagos().getDepaValor();
         if (getBeanPagos().getServicioSeleccionado() == null) {
             Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), "Seleccione un servicio");
@@ -251,7 +255,7 @@ public class BackingPagos implements Serializable{
 
     public void imprimirTicketTermicoPorPago(Pagos pago) {
         try {
-            List<EmpresaMatriz> empresas = administracionService.listarEmpresas();
+            List<EmpresaMatriz> empresas = empresaService.listarEmpresas();
             if (empresas != null && !empresas.isEmpty()) {
                 EmpresaMatriz emp = empresas.get(0);
                 this.ticketEmpresa = emp.getEmpmNombreComercial() != null ? emp.getEmpmNombreComercial() : emp.getEmpmRazonSocial();

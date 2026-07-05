@@ -11,7 +11,7 @@ import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.administracion.BeanCreacionCursos;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Curso;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.OfertaCapacitacion;
-import ec.mileniumtech.educafacil.service.AdministracionService;
+import ec.mileniumtech.educafacil.service.OfertaService;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
@@ -40,15 +40,15 @@ public class BackingCreacionCursos implements Serializable{
 	private BeanCreacionCursos beanCreacionCursos;
 	
 	@EJB
-	private AdministracionService administracionService;
+	private OfertaService ofertaService;
 	
 	@PostConstruct
 	public void init() {
 			getBeanCreacionCursos().setAsignarOferta(false);
-			getBeanCreacionCursos().setListaCursos(administracionService.listarTodosCursosOrdenados());
-			getBeanCreacionCursos().setListaAreas(administracionService.listarAreasOrdenadas());
-			getBeanCreacionCursos().setListaEspecialidades(administracionService.listarTodasEspecialidadesOrdenadas());
-			getBeanCreacionCursos().setListaOfertaCapacitacion(administracionService.listarOfertasCapacitacion());
+			getBeanCreacionCursos().setListaCursos(ofertaService.listarTodosCursosOrdenados());
+			getBeanCreacionCursos().setListaAreas(ofertaService.listarAreasOrdenadas());
+			getBeanCreacionCursos().setListaEspecialidades(ofertaService.listarTodasEspecialidadesOrdenadas());
+			getBeanCreacionCursos().setListaOfertaCapacitacion(ofertaService.listarOfertasCapacitacion());
 
 			getBeanCreacionCursos().setCurso(new Curso());
 			getBeanCreacionCursos().setOfertaCapacitacion(new OfertaCapacitacion());
@@ -131,9 +131,9 @@ public class BackingCreacionCursos implements Serializable{
 	 * Muestra el dialogo Grabar Oferta
 	 */
 	public void grabarOferta() {
-			administracionService.guardarNuevaOfertaCapacitacion(getBeanCreacionCursos().getOfertaCapacitacion());
+			ofertaService.guardarNuevaOfertaCapacitacion(getBeanCreacionCursos().getOfertaCapacitacion());
 			
-			getBeanCreacionCursos().setListaOfertaCapacitacion(administracionService.listarOfertasCapacitacion());
+			getBeanCreacionCursos().setListaOfertaCapacitacion(ofertaService.listarOfertasCapacitacion());
 			getBeanCreacionCursos().setAsignarOferta(false);
 			getBeanCreacionCursos().setCursoActivo(false);
 			Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.agregar"));
@@ -147,8 +147,8 @@ public class BackingCreacionCursos implements Serializable{
 				getBeanCreacionCursos().setCodigoEspecialidad(0);
 				getBeanCreacionCursos().setCursoActivo(false);
 			}
-			administracionService.actualizarCurso(getBeanCreacionCursos().getCurso());
-			getBeanCreacionCursos().setListaCursos(administracionService.listarTodosCursosOrdenados());
+			ofertaService.actualizarCurso(getBeanCreacionCursos().getCurso());
+			getBeanCreacionCursos().setListaCursos(ofertaService.listarTodosCursosOrdenados());
 			Mensaje.ocultarDialogo("dlgGrabaCurso");
 	}
 }

@@ -14,6 +14,7 @@ import org.primefaces.model.StreamedContent;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.contabilidad.BeanFacturacion;
+import ec.mileniumtech.educafacil.dao.excepciones.BusinessException;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.InfoAdicionalDto;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.CatalogoItem;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Cliente;
@@ -219,8 +220,8 @@ public class BackingFacturacion implements Serializable {
         try {
             log.info("Iniciando guardado de ítem...");
             CatalogoItem item = getBeanFacturacion().getNuevoItem();
-            if (item.getCodigo() == null || item.getCodigo().isEmpty()) throw new Exception("El código es obligatorio.");
-            if (item.getNombre() == null || item.getNombre().isEmpty()) throw new Exception("El nombre es obligatorio.");
+            if (item.getCodigo() == null || item.getCodigo().isEmpty()) throw new BusinessException("El código es obligatorio.", "BIZ-FACT-ITEM-NO-CODE");
+            if (item.getNombre() == null || item.getNombre().isEmpty()) throw new BusinessException("El nombre es obligatorio.", "BIZ-FACT-ITEM-NO-NAME");
             
             boolean esNuevo = (item.getId() == null);
             if (esNuevo) {
@@ -336,15 +337,15 @@ public class BackingFacturacion implements Serializable {
     public void agregarFormaPago() {
         try {
             Integer idFp = getBeanFacturacion().getIdFormaPagoSeleccionada();
-            if (idFp == null || idFp == 0) throw new Exception("Debe seleccionar una forma de pago.");
+            if (idFp == null || idFp == 0) throw new BusinessException("Debe seleccionar una forma de pago.", "BIZ-FACT-NO-FP");
             
             ec.mileniumtech.educafacil.modelo.persistencia.entity.FormaPagoFactura fp = getBeanFacturacion().getNuevaFormaPago();
             if (fp.getValor() == null || fp.getValor().compareTo(BigDecimal.ZERO) <= 0) {
-                throw new Exception("El valor debe ser mayor a cero.");
+                throw new BusinessException("El valor debe ser mayor a cero.", "BIZ-FACT-FP-ZERO");
             }
             
             ec.mileniumtech.educafacil.modelo.persistencia.entity.Sriformapago sriFp = facturacionDataService.buscarFormaPagoPorId(idFp);
-            if (sriFp == null) throw new Exception("Forma de pago no encontrada.");
+            if (sriFp == null) throw new BusinessException("Forma de pago no encontrada.", "BIZ-FACT-FP-NOT-FOUND");
             
             fp.setSriformapagos(sriFp);
             
@@ -374,21 +375,21 @@ public class BackingFacturacion implements Serializable {
     public void guardarFactura() {
         try {
             if (getBeanFacturacion().getClienteSeleccionado() == null) {
-                throw new Exception("Debe seleccionar un cliente.");
+                throw new BusinessException("Debe seleccionar un cliente.", "BIZ-FACT-NO-CLIENT");
             }
             
             // Validación de Cédula (si tiene 10 dígitos)
             String identificacion = getBeanFacturacion().getClienteSeleccionado().getNumeroIdentificacion();
             if (identificacion != null && identificacion.length() == 10) {
                 if (!ec.mileniumtech.educafacil.utilitarios.ValidacionUtil.validarCedula(identificacion)) {
-                    throw new Exception("La cédula del cliente (" + identificacion + ") no es válida. Corríjala para continuar.");
+                    throw new BusinessException("La cédula del cliente (" + identificacion + ") no es válida. Corríjala para continuar.", "BIZ-FACT-CLIENT-ID-INV");
                 }
             }
             if (getBeanFacturacion().getListaDetallesNueva().isEmpty()) {
-                throw new Exception("Debe agregar al menos un detalle.");
+                throw new BusinessException("Debe agregar al menos un detalle.", "BIZ-FACT-NO-DET");
             }
             if (getBeanFacturacion().getListaFormasPagoAgregadas().isEmpty()) {
-                throw new Exception("Debe agregar al menos una forma de pago.");
+                throw new BusinessException("Debe agregar al menos una forma de pago.", "BIZ-FACT-NO-FP-LIST");
             }
 
             BigDecimal totalFactura = getBeanFacturacion().getNuevaFactura().getTotal();
@@ -400,7 +401,7 @@ public class BackingFacturacion implements Serializable {
             }
 
             if (totalPagos.compareTo(totalFactura.setScale(2,RoundingMode.HALF_UP)) != 0) {
-                throw new Exception("La suma de las formas de pago (" + totalPagos + ") no coincide con el total de la factura (" + totalFactura + ").");
+                throw new BusinessException("La suma de las formas de pago (" + totalPagos + ") no coincide con el total de la factura (" + totalFactura + ").", "BIZ-FACT-TOT-MISMATCH");
             }
 
             Factura f = getBeanFacturacion().getNuevaFactura();
@@ -425,7 +426,7 @@ public class BackingFacturacion implements Serializable {
             
             // Obtener Punto de Emisión
             List<PuntoEmision> puntos = facturacionDataService.listarPuntosEmisionActivos();
-            if (puntos.isEmpty()) throw new Exception("No hay puntos de emisión activos.");
+            if (puntos.isEmpty()) throw new BusinessException("No hay puntos de emisión activos.", "BIZ-FACT-NO-PUNTO");
             PuntoEmision puem = puntos.get(0);
             f.setPuntoEmision(puem);
             
@@ -564,7 +565,7 @@ public class BackingFacturacion implements Serializable {
     public void generarNotaCredito() {
         try {
             if (getBeanFacturacion().getMotivoNotaCredito() == null || getBeanFacturacion().getMotivoNotaCredito().trim().isEmpty()) {
-                throw new Exception("El motivo es obligatorio para la Nota de Crédito.");
+                throw new BusinessException("El motivo es obligatorio para la Nota de Crédito.", "BIZ-FACT-NO-MOTIVO");
             }
             calcularTotalesNotaCredito();
             

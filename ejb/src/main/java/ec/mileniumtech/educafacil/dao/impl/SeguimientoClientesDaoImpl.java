@@ -3,7 +3,8 @@
  */
 package ec.mileniumtech.educafacil.dao.impl;
 
-import java.math.BigDecimal;
+
+import ec.mileniumtech.educafacil.dao.SeguimientoClientesDao;import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,7 +29,7 @@ import jakarta.persistence.Query;
 */
 @LocalBean
 @Stateless
-public class SeguimientoClientesDaoImpl extends GenericoDaoImpl<SeguimientoClientes, Long>{
+public class SeguimientoClientesDaoImpl extends GenericoDaoImpl<SeguimientoClientes, Long> implements SeguimientoClientesDao{
 	public SeguimientoClientesDaoImpl() {
 		
 	}

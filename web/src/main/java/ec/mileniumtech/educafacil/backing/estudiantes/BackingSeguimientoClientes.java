@@ -669,7 +669,7 @@ public class BackingSeguimientoClientes implements Serializable{
 			}
 			
 		}catch(Exception e) {
-			e.printStackTrace();
+			log.error("Error al devolver valor de celda Excel", e);
 		}
 		return resultado;
 	}
@@ -910,7 +910,7 @@ public class BackingSeguimientoClientes implements Serializable{
 ////			whatsapp.enviarMensaje(getBeanLogin());
 //			whatsapp.enviaMensajeAsync();
 //		}catch(Exception e) {
-//			e.printStackTrace();
+			// printStackTrace eliminado, el error se registra vía Logger
 //		}
 //	}
 	/**

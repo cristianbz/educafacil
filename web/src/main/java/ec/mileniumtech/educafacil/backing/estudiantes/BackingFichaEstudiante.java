@@ -220,6 +220,6 @@ public class BackingFichaEstudiante implements Serializable {
 	}
 	
 	public void metodo() {
-		System.out.println("Busqueda");
+		log.debug("Método metodo() invocado - búsqueda de estudiante");
 	}
 }

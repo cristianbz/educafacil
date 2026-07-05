@@ -1,8 +1,9 @@
 package ec.mileniumtech.educafacil.resource;
 
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.PersonaDto;
-import ec.mileniumtech.educafacil.service.AdministracionService;
+import ec.mileniumtech.educafacil.service.PersonaService;
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -24,12 +25,12 @@ import jakarta.ws.rs.core.Response;
 public class PersonaResource {
 
     @Inject
-    private AdministracionService administracionService;
+    private PersonaService personaService;
     
     @GET
     @Path("/buscacedulacorreo")
     public Response getPersonaPorCedulaCorreo(@QueryParam("cedula") String cedula, @QueryParam("correo") String correo) {
-        PersonaDto personaDto = administracionService.buscarPersonaDto(cedula, correo);
+        PersonaDto personaDto = personaService.buscarPersonaDto(cedula, correo);
         if (personaDto != null) {
             return Response.ok(personaDto).build();
         } else {
@@ -37,20 +38,20 @@ public class PersonaResource {
         }
     }
     @POST
-    public Response crearPersona(PersonaDto personaDto) {
-        PersonaDto nuevaPersona = administracionService.guardarPersona(personaDto);
+    public Response crearPersona(@Valid PersonaDto personaDto) {
+        PersonaDto nuevaPersona = personaService.guardarPersona(personaDto);
         return Response.status(Response.Status.CREATED).entity(nuevaPersona).build();
     }
 
     @PUT
-    public Response actualizarPersona(PersonaDto personaDto) {
-        PersonaDto personaActualizada = administracionService.actualizarPersona(personaDto);
+    public Response actualizarPersona(@Valid PersonaDto personaDto) {
+        PersonaDto personaActualizada = personaService.actualizarPersona(personaDto);
         return Response.ok(personaActualizada).build();
     }
     @DELETE
     @Path("/{id}")
     public Response eliminarPersona(@PathParam("id") int id) {
-        administracionService.eliminarPersona(id);
+        personaService.eliminarPersona(id);
         return Response.noContent().build();
     }
 }

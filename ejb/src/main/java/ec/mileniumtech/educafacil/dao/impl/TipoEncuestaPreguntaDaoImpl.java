@@ -3,7 +3,8 @@
  */
 package ec.mileniumtech.educafacil.dao.impl;
 
-import java.util.ArrayList;
+
+import ec.mileniumtech.educafacil.dao.TipoEncuestaPreguntaDao;import java.util.ArrayList;
 import java.util.List;
 
 import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
@@ -23,7 +24,7 @@ import jakarta.persistence.Query;
 */
 @LocalBean
 @Stateless
-public class TipoEncuestaPreguntaDaoImpl extends GenericoDaoImpl<TipoEncuestaPregunta, Long>{
+public class TipoEncuestaPreguntaDaoImpl extends GenericoDaoImpl<TipoEncuestaPregunta, Long> implements TipoEncuestaPreguntaDao{
 	public TipoEncuestaPreguntaDaoImpl() {
 		
 	}

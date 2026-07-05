@@ -3,7 +3,8 @@
  */
 package ec.mileniumtech.educafacil.dao.impl;
 
-import java.math.BigDecimal;
+
+import ec.mileniumtech.educafacil.dao.CampaniaDao;import java.math.BigDecimal;
 import java.util.List;
 
 import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
@@ -22,7 +23,7 @@ import jakarta.persistence.Query;
 */
 @LocalBean
 @Stateless
-public class CampaniaDaoImpl extends GenericoDaoImpl<Campania,Long>{
+public class CampaniaDaoImpl extends GenericoDaoImpl<Campania,Long> implements CampaniaDao{
 	public CampaniaDaoImpl() {
 		
 	}

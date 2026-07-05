@@ -5,7 +5,7 @@ import java.io.FileOutputStream;
 import java.util.List;
 import java.util.Properties;
 
-import ec.mileniumtech.educafacil.dao.impl.ConfiguracionesDaoImpl;
+import ec.mileniumtech.educafacil.dao.ConfiguracionesDao;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Configuraciones;
 import jakarta.ejb.Asynchronous;
 import jakarta.ejb.EJB;
@@ -27,7 +27,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Servicio para envío de correos electrónicos con los comprobantes autorizados.
+ * Servicio para envÃ­o de correos electrÃ³nicos con los comprobantes autorizados.
  */
 @Stateless
 @LocalBean
@@ -36,15 +36,15 @@ public class NotificacionService {
     private static final Logger log = LogManager.getLogger(NotificacionService.class);
 
     @EJB
-    private ConfiguracionesDaoImpl configuracionesDao;
+    private ConfiguracionesDao configuracionesDao;
 
     /**
-     * Envía la factura por correo electrónico de forma asíncrona.
+     * EnvÃ­a la factura por correo electrÃ³nico de forma asÃ­ncrona.
      * 
      * @param destinatario Correo del cliente.
      * @param xmlContent   Contenido del XML firmado.
      * @param pdfContent   Contenido del PDF (RIDE).
-     * @param numFactura   Número de factura para el asunto.
+     * @param numFactura   NÃºmero de factura para el asunto.
      */
     @Asynchronous
     public void enviarComprobante(String destinatario, byte[] xmlContent, byte[] pdfContent, String numFactura) {
@@ -57,8 +57,8 @@ public class NotificacionService {
             Configuraciones config = configs.get(0);
 
             String host = config.getConfServidorSmtp();
-//            String port = "587"; // O agregar a Configuraciones si varía
-            String port = "26"; // O agregar a Configuraciones si varía
+//            String port = "587"; // O agregar a Configuraciones si varÃ­a
+            String port = "26"; // O agregar a Configuraciones si varÃ­a
             final String user = config.getConfUsuarioCorreo();
             final String pass = config.getConfClaveCorreo();
             final String from = config.getConfEnviadoMailDesde();
@@ -108,3 +108,4 @@ public class NotificacionService {
         }
     }
 }
+

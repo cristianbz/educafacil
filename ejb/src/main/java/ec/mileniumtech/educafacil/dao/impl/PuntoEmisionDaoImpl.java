@@ -1,6 +1,7 @@
 package ec.mileniumtech.educafacil.dao.impl;
 
-import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
+
+import ec.mileniumtech.educafacil.dao.PuntoEmisionDao;import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.PuntoEmision;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
@@ -14,7 +15,7 @@ import java.util.List;
  */
 @LocalBean
 @Stateless
-public class PuntoEmisionDaoImpl extends GenericoDaoImpl<PuntoEmision, Integer> {
+public class PuntoEmisionDaoImpl extends GenericoDaoImpl<PuntoEmision, Integer> implements PuntoEmisionDao {
 
     public PuntoEmisionDaoImpl() {
         super();

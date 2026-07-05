@@ -8,8 +8,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-import ec.mileniumtech.educafacil.dao.impl.ConfiguracionesDaoImpl;
-import ec.mileniumtech.educafacil.dao.impl.FacturaDaoImpl;
+import ec.mileniumtech.educafacil.dao.ConfiguracionesDao;
+import ec.mileniumtech.educafacil.dao.FacturaDao;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.InfoAdicionalDto;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleFactura;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DocumentoElectronico;
@@ -27,10 +27,15 @@ import ec.mileniumtech.educafacil.utilitarios.sri.ClaveAccesoGenerator;
 import jakarta.ejb.EJB;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Stateless
 @LocalBean
 public class FacturaSriStrategy implements DocumentoElectronicoStrategy {
+
+    private static final Logger log = LogManager.getLogger(FacturaSriStrategy.class);
+
 
     @EJB
     private ClaveAccesoGenerator claveAccesoGenerator;
@@ -42,10 +47,10 @@ public class FacturaSriStrategy implements DocumentoElectronicoStrategy {
     private RideGeneratorService rideGeneratorService;
 
     @EJB
-    private FacturaDaoImpl facturaDao;
+    private FacturaDao facturaDao;
 
     @EJB
-    private ConfiguracionesDaoImpl configuracionesDao;
+    private ConfiguracionesDao configuracionesDao;
 
     @Override
     public String getCodigoDocumento() {
@@ -248,3 +253,4 @@ public class FacturaSriStrategy implements DocumentoElectronicoStrategy {
         return "0";
     }
 }
+

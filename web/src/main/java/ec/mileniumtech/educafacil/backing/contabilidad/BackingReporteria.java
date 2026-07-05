@@ -144,7 +144,7 @@ try {
 	        getBeanReporteria().getModelGraficoE().setOptions(options);
 
 		}catch(Exception e) {
-			e.printStackTrace();
+			log.error("Error al cargar gráfico de egresos", e);
 		}
 	}
 	
@@ -212,7 +212,7 @@ try {
 	        options.setTitle(title);
 	        getBeanReporteria().getModelGraficoI().setOptions(options);
 		}catch(Exception e) {
-			e.printStackTrace();
+			log.error("Error al cargar gráfico de ingresos", e);
 		}
 	}
 	
