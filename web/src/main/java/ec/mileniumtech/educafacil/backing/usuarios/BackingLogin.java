@@ -248,6 +248,24 @@ public class BackingLogin implements Serializable{
 			throw new RuntimeException(e);
 		}
 	}
+	/**
+	 * Redirige desde index.xhtml hacia el dashboard principal (inicio.xhtml)
+	 */
+	public void redirigirInicio() {
+		try {
+			if (sesion != null && sesion.getAttribute("logeado") != null && (boolean) sesion.getAttribute("logeado")) {
+				FacesContext fc = FacesContext.getCurrentInstance();
+				String viewId = fc.getViewRoot() != null ? fc.getViewRoot().getViewId() : "";
+				if (viewId.contains("index")) {
+					fc.getExternalContext().redirect(
+						fc.getExternalContext().getRequestContextPath() + "/paginas/inicio.xhtml"
+					);
+				}
+			}
+		} catch(IOException e) {
+			log.error("Error al redirigir a inicio", e);
+		}
+	}
 	public void validarCambioClave() {
 		try {
 			Persona persona=matriculaDataService.buscarPersonaPorCedulaCorreo(getBeanLogin().getCedula(),getBeanLogin().getCorreo());

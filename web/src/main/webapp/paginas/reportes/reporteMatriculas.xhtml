@@ -27,9 +27,9 @@
 					<small>Resumen de inscripciones por período</small>
 				</div>
 				<div class="page-actions">
-					<span style="font-weight: 600; font-size: 0.85rem; color: var(--text-muted); margin-right: 6px;">Filtrar Período:</span>
+					<span class="filter-label">Filtrar Período:</span>
 					<p:inputText id="fechaFiltro" value="#{backingReporteMatriculas.beanReportes.fechaFiltro}" type="month" 
-								 style="width: 160px; height: 38px; border-radius: 8px; border: 1px solid var(--border-color); padding: 0 0.5rem; margin-right: 8px;" />
+								 styleClass="filter-input" />
 					
 					<p:commandButton value="Actualizar" actionListener="#{backingReporteMatriculas.actualizarFiltro()}"
 									 update="@form" icon="pi pi-refresh" styleClass="ui-button-outlined" 
@@ -48,7 +48,7 @@
 					<div class="stats-content">
 						<span class="stats-label">TOTAL MATRICULADOS</span>
 						<span class="stats-value">#{backingReporteMatriculas.beanReportes.totalMatriculados}</span>
-						<span class="stats-desc" style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Histórico acumulado</span>
+						<span class="stats-desc">Histórico acumulado</span>
 						<span class="stats-trend" style="font-size: 0.8rem; font-weight: 700; color: #{backingReporteMatriculas.beanReportes.tendenciaMatriculadosSubio ? '#10b981' : '#ef4444'}; margin-top: 4px; display: inline-flex; align-items: center; gap: 2px;">
 							#{backingReporteMatriculas.beanReportes.tendenciaMatriculados}
 						</span>
@@ -63,7 +63,7 @@
 					<div class="stats-content">
 						<span class="stats-label">ACTIVOS</span>
 						<span class="stats-value">#{backingReporteMatriculas.beanReportes.totalActivos}</span>
-						<span class="stats-desc" style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Cursando actualmente</span>
+						<span class="stats-desc">Cursando actualmente</span>
 						<span style="height: 20px; display: block;"></span> <!-- Espaciador para igualar altura -->
 					</div>
 					<div class="stats-icon-wrapper" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
@@ -76,7 +76,7 @@
 					<div class="stats-content">
 						<span class="stats-label">INACTIVOS / RETIRADOS</span>
 						<span class="stats-value">#{backingReporteMatriculas.beanReportes.totalInactivos}</span>
-						<span class="stats-desc" style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Baja voluntaria</span>
+						<span class="stats-desc">Baja voluntaria</span>
 						<span class="stats-trend" style="font-size: 0.8rem; font-weight: 700; color: #{backingReporteMatriculas.beanReportes.tendenciaInactivosSubio ? '#10b981' : '#ef4444'}; margin-top: 4px; display: inline-flex; align-items: center; gap: 2px;">
 							#{backingReporteMatriculas.beanReportes.tendenciaInactivos}
 						</span>
@@ -91,7 +91,7 @@
 					<div class="stats-content">
 						<span class="stats-label">NUEVOS ESTE MES</span>
 						<span class="stats-value">#{backingReporteMatriculas.beanReportes.totalNuevos}</span>
-						<span class="stats-desc" style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Período seleccionado</span>
+						<span class="stats-desc">Período seleccionado</span>
 						<span class="stats-trend" style="font-size: 0.8rem; font-weight: 700; color: #{backingReporteMatriculas.beanReportes.tendenciaNuevosSubio ? '#10b981' : '#ef4444'}; margin-top: 4px; display: inline-flex; align-items: center; gap: 2px;">
 							#{backingReporteMatriculas.beanReportes.tendenciaNuevos}
 						</span>

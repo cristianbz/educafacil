@@ -66,9 +66,9 @@
 				<textFieldExpression><![CDATA[$F{estudiante}.getPersona().getPersApellidos() + " " + $F{estudiante}.getPersona().getPersNombres()]]></textFieldExpression>
 			</textField>
 			<subreport>
-				<reportElement x="0" y="22" width="530" height="20" uuid="e1e2e3e4-1111-2222-3333-444444444444"/>
+				<reportElement x="0" y="22" width="530" height="20" isStretchWithOverflow="true" uuid="e1e2e3e4-1111-2222-3333-444444444444"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource((java.util.List)((java.util.Map)$P{detallesPorMatricula}).get($F{matrId}))]]></dataSourceExpression>
-				<subreportExpression><![CDATA[$P{subreportDetallePagos}]]></subreportExpression>
+				<subreportExpression class="net.sf.jasperreports.engine.JasperReport"><![CDATA[$P{subreportDetallePagos}]]></subreportExpression>
 			</subreport>
 		</band>
 	</detail>

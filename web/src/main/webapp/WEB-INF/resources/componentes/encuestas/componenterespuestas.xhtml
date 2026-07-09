@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core"
+	xmlns:ui="jakarta.faces.facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="jakarta.tags.functions"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:composite="jakarta.faces.composite">
+	<composite:interface>
+		<composite:attribute name="componenteRespuestas"
+			required="true" />
+	</composite:interface>
+	<composite:implementation>
+		<p:selectOneRadio id="resp" value="#{cc.attrs.componenteRespuestas.beanAplicarEncuesta.respuestaSeleccionada}"  layout="grid" columns="3">
+            <f:selectItems value="#{cc.attrs.componenteRespuestas.beanAplicarEncuesta.listaRespuestas}" var="r" itemLabel="#{r}" itemValue="#{r}"/>
+        </p:selectOneRadio>
+	</composite:implementation>
+</html>

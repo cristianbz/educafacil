@@ -217,6 +217,7 @@
 						
 						<p:commandLink process="@this idcurso" icon="#{botones['icono.seleccion']}" 
 							update="infocampania idcurso growl" title="#{tooltip['editar']}"
+							aria-label="#{tooltip['editar']}"
 							action="#{backingAdminCampanias.mostrarDialogoCampania()}" partialSubmit="true">
 							<f:setPropertyActionListener value="#{c}" target="#{backingAdminCampanias.beanAdminCampanias.campaniaSeleccionada}"></f:setPropertyActionListener>
 							<i class="pi pi-chevron-circle-down" style="font-size: 1em; color: green;"></i>
@@ -224,6 +225,7 @@
 						
 						<p:commandLink process="@this " partialSubmit="true" action="#{backingAdminCampanias.resumenCampania()}" 
 							title="#{tooltip['verRendimiento']}"
+							aria-label="#{tooltip['verRendimiento']}"
 							icon="#{botones['icono.estadistica']}" update="grafica">
 							<f:setPropertyActionListener value="#{c}" target="#{backingAdminCampanias.beanAdminCampanias.campaniaSeleccionada}"></f:setPropertyActionListener>
 							<i class="pi pi-chart-bar" style="font-size: 1em; color: green;"></i>

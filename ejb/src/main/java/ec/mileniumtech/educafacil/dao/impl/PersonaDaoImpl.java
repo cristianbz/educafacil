@@ -148,7 +148,8 @@ public class PersonaDaoImpl extends GenericoDaoImpl<Persona, Long> implements Pe
 			if(persona.getEstudiantes()!=null) {
 				Hibernate.initialize(persona.getEstudiantes().get(0));
 				persona= (Persona) query.getSingleResult();
-			}
+			}else
+				persona= (Persona) query.getSingleResult();
 						
 			return persona;
 		}catch(NoResultException e) {

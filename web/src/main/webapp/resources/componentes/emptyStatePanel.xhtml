@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:composite="jakarta.faces.composite">
+
+<composite:interface>
+    <!-- Título del estado vacío (obligatorio) -->
+    <composite:attribute name="title" required="true" />
+    <!-- Mensaje descriptivo (obligatorio) -->
+    <composite:attribute name="message" required="true" />
+    <!-- Icono PrimeFaces (ej: "pi pi-inbox"). Por defecto "pi pi-info-circle" -->
+    <composite:attribute name="icon" required="false" default="pi pi-info-circle" />
+    <!-- Tipo de icono: info, warning, danger, success -->
+    <composite:attribute name="type" required="false" default="info" />
+    <!-- Texto del botón de acción (opcional). Si se omite, no se muestra botón -->
+    <composite:attribute name="actionLabel" required="false" default="" />
+    <!-- MethodExpression para la acción del botón -->
+    <composite:attribute name="action" required="false"
+                         method-signature="java.lang.String action()" />
+    <!-- Clase CSS adicional -->
+    <composite:attribute name="styleClass" required="false" default="" />
+</composite:interface>
+
+<composite:implementation>
+    <div class="empty-state #{cc.attrs.styleClass}">
+        <div class="empty-state-icon">
+            <ui:fragment rendered="#{cc.attrs.type eq 'warning'}">
+                <div class="icon-container-lg icon-bg-warning">
+                    <i class="#{cc.attrs.icon}" style="font-size: 2rem; color: white;"></i>
+                </div>
+            </ui:fragment>
+            <ui:fragment rendered="#{cc.attrs.type eq 'danger'}">
+                <div class="icon-container-lg icon-bg-danger">
+                    <i class="#{cc.attrs.icon}" style="font-size: 2rem; color: white;"></i>
+                </div>
+            </ui:fragment>
+            <ui:fragment rendered="#{cc.attrs.type eq 'success'}">
+                <div class="icon-container-lg icon-bg-success">
+                    <i class="#{cc.attrs.icon}" style="font-size: 2rem; color: white;"></i>
+                </div>
+            </ui:fragment>
+            <ui:fragment rendered="#{cc.attrs.type eq 'info' or empty cc.attrs.type}">
+                <div class="icon-container-lg icon-bg-primary">
+                    <i class="#{cc.attrs.icon}" style="font-size: 2rem; color: white;"></i>
+                </div>
+            </ui:fragment>
+        </div>
+        <h3>#{cc.attrs.title}</h3>
+        <p>#{cc.attrs.message}</p>
+        <ui:fragment rendered="#{not empty cc.attrs.actionLabel and not empty cc.attrs.action}">
+            <p:commandButton value="#{cc.attrs.actionLabel}"
+                             action="#{cc.attrs.action}"
+                             icon="pi pi-plus"
+                             styleClass="ui-button-primary" />
+        </ui:fragment>
+    </div>
+</composite:implementation>
+</html>

@@ -6,7 +6,7 @@
 	xmlns:p="http://primefaces.org/ui"
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:pe="http://primefaces.org/ui/extensions"
-	xmlns:composite="http://java.sun.com/jsf/composite">
+	xmlns:composite="jakarta.faces.composite">
 
 <composite:interface>
 	<composite:attribute name="componenteBuscaEstudiante"
@@ -44,8 +44,8 @@
 					actionListener="#{cc.attrs.componenteBuscaEstudiante.buscarPorCedulaOApellido()}"
 					process="@this cedula apellidos clientes"
 					update="clientes growl"
-					oncomplete="PF('dlgEnProc').hide();"
-					onstart="PF('dlgEnProc').show();" />
+					oncomplete="hideLoading();"
+					onstart="showLoading();" />
 				</div>
 				</div>
 			</p:scrollPanel>

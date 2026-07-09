@@ -125,7 +125,7 @@
 								
 								<p:column style="width:70px; text-align: center;" headerText="Matrícula">
 									<p:commandLink process="@this tblmatriculados" 
-										title="Confirmar o registrar deserción" update="growl"
+										title="Confirmar o registrar deserción" aria-label="Confirmar o registrar deserción" update="growl"
 										action="#{backingFinalizarCurso.mostrarDialogoFinalizarAlumnoCurso()}" partialSubmit="true"
 										style="display: inline-block;">
 										<f:setPropertyActionListener value="#{alumno}" target="#{beanFinalizarCurso.matriculaSeleccionada}"></f:setPropertyActionListener>
@@ -190,15 +190,15 @@
 				</p:breadCrumb>
 				
 				<!-- ENCABEZADO DE LA PÁGINA -->
-				<div class="page-header" style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+				<div class="page-header page-header-mb">
 					<div class="page-title">
 						<h2>Finalización de Cursos</h2>
-						<small style="color: var(--text-muted); font-size: 0.9rem;">Gestión de actas, cierre académico y registro de culminación o deserción de estudiantes</small>
+						<small>Gestión de actas, cierre académico y registro de culminación o deserción de estudiantes</small>
 					</div>
 				</div>
 				
 				<!-- KPI / RESUMEN DASHBOARD DE CURSOS ABIERTOS -->
-				<div class="dashboard-stats" style="margin-bottom: 1.5rem;">
+				<div class="dashboard-stats section-mb">
 					<!-- Total Cursos Abiertos -->
 					<div class="stats-card stats-card-primary shadow-sm">
 						<div class="stats-content">
@@ -345,9 +345,10 @@
 					<!-- Columna: Acciones -->
 					<p:column style="width: 100px; text-align: center;" headerText="Alumnos">
 						<p:commandLink process="@this panelAlumnos" title="#{tooltip['estudiantes']}"
+							aria-label="#{tooltip['estudiantes']}"
 							update="panelAlumnos"
-							onstart="PF('dlgEnProc').show();"
-							oncomplete="PF('dlgEnProc').hide();" ajax="true"
+							onstart="showLoading();"
+							oncomplete="hideLoading();" ajax="true"
 							action="#{backingFinalizarCurso.cargarAlumnosCurso()}"
 							style="display: inline-block;">
 							<f:setPropertyActionListener value="#{oferta}"

@@ -94,21 +94,26 @@
                 <p:menuitem value="Calendario de Cursos" url="#" />
             </p:breadCrumb>
 
-            <!-- ENCABEZADO DE PÁGINA -->
-            <div class="page-title">
-                <h2>Calendario de Cursos</h2>
-                <small>Planificación semanal de clases, webinars y charlas</small>
-            </div>
-
-            <div class="search-header-container cal-search-header" style="background: #ffffff; padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: flex-end; gap: 1rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-sm);">
-                <p:commandButton value="Agregar curso"
-                                 icon="pi pi-plus"
-                                 styleClass="ui-button"
-                                 style="background-color: #1066eb; border: none; padding: 0 1.5rem !important; height: 48px; border-radius: 8px; font-weight: 600; color: white; display: flex; align-items: center; justify-content: center;"
-                                 partialSubmit="true"
-                                 process="@this"
-                                 actionListener="#{backingCalendarioCursos.nuevaPlanificacion()}"
-                                 update="panelDlgPlanificacion growl" />
+            <!-- ── PAGE-HEADER ──────────────────────────────────────────── -->
+            <div class="page-header">
+                <div class="page-header-left">
+                    <div class="page-header-icon icon-bg-primary">
+                        <i class="pi pi-calendar"></i>
+                    </div>
+                    <div>
+                        <h2>Calendario de Cursos</h2>
+                        <span class="page-header-subtitle">Planificación semanal de clases, webinars y charlas</span>
+                    </div>
+                </div>
+                <div class="page-actions">
+                    <p:commandButton value="Agregar curso"
+                                     icon="pi pi-plus"
+                                     styleClass="ui-button-success"
+                                     partialSubmit="true"
+                                     process="@this"
+                                     actionListener="#{backingCalendarioCursos.nuevaPlanificacion()}"
+                                     update="panelDlgPlanificacion growl" />
+                </div>
             </div>
 
             <!-- =====================================================

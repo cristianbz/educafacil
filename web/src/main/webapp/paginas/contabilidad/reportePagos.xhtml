@@ -17,8 +17,28 @@
 			<h:form>							
 				<p:growl id="growl" life="3000" showDetail="true" />
 
+				<!-- ── BREADCRUMB ──────────────────────────────────────────── -->
+				<p:breadCrumb styleClass="ui-breadcrumb p-mb-3" style="border: none; background: transparent; padding-left: 0;">
+					<p:menuitem value="Inicio" outcome="/paginas/index?faces-redirect=true" icon="pi pi-home" />
+					<p:menuitem value="Contabilidad" url="#" />
+					<p:menuitem value="Registro de Pagos" url="#" />
+				</p:breadCrumb>
+
+				<!-- ── PAGE-HEADER ──────────────────────────────────────────── -->
+				<div class="page-header">
+					<div class="page-header-left">
+						<div class="page-header-icon icon-bg-primary">
+							<i class="pi pi-dollar"></i>
+						</div>
+						<div>
+							<h2>Registro de Pagos</h2>
+							<span class="page-header-subtitle">Gestión de pagos de matrículas y servicios</span>
+						</div>
+					</div>
+				</div>
+
 					<p:dialog widgetVar="dlgCargarInfo" modal="true" closable="false"
-			header="#{titulos['selInformacion']}">
+			header="#{titulos['selInformacion']}" responsive="true" width="450">
 			<p:outputPanel id="campanias">						
 				<h:panelGrid columns="3">					
 					<p:outputLabel value="#{etiquetas['curso']}"/>										

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:composite="jakarta.faces.composite">
+
+<composite:interface>
+    <!-- Título de la página (obligatorio) -->
+    <composite:attribute name="title" required="true" />
+    <!-- Subtítulo (opcional) -->
+    <composite:attribute name="subtitle" required="false" default="" />
+    <!-- Icono PrimeFaces (ej: "pi pi-users"). Si se omite, no se muestra icono -->
+    <composite:attribute name="icon" required="false" default="" />
+    <!-- Color del icono: primary, success, warning, danger, purple, pink, cyan -->
+    <composite:attribute name="iconColor" required="false" default="primary" />
+    <!-- Clase CSS adicional para el contenedor page-header -->
+    <composite:attribute name="styleClass" required="false" default="" />
+    <!-- Facet para acciones de la página (botones en page-actions) -->
+    <composite:facet name="pageActions" required="false" />
+</composite:interface>
+
+<composite:implementation>
+    <div class="page-header page-header-mb #{cc.attrs.styleClass}">
+        <div class="page-header-left">
+            <ui:fragment rendered="#{not empty cc.attrs.icon}">
+                <div class="page-header-icon icon-bg-#{cc.attrs.iconColor}">
+                    <i class="#{cc.attrs.icon}"></i>
+                </div>
+            </ui:fragment>
+            <div>
+                <h2>#{cc.attrs.title}</h2>
+                <ui:fragment rendered="#{not empty cc.attrs.subtitle}">
+                    <span class="page-header-subtitle">#{cc.attrs.subtitle}</span>
+                </ui:fragment>
+            </div>
+        </div>
+        <ui:fragment rendered="#{cc.facetExists('pageActions')}">
+            <div class="page-actions">
+                <composite:renderFacet name="pageActions" />
+            </div>
+        </ui:fragment>
+    </div>
+</composite:implementation>
+</html>

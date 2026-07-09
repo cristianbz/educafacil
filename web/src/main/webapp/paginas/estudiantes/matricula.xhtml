@@ -9,35 +9,104 @@
 <ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
 	
 	<ui:define name="contenido">
-			<f:event listener="#{backingLogin.validarSesion()}" type="preRenderView" />
-			<h:form id="form" >
-				<p:dialog widgetVar="dlgMatricula" showEffect="fade" 
-				hideEffect="fade" modal="true" appendTo="@(body)" 
-				header="#{titulos['grabarMatricula']}" width="250"
+		<f:event listener="#{backingLogin.validarSesion()}" type="preRenderView" />
+		<h:form id="form">
+
+			<p:growl id="growl" life="3000" showDetail="true" />
+
+			<!-- ── BREADCRUMB ─────────────────────────────────────── -->
+			<p:breadCrumb styleClass="ui-breadcrumb p-mb-3"
+						  style="border: none; background: transparent; padding-left: 0;">
+				<p:menuitem value="#{etiquetas['inicio']}" outcome="/paginas/index?faces-redirect=true" icon="pi pi-home" />
+				<p:menuitem value="#{etiquetas['matricula.datos']}" url="#" />
+				<p:menuitem value="#{etiquetas['matricula.titulo']}" />
+			</p:breadCrumb>
+
+			<!-- ── PAGE HEADER ────────────────────────────────────── -->
+			<div class="page-header">
+				<div class="page-title">
+					<h2>
+						<i class="pi pi-user-plus" style="margin-right: 0.5rem; color: var(--primary-color);"></i>
+						#{titulos['matriculaCliente']}
+					</h2>
+					<small>#{etiquetas['matricula.subtitulo']}</small>
+				</div>
+				<div class="page-actions">
+					<p:commandButton value="#{botones['nuevaMatricula']}" 
+						process="@this" update="@form" 
+						icon="#{botones['icono.nuevo']}"
+						immediate="true" resetValues="true" 
+						actionListener="#{backingMatricula.nuevaInscripcion}"
+						styleClass="ui-button-success" />
+				</div>
+			</div>
+
+			<!-- ── DIÁLOGO DE CONFIRMACIÓN DE GRABACIÓN ───────────── -->
+			<p:dialog widgetVar="dlgMatricula" showEffect="fade" 
+				hideEffect="fade" modal="true" appendTo="@(body)"
+				header="#{titulos['grabarMatricula']}" 
+				responsive="true" fitViewport="true"
+				width="auto" style="max-width: 380px;"
 				closable="true" resizable="false">
-					<h:panelGrid columns="2" id="panelBotones">
-						<p:commandButton value="#{botones['grabar']}" actionListener="#{backingMatricula.grabarMatricula}" update="@form"  id="btngrabar" 
-							oncomplete="PF('dlgMatricula').hide();" process="@this " icon="#{botones['icono.grabar']}"/>
-						<p:commandButton icon="#{botones['icono.cancelar']}" value="#{botones['cancelar']}" oncomplete="PF('dlgMatricula').hide();" process="@this"/>
-					</h:panelGrid>					
-				</p:dialog>
-				<p:blockUI block="panelBotones" trigger="btngrabar" />
-				<p:fieldset legend="#{titulos['matriculaCliente']}" style="margin-bottom:20px">				
-					<div class="text-center">
-						<p:commandButton value="#{botones['nuevaMatricula']}" process="@this" update="@form" icon="#{botones['icono.nuevo']}"
-						immediate="true" resetValues="true" actionListener="#{backingMatricula.nuevaInscripcion}"/>	
+				<div style="text-align: center; padding: 0.5rem;">
+					<div style="width: 56px; height: 56px; border-radius: 50%;
+								background: #eff6ff; border: 2px solid #bfdbfe;
+								display: inline-flex; align-items: center; justify-content: center;
+								margin-bottom: 1rem;">
+						<i class="pi pi-question-circle" style="font-size: 1.6rem; color: var(--primary-color);"></i>
 					</div>
-					<comp:componentematricula id="matricula" componenteBackingMatriculaInscripcion="#{backingMatricula.componenteBackingMatriculaInscripcion}"/>
-				</p:fieldset> 
-				<div class="text-center">
-					<h:panelGrid columns="2">					
-						<p:commandButton value="#{botones['matricular']}" process="@this :form:matricula:idpanelMatriculaInscripcion"  partialSubmit="true" update=":form:matricula:idpanelMatriculaInscripcion" 					
-						actionListener="#{backingMatricula.mostrarDialogoGrabar}" icon="#{botones['icono.matricular']}"/>					
-					</h:panelGrid>		
-				</div>	  
-			</h:form>
+					<p style="font-weight: 600; color: var(--text-main); margin: 0 0 1.25rem 0;">
+						#{titulos['grabarMatricula']}
+					</p>
+					<div style="display: flex; justify-content: center; gap: 0.75rem;">
+						<p:commandButton value="#{botones['grabar']}" 
+							actionListener="#{backingMatricula.grabarMatricula}" 
+							update="@form" id="btngrabar" 
+							oncomplete="PF('dlgMatricula').hide();" 
+							process="@this" 
+							icon="#{botones['icono.grabar']}"
+							styleClass="ui-button-success" />
+						<p:commandButton icon="#{botones['icono.cancelar']}" 
+							value="#{botones['cancelar']}" 
+							oncomplete="PF('dlgMatricula').hide();" 
+							process="@this"
+							styleClass="ui-button-outlined ui-button-secondary" />
+					</div>
+				</div>
+			</p:dialog>
+
+			<p:blockUI block="panelBotones" trigger="btngrabar" />
+
+			<!-- ── PANEL DE MATRÍCULA ─────────────────────────────── -->
+			<div style="background: var(--surface-color); border: 1px solid var(--border-color);
+						border-radius: 14px; box-shadow: var(--shadow-sm); overflow: hidden;">
+				<div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color);
+							background: #f8fafc;">
+				<h5 class="section-title-accent" style="margin: 0;">
+					<i class="pi pi-pencil" style="margin-right: 0.4rem;"></i>
+					#{etiquetas['matricula.datosMatricula']}
+				</h5>
+				</div>
+				<div style="padding: 1.5rem;">
+					<comp:componentematricula id="matricula" 
+						componenteBackingMatriculaInscripcion="#{backingMatricula.componenteBackingMatriculaInscripcion}"/>
+				</div>
+			</div>
+
+			<!-- ── ACCIONES DEL FORMULARIO ────────────────────────── -->
+			<div style="display: flex; justify-content: center; gap: 0.75rem; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+				<p:commandButton value="#{botones['matricular']}" 
+					process="@this :form:matricula:idpanelMatriculaInscripcion"  
+					partialSubmit="true" 
+					update=":form:matricula:idpanelMatriculaInscripcion" 					
+					actionListener="#{backingMatricula.mostrarDialogoGrabar}" 
+					icon="#{botones['icono.matricular']}"
+					styleClass="ui-button-success"
+					style="padding: 0.6rem 2rem !important; font-weight: 700;" />					
+			</div>
+
+		</h:form>
 	</ui:define>
 
 </ui:composition>
-
 </html>

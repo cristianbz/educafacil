@@ -3,7 +3,7 @@
       xmlns:ui="jakarta.faces.facelets"
       xmlns:f="jakarta.faces.core"
       xmlns:h="jakarta.faces.html"
-      xmlns:p="http://primefaces.org/ui">
+       xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
 
@@ -17,89 +17,69 @@
 		<h:form id="formPerfiles" prependId="false">
 			<p:growl id="growl" life="3500" showDetail="true" />
 
-			<!-- DIÁLOGO DE CARGA -->
-			<p:dialog widgetVar="dlgCargando" header="Por favor espere.."
-				draggable="false" modal="true" resizable="false" closable="false" responsive="true"
-				style="font-size: 11px;">
-				<h:graphicImage value="/resources/img/cargando.gif" width="200" height="200"/>
-			</p:dialog>
-
 			<!-- ── BREADCRUMB ──────────────────────────────────────────── -->
 			<p:breadCrumb styleClass="ui-breadcrumb p-mb-3"
 				style="border: none; background: transparent; padding-left: 0;">
-				<p:menuitem value="Inicio" outcome="/paginas/index?faces-redirect=true" icon="pi pi-home" />
-				<p:menuitem value="Accesos" url="#" />
-				<p:menuitem value="Gestión de Perfiles" url="#" />
+				<p:menuitem value="#{etiquetas['inicio']}" outcome="/paginas/index?faces-redirect=true" icon="pi pi-home" />
+				<p:menuitem value="#{etiquetas['accesos']}" url="#" />
+				<p:menuitem value="#{titulos['perfiles.titulo']}" url="#" />
 			</p:breadCrumb>
-			<div class="page-title">
-					<h2>Perfiles</h2>
-					<small>Gestiona los perfiles del sistema. Los perfiles agrupan acciones relacionadas.</small>
+			<!-- ── PAGE-HEADER ──────────────────────────────────────────── -->
+			<div class="page-header page-header-mb">
+				<div class="page-header-left">
+					<div class="page-header-icon icon-bg-primary">
+						<i class="pi pi-folder-open"></i>
+					</div>
+					<div>
+						<h2>#{titulos['perfiles.titulo']}</h2>
+						<span class="page-header-subtitle">#{etiquetas['perfiles.subtitulo']}</span>
+					</div>
+				</div>
+				<div class="page-actions">
+					<p:commandButton value="#{botones['perfiles.nuevo']}"
+						icon="pi pi-plus"
+						styleClass="ui-button-success"
+						actionListener="#{backingAccesoPerfil.nuevoPerfil()}"
+						process="@this" update="growl dlgPerfil" />
+				</div>
 			</div>
 
-			<!-- ── ESTILOS PERSONALIZADOS ──────────────────────────────── -->
-			<style type="text/css">
-				.profile-card {
-					transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-				}
-				.profile-card:hover {
-					transform: translateY(-3px);
-					box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08) !important;
-					border-color: #cbd5e1 !important;
-				}
-				.search-input:focus {
-					border-color: #2563eb !important;
-					box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
-					outline: none;
-				}
-			</style>
-
-			<!-- ── BUSCADOR Y ACCIÓN DE CREACIÓN ────────────────────────── -->
-			<div class="search-header-container" style="background: #ffffff; padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-sm);">
-				<div style="position: relative; flex-grow: 1; max-width: 720px;">
-					<i class="pi pi-search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 1.1rem; z-index: 10;" />
+			<!-- ── BUSCADOR ────────────────────────────────────────────── -->
+			<div class="search-bar">
+				<div style="position: relative; flex-grow: 1;">
+					<i class="pi pi-search search-icon"></i>
 					<p:inputText id="searchPerfil"
 						value="#{beanAccesoPerfil.filtro}"
-						placeholder="Buscar perfiles por nombre o descripción..."
-						style="width: 100%; padding-left: 2.75rem; height: 48px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.95rem; box-shadow: none;"
-						styleClass="search-input">
+						placeholder="#{etiquetas['perfiles.buscarPlaceholder']}"
+						styleClass="search-input search-input-custom">
 						<p:ajax event="keyup" delay="200" update="panelStats panelPerfilesGrid" />
 					</p:inputText>
 				</div>
-				<p:commandButton value="Nuevo Perfil"
-					icon="pi pi-plus"
-					styleClass="ui-button"
-					style="background-color: #1066eb; border: none; padding: 0 1.5rem !important; height: 48px; border-radius: 8px; font-weight: 600; color: white; display: flex; align-items: center; justify-content: center;"
-					actionListener="#{backingAccesoPerfil.nuevoPerfil()}"
-					process="@this" update="growl dlgPerfil" />
 			</div>
 
 			<!-- ── STATS CARDS ────────────────────────────────────────── -->
 			<p:outputPanel id="panelStats">
-				<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+				<div class="dashboard-stats">
 					
-					<!-- Card 1: Total Perfiles -->
-					<div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 1.25rem; box-shadow: var(--shadow-sm);">
-						<div style="width: 48px; height: 48px; border-radius: 10px; background-color: #eff6ff; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-							<i class="pi pi-folder-open" style="color: #2563eb; font-size: 1.5rem;" />
-						</div>
-						<div>
-							<div style="font-size: 0.85rem; color: #64748b; font-weight: 500; margin-bottom: 0.25rem;">Total Perfiles</div>
-							<div style="font-size: 1.75rem; font-weight: 700; color: #0f172a; line-height: 1;">
+					<div class="stats-card stats-card-primary">
+						<div class="stats-content">
+							<span class="stats-label">#{etiquetas['perfiles.total']}</span>
+							<span class="stats-value">
 								#{beanAccesoPerfil.listaPerfiles != null ? beanAccesoPerfil.listaPerfiles.size() : 0}
-							</div>
+							</span>
+						</div>
+						<div class="stats-icon-wrapper">
+							<i class="pi pi-folder-open"></i>
 						</div>
 					</div>
 
-					<!-- Card 2: Resultados -->
-					<div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 1.25rem; box-shadow: var(--shadow-sm);">
-						<div style="width: 48px; height: 48px; border-radius: 10px; background-color: #ecfdf5; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-							<i class="pi pi-folder" style="color: #10b981; font-size: 1.5rem;" />
+					<div class="stats-card stats-card-success">
+						<div class="stats-content">
+							<span class="stats-label">#{etiquetas['perfiles.resultados']}</span>
+							<span class="stats-value">#{backingAccesoPerfil.perfilesFiltrados.size()}</span>
 						</div>
-						<div>
-							<div style="font-size: 0.85rem; color: #64748b; font-weight: 500; margin-bottom: 0.25rem;">Resultados</div>
-							<div style="font-size: 1.75rem; font-weight: 700; color: #0f172a; line-height: 1;">
-								#{backingAccesoPerfil.perfilesFiltrados.size()}
-							</div>
+						<div class="stats-icon-wrapper">
+							<i class="pi pi-folder"></i>
 						</div>
 					</div>
 
@@ -108,90 +88,74 @@
 
 			<!-- ── CUADRÍCULA DE PERFILES ────────────────────────────── -->
 			<p:outputPanel id="panelPerfilesGrid">
-				<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(450px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+				<div class="card-grid" style="grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));">
 					
 					<ui:repeat value="#{backingAccesoPerfil.perfilesFiltrados}" var="perf">
 						
-						<div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; box-shadow: var(--shadow-sm);" 
-							 class="profile-card">
+						<div class="card-hover" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
 							
-							<!-- Cabecera de la Tarjeta (Nombre + Acciones rápidas) -->
-							<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;">
+							<div class="flex-between" style="gap: 1rem;">
 								<div style="min-width: 0;">
 									<h3 style="margin: 0 0 0.25rem 0; font-weight: 700; color: var(--text-main); font-size: 1.2rem; display: flex; align-items: center; gap: 0.5rem;">
 										<i class="#{perf.icono != null and perf.icono != '' ? perf.icono : 'pi pi-id-card'}" 
 										   style="color: var(--primary-color); font-size: 1.25rem; flex-shrink: 0;" />
 										<h:outputText value="#{perf.nombre}" />
 									</h3>
-									<div style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.4;">
+									<div class="text-muted" style="font-size: 0.9rem; line-height: 1.4;">
 										<h:outputText value="#{perf.descripcion}" />
 									</div>
 								</div>
 								
-								<!-- Botones de Acción rápidos -->
-								<div style="display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0;">
-									<!-- Editar perfil -->
-									<p:commandLink
-										title="Editar perfil"
+								<div class="flex-row gap-sm" style="flex-shrink: 0;">
+									<p:commandLink class="command-link-edit"
+										title="#{tooltip['perfiles.editar']}"
+										aria-label="#{tooltip['perfiles.editar']}"
 										process="@this"
 										update="growl :formDialogoPerfil"
 										partialSubmit="true"
-										actionListener="#{backingAccesoPerfil.editarPerfil(perf)}"
-										style="text-decoration: none;">
-										<i class="pi pi-pencil"
-											style="font-size: 1.1rem; color: #64748b; transition: transform 0.2s, color 0.2s;"
-											onmouseover="this.style.transform='scale(1.25)'; this.style.color='var(--primary-color)';"
-											onmouseout="this.style.transform='scale(1)'; this.style.color='#64748b';"></i>
+										actionListener="#{backingAccesoPerfil.editarPerfil(perf)}">
+										<i class="pi pi-pencil"></i>
 									</p:commandLink>
 
-									<!-- Desactivar perfil / Eliminar (con confirmación) -->
-									<p:commandLink
-										title="Desactivar perfil"
+									<p:commandLink class="command-link-delete"
+										title="#{tooltip['perfiles.desactivar']}"
+										aria-label="#{tooltip['perfiles.desactivar']}"
 										rendered="#{perf.estado}"
 										process="@this"
 										update="panelPerfilesGrid panelStats growl"
 										partialSubmit="true"
 										actionListener="#{backingAccesoPerfil.eliminarLogicoPerfil(perf)}"
-										onclick="return confirm('¿Deseas desactivar el perfil \'' + '#{perf.nombre}' + '\'? Esta acción es reversible desde la edición.');"
-										style="text-decoration: none;">
-										<i class="pi pi-trash"
-											style="font-size: 1.1rem; color: #ef4444; transition: transform 0.2s, color 0.2s;"
-											onmouseover="this.style.transform='scale(1.25)'; this.style.color='#dc2626';"
-											onmouseout="this.style.transform='scale(1)'; this.style.color='#ef4444';"></i>
+										onclick="return confirm('¿Deseas desactivar el perfil \'' + '#{perf.nombre}' + '\'? Esta acción es reversible desde la edición.');">
+										<i class="pi pi-trash"></i>
 									</p:commandLink>
 									
-									<!-- Estado Inactivo indicador (si está inactivo) -->
 									<h:panelGroup rendered="#{!perf.estado}">
-										<span style="font-size: 0.75rem; font-weight: 700; background-color: #fee2e2; color: #ef4444; padding: 0.2rem 0.5rem; border-radius: 6px; border: 1px solid #fca5a5;">
-											Inactivo
+										<span class="chip-inactive" style="border-radius: 6px; padding: 0.2rem 0.5rem;">
+											#{etiquetas['perfiles.inactivo']}
 										</span>
 									</h:panelGroup>
 								</div>
 							</div>
 							
-							<!-- Fila: Cantidad de acciones asignadas -->
-							<div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; color: #475569;">
-								<span>Acciones asignadas:</span>
+							<div class="flex-row gap-sm" style="font-size: 0.9rem; color: #475569;">
+								<span>#{etiquetas['perfiles.accionesAsignadas']}</span>
 								
 								<p:commandLink
-									title="Gestionar acciones del perfil"
+									title="#{tooltip['perfiles.gestionarAcciones']}"
+									aria-label="#{tooltip['perfiles.gestionarAcciones']}"
 									process="@this"
 									update="panelDialogoAcciones growl"
 									partialSubmit="true"
-									actionListener="#{backingAccesoPerfil.gestionarAcciones(perf)}"
-									style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
-									<span style="display: inline-flex; align-items: center; justify-content: center; min-width: 26px; height: 26px; padding: 0 6px; border-radius: 9999px; background-color: #dbeafe; color: #1e40af; font-weight: 700; font-size: 0.82rem; cursor: pointer; transition: background-color 0.2s;"
-										  onmouseover="this.style.backgroundColor='#bfdbfe';"
-										  onmouseout="this.style.backgroundColor='#dbeafe';">
+									actionListener="#{backingAccesoPerfil.gestionarAcciones(perf)}">
+									<span class="count-badge">
 										#{backingAccesoPerfil.obtenerAccionesDePerfilPorId(perf.id).size()}
 									</span>
 								</p:commandLink>
 							</div>
 							
-							<!-- Fila: Chips de acciones asignadas -->
-							<div style="display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.25rem;">
+							<div class="flex-row flex-wrap gap-xs" style="margin-top: 0.25rem;">
 								<ui:repeat value="#{backingAccesoPerfil.obtenerAccionesDePerfilPorId(perf.id)}" var="pa">
-									<span style="background: #f1f5f9; color: #475569; font-weight: 500; font-size: 0.78rem; padding: 0.35rem 0.7rem; border-radius: 6px; border: 1px solid #e2e8f0; display: inline-flex; align-items: center; gap: 0.35rem;">
+									<span class="role-tag" style="background: #f1f5f9; color: #475569; font-weight: 500; border: 1px solid #e2e8f0;">
 										<i class="#{pa.accion.icono != null and pa.accion.icono != '' ? pa.accion.icono : 'pi pi-circle'}" 
 										   style="font-size: 0.7rem; color: #64748b;" />
 										<h:outputText value="#{pa.accion.nombre}" />
@@ -199,8 +163,8 @@
 								</ui:repeat>
 								
 								<h:panelGroup rendered="#{empty backingAccesoPerfil.obtenerAccionesDePerfilPorId(perf.id)}">
-									<span style="font-size: 0.8rem; color: #94a3b8; font-style: italic; display: flex; align-items: center; gap: 0.3rem; padding: 0.35rem 0;">
-										<i class="pi pi-info-circle" /> Sin acciones asignadas
+									<span class="text-muted" style="font-size: var(--text-xs); font-style: italic; display: flex; align-items: center; gap: 0.3rem; padding: 0.35rem 0;">
+										<i class="pi pi-info-circle" /> #{etiquetas['perfiles.sinAcciones']}
 									</span>
 								</h:panelGroup>
 							</div>
@@ -211,17 +175,14 @@
 					
 				</div>
 				
-				<!-- Estado vacío para la búsqueda -->
 				<h:panelGroup rendered="#{empty backingAccesoPerfil.perfilesFiltrados}">
-					<div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: 16px; padding: 3rem 2rem; text-align: center; box-shadow: var(--shadow-sm);">
-						<div style="margin-bottom: 1.5rem;">
+					<div class="empty-state">
+						<div class="empty-state-icon">
 							<i class="pi pi-search" style="font-size: 3.5rem; color: #94a3b8; padding: 1.25rem; background-color: #f8fafc; border-radius: 50%;" />
 						</div>
-						<h3 style="margin: 0 0 0.5rem 0; font-weight: 700; color: var(--text-main);">No se encontraron perfiles</h3>
-						<p style="color: var(--text-muted); max-width: 480px; margin: 0 auto 1.5rem auto; font-size: 0.95rem;">
-							No hay perfiles que coincidan con la búsqueda de "#{beanAccesoPerfil.filtro}". Intente con otro término o cree un nuevo perfil.
-						</p>
-						<p:commandButton value="Limpiar búsqueda"
+						<h3>#{etiquetas['perfiles.noResultados']}</h3>
+						<p>#{etiquetas['perfiles.noResultadosDesc']} "#{beanAccesoPerfil.filtro}". #{etiquetas['perfiles.intenteOtro']}</p>
+						<p:commandButton value="#{etiquetas['perfiles.limpiarBusqueda']}"
 							icon="pi pi-filter-slash"
 							styleClass="ui-button-outlined ui-button-secondary"
 							actionListener="#{beanAccesoPerfil.setFiltro(null)}"
@@ -237,92 +198,92 @@
 		     DIÁLOGO: CREAR / EDITAR PERFIL
 		     ============================================================ -->
 		<p:dialog id="dlgPerfil"
-    widgetVar="dlgPerfil"
-    header="#{backingAccesoPerfil.beanAccesoPerfil.esNuevo ? 'Nuevo Perfil' : 'Editar Perfil'}"
-    modal="true" responsive="true" width="500" resizable="false"
-    styleClass="ui-dialog shadow-lg" appendTo="@(body)">
+			widgetVar="dlgPerfil"
+			header="#{backingAccesoPerfil.beanAccesoPerfil.esNuevo ? titulos['perfiles.nuevo'] : titulos['perfiles.editar']}"
+			modal="true" responsive="true" width="480" resizable="false"
+			styleClass="ui-dialog shadow-lg" appendTo="@(body)">
 
-    <h:form id="formDialogoPerfil">
-        <div class="ui-fluid">
+			<h:form id="formDialogoPerfil">
+				<div class="ui-fluid">
 
-            <div style="display: flex; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color);">
-                <div style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-right: 1rem; box-shadow: var(--shadow-sm);">
-                    <i class="pi pi-id-card"></i>
-                </div>
-                <div>
-                    <h3 style="margin: 0; font-weight: 700; color: var(--text-main); font-size: 1rem;">
-                        #{backingAccesoPerfil.beanAccesoPerfil.esNuevo ? 'Registrar nuevo perfil de acceso' : 'Actualizar datos del perfil'}
-                    </h3>
-                    <span style="color: var(--text-muted); font-size: 0.82rem;">Complete los campos obligatorios (*)</span>
-                </div>
-            </div>
+					<div class="dialog-header">
+						<div class="dialog-header-icon icon-bg-primary">
+							<i class="pi pi-id-card"></i>
+						</div>
+						<div>
+							<h3 class="dialog-header-title">
+								#{backingAccesoPerfil.beanAccesoPerfil.esNuevo ? titulos['perfiles.registrarNuevo'] : titulos['perfiles.actualizarDatos']}
+							</h3>
+							<span class="dialog-header-subtitle">#{etiquetas['perfiles.completarCampos']}</span>
+						</div>
+					</div>
 
-            <div class="p-field" style="margin-bottom: 1.1rem;">
-                <label style="display: block; font-weight: 600; color: var(--text-main); font-size: 0.85rem; margin-bottom: 0.4rem;">
-                    <i class="pi pi-tag" style="margin-right: 5px; color: var(--primary-color);"></i> Nombre *
-                </label>
-                <p:inputText id="perfilNombre"
-                    value="#{beanAccesoPerfil.perfil.nombre}"
-                    placeholder="Ej. Administrador..."
-                    required="true"
-                    requiredMessage="El nombre del perfil es obligatorio." />
-            </div>
+					<div class="p-field" style="margin-bottom: 1.1rem;">
+						<label class="form-label">
+							<i class="pi pi-tag form-label-icon"></i> #{etiquetas['perfiles.nombre']} *
+						</label>
+						<p:inputText id="perfilNombre"
+							value="#{beanAccesoPerfil.perfil.nombre}"
+							placeholder="#{etiquetas['perfiles.nombrePlaceholder']}"
+							required="true"
+							requiredMessage="#{etiquetas['perfiles.nombreRequerido']}" />
+					</div>
 
-            <div class="p-field" style="margin-bottom: 1.1rem;">
-                <label style="display: block; font-weight: 600; color: var(--text-main); font-size: 0.85rem; margin-bottom: 0.4rem;">
-                    <i class="pi pi-align-left" style="margin-right: 5px; color: var(--primary-color);"></i> Descripción
-                </label>
-                <p:inputTextarea id="perfilDescripcion"
-                    value="#{beanAccesoPerfil.perfil.descripcion}"
-                    placeholder="Descripción del rol..."
-                    rows="3" style="width: 100%; resize: none;" />
-            </div>
+					<div class="p-field" style="margin-bottom: 1.1rem;">
+						<label class="form-label">
+							<i class="pi pi-align-left form-label-icon"></i> #{etiquetas['perfiles.descripcion']}
+						</label>
+						<p:inputTextarea id="perfilDescripcion"
+							value="#{beanAccesoPerfil.perfil.descripcion}"
+							placeholder="#{etiquetas['perfiles.descripcionPlaceholder']}"
+							rows="3" style="width: 100%; resize: none;" />
+					</div>
 
-            <div class="p-field" style="margin-bottom: 1.1rem;">
-                <label style="display: block; font-weight: 600; color: var(--text-main); font-size: 0.85rem; margin-bottom: 0.4rem;">
-                    <i class="pi pi-images" style="margin-right: 5px; color: var(--primary-color);"></i> Ícono
-                </label>
-                <div style="display: flex; gap: 0.5rem; align-items: center;">
-                    <p:inputText id="perfilIcono" value="#{beanAccesoPerfil.perfil.icono}" placeholder="Ej. pi pi-user..." style="flex: 1;" />
-                    <div style="width: 38px; height: 38px; border-radius: 8px; background: #eff6ff; border: 1px solid #bfdbfe; display: flex; align-items: center; justify-content: center;">
-                        <i class="#{beanAccesoPerfil.perfil.icono != null and beanAccesoPerfil.perfil.icono != '' ? beanAccesoPerfil.perfil.icono : 'pi pi-id-card'}" style="color: var(--primary-color); font-size: 1.1rem;"></i>
-                    </div>
-                </div>
-            </div>
+					<div class="p-field" style="margin-bottom: 1.1rem;">
+						<label class="form-label">
+							<i class="pi pi-images form-label-icon"></i> #{etiquetas['perfiles.icono']}
+						</label>
+						<div class="flex-row gap-sm">
+							<p:inputText id="perfilIcono" value="#{beanAccesoPerfil.perfil.icono}" placeholder="#{etiquetas['perfiles.iconoPlaceholder']}" style="flex: 1;" />
+							<div class="icon-container icon-bg-primary" style="width: 38px; height: 38px; border-radius: 8px; flex-shrink: 0;">
+								<i class="#{beanAccesoPerfil.perfil.icono != null and beanAccesoPerfil.perfil.icono != '' ? beanAccesoPerfil.perfil.icono : 'pi pi-id-card'}" style="font-size: 1.1rem;"></i>
+							</div>
+						</div>
+					</div>
 
-            <div class="p-field" style="margin-bottom: 1rem;">
-                <label style="display: block; font-weight: 600; color: var(--text-main); font-size: 0.85rem; margin-bottom: 0.4rem;">
-                    <i class="pi pi-power-off" style="margin-right: 5px; color: var(--primary-color);"></i> Estado
-                </label>
-                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                    <p:toggleSwitch id="perfilEstado" value="#{beanAccesoPerfil.perfil.estado}" />
-                    <span style="font-size: 0.88rem; color: var(--text-muted);">
-                        #{beanAccesoPerfil.perfil.estado ? 'Perfil Activo' : 'Perfil Inactivo'}
-                    </span>
-                </div>
-            </div>
+					<div class="p-field" style="margin-bottom: 1rem;">
+						<label class="form-label">
+							<i class="pi pi-power-off form-label-icon"></i> #{etiquetas['estado']}
+						</label>
+						<div class="flex-row gap-sm">
+							<p:toggleSwitch id="perfilEstado" value="#{beanAccesoPerfil.perfil.estado}" />
+							<span class="toggle-label">
+								#{beanAccesoPerfil.perfil.estado ? etiquetas['perfiles.perfilActivo'] : etiquetas['perfiles.perfilInactivo']}
+							</span>
+						</div>
+					</div>
 
-            <hr style="border: none; border-top: 1px solid var(--border-color); margin: 1.25rem 0;" />
+					<div class="separator-line"></div>
 
-            <div style="display: flex; justify-content: flex-end; gap: 0.6rem;">
-                <p:commandButton value="Guardar"
-                    icon="pi pi-check"
-                    styleClass="ui-button-success"
-                    process="@form"
-                    update="@form :formPerfiles:panelPerfilesGrid :formPerfiles:panelStats :formPerfiles:growl"
-                    actionListener="#{backingAccesoPerfil.guardarPerfil()}" 
-                    oncomplete="if (!args.validationFailed) PF('dlgPerfil').hide();"/>
+					<div class="dialog-footer">
+						<p:commandButton value="#{botones['perfiles.guardar']}"
+							icon="pi pi-check"
+							styleClass="ui-button-success"
+							process="@form"
+							update="@form :formPerfiles:panelPerfilesGrid :formPerfiles:panelStats :formPerfiles:growl"
+							actionListener="#{backingAccesoPerfil.guardarPerfil()}" 
+							oncomplete="if (!args.validationFailed) PF('dlgPerfil').hide();"/>
 
-                <p:commandButton value="Cancelar"
-                    type="button"
-                    icon="pi pi-times"
-                    onclick="PF('dlgPerfil').hide();"
-                    styleClass="ui-button-outlined ui-button-secondary" />
-            </div>
+						<p:commandButton value="#{botones['cancelar']}"
+							type="button"
+							icon="pi pi-times"
+							onclick="PF('dlgPerfil').hide();"
+							styleClass="ui-button-outlined ui-button-secondary" />
+					</div>
 
-        </div>
-    </h:form>
-</p:dialog>
+				</div>
+			</h:form>
+		</p:dialog>
 		<!-- ============================================================
 		     DIÁLOGO: GESTIONAR ACCIONES DEL PERFIL
 		     ============================================================ -->
@@ -330,57 +291,41 @@
 			<p:outputPanel id="panelDialogoAcciones">
 				<p:dialog id="dlgAcciones"
 					widgetVar="dlgAcciones"
-					header="Asignación de Acciones"
-					modal="true" responsive="true" width="680" resizable="false"
+					header="#{titulos['perfiles.asignacionAcciones']}"
+					modal="true" responsive="true" width="560" resizable="false"
 					styleClass="ui-dialog shadow-lg" appendTo="@(body)">
 
 					<div class="ui-fluid">
 
-						<!-- Encabezado del diálogo acciones -->
-						<div style="display: flex; align-items: center;
-							margin-bottom: 1.25rem; padding-bottom: 1rem;
-							border-bottom: 1px solid var(--border-color);">
-							<div style="width: 48px; height: 48px; border-radius: 12px;
-								background: linear-gradient(135deg, #7c3aed, #5b21b6);
-								color: white; display: flex; align-items: center;
-								justify-content: center; font-size: 1.4rem;
-								margin-right: 1rem; box-shadow: var(--shadow-sm);">
+						<div class="dialog-header">
+							<div class="dialog-header-icon" style="background: linear-gradient(135deg, #7c3aed, #5b21b6); color: white;">
 								<i class="pi pi-key"></i>
 							</div>
 							<div>
-								<h3 style="margin: 0; font-weight: 700; color: var(--text-main); font-size: 1rem;">
-									Gestionar acciones:
-									<span style="color: #7c3aed;">
+								<h3 class="dialog-header-title">
+									#{etiquetas['perfiles.gestionarHeading']}
+									<span class="text-purple">
 										#{beanAccesoPerfil.perfilSeleccionado != null
 											? beanAccesoPerfil.perfilSeleccionado.nombre : ''}
 									</span>
 								</h3>
-								<span style="color: var(--text-muted); font-size: 0.82rem;">
-									Activa o desactiva las acciones disponibles para este perfil.
-								</span>
+								<span class="dialog-header-subtitle">#{etiquetas['perfiles.gestionarSub']}</span>
 							</div>
 						</div>
 
-						<!-- Contador de selección -->
-						<div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
-							<p:chip
-								label="#{beanAccesoPerfil.accionesDelPerfil != null
-									? beanAccesoPerfil.accionesDelPerfil.size() : 0} asignadas"
-								icon="pi pi-check-square"
-								style="background: #d1fae5; color: #065f46; font-weight: 700;
-									font-size: 0.8rem; border: 1px solid #a7f3d0;" />
-							<p:chip
-								label="#{beanAccesoPerfil.listaAcciones != null
-									? beanAccesoPerfil.listaAcciones.size() : 0} disponibles"
-								icon="pi pi-list"
-								style="background: #f1f5f9; color: var(--text-muted); font-weight: 700;
-									font-size: 0.8rem; border: 1px solid var(--border-color);" />
+						<div class="flex-row gap-xs flex-wrap" style="margin-bottom: 1rem;">
+							<span class="count-badge" style="background: #d1fae5; color: #065f46;">
+								#{beanAccesoPerfil.accionesDelPerfil != null
+									? beanAccesoPerfil.accionesDelPerfil.size() : 0} #{etiquetas['perfiles.asignadas']}
+							</span>
+							<span class="count-badge" style="background: #f1f5f9; color: var(--text-muted);">
+								#{beanAccesoPerfil.listaAcciones != null
+									? beanAccesoPerfil.listaAcciones.size() : 0} #{etiquetas['perfiles.disponibles']}
+							</span>
 						</div>
 
-						<!-- Grid de acciones (scrollable) -->
 						<div style="max-height: 380px; overflow-y: auto; padding-right: 4px;">
-							<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-								gap: 0.6rem;">
+							<div class="card-grid">
 
 								<ui:repeat value="#{beanAccesoPerfil.listaAcciones}" var="acc">
 									<div style="display: flex; align-items: center; gap: 0.75rem;
@@ -393,14 +338,12 @@
 										cursor: pointer;
 										transition: border-color 0.2s, background 0.2s;">
 
-										<!-- Checkbox visual -->
 										<p:commandLink
 											process="@this"
 											update="panelDialogoAcciones panelPerfilesGrid growl"
 											partialSubmit="true"
 											actionListener="#{backingAccesoPerfil.toggleAccion(acc)}"
-											style="display: flex; align-items: center; gap: 0.65rem;
-												text-decoration: none; flex: 1;">
+											style="display: flex; align-items: center; gap: 0.65rem; text-decoration: none; flex: 1;">
 
 											<i class="#{backingAccesoPerfil.accionAsignada(acc.id)
 												? 'pi pi-check-square' : 'pi pi-stop'}"
@@ -410,9 +353,7 @@
 												flex-shrink: 0; transition: color 0.2s;"></i>
 
 											<div style="min-width: 0;">
-												<div style="font-weight: 600; font-size: 0.88rem;
-													color: var(--text-main); white-space: nowrap;
-													overflow: hidden; text-overflow: ellipsis;">
+												<div class="text-truncate" style="font-weight: 600; font-size: 0.88rem; color: var(--text-main);">
 													<i class="#{acc.icono != null and acc.icono != ''
 														? acc.icono : 'pi pi-circle'}"
 														style="margin-right: 5px;
@@ -421,8 +362,7 @@
 														font-size: 0.85rem;"></i>
 													<h:outputText value="#{acc.nombre}" />
 												</div>
-												<div style="font-size: 0.75rem; color: var(--text-muted);
-													white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+												<div class="text-truncate" style="font-size: 0.75rem; color: var(--text-muted);">
 													<h:outputText value="#{acc.descripcion}" />
 												</div>
 											</div>
@@ -433,28 +373,24 @@
 
 							</div>
 
-							<!-- Estado vacío acciones -->
 							<h:panelGroup
 								rendered="#{empty beanAccesoPerfil.listaAcciones}"
 								layout="block"
 								style="text-align: center; padding: 2rem; color: var(--text-muted);">
 								<i class="pi pi-info-circle" style="font-size: 2rem; display: block; margin-bottom: 0.5rem;"></i>
-								No hay acciones activas configuradas en el sistema.
+								#{etiquetas['perfiles.noAcciones']}
 							</h:panelGroup>
 
 						</div>
 
-						<!-- Separador -->
-						<hr style="border: none; border-top: 1px solid var(--border-color); margin: 1.25rem 0 1rem;" />
+						<div class="separator-line"></div>
 
-						<!-- Botones del diálogo acciones -->
-						<div style="display: flex; justify-content: flex-end; gap: 0.6rem;">
-							<p:commandButton value="Cerrar"
+						<div class="dialog-footer">
+							<p:commandButton value="#{botones['perfiles.cerrar']}"
 								type="button"
 								icon="pi pi-times"
 								onclick="PF('dlgAcciones').hide();"
-								styleClass="ui-button-outlined ui-button-secondary"
-								style="padding: 0.4rem 1.25rem !important;" />
+								styleClass="ui-button-outlined ui-button-secondary" />
 						</div>
 
 					</div>

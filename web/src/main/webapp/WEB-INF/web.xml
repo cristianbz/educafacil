@@ -8,6 +8,13 @@
         metadata-complete = "false"
 >
   <display-name>Archetype Created Web Application</display-name>
+
+  <!-- Facelets Tag Library -->
+  <context-param>
+      <param-name>jakarta.faces.FACELETS_LIBRARIES</param-name>
+      <param-value>/WEB-INF/educafacil.taglib.xml</param-value>
+  </context-param>
+
   <servlet>
    <servlet-name>Faces Servlet</servlet-name>
    <servlet-class>jakarta.faces.webapp.FacesServlet</servlet-class>

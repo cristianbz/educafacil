@@ -24,16 +24,20 @@
 			</p:breadCrumb>
 			
 			<!-- ENCABEZADO DE LA PÁGINA -->
-			<div class="page-header" style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
-				<div class="page-title">
-					<h2 style="font-weight: 800; color: var(--text-main); margin: 0; font-size: 1.875rem;">Administración de preguntas</h2>
-					<small style="color: var(--text-muted); font-size: 0.9rem;">Gestión y control de preguntas para evaluaciones</small>
+			<div class="page-header page-header-mb">
+				<div class="page-header-left">
+					<div class="page-header-icon icon-bg-primary">
+						<i class="pi pi-question-circle"></i>
+					</div>
+					<div>
+						<h2>Administración de preguntas</h2>
+						<span class="page-header-subtitle">Gestión y control de preguntas para evaluaciones</span>
+					</div>
 				</div>
-				<div class="page-actions" style="display: flex; gap: 0.5rem; align-items: center;">
+				<div class="page-actions">
 					<!-- Acción primaria -->
 					<p:commandButton 
-						styleClass="ui-button-success" 
-						style="padding: 0.5rem 1.25rem !important; font-weight: 600;"
+						styleClass="ui-button-success"
 						value="#{botones['nuevoObjeto']}" partialSubmit="true"
 						icon="pi pi-plus-circle" resetValues="true"
 						actionListener="#{backingConfPreguntas.nuevoObjeto()}"
@@ -58,9 +62,8 @@
 			</div>
 
 			<!-- KPI / RESUMEN DASHBOARD -->
-			<div class="dashboard-stats" style="margin-bottom: 1.5rem;">
-				<!-- Objetos de Evaluación -->
-				<div class="stats-card stats-card-primary shadow-sm">
+			<div class="dashboard-stats">
+				<div class="stats-card stats-card-primary">
 					<div class="stats-content">
 						<span class="stats-label">Objetos Evaluación</span>
 						<span class="stats-value">#{backingConfPreguntas.beanConfPreguntas.listaObjetoEvaluacion.size()}</span>
@@ -70,33 +73,30 @@
 					</div>
 				</div>
 
-				<!-- Tipos de Encuesta -->
-				<div class="stats-card stats-card-success shadow-sm">
+				<div class="stats-card stats-card-success">
 					<div class="stats-content">
 						<span class="stats-label">Tipos Encuesta</span>
-						<span class="stats-value" style="color: var(--success-color);">#{backingConfPreguntas.beanConfPreguntas.listaTipoEncuesta.size()}</span>
+						<span class="stats-value">#{backingConfPreguntas.beanConfPreguntas.listaTipoEncuesta.size()}</span>
 					</div>
 					<div class="stats-icon-wrapper">
 						<i class="pi pi-file-o"></i>
 					</div>
 				</div>
 
-				<!-- Categorías de Respuesta -->
-				<div class="stats-card stats-card-warning shadow-sm">
+				<div class="stats-card stats-card-warning">
 					<div class="stats-content">
 						<span class="stats-label">Categorías Respuesta</span>
-						<span class="stats-value" style="color: var(--warning-color);">#{backingConfPreguntas.beanConfPreguntas.listaCategoriaRespuesta.size()}</span>
+						<span class="stats-value">#{backingConfPreguntas.beanConfPreguntas.listaCategoriaRespuesta.size()}</span>
 					</div>
 					<div class="stats-icon-wrapper">
 						<i class="pi pi-list"></i>
 					</div>
 				</div>
 
-				<!-- Total Preguntas -->
-				<div class="stats-card stats-card-danger shadow-sm">
+				<div class="stats-card stats-card-danger">
 					<div class="stats-content">
 						<span class="stats-label">Preguntas Totales</span>
-						<span class="stats-value" style="color: var(--danger-color);">#{backingConfPreguntas.beanConfPreguntas.listaPreguntas.size()}</span>
+						<span class="stats-value">#{backingConfPreguntas.beanConfPreguntas.listaPreguntas.size()}</span>
 					</div>
 					<div class="stats-icon-wrapper">
 						<i class="pi pi-question-circle"></i>
@@ -312,6 +312,7 @@
 									
 									<p:column style="width: 40px; text-align: center; vertical-align: middle;">
 										<p:commandLink title="#{tooltip['eliminar']}"
+											aria-label="#{tooltip['eliminar']}"
 											action="#{backingConfPreguntas.eliminarRespuesta()}" process="@this tablarespuestas" immediate="true"
 											partialSubmit="true" update="tablarespuestas growl"
 											styleClass="delete-action-link" style="display: inline-flex; align-items: center; justify-content: center;">
@@ -538,6 +539,7 @@
 						
 						<p:column headerText="#{etiquetas['acciones']}" width="100px" style="text-align: center; vertical-align: middle;">
 							<p:commandLink title="#{tooltip['editar']}"
+								aria-label="#{tooltip['editar']}"
 								action="#{backingConfPreguntas.editarObjeto()}" process="@this"
 								partialSubmit="true" icon="#{botones['editarBoton']}"
 								resetValues="true" update="datosObjetoEvaluacion"
@@ -581,6 +583,7 @@
 										</p:column>
 										<p:column style="width: 35px; text-align: center; border: none; padding: 0.35rem 0.5rem; vertical-align: middle;">
 											<p:commandLink title="#{tooltip['eliminar']}"
+												aria-label="#{tooltip['eliminar']}"
 												action="#{backingConfPreguntas.eliminarTipoEncuestaPregunta()}" process="@this :tabsOpciones:tablaTE"
 												partialSubmit="true" update=":tabsOpciones:tablaTE growl tblPreguntasTEP"
 												styleClass="delete-action-link" style="display: inline-flex; align-items: center; justify-content: center;">
@@ -605,6 +608,7 @@
 							<div style="display: flex; gap: 0.5rem; justify-content: center; align-items: center;">
 								<!-- Editar Tipo -->
 								<p:commandLink title="#{tooltip['editar']}"
+									aria-label="#{tooltip['editar']}"
 									action="#{backingConfPreguntas.editarTipo()}" process="@this cmbObjetoEstudio"
 									partialSubmit="true" icon="#{botones['editarBoton']}"
 									resetValues="true" update="datosTipoEncuesta cmbObjetoEstudio"
@@ -617,6 +621,7 @@
 
 								<!-- Vincular Preguntas -->
 								<p:commandLink title="#{tooltip['preguntas']}"
+									aria-label="#{tooltip['preguntas']}"
 									action="#{backingConfPreguntas.nuevoTipoEncuestaPregunta()}" process="@this"
 									partialSubmit="true" icon="#{botones['icono.info']}"
 									update="datosPreguntaAsociadas"
@@ -671,6 +676,7 @@
 						
 						<p:column headerText="#{etiquetas['acciones']}" width="100px" style="text-align: center; vertical-align: middle;">
 							<p:commandLink title="#{tooltip['editar']}"
+								aria-label="#{tooltip['editar']}"
 								action="#{backingConfPreguntas.editarCategoriaRespuesta()}" process="@this"
 								partialSubmit="true" icon="#{botones['editarBoton']}"
 								resetValues="true" update="datosCategoriaRespuesta"
@@ -713,6 +719,7 @@
 						
 						<p:column headerText="#{etiquetas['acciones']}" width="100px" style="text-align: center; vertical-align: middle;">
 							<p:commandLink title="#{tooltip['editar']}"
+								aria-label="#{tooltip['editar']}"
 								action="#{backingConfPreguntas.editarPregunta()}" process="@this"
 								partialSubmit="true" icon="#{botones['editarBoton']}"
 								update="datosPregunta listcategoriaRespuesta"

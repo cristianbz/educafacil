@@ -84,7 +84,7 @@
 						<p:column headerText="#{etiquetas['proximaLlamada']}"
 							style="width:100px;">
 							<p:outputLabel value="#{sc.segcProximaLlamada}" id="proximacall"
-								style="color:red;"
+								styleClass="text-danger"
 								rendered="#{sc.segcProximaLlamada!=null?true:false}">
 								<f:convertDateTime for="proximacall" pattern="yyyy-MM-dd" />
 							</p:outputLabel>
@@ -102,12 +102,13 @@
 					<p:selectOneMenu id="idcampaniaFormulario"
 						converter="selectOneMenuConverter" filterMatchMode="contains"
 						filter="true" panelStyle="width:300px;" style="width:300px;"
-						value="#{backingSeguimientoClientes.beanSeguimiento.campaniaSeleccionada}">
+						value="#{backingSeguimientoClientes.beanSeguimiento.campaniaSeleccionada}"
+						required="true"
+						requiredMessage="#{mensajes['campoRequerido']}">
 						<f:selectItems
 							value="#{backingSeguimientoClientes.beanSeguimiento.listaCampaniasTodas}"
 							var="camp" itemLabel="#{camp.campDescripcion}"
-							itemValue="#{camp}" required="true"
-							requiredMessage="#{mensajes['campoRequerido']}" />
+							itemValue="#{camp}" />
 						<p:ajax process="@this idcampaniaFormulario archivoFormulario"
 							update="archivoFormulario" partialSubmit="true"
 							listener="#{backingSeguimientoClientes.activaUploadFormulario()}"
@@ -144,8 +145,8 @@
 						<br />
 						<p:commandButton process="@this " value="#{botones['procesar']}"
 							partialSubmit="true" update="growl "
-							onstart="PF('dlgEnProc').show();"
-							oncomplete="PF('dlgEnProc').hide();"
+							onstart="showLoading();"
+							oncomplete="hideLoading();"
 							rendered="#{backingSeguimientoClientes.beanSeguimiento.activaUploadFormulario}"
 							icon="#{botones['icono.ruedas']}"
 							actionListener="#{backingSeguimientoClientes.procesarSubidaFormulario()}" />
@@ -181,8 +182,8 @@
 				<br />
 				<p:commandButton process="@this" value="#{botones['procesar']}"
 					partialSubmit="true" update="growl"
-					onstart="PF('dlgEnProc').show();"
-					oncomplete="PF('dlgEnProc').hide();"
+					onstart="showLoading();"
+					oncomplete="hideLoading();"
 					icon="#{botones['icono.ruedas']}"
 					actionListener="#{backingSeguimientoClientes.procesarSubidaExcel()}" />
 			</p:dialog>
@@ -218,12 +219,13 @@
 				<p:outputPanel id="idlstcampanias">
 					<p:selectOneListbox id="idcampania"
 						converter="selectOneMenuConverter"
-						value="#{backingSeguimientoClientes.beanSeguimiento.campaniaSeleccionada}">
+						value="#{backingSeguimientoClientes.beanSeguimiento.campaniaSeleccionada}"
+						required="true"
+						requiredMessage="#{mensajes['campoRequerido']}">
 						<f:selectItems
 							value="#{backingSeguimientoClientes.beanSeguimiento.listaCampanias}"
 							var="camp" itemLabel="#{camp.campDescripcion}"
-							itemValue="#{camp}" required="true"
-							requiredMessage="#{mensajes['campoRequerido']}" />
+							itemValue="#{camp}" />
 						<p:ajax process="@this idcampania valorcampania"
 							update="valorcampania" partialSubmit="true" event="click"
 							listener="#{backingSeguimientoClientes.cerrarDialogoCampania()}" />
@@ -240,10 +242,11 @@
 					<p:selectManyCheckbox id="idnoInteres" layout="grid" columns="3"
 						styleClass="grid-checkbox"
 						value="#{backingSeguimientoClientes.beanSeguimiento.motivosNoInteresSeleccionados}"
-						label="motivos" style="width: 15rem">
+						label="motivos" style="width: 15rem"
+						required="true"
+						requiredMessage="#{mensajes['campoRequerido']}">
 						<f:selectItems
-							value="#{backingSeguimientoClientes.beanSeguimiento.motivosNoInteres}"
-							required="true" requiredMessage="#{mensajes['campoRequerido']}" />
+							value="#{backingSeguimientoClientes.beanSeguimiento.motivosNoInteres}" />
 						<p:ajax process="@this" event="change" update="motivos" />
 					</p:selectManyCheckbox>
 					<p:message for="idnoInteres" />
@@ -267,10 +270,10 @@
 					<br />
 					<br />
 					<div class="text-center">
-						<h:panelGrid columns="2">
+						<div class="flex-row gap-sm" style="justify-content: center;">
 							<p:commandButton value="#{botones['grabar']}"
-								onstart="PF('dlgEnProc').show();"
-								oncomplete="PF('dlgEnProc').hide();"
+								onstart="showLoading();"
+								oncomplete="hideLoading();"
 								icon="#{botones['icono.grabar']}"
 								process="@this  tblllamar panelSeguimiento" partialSubmit="true"
 								action="#{backingSeguimientoClientes.grabarSeguimiento()}"
@@ -281,31 +284,36 @@
 							<p:commandButton value="#{botones['cancelar']}"
 								icon="#{botones['icono.cancelar']}" process="@this"
 								oncomplete="PF('dlggrabar').hide();" />
-						</h:panelGrid>
+						</div>
 					</div>
 				</p:outputPanel>
 			</p:dialog>
-			<p:breadCrumb styleClass="mb-3">
-				<p:menuitem value="Inicio" icon="pi pi-home" outcome="/paginas/index?faces-redirect=true" />
-				<p:menuitem value="Marketing"  />
-				<p:menuitem value="Seguimiento clientes" />
+			<p:breadCrumb styleClass="ui-breadcrumb mb-3"
+				style="border: none; background: transparent; padding-left: 0;">
+				<p:menuitem value="#{etiquetas['inicio']}" outcome="/paginas/index?faces-redirect=true" icon="pi pi-home" />
+				<p:menuitem value="Marketing" url="#" />
+				<p:menuitem value="#{titulos['seguimiento.titulo']}" url="#" />
 			</p:breadCrumb>
-			<div class="page-header">
-
-				<div class="page-title">
-					<h2>Seguimiento de Clientes</h2>
-					<small>Gestión y control de interacciones comerciales</small>
+			<div class="page-header page-header-mb">
+				<div class="page-header-left">
+					<div class="page-header-icon icon-bg-primary">
+						<i class="pi pi-users"></i>
+					</div>
+					<div>
+						<h2>#{titulos['seguimiento.titulo']}</h2>
+						<span class="page-header-subtitle">#{etiquetas['seguimiento.subtitulo']}</span>
+					</div>
 				</div>
-
 				<div class="page-actions">
-
-					<!-- Acción primaria -->
+					<!-- Botón: Nuevo Seguimiento -->
 					<p:commandButton value="Nuevo Seguimiento" icon="pi pi-plus"
-						styleClass="ui-button-success" process="@this panelSeguimiento"
+						styleClass="ui-button-success" process="@this"
 						update="pnlseguimiento panelSeguimiento"
-						actionListener="#{backingSeguimientoClientes.nuevoSeguimiento}" />
+						actionListener="#{backingSeguimientoClientes.nuevoSeguimiento}">
+						<p:resetInput target="pnlseguimiento" />
+					</p:commandButton>
 
-					<!-- Acciones secundarias -->
+					<!-- Menú: Más acciones -->
 					<p:menuButton value="Más acciones" icon="pi pi-ellipsis-v">
 
 						<p:menuitem value="#{botones['cargarregistrodatos']}"
@@ -326,9 +334,7 @@
 							update="idcampaniaFormulario archivoFormulario" />
 
 					</p:menuButton>
-
 				</div>
-
 			</div>
 
 			<p:outputPanel id="panelSeguimiento">
@@ -343,13 +349,12 @@
 					paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
 					var="seg">
 					<f:facet name="{Exporters}">
-						<div style="float: right; padding-top: 5px;">
+						<div class="text-right" style="padding-top: 5px;">
 							<h:commandLink immediate="true">
-								<h:graphicImage library="img" name="excel.png" />
+								<h:graphicImage library="img" name="excel.png" alt="Exportar a Excel" />
 								<p:dataExporter type="xls" target="tblSeg"
 									fileName="interesados" />
 							</h:commandLink>
-
 						</div>
 					</f:facet>
 					<p:ajax event="rowSelect"
@@ -365,7 +370,7 @@
 						filterBy="#{seg.campania.campDescripcion}" style="width:200px;">
 						<p:outputLabel value="#{seg.campania.campDescripcion}" />
 						<p:commandButton icon="#{botones['icono.info']}"
-							style="width:15px; height:20px;"
+							styleClass="action-icon-btn"
 							action="#{backingSeguimientoClientes.mostrarDialogoDatosCampania()}"
 							update="datoscampania"
 							rendered="#{seg.campania==null?false:true}" process="@this">
@@ -414,33 +419,37 @@
 						<p:outputLabel value="#{seg.segcUltimoSeguimiento}" />
 						<h:inputHidden />
 						<p:outputLabel value="#{etiquetas['proximaLlamada']}:"
-							style="color:red;"
+							styleClass="text-danger"
 							rendered="#{seg.segcProximaLlamada!=null?true:false}" />
 						<p:outputLabel value="#{seg.segcProximaLlamada}" id="proximacall"
-							style="color:red;"
+							styleClass="text-danger"
 							rendered="#{seg.segcProximaLlamada!=null?true:false}">
 							<f:convertDateTime for="proximacall" pattern="yyyy-MM-dd" />
 						</p:outputLabel>
 					</p:column>
 
-					<p:column style="width:70px;">
+					<p:column style="width:70px; text-align: center;">
 
-						<p:commandLink process="@this" title="#{tooltip['seguimiento']}"
+						<p:commandLink class="command-link-edit"
+							process="@this" title="#{tooltip['seguimiento']}"
+							aria-label="#{tooltip['seguimiento']}"
 							action="#{backingSeguimientoClientes.cargaDetalleSeguimiento()}"
 							update="detalleSeguimiento">
 							<f:setPropertyActionListener value="#{seg}"
 								target="#{backingSeguimientoClientes.beanSeguimiento.seguimientoClientes}"></f:setPropertyActionListener>
-							<i class="pi pi-share-alt" style="font-size: 1em; color: green;"></i>
+							<i class="pi pi-share-alt"></i>
 						</p:commandLink>
 
-						<p:commandLink title="#{tooltip['realizaSeguimiento']}"
+						<p:commandLink class="command-link-edit"
+							title="#{tooltip['realizaSeguimiento']}"
+							aria-label="#{tooltip['realizaSeguimiento']}"
 							process="@this" partialSubmit="true"
 							action="#{backingSeguimientoClientes.agregarNuevoSeguimiento()}"
 							update="pnlseguimiento growl">
 							<f:setPropertyActionListener value="#{seg}"
 								target="#{backingSeguimientoClientes.beanSeguimiento.seguimientoClientes}"></f:setPropertyActionListener>
-							<i class="pi pi-chevron-circle-down"
-								style="font-size: 1em; color: green;"></i>
+							<i class="pi pi-chevron-circle-down"></i>
+							<p:resetInput target="pnlseguimiento" />
 						</p:commandLink>
 					</p:column>
 				</p:dataTable>

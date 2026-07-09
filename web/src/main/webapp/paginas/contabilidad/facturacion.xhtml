@@ -11,54 +11,43 @@
 		<f:event listener="#{backingLogin.validarSesion()}" type="preRenderView" />
 		<h:form id="formFacturacion">
 			<p:growl id="growl" life="3000" showDetail="true" />
-						<!-- DIÁLOGO DE CARGA -->
-			<p:dialog widgetVar="dlgCargando" header="Por favor espere.."
-				draggable="false" modal="true" resizable="false" closable="false" responsive="true"
-				style="font-size: 11px;">
-				<h:graphicImage value="/resources/img/cargando.gif" width="200" height="200"/>
-			</p:dialog>
-			
+						
 			<p:breadCrumb>
 				<p:menuitem value="Inicio" url="/paginas/inicio.xhtml" />
 				<p:menuitem value="Contabilidad" url="#" />
 				<p:menuitem value="Gestión de Facturación" />
 			</p:breadCrumb>
 			<div class="page-header">
-
-				<div class="page-title">
-					<h2>Facturación electrónica</h2>
-					<small>Gestión y control de facturación electrónica</small>
-					<small>
-						<div class="stats-icon-wrapper">
+				<div class="page-header-left">
+					<div class="page-header-icon icon-bg-primary">
+						<i class="pi pi-file"></i>
+					</div>
+					<div>
+						<h2>Facturación electrónica</h2>
+						<span class="page-header-subtitle">Gestión y control de facturación electrónica</span>
+						<small class="flex-row gap-xs text-muted" style="margin-top: 0.25rem; font-size: var(--text-xs);">
 							<i class="pi pi-history"></i>
-						</div>					
-						<span class="stats-value">#{backingFacturacion.diasVigenciaFirma}</span>
-					</small>
+							Vigencia firma: <strong>#{backingFacturacion.diasVigenciaFirma}</strong> días
+						</small>
+					</div>
 				</div>
 
 				<div class="page-actions">
-
 					<!-- Acción primaria -->					
 					<p:commandButton value="Nueva Factura" icon="pi pi-plus"
 							styleClass="ui-button-success" 
-							 actionListener="#{backingFacturacion.prepararNuevaFactura()}" process="@this"
-							 oncomplete="PF('dlgNuevaFactura').show()"
-							 update="dlgNuevaFactura" />	
+							actionListener="#{backingFacturacion.prepararNuevaFactura()}" process="@this"
+							oncomplete="PF('dlgNuevaFactura').show()"
+							update="dlgNuevaFactura" />	
 
 					<!-- Acciones secundarias -->
 					<p:menuButton value="Más acciones" icon="pi pi-ellipsis-v">
-
 						<p:menuitem value="Cargar facturas"
-							process="@this " partialSubmit="true" icon="pi pi-cloud-upload"
+							process="@this" partialSubmit="true" icon="pi pi-cloud-upload"
 							update="tblFacturas pnlMetrics"
-							actionListener="#{backingFacturacion.cargarFacturas()}">
-							 
-						</p:menuitem>
-
+							actionListener="#{backingFacturacion.cargarFacturas()}" />
 					</p:menuButton>
-
 				</div>
-
 			</div>
 
 			<!-- Panel de Métricas / Dashboard -->
@@ -153,45 +142,33 @@
 									 rendered="#{fac.documentoElectronico == null or fac.documentoElectronico.estado != 'AUTORIZADO'}"
 									 disabled="#{fac.documentoElectronico.estado == 'ANULADA'}"
 									 update=":formFacturacion:growl :formFacturacion:tblFacturas :formFacturacion:pnlMetrics" 
-									 styleClass="ui-button-warning"
-									 style="margin: 0 2px;" />
+									 styleClass="ui-button-warning datatable-action-btn" />
 					
-					<!-- Botón: Subir documentos a AWS S3 (para facturas autorizadas sin URL de S3) -->
 					<p:commandButton icon="pi pi-cloud" title="Subir a AWS S3"
 									 rendered="#{fac.documentoElectronico != null 
 												and fac.documentoElectronico.estado == 'AUTORIZADO'
 												and (fac.documentoElectronico.urlPdf == null or fac.documentoElectronico.urlPdf == '')}"
 									 actionListener="#{backingFacturacion.subirDocumentosAws(fac)}"
 									 update=":formFacturacion:growl :formFacturacion:tblFacturas"
-									 styleClass="ui-button-primary"
-									 style="margin: 0 2px;" />
+									 styleClass="ui-button-primary datatable-action-btn" />
 
-					<!-- Botón: Descargar RIDE (PDF) — disponible si hay URL de S3 o bytes en BD -->
 					<p:commandButton icon="pi pi-file-pdf" title="Descargar RIDE" process="@this"
 									 rendered="#{fac.documentoElectronico != null 
 												and (fac.documentoElectronico.urlPdf != null and fac.documentoElectronico.urlPdf != '')}"
-									 styleClass="ui-button-success" action="#{backingFacturacion.descargarRide(fac)}"
-									 style="margin: 0 2px;">
-						
-					</p:commandButton>
+									 styleClass="ui-button-success datatable-action-btn" 
+									 action="#{backingFacturacion.descargarRide(fac)}" />
 
-					<!-- Botón: Descargar XML — disponible si hay URL de S3 o bytes en BD -->
-					<p:commandButton icon="pi pi-file" title="Descargar XML" action="#{backingFacturacion.descargarXml(fac)}" process="@this"
+					<p:commandButton icon="pi pi-file" title="Descargar XML" 
+									 action="#{backingFacturacion.descargarXml(fac)}" process="@this"
 									 rendered="#{fac.documentoElectronico != null 
 												and (fac.documentoElectronico.urlXml != null and fac.documentoElectronico.urlXml != '')}"
-									 styleClass="ui-button-info"
-									 style="margin: 0 2px;">
-						
-					</p:commandButton>
+									 styleClass="ui-button-info datatable-action-btn" />
 										
-					<!-- Botón: Generar Nota de Crédito -->
 					<p:commandButton icon="pi pi-credit-card" title="Generar Nota de Crédito" 
 									 rendered="#{fac.documentoElectronico != null and fac.documentoElectronico.estado == 'AUTORIZADO'}"
 									 actionListener="#{backingFacturacion.prepararNotaCredito(fac)}"
 									 update=":formNuevaNotaCredito"
-									 styleClass="ui-button-secondary"
-									 style="margin: 0 2px;">
-					</p:commandButton>
+									 styleClass="ui-button-secondary datatable-action-btn" />
 				</p:column>
 				
 			</p:dataTable>
@@ -201,18 +178,18 @@
 		</h:form>
 
 		<ui:include src="/paginas/contabilidad/fragmentos/dialogoNuevoItem.xhtml" />	
-		<p:dialog widgetVar="dlgErrorSri" header="Error de conexi\u00f3n con el SRI" 
+		<p:dialog widgetVar="dlgErrorSri" header="Error de conexión con el SRI" 
 				  modal="true" width="420px" responsive="true" 
 				  draggable="false" resizable="false" closeOnEscape="true">
-			<div style="text-align: center; padding: 1rem;">
-				<i class="pi pi-exclamation-triangle" style="font-size: 3rem; color: #f59e0b; margin-bottom: 1rem; display: block;"></i>
-				<p style="font-size: 1.1rem; margin-bottom: 1.5rem; color: #333;">
+			<div class="flex-col flex-center gap-sm" style="padding: 1.5rem; text-align: center;">
+				<i class="pi pi-exclamation-triangle text-warning" style="font-size: 3rem;"></i>
+				<p class="text-main" style="font-size: var(--text-lg); margin: 1rem 0;">
 					No se pudo enviar el documento al SRI, se procesará luego.
 				</p>
 				<p:commandButton value="Aceptar" icon="pi pi-refresh" 								 
 								 update=":formFacturacion:tblFacturas :formFacturacion:pnlMetrics"
 								 oncomplete="PF('dlgErrorSri').hide()"
-								 styleClass="ui-button-primary" style="width: 100%;" />
+								 styleClass="ui-button-primary" style="min-width: 200px;" />
 			</div>
 		</p:dialog>
 				

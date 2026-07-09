@@ -12,16 +12,22 @@
         <h:form id="formRetenciones">
             <p:growl id="growl" life="3000" showDetail="true" />
             
-            <p:breadCrumb>
-                <p:menuitem value="Inicio" url="/paginas/inicio.xhtml" />
+            <p:breadCrumb styleClass="ui-breadcrumb p-mb-3" style="border: none; background: transparent; padding-left: 0;">
+                <p:menuitem value="Inicio" outcome="/paginas/index?faces-redirect=true" icon="pi pi-home" />
                 <p:menuitem value="Contabilidad" url="#" />
                 <p:menuitem value="Comprobantes de Retención" />
             </p:breadCrumb>
 
+            <!-- ── PAGE-HEADER ──────────────────────────────────────────── -->
             <div class="page-header">
-                <div class="page-title">
-                    <h2>Comprobantes de Retención</h2>
-                    <small>Gestión de retenciones emitidas al SRI</small>
+                <div class="page-header-left">
+                    <div class="page-header-icon icon-bg-primary">
+                        <i class="pi pi-file"></i>
+                    </div>
+                    <div>
+                        <h2>Comprobantes de Retención</h2>
+                        <span class="page-header-subtitle">Gestión de retenciones emitidas al SRI</span>
+                    </div>
                 </div>
             </div>
 

@@ -11,7 +11,7 @@
 		href="#{facesContext.externalContext.requestContextPath}/resources/css/bootstrap.min.css"
 		rel="stylesheet" type="text/css" />
 	<link
-		href="#{facesContext.externalContext.requestContextPath}/resources/css/estilos.css"
+		href="#{facesContext.externalContext.requestContextPath}/resources/css/custom.css"
 		rel="stylesheet" type="text/css" />
 
 	<script
@@ -52,7 +52,7 @@
 		<p:dialog widgetVar="dlgEnProc" draggable="false" modal="true"
 			resizable="false" closable="false" responsive="true"
 			style="font-size: 10px;">
-			<h:graphicImage value="/resources/img/cargando.gif" width="200"
+			<h:graphicImage value="/resources/img/cargando.gif" width="200" alt=""
 				height="200" />
 		</p:dialog>
 		<div class="container">
@@ -73,14 +73,14 @@
 
 					<div class="ui-fluid p-formgrid p-grid">
 						<div class="p-field p-col-12 p-md-5">
-							<h4 style="margin-top: 0; color: blue;">DATOS PERSONALES</h4>
+							<h4 class="label-blue" style="margin-top: 0;">DATOS PERSONALES</h4>
 							<p:separator />
 						</div>
 						<div class="p-field p-col-12 p-md-7"></div>
 
 						<div class="p-field p-col-12 p-md-2">
 							<p:outputLabel value="#{etiquetas['cedularuc']}:*"
-								style="color:blue" />
+								styleClass="label-blue" />
 						</div>
 						<div class="p-field p-col-12 p-md-10"></div>
 
@@ -104,7 +104,7 @@
 
 						<div class="p-field p-col-12 p-md-2">
 							<p:outputLabel value="#{etiquetas['apellidos']}:*"
-								style="color:blue" />
+								styleClass="label-blue" />
 						</div>
 						<div class="p-field p-col-12 p-md-10"></div>
 
@@ -122,7 +122,7 @@
 
 						<div class="p-field p-col-12 p-md-2">
 							<p:outputLabel value="#{etiquetas['nombres']}:*"
-								style="color:blue" />
+								styleClass="label-blue" />
 						</div>
 						<div class="p-field p-col-12 p-md-10"></div>
 
@@ -141,7 +141,7 @@
 
 						<div class="p-field p-col-12 p-md-2">
 							<p:outputLabel value="#{etiquetas['telefonoMobil']}:*"
-								style="color:blue" />
+								styleClass="label-blue" />
 						</div>
 						<div class="p-field p-col-12 p-md-10"></div>
 
@@ -159,7 +159,7 @@
 
 						<div class="p-field p-col-12 p-md-2">
 							<p:outputLabel value="#{etiquetas['telefonoCasa']}:"
-								style="color:blue" />
+								styleClass="label-blue" />
 						</div>
 						<div class="p-field p-col-12 p-md-10"></div>
 
@@ -173,7 +173,7 @@
 						
 						<div class="p-field p-col-12 p-md-2">
 							<p:outputLabel value="#{etiquetas['correo']}:*"
-								style="color:blue" />
+								styleClass="label-blue" />
 						</div>
 						<div class="p-field p-col-12 p-md-10"></div>
 
@@ -197,7 +197,7 @@
 
 						<div class="p-field p-col-12 p-md-2">
 							<p:outputLabel value="#{etiquetas['telefonoTrabajo']}:"
-								style="color:blue" />
+								styleClass="label-blue" />
 						</div>
 						<div class="p-field p-col-12 p-md-10"></div>
 
@@ -210,7 +210,7 @@
 
 						<div class="p-field p-col-12 p-md-2">
 							<p:outputLabel value="#{etiquetas['fechaNacimiento']}:*"
-								style="color:blue" />
+								styleClass="label-blue" />
 						</div>
 						<div class="p-field p-col-12 p-md-10"></div>
 
@@ -230,7 +230,7 @@
 
 						<div class="p-field p-col-12 p-md-2">
 							<p:outputLabel value="#{etiquetas['domicilio']}:*"
-								style="color:blue" />
+								styleClass="label-blue" />
 						</div>
 						<div class="p-field p-col-12 p-md-10"></div>
 
@@ -251,7 +251,7 @@
 
 						<div class="p-field p-col-12 p-md-2">
 							<p:outputLabel value="#{etiquetas['direccionTrabajo']}:*"
-								style="color:blue" />
+								styleClass="label-blue" />
 						</div>
 						<div class="p-field p-col-12 p-md-10"></div>
 
@@ -270,7 +270,7 @@
 						</div>
 						
 						<div class="p-field p-col-12 p-md-2">							
-								<p:outputLabel value="#{etiquetas['estadoCivil']}:*" style="color:blue"/>								
+								<p:outputLabel value="#{etiquetas['estadoCivil']}:*" styleClass="label-blue"/>								
 						</div>
 						<div class="p-field p-col-12 p-md-9">							
 							<p:outputPanel id="idestadocivil">
@@ -289,7 +289,7 @@
 						</div>
 						
 						<div class="p-field p-col-12 p-md-2">							
-								<p:outputLabel  value="#{etiquetas['cargasFamiliares']}:*" style="color:blue"/>							
+								<p:outputLabel  value="#{etiquetas['cargasFamiliares']}:*" styleClass="label-blue"/>							
 						</div>
 						<div class="p-field p-col-12 p-md-10">							
 							 	<p:toggleSwitch  value="#{backingMatriculaOnline.beanMatricula.persona.persCargasFamiliares}" onIcon="pi pi-check" offIcon="pi pi-times" tabindex="12"> 							 		
@@ -299,7 +299,7 @@
 						
 						<div class="p-field p-col-12 p-md-2">
 							
-								<p:outputLabel  value="#{etiquetas['trabajaEnArea']}?:*" style="color:blue"/>
+								<p:outputLabel  value="#{etiquetas['trabajaEnArea']}?:*" styleClass="label-blue"/>
 							
 						</div>
 						<div class="p-field p-col-12 p-md-10">							
@@ -309,7 +309,7 @@
 						</div>
 
 						<div class="p-field p-col-12 p-md-2">							
-								<p:outputLabel value="#{etiquetas['deseoCurso']}:*" style="color:blue"/>								
+								<p:outputLabel value="#{etiquetas['deseoCurso']}:*" styleClass="label-blue"/>								
 						</div>
 						<div class="p-field p-col-12 p-md-9">							
 							<p:outputPanel id="iddeseocurso">
@@ -329,7 +329,7 @@
 
 						<div class="p-field p-col-12 p-md-2">
 							<p:outputLabel value="#{etiquetas['cargoDesempenia']}:*"
-								style="color:blue" />
+								styleClass="label-blue" />
 						</div>
 						<div class="p-field p-col-12 p-md-10"></div>
 
@@ -353,7 +353,7 @@
 
 						<div class="p-field p-col-12 p-md-2">
 							<p:outputLabel value="#{etiquetas['nivelEstudio']}:*"
-								style="color:blue" />
+								styleClass="label-blue" />
 						</div>
 						<div class="p-field p-col-12 p-md-10"></div>
 
@@ -376,7 +376,7 @@
 						
 						<div class="p-field p-col-12 p-md-2">
 							<p:outputLabel value="#{etiquetas['ingresoMensual']}:*"
-								style="color:blue" />
+								styleClass="label-blue" />
 						</div>
 						<div class="p-field p-col-12 p-md-10"></div>
 
@@ -398,7 +398,7 @@
 						</div>
 
 						<div class="p-field p-col-12 p-md-2">
-							<p:outputLabel value="#{etiquetas['provinciaDom']}:*" style="color:blue" />
+							<p:outputLabel value="#{etiquetas['provinciaDom']}:*" styleClass="label-blue" />
 						</div>
 						<div class="p-field p-col-12 p-md-10"></div>
 						
@@ -421,7 +421,7 @@
 						<div class="p-field p-col-12 p-md-3"></div>
 						
 						<div class="p-field p-col-12 p-md-2">
-							<p:outputLabel value="#{etiquetas['ciudadDom']}:*" style="color:blue" />
+							<p:outputLabel value="#{etiquetas['ciudadDom']}:*" styleClass="label-blue" />
 						</div>
 						<div class="p-field p-col-12 p-md-10"></div>
 						
@@ -445,7 +445,7 @@
 						
 						
 						<div class="p-field p-col-12 p-md-2">
-							<p:outputLabel value="#{etiquetas['sectorDom']}:*" style="color:blue" />
+							<p:outputLabel value="#{etiquetas['sectorDom']}:*" styleClass="label-blue" />
 						</div>
 						<div class="p-field p-col-12 p-md-10"></div>
 						
@@ -476,13 +476,13 @@
 						-->
 						
 						<div class="p-field p-col-12 p-md-5">
-							<h4 style="margin-top: 0; color: blue;">DATOS CURSO</h4>
+							<h4 class="label-blue" style="margin-top: 0;">DATOS CURSO</h4>
 							<p:separator />
 						</div>
 						<div class="p-field p-col-12 p-md-7"></div>
 
 						<div class="p-field p-col-12 p-md-2">
-							<p:outputLabel value="#{etiquetas['curso']}:*" style="color:blue" />
+							<p:outputLabel value="#{etiquetas['curso']}:*" styleClass="label-blue" />
 						</div>
 						<div class="p-field p-col-12 p-md-10"></div>
 
@@ -524,7 +524,7 @@
 
 						<div class="p-field p-col-12 p-md-2">
 							<p:outputLabel value="#{etiquetas['medioInformacion']}:*"
-								style="color:blue" />
+								styleClass="label-blue" />
 						</div>
 						<div class="p-field p-col-12 p-md-10"></div>
 
@@ -548,7 +548,7 @@
 						
 						<div class="p-field p-col-12 p-md-2">
 							<p:outputLabel value="#{etiquetas['otroCurso']}:"
-								style="color:blue" />
+								styleClass="label-blue" />
 						</div>
 						<div class="p-field p-col-12 p-md-10"></div>
 

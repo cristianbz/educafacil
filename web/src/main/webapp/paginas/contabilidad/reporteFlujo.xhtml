@@ -42,68 +42,57 @@
 			<h:form>							
 				<p:growl id="growl" life="3000" showDetail="true" />
 
-				<p:dialog widgetVar="dlgReporteFechas" modal="true" closable="true" header="#{titulos['buscaEgresosIngresos']}">
+				<p:dialog widgetVar="dlgReporteFechas" modal="true" closable="true" header="#{titulos['buscaEgresosIngresos']}" responsive="true" width="420">
 					<p:outputPanel id="fechas">
-						<p:scrollPanel mode="native" style="max-height:350px; max-width:450px;">
-						<div class="ui-fluid p-formgrid p-grid">
-							<div class="p-field p-col-12 p-md-12" >
-							<span class="ui-float-label ui-input-icon-right" style="margin-top: 2em">
-							<p:datePicker locale="es_ES" pattern="yyyy-MM-dd" monthNavigator="true" 
-								required="true" requiredMessage="#{mensajes['campoRequerido']}"
-								yearNavigator="true" id="fechaUno" value="#{backingReporteria.beanReporteria.fechaInicial}" >
-								
-							</p:datePicker><p:outputLabel value="#{etiquetas['fechaInicio']}:"/>
-							</span>
-							<p:message for="fechaUno"/>
+						<div class="ui-fluid p-formgrid p-grid" style="padding: 0.5rem 0;">
+							<div class="p-field p-col-12 p-md-12" style="margin-bottom: 0.85rem;">
+								<p:outputLabel value="#{etiquetas['fechaInicio']}:" for="fechaUno" style="display: block; font-weight: 600; margin-bottom: 0.35rem;"/>
+								<p:datePicker locale="es_ES" pattern="yyyy-MM-dd" monthNavigator="true" 
+									required="true" requiredMessage="#{mensajes['campoRequerido']}"
+									yearNavigator="true" id="fechaUno" value="#{backingReporteria.beanReporteria.fechaInicial}" showIcon="true" style="width: 100%;" />
+								<p:message for="fechaUno"/>
 							</div>
-							<div class="p-field p-col-12 p-md-12" >
-							<span class="ui-float-label ui-input-icon-right" style="margin-top: 2em">
-							<p:datePicker locale="es_ES" pattern="yyyy-MM-dd"  monthNavigator="true" yearNavigator="true" 
-								required="true" requiredMessage="#{mensajes['campoRequerido']}"
-								id="fechaDos" value="#{backingReporteria.beanReporteria.fechaFinal}" >
-							</p:datePicker><p:outputLabel value="#{etiquetas['fechaFin']}:"/>
-							</span>
-							<p:message for="fechaDos"/>
+							<div class="p-field p-col-12 p-md-12" style="margin-bottom: 0.85rem;">
+								<p:outputLabel value="#{etiquetas['fechaFin']}:" for="fechaDos" style="display: block; font-weight: 600; margin-bottom: 0.35rem;"/>
+								<p:datePicker locale="es_ES" pattern="yyyy-MM-dd"  monthNavigator="true" yearNavigator="true" 
+									required="true" requiredMessage="#{mensajes['campoRequerido']}"
+									id="fechaDos" value="#{backingReporteria.beanReporteria.fechaFinal}" showIcon="true" style="width: 100%;" />
+								<p:message for="fechaDos"/>
 							</div>
-							<div class="p-field p-col-12 p-md-6" >
-							<p:commandButton process="@this fechas" value="#{botones['aceptar']}" partialSubmit="true" icon="#{botones['icono.select']}"
-								onstart="PF('dlgEnProc').show()" oncomplete="PF('dlgEnProc').hide()"
-								update="graficas growl fechas" actionListener="#{backingReporteria.buscaReporteFlujoFechas()}"/>
-							</div>
-							<div class="p-field p-col-12 p-md-6" >
-							<p:commandButton icon="#{botones['icono.cancelar']}" value="#{botones['cancelar']}" process="@this" oncomplete="PF('dlgReporteFechas').hide()"/>			
+							<div style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 0.5rem; width: 100%;">
+								<p:commandButton process="@this fechas" value="#{botones['aceptar']}" partialSubmit="true" icon="#{botones['icono.select']}"
+									onstart="PF('dlgEnProc').show()" oncomplete="PF('dlgEnProc').hide()"
+									update="graficas growl fechas" actionListener="#{backingReporteria.buscaReporteFlujoFechas()}"/>
+								<p:commandButton icon="#{botones['icono.cancelar']}" value="#{botones['cancelar']}" process="@this" oncomplete="PF('dlgReporteFechas').hide()"/>			
 							</div>
 						</div>
-						</p:scrollPanel>
 					</p:outputPanel>
 				</p:dialog>
-			<p:breadCrumb styleClass="mb-3">
-				<p:menuitem value="Categorias" icon="pi pi-home" outcome="/paginas/index?faces-redirect=true" />
-				<p:menuitem value="Contabilidad" />
-				<p:menuitem value="Reporte ingresos/egresos" />
+			<p:breadCrumb styleClass="ui-breadcrumb p-mb-3" style="border: none; background: transparent; padding-left: 0;">
+				<p:menuitem value="Inicio" outcome="/paginas/index?faces-redirect=true" icon="pi pi-home" />
+				<p:menuitem value="Contabilidad" url="#" />
+				<p:menuitem value="Reporte Ingresos/Egresos" url="#" />
 			</p:breadCrumb>	
+			<!-- ── PAGE-HEADER ──────────────────────────────────────────── -->
 			<div class="page-header">
-				<div class="page-title">
-					<h2>Administración estadísticas</h2>
-					<small>Gestión de estadisticas de ingresos / egresos</small>
+				<div class="page-header-left">
+					<div class="page-header-icon icon-bg-primary">
+						<i class="pi pi-chart-bar"></i>
+					</div>
+					<div>
+						<h2>Administración de Estadísticas</h2>
+						<span class="page-header-subtitle">Gestión de estadísticas de ingresos / egresos</span>
+					</div>
 				</div>
 				<div class="page-actions">
-
-					<!-- Acción primaria -->
 					<p:commandButton value="#{botones['estadisticas']}" action="#{backingReporteria.dialogoReporteFechas}" update="fechas"
 						process="@this"
-						icon="pi pi-chart-line" styleClass="ui-button-success" 
-					 />
+						icon="pi pi-chart-line" styleClass="ui-button-success" />
 
-					<!-- Acciones secundarias -->
 					<p:menuButton value="Más acciones" icon="pi pi-ellipsis-v">
-
 						<p:menuitem onclick="exportChartInPDF()" value="#{botones['descargarGraficas']}"  icon="pi pi-cloud-download" />
-						
 					</p:menuButton>
-
 				</div>
-
 			</div>
 				<p:outputPanel id="graficas">
 					<div class="text-center">

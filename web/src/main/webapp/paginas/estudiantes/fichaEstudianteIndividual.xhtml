@@ -277,6 +277,7 @@
 								<p:commandLink
 									disabled="#{matricula.matrEstado.equals('INSMAT05')?false:true}"
 									title="#{tooltip['certCurso']}"
+									aria-label="#{tooltip['certCurso']}"
 									action="#{backingFichaEstudiante.generarPdf()}" process="@this"
 									ajax="false">
 									<f:setPropertyActionListener value="#{matricula}"
