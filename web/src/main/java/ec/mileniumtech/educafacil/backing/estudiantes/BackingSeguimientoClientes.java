@@ -124,7 +124,8 @@ public class BackingSeguimientoClientes implements Serializable{
 			getBeanSeguimiento().setCampaniaSeleccionada(new Campania());
 			getBeanSeguimiento().setListaPorLlamar(new ArrayList<SeguimientoClientes>());
 			getBeanSeguimiento().setListaPorLlamar(getMarketingDataService().listaPendientesLlamada());
-
+			getBeanSeguimiento().setDetalleSeguimiento(new DetalleSeguimiento());
+			getBeanSeguimiento().setSeguimientoClientes(new SeguimientoClientes());
 	}
 	public void vaciarCodigos() {
 		getBeanSeguimiento().setCodigoCurso(null);
@@ -312,7 +313,13 @@ public class BackingSeguimientoClientes implements Serializable{
 			getBeanSeguimiento().setProximaLlamada(null);
 			getBeanSeguimiento().setMedioContactoLlamada(false);
 			getBeanSeguimiento().setMedioContactoVisita(false);
-			getBeanSeguimiento().setCodigoEstadoContacto("");
+			// Inicializa estado desde el registro actual para evitar validación "campo requerido"
+			getBeanSeguimiento().setCodigoEstadoContacto(
+			    getBeanSeguimiento().getSeguimientoClientes().getSegcEstado() != null 
+			        ? getBeanSeguimiento().getSeguimientoClientes().getSegcEstado() 
+			        : null);
+			// Inicializa medio de contacto con valor por defecto
+			getBeanSeguimiento().setCodigoMedioContacto(EnumMedioContacto.LLAMADATELEFONICA.getCodigo());
 			getBeanSeguimiento().setCampaniaSeleccionada(null);
 			getBeanSeguimiento().getSeguimientoClientes().setSegcProximaLlamada(null);
 			if(getBeanSeguimiento().getSeguimientoClientes().getSegcEstado().equals(EnumEstadosContactoCliente.ABANDONADO.getCodigo())) {

@@ -641,7 +641,7 @@
 											value="#{det.dsegEstado.equals('CONTAC01')?'EN SEGUIMIENTO':det.dsegEstado.equals('CONTAC02')?'ABANDONADO':det.dsegEstado.equals('CONTAC03')?'MATRICULADO':det.dsegEstado.equals('CONTAC04')?'CANDIDATO':'PROXIMA OCASION'}" />
 									</p:column>
 									<p:column style="width:10px;">
-										<p:commandLink title="#{tooltip['eliminar']}" process="@this"
+										<p:commandLink title="#{tooltip['eliminar']}" aria-label="#{tooltip['eliminar']}" process="@this"
 											action="#{backingSeguimientoClientes.removerDetalle()}"
 											partialSubmit="true" update="tabladetalle growl">
 											<f:setPropertyActionListener value="#{det}"
@@ -719,7 +719,7 @@
 					<f:facet name="{Exporters}">
 						<div style="float: right; padding-top: 5px;">
 							<h:commandLink immediate="true">
-								<h:graphicImage library="img" name="excel.png" />
+								<h:graphicImage library="img" name="excel.png" alt="Exportar a Excel" />
 								<p:dataExporter type="xls" target="tblSeg"
 									fileName="interesados" />
 							</h:commandLink>
@@ -800,6 +800,7 @@
 					<p:column style="width:70px;">
 
 						<p:commandLink process="@this" title="#{tooltip['seguimiento']}"
+							aria-label="#{tooltip['seguimiento']}"
 							action="#{backingSeguimientoClientes.cargaDetalleSeguimiento()}"
 							update="detalleSeguimiento">
 							<f:setPropertyActionListener value="#{seg}"
@@ -808,6 +809,7 @@
 						</p:commandLink>
 
 						<p:commandLink title="#{tooltip['realizaSeguimiento']}"
+							aria-label="#{tooltip['realizaSeguimiento']}"
 							process="@this" partialSubmit="true"
 							action="#{backingSeguimientoClientes.agregarNuevoSeguimiento()}"
 							update="pnlseguimiento growl">

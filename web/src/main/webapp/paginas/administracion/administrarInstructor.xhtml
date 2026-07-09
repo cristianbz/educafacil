@@ -569,17 +569,16 @@
 			</p:breadCrumb>
 			
 			<!-- ENCABEZADO DE LA PÁGINA -->
-			<div class="page-header" style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+			<div class="page-header page-header-mb">
 				<div class="page-title">
 					<h2>Administración de Instructores</h2>
-					<small style="color: var(--text-muted); font-size: 0.9rem;">Gestión de la plantilla docente, historial de contratación y expedientes</small>
+					<small>Gestión de la plantilla docente, historial de contratación y expedientes</small>
 				</div>
 				<div class="page-actions">
 					<p:commandButton value="#{botones['nuevoInstructor']}"
 						process="@this panelInstructor" 
 						actionListener="#{backingAdminInstructor.nuevoInstructor()}"
 						icon="pi pi-user-plus" styleClass="p-button-success" 
-						style="padding: 0.5rem 1.25rem !important; font-weight: 600;"
 						update="iddatosInstructor panelInstructor" />
 				</div>
 			</div>

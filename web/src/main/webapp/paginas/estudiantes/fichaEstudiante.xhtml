@@ -3,163 +3,194 @@
 	xmlns:ui="jakarta.faces.facelets"
 	xmlns:f="jakarta.faces.core"
 	xmlns:h="jakarta.faces.html"
-		xmlns:comp="jakarta.faces.composite/componentes" 
+	xmlns:comp="jakarta.faces.composite/componentes" 
 	xmlns:val="jakarta.faces.composite/componentes"
 	xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
 	
 	<ui:define name="contenido">
-			<f:event listener="#{backingLogin.validarSesion()}"
-		type="preRenderView" />
-	<h:form id="formFicha" prependId="false">
-		<p:growl id="growl" life="3000" showDetail="true" />
+		<f:event listener="#{backingLogin.validarSesion()}" type="preRenderView" />
+		<h:form id="formFicha" prependId="false">
 
-		<p:dialog widgetVar="dlggrabar" modal="true"
-			header="#{titulos['actualizar']}" closable="false">
-			<h:panelGrid columns="2">
-				<p:commandButton value="#{botones['grabar']}"
-					icon="#{botones['icono.grabar']}" process="@this "
-					oncomplete="PF('dlggrabar').hide();"
-					actionListener="#{backingFichaEstudiante.actualizarEstudiante()}"
-					update="growl" />
-				<p:commandButton value="#{botones['cancelar']}"
-					icon="#{botones['icono.cancelar']}" process="@this"
-					oncomplete="PF('dlggrabar').hide();" />
-			</h:panelGrid>
-		</p:dialog>
-			<p:breadCrumb>
-				<p:menuitem value="Categorias" url="#" />
-				<p:menuitem value="Secretaria" url="#" />
-				<p:menuitem value="Ficha estudiante" url="#" />
+			<p:growl id="growl" life="3000" showDetail="true" />
+
+			<!-- ── DIÁLOGO DE CONFIRMACIÓN ────────────────────────── -->
+			<p:dialog widgetVar="dlggrabar" modal="true"
+				header="#{titulos['actualizar']}" closable="false"
+				responsive="true" fitViewport="true"
+				width="auto" style="max-width: 380px;">
+				<div style="text-align: center; padding: 0.5rem;">
+					<div style="width: 56px; height: 56px; border-radius: 50%;
+								background: #eff6ff; border: 2px solid #bfdbfe;
+								display: inline-flex; align-items: center; justify-content: center;
+								margin-bottom: 1rem;">
+						<i class="pi pi-save" style="font-size: 1.6rem; color: var(--primary-color);"></i>
+					</div>
+					<p style="font-weight: 600; color: var(--text-main); margin: 0 0 1.25rem 0;">
+						#{titulos['actualizar']}
+					</p>
+					<div style="display: flex; justify-content: center; gap: 0.75rem;">
+						<p:commandButton value="#{botones['grabar']}"
+							icon="#{botones['icono.grabar']}" process="@this "
+							oncomplete="PF('dlggrabar').hide();"
+							actionListener="#{backingFichaEstudiante.actualizarEstudiante()}"
+							update="growl"
+							styleClass="ui-button-success" />
+						<p:commandButton value="#{botones['cancelar']}"
+							icon="#{botones['icono.cancelar']}" process="@this"
+							oncomplete="PF('dlggrabar').hide();"
+							styleClass="ui-button-outlined ui-button-secondary" />
+					</div>
+				</div>
+			</p:dialog>
+
+			<!-- ── BREADCRUMB ─────────────────────────────────────── -->
+			<p:breadCrumb styleClass="ui-breadcrumb p-mb-3"
+						  style="border: none; background: transparent; padding-left: 0;">
+				<p:menuitem value="Inicio" outcome="/paginas/index?faces-redirect=true" icon="pi pi-home" />
+				<p:menuitem value="Estudiantes" url="#" />
+				<p:menuitem value="Ficha del Estudiante" />
 			</p:breadCrumb>
-			<br/>
 
-			<br />
-
-			<div class="text-center">			
-				<comp:buscaEstudiante componenteBuscaEstudiante="#{backingFichaEstudiante.componenteBuscaEstudiante}"></comp:buscaEstudiante>	
+			<!-- ── PAGE HEADER ────────────────────────────────────── -->
+			<div class="page-header">
+				<div class="page-title">
+					<h2>
+						<i class="pi pi-id-card" style="margin-right: 0.5rem; color: var(--primary-color);"></i>
+						#{titulos['datosPersonales']}
+					</h2>
+					<small>Gestión de datos personales, contacto e información académica del estudiante</small>
+				</div>
+				<div class="page-actions">
+					<p:commandButton value="#{botones['actualizar']}"
+						icon="#{botones['icono.actualizar']}" partialSubmit="true"
+						disabled="#{beanFichaEstudiante.estudiante == null ? true : false}"
+						process="@this panelEstudiante" update="growl panelEstudiante"
+						actionListener="#{backingFichaEstudiante.mostrarDialogoActualizar()}"
+						styleClass="ui-button-success" />
+				</div>
 			</div>
 
+			<!-- ── BUSCADOR DE ESTUDIANTE ─────────────────────────── -->
+			<div style="background: var(--surface-color); border: 1px solid var(--border-color);
+						border-radius: 14px; box-shadow: var(--shadow-sm); overflow: hidden; margin-bottom: 1.5rem;">
+				<div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color);
+							background: #f8fafc;">
+					<h5 class="section-title-accent" style="margin: 0;">
+						<i class="pi pi-search" style="margin-right: 0.4rem;"></i>
+						Buscar Estudiante
+					</h5>
+				</div>
+				<div style="padding: 1.5rem; text-align: center;">
+					<comp:buscaEstudiante 
+						componenteBuscaEstudiante="#{backingFichaEstudiante.componenteBuscaEstudiante}" />
+				</div>
+			</div>
 
-			<br />
+			<!-- ── PANEL DE DATOS DEL ESTUDIANTE (TABS) ───────────── -->
 			<p:outputPanel id="panelEstudiante">
 
-				<p:tabView>
+				<p:tabView styleClass="ui-tabs">
 				
+					<!-- ── TAB: DATOS PERSONALES ────────────────────── -->
 					<p:tab title="#{titulos['datosPersonales']}">
-						<div class="ui-fluid p-formgrid p-grid">
-							<div class="p-field p-col-12 p-md-3">
-							<span class="ui-float-label ui-input-icon-right" 
-								style="margin-top: 2em"> <p:inputText id="idCedula" maxlength="15"
-									disabled="#{beanFichaEstudiante.estudiante == null ?false:true}"
-									value="#{backingFichaEstudiante.beanFichaEstudiante.estudiante.persona.persDocumentoIdentidad}"
-									required="true" requiredMessage="#{mensajes['campoRequerido']}" />
-								<p:outputLabel value="#{etiquetas['cedularuc']}:*" />
-							</span>
+						<div class="ui-fluid p-formgrid p-grid" style="margin-top: 0.5rem;">
+
+							<!-- Sección: Identificación -->
+							<div class="p-col-12">
+								<h5 class="section-title-accent">
+									<i class="pi pi-id-card" style="margin-right: 0.3rem;"></i>
+									Identificación
+								</h5>
 							</div>
 
-							<div class="p-field p-col-12 p-md-1">
+							<div class="p-field p-col-12 p-md-3">
+								<p:outputLabel value="#{etiquetas['cedularuc']}:*" for="idCedula" />
+								<p:inputText id="idCedula" maxlength="15"
+									disabled="#{beanFichaEstudiante.estudiante != null}"
+									value="#{backingFichaEstudiante.beanFichaEstudiante.estudiante.persona.persDocumentoIdentidad}"
+									required="true" requiredMessage="#{mensajes['campoRequerido']}" />
 								<p:message for="idCedula" />
 							</div>
-							<br/>
-							<div class="p-field p-col-12 p-md-8"></div>
-							<div class="p-field p-col-12 p-md-3">
-								<span class="ui-float-label ui-input-icon-right" 
-								style="margin-top: 2em"> <p:inputText maxlength="30" id="idApellidos" required="true"
-									disabled="#{beanFichaEstudiante.estudiante == null ?true:false}"
+
+							<div class="p-field p-col-12 p-md-4">
+								<p:outputLabel value="#{etiquetas['apellidos']}:*" for="idApellidos" />
+								<p:inputText id="idApellidos" maxlength="30" required="true"
+									disabled="#{beanFichaEstudiante.estudiante == null}"
 									requiredMessage="#{mensajes['campoRequerido']}"
 									value="#{backingFichaEstudiante.beanFichaEstudiante.estudiante.persona.persApellidos}" />
-									<p:outputLabel value="#{etiquetas['apellidos']}:*" />
-								</span>
-							</div>
-							
-							<div class="p-field p-col-12 p-md-1">
 								<p:message for="idApellidos" />
 							</div>
 
-							<div class="p-field p-col-12 p-md-3">
-								<span class="ui-float-label ui-input-icon-right" 
-								style="margin-top: 2em"> <p:inputText maxlength="30" id="idNombres" required="true"
-									disabled="#{beanFichaEstudiante.estudiante == null ?true:false}"
+							<div class="p-field p-col-12 p-md-4">
+								<p:outputLabel value="#{etiquetas['nombres']}:*" for="idNombres" />
+								<p:inputText id="idNombres" maxlength="30" required="true"
+									disabled="#{beanFichaEstudiante.estudiante == null}"
 									requiredMessage="#{mensajes['campoRequerido']}"
 									value="#{backingFichaEstudiante.beanFichaEstudiante.estudiante.persona.persNombres}">
 									<p:ajax event="blur" process="@this" />
 								</p:inputText>
-								<p:outputLabel value="#{etiquetas['nombres']}:*" />
-								</span>
-							</div>
-							<div class="p-field p-col-12 p-md-1">
 								<p:message for="idNombres" />
 							</div>
 
-							<div class="p-field p-col-12 p-md-4"></div>
-
 							<div class="p-field p-col-12 p-md-3">
-								<span class="ui-float-label ui-input-icon-right" 
-								style="margin-top: 2em"><p:inputText maxlength="16" id="idTelefonoMobil" required="true"
-									disabled="#{beanFichaEstudiante.estudiante == null ?true:false}"
-									requiredMessage="#{mensajes['campoRequerido']}" onkeypress="if( (event.which &lt; 48 || event.which &gt; 57) ) return false;"
-									value="#{backingFichaEstudiante.beanFichaEstudiante.estudiante.persona.persTelefonoMobil}"
-									>
-									<p:ajax event="blur" process="@this" />
-								</p:inputText>
-								<p:outputLabel value="#{etiquetas['telefonoMobil']}:*" />
-								</span>
-							</div>
-							<div class="p-field p-col-12 p-md-1">
-								<p:message for="idTelefonoMobil" />
-							</div>
-
-							<div class="p-field p-col-12 p-md-2">
-								<span class="ui-float-label ui-input-icon-right" 
-								style="margin-top: 2em"><p:inputText maxlength="16" onkeypress="if( (event.which &lt; 48 || event.which &gt; 57) ) return false;"
-									disabled="#{beanFichaEstudiante.estudiante == null ?true:false}"
-									value="#{backingFichaEstudiante.beanFichaEstudiante.estudiante.persona.persTelefonoCasa}">
-									<p:ajax event="blur" process="@this" />
-								</p:inputText>
-								<p:outputLabel value="#{etiquetas['telefonoCasa']}:" />
-								</span>
-							</div>
-							<div class="p-field p-col-12 p-md-1"></div>
-
-							<div class="p-field p-col-12 p-md-4"></div>
-
-							<div class="p-field p-col-12 p-md-3">
-								<span class="ui-float-label ui-input-icon-right" 
-								style="margin-top: 2em"><p:inputText maxlength="16" onkeypress="if( (event.which &lt; 48 || event.which &gt; 57) ) return false;"
-									disabled="#{beanFichaEstudiante.estudiante == null ?true:false}"
-									value="#{backingFichaEstudiante.beanFichaEstudiante.estudiante.estuTelefonoTrabajo}">
-									<p:ajax event="blur" process="@this" />
-								</p:inputText>
-								<p:outputLabel value="#{etiquetas['telefonoTrabajo']}:" />
-								</span>
-							</div>
-							<div class="p-field p-col-12 p-md-1"></div>
-
-							<div class="p-field p-col-12 p-md-3">
-								<span class="ui-float-label ui-input-icon-right" 
-								style="margin-top: 2em"><p:calendar id="fechaNacimiento" pattern="yyyy-MM-dd"
-									disabled="#{beanFichaEstudiante.estudiante == null ?true:false}"
+								<p:outputLabel value="#{etiquetas['fechaNacimiento']}:*" for="fechaNacimiento" />
+								<p:datePicker id="fechaNacimiento" pattern="yyyy-MM-dd"
+									disabled="#{beanFichaEstudiante.estudiante == null}"
 									locale="es" navigator="true" required="true"
 									requiredMessage="#{mensajes['campoRequerido']}"
-									validatorMessage="#{mensajes['campoRequerido']}"
-									value="#{backingFichaEstudiante.beanFichaEstudiante.estudiante.persona.persFechaNacimiento}">
-									<p:ajax event="blur" process="@this " partialSubmit="true" />
-								</p:calendar>
-								<p:outputLabel value="#{etiquetas['fechaNacimiento']}:*" />
-								</span>
-							</div>
-							<div class="p-field p-col-12 p-md-1">
+									value="#{backingFichaEstudiante.beanFichaEstudiante.estudiante.persona.persFechaNacimiento}"
+									showIcon="true" style="width: 100%;">
+									<p:ajax event="blur" process="@this" partialSubmit="true" />
+								</p:datePicker>
 								<p:message for="fechaNacimiento" />
 							</div>
 
-							<div class="p-field p-col-12 p-md-4"></div>
+							<!-- Separador: Contacto -->
+							<div class="p-col-12" style="margin-top: 1rem;">
+								<h5 class="section-title-accent">
+									<i class="pi pi-phone" style="margin-right: 0.3rem;"></i>
+									Contacto
+								</h5>
+							</div>
 
 							<div class="p-field p-col-12 p-md-3">
-								<span class="ui-float-label ui-input-icon-right" 
-								style="margin-top: 2em"><p:inputText maxlength="60" id="idCorreo" required="true"
-									disabled="#{beanFichaEstudiante.estudiante == null ?true:false}"
+								<p:outputLabel value="#{etiquetas['telefonoMobil']}:*" for="idTelefonoMobil" />
+								<p:inputText id="idTelefonoMobil" maxlength="16" required="true"
+									disabled="#{beanFichaEstudiante.estudiante == null}"
+									requiredMessage="#{mensajes['campoRequerido']}" 
+									onkeypress="if( (event.which &lt; 48 || event.which &gt; 57) ) return false;"
+									value="#{backingFichaEstudiante.beanFichaEstudiante.estudiante.persona.persTelefonoMobil}">
+									<p:ajax event="blur" process="@this" />
+								</p:inputText>
+								<p:message for="idTelefonoMobil" />
+							</div>
+
+							<div class="p-field p-col-12 p-md-3">
+								<p:outputLabel value="#{etiquetas['telefonoCasa']}:" for="idTelefonoCasa" />
+								<p:inputText id="idTelefonoCasa" maxlength="16" 
+									onkeypress="if( (event.which &lt; 48 || event.which &gt; 57) ) return false;"
+									disabled="#{beanFichaEstudiante.estudiante == null}"
+									value="#{backingFichaEstudiante.beanFichaEstudiante.estudiante.persona.persTelefonoCasa}">
+									<p:ajax event="blur" process="@this" />
+								</p:inputText>
+							</div>
+
+							<div class="p-field p-col-12 p-md-3">
+								<p:outputLabel value="#{etiquetas['telefonoTrabajo']}:" for="idTelefonoTrabajo" />
+								<p:inputText id="idTelefonoTrabajo" maxlength="16" 
+									onkeypress="if( (event.which &lt; 48 || event.which &gt; 57) ) return false;"
+									disabled="#{beanFichaEstudiante.estudiante == null}"
+									value="#{backingFichaEstudiante.beanFichaEstudiante.estudiante.estuTelefonoTrabajo}">
+									<p:ajax event="blur" process="@this" />
+								</p:inputText>
+							</div>
+
+							<div class="p-field p-col-12 p-md-3">
+								<p:outputLabel value="#{etiquetas['correo']}:*" for="idCorreo" />
+								<p:inputText id="idCorreo" maxlength="60" required="true"
+									disabled="#{beanFichaEstudiante.estudiante == null}"
 									requiredMessage="#{mensajes['campoRequerido']}"
 									validatorMessage="#{mensajes['correoInvalido']}"
 									value="#{backingFichaEstudiante.beanFichaEstudiante.estudiante.persona.persCorreoElectronico}">
@@ -167,141 +198,130 @@
 									<f:validateRegex
 										pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$" />
 								</p:inputText>
-								<p:outputLabel value="#{etiquetas['correo']}:*" />
-								</span>
-							</div>
-							<div class="p-field p-col-12 p-md-1">
 								<p:message for="idCorreo" id="msgCorreo" />
 							</div>
 
-							<div class="p-field p-col-12 p-md-3">
-								<span class="ui-float-label ui-input-icon-right" 
-								style="margin-top: 2em"><p:inputTextarea id="idDomicilio" required="true"
-									disabled="#{beanFichaEstudiante.estudiante == null ?true:false}"
+							<!-- Separador: Dirección -->
+							<div class="p-col-12" style="margin-top: 1rem;">
+								<h5 class="section-title-accent">
+									<i class="pi pi-map-marker" style="margin-right: 0.3rem;"></i>
+									Dirección
+								</h5>
+							</div>
+
+							<div class="p-field p-col-12 p-md-6">
+								<p:outputLabel value="#{etiquetas['domicilio']}:*" for="idDomicilio" />
+								<p:inputText id="idDomicilio" required="true"
+									disabled="#{beanFichaEstudiante.estudiante == null}"
 									requiredMessage="#{mensajes['campoRequerido']}" maxlength="50"
 									value="#{backingFichaEstudiante.beanFichaEstudiante.estudiante.persona.persDomicilio}">
 									<p:ajax event="blur" process="@this" />
-								</p:inputTextarea>
-								<p:outputLabel value="#{etiquetas['domicilio']}:*" />
-								</span>
-							</div>
-							<div class="p-field p-col-12 p-md-1">
+								</p:inputText>
 								<p:message for="idDomicilio" />
 							</div>
 
-							<div class="p-field p-col-12 p-md-4"></div>
-							<div class="p-field p-col-12 p-md-3">
-								<span class="ui-float-label ui-input-icon-right" 
-								style="margin-top: 2em"><p:inputTextarea id="idTrabajo" required="true"
-									disabled="#{beanFichaEstudiante.estudiante == null ?true:false}"
+							<div class="p-field p-col-12 p-md-6">
+								<p:outputLabel value="#{etiquetas['direccionTrabajo']}:*" for="idTrabajo" />
+								<p:inputText id="idTrabajo" required="true"
+									disabled="#{beanFichaEstudiante.estudiante == null}"
 									requiredMessage="#{mensajes['campoRequerido']}" maxlength="50"
 									value="#{backingFichaEstudiante.beanFichaEstudiante.estudiante.estuDireccionTrabajo}">
 									<p:ajax event="blur" process="@this" />
-								</p:inputTextarea>
-								<p:outputLabel value="#{etiquetas['direccionTrabajo']}:*" />
-								</span>
-							</div>
-							<div class="p-field p-col-12 p-md-1">
+								</p:inputText>
 								<p:message for="idTrabajo" />
 							</div>
-							<div class="p-field p-col-12 p-md-3">
-								<span class="ui-float-label ui-input-icon-right" 
-								style="margin-top: 2em"><p:selectOneMenu id="idcargo"
-									disabled="#{beanFichaEstudiante.estudiante == null ?true:false}"
+
+							<!-- Separador: Información Laboral y Académica -->
+							<div class="p-col-12" style="margin-top: 1rem;">
+								<h5 class="section-title-accent">
+									<i class="pi pi-briefcase" style="margin-right: 0.3rem;"></i>
+									Información Laboral y Académica
+								</h5>
+							</div>
+
+							<div class="p-field p-col-12 p-md-4">
+								<p:outputLabel value="#{etiquetas['cargoDesempenia']}:*" for="idcargo" />
+								<p:selectOneMenu id="idcargo"
+									disabled="#{beanFichaEstudiante.estudiante == null}"
 									value="#{backingFichaEstudiante.beanFichaEstudiante.codigoCargo}"
-									required="true" requiredMessage="#{mensajes['campoRequerido']}">
-									<f:selectItem itemLabel=" "
+									required="true" requiredMessage="#{mensajes['campoRequerido']}"
+									style="width: 100%;">
+									<f:selectItem itemLabel="-- Seleccione --"
 										itemValue="#{null}" noSelectionOption="true" />
 									<f:selectItems var="cargo"
 										value="#{backingFichaEstudiante.beanFichaEstudiante.enumCargoTrabajo}"
 										itemValue="#{cargo.codigo}" itemLabel="#{cargo.label}" />
 									<p:ajax event="change" process="@this" />
 								</p:selectOneMenu>
-								<p:outputLabel value="#{etiquetas['cargoDesempenia']}:*" />
-								</span>
-							</div>
-							<div class="p-field p-col-12 p-md-1">
 								<p:message for="idcargo" />
 							</div>
 
-							<div class="p-field p-col-12 p-md-4"></div>
-
-
-							<div class="p-field p-col-12 p-md-3">
-								<span class="ui-float-label ui-input-icon-right" 
-								style="margin-top: 2em"><p:selectOneMenu id="idnivel"
-									disabled="#{beanFichaEstudiante.estudiante == null ?true:false}"
+							<div class="p-field p-col-12 p-md-4">
+								<p:outputLabel value="#{etiquetas['nivelEstudio']}:*" for="idnivel" />
+								<p:selectOneMenu id="idnivel"
+									disabled="#{beanFichaEstudiante.estudiante == null}"
 									value="#{backingFichaEstudiante.beanFichaEstudiante.codigoNivelEstudio}"
-									required="true" requiredMessage="#{mensajes['campoRequerido']}">
-									<f:selectItem itemLabel=" "
+									required="true" requiredMessage="#{mensajes['campoRequerido']}"
+									style="width: 100%;">
+									<f:selectItem itemLabel="-- Seleccione --"
 										itemValue="#{null}" noSelectionOption="true" />
 									<f:selectItems var="nivel"
 										value="#{backingFichaEstudiante.beanFichaEstudiante.enumNivelEstudio}"
 										itemValue="#{nivel.codigo}" itemLabel="#{nivel.label}" />
 									<p:ajax event="change" process="@this" />
 								</p:selectOneMenu>
-								<p:outputLabel value="#{etiquetas['nivelEstudio']}:*" />
-								</span>
-							</div>
-							<div class="p-field p-col-12 p-md-1">
 								<p:message for="idnivel" />
 							</div>
 
-							<div class="p-field p-col-12 p-md-1">
-								<p:commandButton value="#{botones['actualizar']}"
-									icon="#{botones['icono.actualizar']}" partialSubmit="true"
-									disabled="#{beanFichaEstudiante.estudiante == null ?true:false}"
-									process="@this panelEstudiante" update="growl panelEstudiante"
-									actionListener="#{backingFichaEstudiante.mostrarDialogoActualizar()}" />
-							</div>
-							<div class="p-field p-col-12 p-md-2"></div>
-							<div class="p-field p-col-12 p-md-1"></div>
-
-							<div class="p-field p-col-12 p-md-4"></div>
-
 						</div>
-
 					</p:tab>
+
+					<!-- ── TAB: DATOS ACADÉMICOS ────────────────────── -->
 					<p:tab title="#{titulos['datosAcademicos']}">
 						<p:dataTable id="datosAcademicos"
 							value="#{backingFichaEstudiante.beanFichaEstudiante.listaMatricula}"
-							var="matricula" paginator="true" rows="10">
+							var="matricula" paginator="true" rows="10" reflow="true"
+							emptyMessage="No se encontraron matrículas registradas para este estudiante.">
 							<p:column headerText="#{etiquetas['curso']}">
-							#{matricula.ofertaCursos.ofertaCapacitacion.curso.cursNombre}
-						</p:column>
-							<p:column headerText="#{etiquetas['fechaMatricula']}" style="width:100px;">
-								<p:outputLabel value="#{matricula.matrFechaMatricula}"
-									id="fechaMatricula">
+								#{matricula.ofertaCursos.ofertaCapacitacion.curso.cursNombre}
+							</p:column>
+							<p:column headerText="#{etiquetas['fechaMatricula']}" style="width: 120px;">
+								<p:outputLabel value="#{matricula.matrFechaMatricula}" id="fechaMatricula">
 									<f:convertDateTime for="fechaMatricula" pattern="yyyy-MM-dd" />
 								</p:outputLabel>
 							</p:column>
-							<p:column headerText="#{etiquetas['estado']}" style="width:120px;">
-								<p:chip label="MATRICULADO" icon="pi pi-file-edit" styleClass="colorMatriculado" rendered="#{matricula.matrEstado.equals('INSMAT02')}"/>
-								<p:chip label="CULMINADO" icon="pi pi-check-circle" styleClass="colorCulminado" rendered="#{matricula.matrEstado.equals('INSMAT05')}"/>
-								<p:chip label="DESERTADO" icon="pi pi-times-circle" styleClass="colorDesertado" rendered="#{matricula.matrEstado.equals('INSMAT03')}"/>								
+							<p:column headerText="#{etiquetas['estado']}" style="width: 140px;">
+								<p:chip label="MATRICULADO" icon="pi pi-file-edit" 
+									styleClass="colorMatriculado" 
+									rendered="#{matricula.matrEstado.equals('INSMAT02')}" />
+								<p:chip label="CULMINADO" icon="pi pi-check-circle" 
+									styleClass="colorCulminado" 
+									rendered="#{matricula.matrEstado.equals('INSMAT05')}" />
+								<p:chip label="DESERTADO" icon="pi pi-times-circle" 
+									styleClass="colorDesertado" 
+									rendered="#{matricula.matrEstado.equals('INSMAT03')}" />
 							</p:column>
-							<p:column style="width:50px;">
+							<p:column headerText="#{etiquetas['certificado']}" style="width: 70px; text-align: center;">
 								<p:commandLink
-									disabled="#{matricula.matrEstado.equals('INSMAT05')?false:true}"
+									disabled="#{!matricula.matrEstado.equals('INSMAT05')}"
 									title="#{tooltip['certCurso']}" 
+									aria-label="#{tooltip['certCurso']}"
 									action="#{backingFichaEstudiante.generarPdf()}" process="@this"
 									ajax="false">
 									<f:setPropertyActionListener value="#{matricula}"
-										target="#{backingFichaEstudiante.beanFichaEstudiante.matriculaSeleccionada}"></f:setPropertyActionListener>
-									<i class="pi pi-file-pdf" style="font-size: 1em; color: green;"></i>	
+										target="#{backingFichaEstudiante.beanFichaEstudiante.matriculaSeleccionada}" />
+									<i class="pi pi-file-pdf" style="font-size: 1.2rem; color: #dc2626;"></i>
 								</p:commandLink>
-
 							</p:column>
 						</p:dataTable>
 					</p:tab>
+
 				</p:tabView>
 
 			</p:outputPanel>
-		
-	</h:form>
-		
+
+		</h:form>
 	</ui:define>
 
 </ui:composition>
-
 </html>

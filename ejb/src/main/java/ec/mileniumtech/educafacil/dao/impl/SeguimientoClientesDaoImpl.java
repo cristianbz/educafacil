@@ -247,28 +247,20 @@ public class SeguimientoClientesDaoImpl extends GenericoDaoImpl<SeguimientoClien
 	 * @return
 	 * @throws Exception
 	 */
-	@SuppressWarnings("unchecked")
 	public BigDecimal totalDatosCRM(String estado) {
-		List<Object[]> resultado= null;
 		BigDecimal valor= new BigDecimal(0);		
 		String sql ="SELECT COUNT(segc_id) FROM cap.seguimientoclientes WHERE segc_estado = :estado ";
 		Query q = getEntityManager().createNativeQuery(sql);
 		q.setParameter("estado", estado);
         
-		resultado = (List<Object[]>)q.getResultList();
-		if(resultado.size()>0){
-			valor = resultado.stream()
-					.filter(obj -> obj[0] != null)
-					.map(obj -> new BigDecimal(obj[0].toString()))
-					.findFirst()
-					.orElse(BigDecimal.ZERO);
+		Object result = q.getSingleResult();
+		if(result != null) {
+			valor = new BigDecimal(result.toString());
 		}
 		return valor;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public BigDecimal totalDatosCRMVendedor(String estado, Integer vendedor, Integer campania) {
-		List<Object[]> resultado= null;
 		BigDecimal valor= new BigDecimal(0);		
 		String sql ="SELECT COUNT(segc_id) FROM cap.seguimientoclientes WHERE segc_estado = :estado "
 				+ " AND vend_id = :vendedorId AND camp_id = :campId ";
@@ -277,13 +269,9 @@ public class SeguimientoClientesDaoImpl extends GenericoDaoImpl<SeguimientoClien
 		q.setParameter("vendedorId", vendedor);
 		q.setParameter("campId", campania);
         
-		resultado = (List<Object[]>)q.getResultList();
-		if(resultado.size()>0){
-			valor = resultado.stream()
-					.filter(obj -> obj[0] != null)
-					.map(obj -> new BigDecimal(obj[0].toString()))
-					.findFirst()
-					.orElse(BigDecimal.ZERO);
+		Object result = q.getSingleResult();
+		if(result != null) {
+			valor = new BigDecimal(result.toString());
 		}
 		return valor;
 	}

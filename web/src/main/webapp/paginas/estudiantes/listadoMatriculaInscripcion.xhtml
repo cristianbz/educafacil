@@ -21,15 +21,15 @@
 			</p:breadCrumb>				
 
 			<!-- ENCABEZADO DE LA PÁGINA -->
-			<div class="page-header" style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+<div class="page-header page-header-mb">
 				<div class="page-title">
-					<h2 style="font-weight: 800; color: var(--text-main); margin: 0; font-size: 1.875rem;">Reportes y Listado de Estudiantes</h2>
-					<small style="color: var(--text-muted); font-size: 0.9rem;">Consulta de matrículas e inscripciones activas por curso</small>
+					<h2>Reportes y Listado de Estudiantes</h2>
+					<small>Consulta de matrículas e inscripciones activas por curso</small>
 				</div>
 			</div>
-
+			
 			<!-- PANEL INLINE DE BÚSQUEDA / FILTROS (MEJORA SIGNIFICATIVA DE UX) -->
-			<p:panel id="panelBuscar" header="Filtros de Búsqueda" toggleable="true" styleClass="card ui-panel p-mb-4 shadow-sm" style="margin-bottom: 2rem;">
+			<p:panel id="panelBuscar" header="Filtros de Búsqueda" toggleable="true" styleClass="card ui-panel shadow-sm" style="margin-bottom: 2rem;">
 				<div class="ui-fluid p-formgrid p-grid">
 					<!-- Selección de Curso -->
 					<div class="p-field p-col-12 p-md-5" style="margin-bottom: 1rem;">
@@ -54,7 +54,7 @@
 						<p:outputLabel value="#{etiquetas['anio']}:" for="anio" styleClass="font-semibold p-d-block p-mb-2 p-text-secondary" />
 						<p:inputText required="true" id="anio" requiredMessage="#{mensajes['campoRequerido']}" 
 							value="#{backingListadoEstudiantes.beanListadoEstudiantes.anioBusqueda}">
-							<p:ajax process="@this idCurso" partialSubmit="true" update="ofertacurso" onstart="PF('dlgEnProc').show();" oncomplete="PF('dlgEnProc').hide();"
+							<p:ajax process="@this idCurso" partialSubmit="true" update="ofertacurso" onstart="showLoading();" oncomplete="hideLoading();"
 								event="change" listener="#{backingListadoEstudiantes.cargarOfertaCursos()}"/>
 						</p:inputText>
 						<p:keyFilter for="anio" mask="pint" />
@@ -79,7 +79,7 @@
 				<div class="p-grid p-jc-end p-mt-3">
 					<div class="p-col-12 p-md-2">
 						<p:commandButton icon="pi pi-search" value="#{botones['buscar']}" partialSubmit="true"
-							actionListener="#{backingListadoEstudiantes.buscarMatriculas()}" onstart="PF('dlgEnProc').show();" oncomplete="PF('dlgEnProc').hide();"
+							actionListener="#{backingListadoEstudiantes.buscarMatriculas()}" onstart="showLoading();" oncomplete="hideLoading();"
 							process="panelBuscar" update="panelDatosBusqueda panelBuscar growl" styleClass="ui-button-primary"/>
 					</div>
 					<div class="p-col-12 p-md-2">
@@ -149,7 +149,7 @@
 						<f:facet name="{Exporters}">
 							<div style="float: right; padding-top: 5px;">
 								<h:commandLink immediate="true" title="Exportar a Excel">
-									<h:graphicImage library="img" name="excel.png" width="24" height="24" style="transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.15)';" onmouseout="this.style.transform='scale(1)';" />
+									<h:graphicImage library="img" name="excel.png" width="24" height="24" alt="Exportar a Excel" style="transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.15)';" onmouseout="this.style.transform='scale(1)';" />
 									<p:dataExporter type="xls" target="listaMatriculas"
 										fileName="matriculados_curso" />
 								</h:commandLink>
@@ -199,19 +199,19 @@
 						<!-- Acciones de Ficha y Documentos -->
 						<p:column headerText="Acciones" style="width:130px; text-align: center;"> 
 							<!-- Ver Ficha del Alumno -->
-							<p:commandLink title="#{tooltip['infoEstudiante']}" oncomplete="PF('dlgMatriculaSeleccionada').show();" process="@this" update="datosMatriculaSeleccionada" style="margin-right: 12px; display: inline-block;">
+							<p:commandLink title="#{tooltip['infoEstudiante']}" aria-label="#{tooltip['infoEstudiante']}" oncomplete="PF('dlgMatriculaSeleccionada').show();" process="@this" update="datosMatriculaSeleccionada" style="margin-right: 12px; display: inline-block;">
 								<f:setPropertyActionListener value="#{matricula}" target="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada}"/>
 								<i class="pi pi-user" style="font-size: 1.25rem; color: var(--primary-color); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)';" onmouseout="this.style.transform='scale(1)';"></i>
 							</p:commandLink>
 							
 							<!-- Generar PDF de Matrícula (Deshabilitado si oferta cerrada) -->
-							<p:commandLink title="#{tooltip['docMatricula']}" action="#{backingListadoEstudiantes.generarPdf}" process="@this" immediate="true" disabled="#{matricula.ofertaCursos.ocurEstado.equals('OCUR03')}" ajax="false" style="margin-right: 12px; display: inline-block;">
+							<p:commandLink title="#{tooltip['docMatricula']}" aria-label="#{tooltip['docMatricula']}" action="#{backingListadoEstudiantes.generarPdf}" process="@this" immediate="true" disabled="#{matricula.ofertaCursos.ocurEstado.equals('OCUR03')}" ajax="false" style="margin-right: 12px; display: inline-block;">
 								<f:setPropertyActionListener value="#{matricula}" target="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada}"/>
 								<i class="pi pi-file-pdf" style="font-size: 1.25rem; color: #ef4444; transition: transform 0.2s; opacity: #{matricula.ofertaCursos.ocurEstado.equals('OCUR03') ? '0.3' : '1'};" onmouseover="if(!#{matricula.ofertaCursos.ocurEstado.equals('OCUR03')}) this.style.transform='scale(1.2)';" onmouseout="this.style.transform='scale(1)';"></i>
 							</p:commandLink>
 							
 							<!-- Generar Certificado (Solo habilitado si está CULMINADO) -->
-							<p:commandLink title="#{tooltip['certCurso']}" action="#{backingListadoEstudiantes.generaCertificadoPdf}" immediate="true" alt="Certificado"
+							<p:commandLink title="#{tooltip['certCurso']}" aria-label="#{tooltip['certCurso']}" action="#{backingListadoEstudiantes.generaCertificadoPdf}" immediate="true"
 								process="@this" disabled="#{not matricula.matrEstado.equals('INSMAT05')}" ajax="false" style="display: inline-block;">
 								<f:setPropertyActionListener value="#{matricula}" target="#{backingListadoEstudiantes.beanListadoEstudiantes.matriculaSeleccionada}"/>
 								<i class="pi pi-verified" style="font-size: 1.25rem; color: #{matricula.matrEstado.equals('INSMAT05') ? 'var(--success-color)' : '#94a3b8'}; transition: transform 0.2s; opacity: #{matricula.matrEstado.equals('INSMAT05') ? '1' : '0.3'};" onmouseover="if(#{matricula.matrEstado.equals('INSMAT05')}) this.style.transform='scale(1.2)';" onmouseout="this.style.transform='scale(1)';"></i>

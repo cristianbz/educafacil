@@ -13,9 +13,6 @@
 		href="#{facesContext.externalContext.requestContextPath}/resources/css/bootstrap.min.css"
 		rel="stylesheet" type="text/css" />
 	<link
-		href="#{facesContext.externalContext.requestContextPath}/resources/css/estilos.css"
-		rel="stylesheet" type="text/css" />
-	<link
 		href="#{facesContext.externalContext.requestContextPath}/resources/css/custom.css"
 		rel="stylesheet" type="text/css" />
 
@@ -39,36 +36,7 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800" rel="stylesheet" />
 	
-	<style type="text/css">
-.inscrito {
-	background-color: #40e577 !important;
-	color: #ffffff !important;
-}
 
-.abandonado {
-	background-color: #f28b65 !important;
-	color: #ffffff !important;
-}
-
-.candidato {
-	background-color: #11ddcc !important;
-	color: #ffffff !important;
-}
-
-.otraocasion {
-	background-color: #FFAB68 !important;
-	color: #ffffff !important;
-}
-.colorDesertado{
-	background-color:#fc3755 !important;	
-}
-.colorMatriculado{
-	background-color:#24d80d !important;	
-}
-.colorCulminado{
-	background-color:#116FBF !important;	
-}
-</style>
 	<meta name="viewport"
 		content="width=device-width,initial-scale=1,shrink-to-fit=no" />
 		
@@ -115,7 +83,10 @@
         else if (mq.addListener) mq.addListener(syncLayoutForViewport);
     })();
 </script>
-<body>
+<!-- ... Todo tu <h:head> se queda exactamente igual ... -->
+
+<!-- 1. CAMBIO: Cambiar <body> por <h:body> -->
+<h:body>
 	<h:form id="logoutForm">
 		<p:dialog widgetVar="dlgCerrar" appendTo="@parent"
 			header="#{titulos['salirSistema']}" modal="true" width="200px;"
@@ -131,54 +102,88 @@
 			</h:panelGrid>
 		</p:dialog>
     </h:form>
-        <!-- 🔵 TOP BAR -->
-        <div class="topbar">
-            <button type="button" class="toggle-btn" onclick="toggleSidebar()"
-                aria-label="Abrir o cerrar menú de navegación" aria-expanded="false" id="sidebar-toggle-btn">
-                <i class="pi pi-bars"></i>
-            </button>
 
-            <div class="user-info">
-                <i class="pi pi-user"></i>
-                #{backingLogin.beanLogin.usuario.persona.persApellidos}
-                #{backingLogin.beanLogin.usuario.persona.persNombres}
+    <!-- 2. CAMBIO (REUBICACIÓN): El diálogo de carga ahora se procesa PRIMERO -->
+    <!-- Además, le añadimos appendTo="@(body)" para independizarlo por completo -->
+    <h:form id="cargaForm">
+        <p:dialog widgetVar="dlgCargando" header="#{titulos['espere']}"
+                  draggable="false" modal="true" appendTo="@(body)"
+                  resizable="false" closable="false" responsive="true"
+                  style="font-size: var(--text-xs);">
+            <div class="flex-center" style="flex-direction: column; gap: 1rem; padding: 1rem;">
+                <h:graphicImage value="/resources/img/cargando.gif" width="200" height="200" alt="" />
+                <span style="font-weight: 600; color: var(--text-muted); font-size: var(--text-sm);">
+                    #{titulos['procesando']}
+                </span>
             </div>
+        </p:dialog>
+    </h:form>
+
+    <!-- 3. REUBICACIÓN: El diálogo de confirmación global también va arriba -->
+    <h:form id="confirmForm">
+        <p:confirmDialog widgetVar="dlgConfirmar" global="true"
+                         message="#{mensajes['confirmacion.eliminar']}"
+                         header="#{titulos['confirmar']}"
+                         confirmLabel="#{botones['si']}"
+                         cancelLabel="#{botones['no']}"
+                         icon="pi pi-exclamation-triangle"
+                         styleClass="shadow-lg"
+                         responsive="true">
+            <p:commandButton value="#{botones['si']}" type="button"
+                             styleClass="ui-button-danger"
+                             onclick="PF('dlgConfirmar').hide();" />
+            <p:commandButton value="#{botones['no']}" type="button"
+                             onclick="PF('dlgConfirmar').hide();" />
+        </p:confirmDialog>
+    </h:form>
+
+    <!-- 🔵 TOP BAR (Igual) -->
+    <div class="topbar">
+        <button type="button" class="toggle-btn" onclick="toggleSidebar()"
+            aria-label="Abrir o cerrar menú de navegación" aria-expanded="false" id="sidebar-toggle-btn">
+            <i class="pi pi-bars"></i>
+        </button>
+
+        <div class="user-info">
+            <i class="pi pi-user"></i>
+            #{backingLogin.beanLogin.usuario.persona.persApellidos}
+            #{backingLogin.beanLogin.usuario.persona.persNombres}
         </div>
+    </div>
 
-        <div id="sidebar-backdrop" class="sidebar-backdrop" role="presentation" onclick="closeSidebarMobile();"
-            aria-hidden="true"></div>
+    <div id="sidebar-backdrop" class="sidebar-backdrop" role="presentation" onclick="closeSidebarMobile();"
+        aria-hidden="true"></div>
 
-        <!-- 🔵 SIDEBAR -->
-        <div id="sidebar" class="sidebar">
-            <p:panelMenu model="#{backingLogin.menumodel}" style="width:100%" />
+    <!-- 🔵 SIDEBAR (Igual) -->
+    <div id="sidebar" class="sidebar">
+        <p:panelMenu model="#{backingLogin.menumodel}" style="width:100%" />
 
-            <div class="logout-container">
-            	<h:form>
-	                <p:commandButton 
-	                    value="Cerrar sesión"
-	                    icon="pi pi-sign-out"
-	                    styleClass="ui-button-danger w-100"
-	                    oncomplete="PF('dlgCerrar').show();"
-	                    process="@this"/>
-               </h:form>     
-            </div>
+        <div class="logout-container">
+            <h:form>
+                <p:commandButton 
+                    value="Cerrar sesión"
+                    icon="pi pi-sign-out"
+                    styleClass="ui-button-danger w-100"
+                    oncomplete="PF('dlgCerrar').show();"
+                    process="@this"/>
+           </h:form>     
         </div>
+    </div>
 
-        <!-- 🟢 CONTENT -->
-        <div id="content" class="content">
-            <ui:insert name="contenido">
-                Contenido por defecto...
-            </ui:insert>
-        </div>
-        <!-- Diálogo de carga compartido -->
-        <h:form id="cargaForm">
-            <p:dialog widgetVar="dlgEnProc" draggable="false" modal="true"
-                      resizable="false" closable="false" responsive="true"
-                      style="font-size: var(--text-xs);">
-                <h:graphicImage value="/resources/img/cargando.gif" width="200" height="200" />
-            </p:dialog>
-        </h:form>
+    <!-- 🟢 CONTENT (Ahora abajo, garantizando que todo lo anterior ya exista) -->
+    <div id="content" class="content">
+        <ui:insert name="contenido">
+            Contenido por defecto...
+        </ui:insert>
+    </div>
 
+    <!-- ════════════════════════════════════════════════════════════
+         JAVASCRIPT COMPARTIDO
+         ════════════════════════════════════════════════════════════ -->
+    <script type="text/javascript">
+        function showLoading() { if (window.PF &amp;&amp; PF('dlgCargando')) PF('dlgCargando').show(); }
+        function hideLoading() { if (window.PF &amp;&amp; PF('dlgCargando')) PF('dlgCargando').hide(); }
+    </script>
 
-</body>
+</h:body> <!-- 1. CAMBIO: Cerrar con </h:body> -->
 </html>

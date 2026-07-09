@@ -3,49 +3,217 @@
       xmlns:ui="jakarta.faces.facelets"
       xmlns:f="jakarta.faces.core"
       xmlns:h="jakarta.faces.html"
-	xmlns:p="http://primefaces.org/ui">
+       xmlns:p="http://primefaces.org/ui">
 
-<h:head>
-	
-</h:head>
-<h:body>
-	
-	<h:form id="frm">
-		<p:growl id="msgs" showDetail="true" />
+<ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
 
-		<div class="text-center">
-			<br />
+    <ui:define name="contenido">
+        <f:event listener="#{backingLogin.validarSesion()}" type="preRenderView" />
 
-			<h:panelGrid style="margin:0 auto;">
-				<p:outputLabel value="Sistema de Gestión de cursos de capacitación"></p:outputLabel>
-				<br />
-				<br />
-			</h:panelGrid>
-			<h:panelGrid columns="3">
-				<p:menubar style="width:400px" model="#{backingLogin.menumodel}">
-				
-				</p:menubar> 
-				<p:tieredMenu style="width:400px" model="#{backingLogin.menumodel}">
-					
-				</p:tieredMenu>  
-				<!--
-				<div class="card">
-				<p:menubar model="#{backingLogin.menumodel}">
-				</p:menubar>
-				</div>
-				-->
-				<h:panelGrid width="550">
-				
-				</h:panelGrid>
-				
-				<p:commandLink action="#{backingLogin.cerrarSesion()}"
-					process="@this" partialSubmit="true" async="true" global="false">
-					<i class="fa fa-power-off"></i>
-					<span>Salir</span>
-				</p:commandLink>
-			</h:panelGrid>
-		</div>
+        <h:form id="formDashboard" prependId="false">
 
-	</h:form>
-</h:body>
+            <p:growl id="growl" life="3500" showDetail="true" />
+
+            <!-- ── BREADCRUMB ─────────────────────────────────────── -->
+            <p:breadCrumb styleClass="ui-breadcrumb p-mb-3">
+                <p:menuitem value="#{etiquetas['inicio']}" icon="pi pi-home" />
+                <p:menuitem value="#{etiquetas['inicio.dashboard']}" />
+            </p:breadCrumb>
+
+            <!-- ── PAGE HEADER ────────────────────────────────────── -->
+            <div class="page-header page-header-mb">
+                <div class="page-header-left">
+                    <div class="page-header-icon icon-bg-primary">
+                        <i class="pi pi-home"></i>
+                    </div>
+                    <div>
+                        <h2>#{etiquetas['inicio.panelPrincipal']}</h2>
+                        <span class="page-header-subtitle">#{etiquetas['inicio.bienvenido']}, #{backingLogin.beanLogin.usuario.persona.persNombres} #{backingLogin.beanLogin.usuario.persona.persApellidos} - #{etiquetas['inicio.sistemaGestion']}</span>
+                    </div>
+                </div>
+                <div class="page-actions">
+                    <p:commandButton value="#{botones['inicio.irFacturacion']}" icon="pi pi-file"
+                                     action="/paginas/contabilidad/facturacion?faces-redirect=true"
+                                     styleClass="ui-button-primary"
+                                     process="@this" />
+                </div>
+            </div>
+
+            <!-- ── DASHBOARD STATS CARDS ──────────────────────────── -->
+            <div class="dashboard-stats">
+
+                <div class="stats-card stats-card-primary card-hover clickable-card"
+                     tabindex="0" role="button"
+                     onclick="window.location.href='#{facesContext.externalContext.requestContextPath}/paginas/administracion/administrarCursos.xhtml'"
+                     onkeydown="if(event.key==='Enter'||event.key===' '){window.location.href='#{facesContext.externalContext.requestContextPath}/paginas/administracion/administrarCursos.xhtml';}">
+                    <div class="stats-content">
+                        <span class="stats-label">#{etiquetas['inicio.cursosActivos']}</span>
+                        <span class="stats-value">#{backingCreacionCursos.beanCreacionCursos.listaOfertaCapacitacion != null ? backingCreacionCursos.beanCreacionCursos.listaOfertaCapacitacion.stream().filter(o -> o.ofcaEstado).count() : 0}</span>
+                    </div>
+                    <div class="stats-icon-wrapper">
+                        <i class="pi pi-book"></i>
+                    </div>
+                </div>
+
+                <div class="stats-card stats-card-warning card-hover clickable-card"
+                     tabindex="0" role="button"
+                     onclick="window.location.href='#{facesContext.externalContext.requestContextPath}/paginas/estudiantes/seguimientocliente.xhtml'"
+                     onkeydown="if(event.key==='Enter'||event.key===' '){window.location.href='#{facesContext.externalContext.requestContextPath}/paginas/estudiantes/seguimientocliente.xhtml';}">
+                    <div class="stats-content">
+                        <span class="stats-label">#{etiquetas['inicio.enSeguimiento']}</span>
+                        <span class="stats-value">#{backingSeguimientoClientes.beanSeguimiento.listadoSeguimiento != null ? backingSeguimientoClientes.beanSeguimiento.listadoSeguimiento.stream().filter(s -> s.segcEstado eq 'CONTAC01').count() : 0}</span>
+                    </div>
+                    <div class="stats-icon-wrapper">
+                        <i class="pi pi-users"></i>
+                    </div>
+                </div>
+
+                <div class="stats-card stats-card-success card-hover clickable-card"
+                     tabindex="0" role="button"
+                     onclick="window.location.href='#{facesContext.externalContext.requestContextPath}/paginas/contabilidad/facturacion.xhtml'"
+                     onkeydown="if(event.key==='Enter'||event.key===' '){window.location.href='#{facesContext.externalContext.requestContextPath}/paginas/contabilidad/facturacion.xhtml';}">
+                    <div class="stats-content">
+                        <span class="stats-label">#{etiquetas['inicio.facturacion']}</span>
+                        <span class="stats-value">$ #{backingFacturacion.totalFacturado != null ? backingFacturacion.totalFacturado : '0.00'}</span>
+                    </div>
+                    <div class="stats-icon-wrapper">
+                        <i class="pi pi-money-bill"></i>
+                    </div>
+                </div>
+
+                <div class="stats-card stats-card-danger card-hover clickable-card"
+                     tabindex="0" role="button"
+                     onclick="window.location.href='#{facesContext.externalContext.requestContextPath}/paginas/accesos/gestionUsuarios.xhtml'"
+                     onkeydown="if(event.key==='Enter'||event.key===' '){window.location.href='#{facesContext.externalContext.requestContextPath}/paginas/accesos/gestionUsuarios.xhtml';}">
+                    <div class="stats-content">
+                        <span class="stats-label">#{etiquetas['inicio.usuarios']}</span>
+                        <span class="stats-value">#{beanAccesoUsuario.listaUsuarios != null ? beanAccesoUsuario.listaUsuarios.size() : 0}</span>
+                    </div>
+                    <div class="stats-icon-wrapper">
+                        <i class="pi pi-users"></i>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ── ACCESOS RÁPIDOS ───────────────────────────────── -->
+            <div class="section-mb">
+                <h5 class="section-title-accent">
+                    <i class="pi pi-th-large" style="margin-right: 0.4rem;"></i>
+                    #{etiquetas['inicio.accesosRapidos']}
+                </h5>
+
+                <div class="dashboard-stats quick-access-grid">
+                    <!-- NOTA: Cada tarjeta de acceso rápido sigue el patrón:
+                         surface-card + card-hover + flex-row + gap-md 
+                         El icono usa icon-container + icon-bg-* + icon-white -->
+
+                    <!-- Card: Matrícula -->
+                    <div class="surface-card card-hover flex-row gap-md clickable-card" tabindex="0" role="button"
+                         onclick="window.location.href='#{facesContext.externalContext.requestContextPath}/paginas/estudiantes/matricula.xhtml'"
+                         onkeydown="if(event.key==='Enter'||event.key===' '){window.location.href='#{facesContext.externalContext.requestContextPath}/paginas/estudiantes/matricula.xhtml';}">
+                        <div class="icon-container icon-bg-primary">
+                            <i class="pi pi-user-plus icon-white"></i>
+                        </div>
+                        <div>
+                            <div class="text-main quick-card-title">#{etiquetas['inicio.nuevaMatricula']}</div>
+                            <div class="text-muted quick-card-desc">#{etiquetas['inicio.subNuevaMatricula']}</div>
+                        </div>
+                    </div>
+
+                    <!-- Card: Seguimiento -->
+                    <div class="surface-card card-hover flex-row gap-md clickable-card" tabindex="0" role="button"
+                         onclick="window.location.href='#{facesContext.externalContext.requestContextPath}/paginas/estudiantes/seguimientocliente.xhtml'"
+                         onkeydown="if(event.key==='Enter'||event.key===' '){window.location.href='#{facesContext.externalContext.requestContextPath}/paginas/estudiantes/seguimientocliente.xhtml';}">
+                        <div class="icon-container icon-bg-warning">
+                            <i class="pi pi-phone icon-white"></i>
+                        </div>
+                        <div>
+                            <div class="text-main quick-card-title">#{etiquetas['inicio.seguimientoClientes']}</div>
+                            <div class="text-muted quick-card-desc">#{etiquetas['inicio.subSeguimiento']}</div>
+                        </div>
+                    </div>
+
+                    <!-- Card: Pagos -->
+                    <div class="surface-card card-hover flex-row gap-md clickable-card" tabindex="0" role="button"
+                         onclick="window.location.href='#{facesContext.externalContext.requestContextPath}/paginas/contabilidad/pagosCurso.xhtml'"
+                         onkeydown="if(event.key==='Enter'||event.key===' '){window.location.href='#{facesContext.externalContext.requestContextPath}/paginas/contabilidad/pagosCurso.xhtml';}">
+                        <div class="icon-container icon-bg-success">
+                            <i class="pi pi-wallet icon-white"></i>
+                        </div>
+                        <div>
+                            <div class="text-main quick-card-title">#{etiquetas['inicio.registroPagos']}</div>
+                            <div class="text-muted quick-card-desc">#{etiquetas['inicio.subPagos']}</div>
+                        </div>
+                    </div>
+
+                    <!-- Card: Calendario -->
+                    <div class="surface-card card-hover flex-row gap-md clickable-card" tabindex="0" role="button"
+                         onclick="window.location.href='#{facesContext.externalContext.requestContextPath}/paginas/administracion/calendarioCursos.xhtml'"
+                         onkeydown="if(event.key==='Enter'||event.key===' '){window.location.href='#{facesContext.externalContext.requestContextPath}/paginas/administracion/calendarioCursos.xhtml';}">
+                        <div class="icon-container icon-bg-purple">
+                            <i class="pi pi-calendar icon-white"></i>
+                        </div>
+                        <div>
+                            <div class="text-main quick-card-title">#{etiquetas['inicio.calendarioCursos']}</div>
+                            <div class="text-muted quick-card-desc">#{etiquetas['inicio.subCalendario']}</div>
+                        </div>
+                    </div>
+
+                    <!-- Card: Cursos -->
+                    <div class="surface-card card-hover flex-row gap-md clickable-card" tabindex="0" role="button"
+                         onclick="window.location.href='#{facesContext.externalContext.requestContextPath}/paginas/administracion/administrarCursos.xhtml'"
+                         onkeydown="if(event.key==='Enter'||event.key===' '){window.location.href='#{facesContext.externalContext.requestContextPath}/paginas/administracion/administrarCursos.xhtml';}">
+                        <div class="icon-container icon-bg-pink">
+                            <i class="pi pi-book icon-white"></i>
+                        </div>
+                        <div>
+                            <div class="text-main quick-card-title">#{etiquetas['inicio.administrarCursos']}</div>
+                            <div class="text-muted quick-card-desc">#{etiquetas['inicio.subCursos']}</div>
+                        </div>
+                    </div>
+
+                    <!-- Card: Facturación -->
+                    <div class="surface-card card-hover flex-row gap-md"
+                         onclick="window.location.href='#{facesContext.externalContext.requestContextPath}/paginas/contabilidad/facturacion.xhtml'">
+                        <div class="icon-container icon-bg-cyan">
+                            <i class="pi pi-file icon-white"></i>
+                        </div>
+                        <div>
+                            <div class="text-main quick-card-title">#{etiquetas['inicio.facturacionElectronica']}</div>
+                            <div class="text-muted quick-card-desc">#{etiquetas['inicio.subFacturacion']}</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ── INFORMACIÓN DEL USUARIO ───────────────────────── -->
+            <div class="surface-card flex-between flex-wrap gap-md user-info-card">
+                <div class="flex-row gap-sm">
+                    <div class="user-avatar-circle">
+                        <i class="pi pi-user"></i>
+                    </div>
+                    <div>
+                        <div class="user-info-name">
+                            #{backingLogin.beanLogin.usuario.persona.persNombres} #{backingLogin.beanLogin.usuario.persona.persApellidos}
+                        </div>
+                        <div class="text-muted" style="font-size: var(--text-xs);">
+                            #{backingLogin.beanLogin.usuario.persona.persDocumentoIdentidad}
+                            &#183; #{etiquetas['inicio.ultimoAcceso']} #{backingLogin.beanLogin.usuario.usuaFechaRegistro}
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-row gap-sm flex-wrap">
+                    <p:commandButton value="#{botones['inicio.configuracion']}" icon="pi pi-cog"
+                                     action="/paginas/administracion/configuracionEmpresa?faces-redirect=true"
+                                     styleClass="ui-button-outlined ui-button-secondary"
+                                     process="@this" />
+                </div>
+            </div>
+
+        </h:form>
+    </ui:define>
+
+</ui:composition>
 </html>

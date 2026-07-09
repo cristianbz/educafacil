@@ -27,13 +27,14 @@
 										filterMatchMode="contains" filter="true"
 										panelStyle="width:300px;" style="width:300px;"
 										disabled="#{backingSeguimientoClientes.beanSeguimiento.tipoCargaInformacion==3 || backingSeguimientoClientes.beanSeguimiento.tipoCargaInformacion==4}"
-										value="#{backingSeguimientoClientes.beanSeguimiento.campaniaSeleccionada}">
+										value="#{backingSeguimientoClientes.beanSeguimiento.campaniaSeleccionada}"
+										required="true"
+										requiredMessage="#{mensajes['campoRequerido']}">
 										<f:selectItems
 											value="#{backingSeguimientoClientes.beanSeguimiento.listaCampaniasTodas}"
 											var="camp"
 											itemLabel="#{camp.campDescripcion} / #{camp.fechasCampania}"
-											itemValue="#{camp}" required="true"
-											requiredMessage="#{mensajes['campoRequerido']}" />
+											itemValue="#{camp}" />
 										<p:ajax process="@this idcampanias " partialSubmit="true"
 											event="change" />
 									</p:selectOneMenu> <p:outputLabel value="#{etiquetas['campania']}" />
@@ -46,12 +47,12 @@
 										converter="selectOneMenuConverter" filterMatchMode="contains"
 										filter="true" panelStyle="width:300px;" style="width:300px;"
 										disabled="#{backingSeguimientoClientes.beanSeguimiento.tipoCargaInformacion==2 || backingSeguimientoClientes.beanSeguimiento.tipoCargaInformacion==4}"
-										value="#{backingSeguimientoClientes.beanSeguimiento.cursoSeleccionado}">
+										value="#{backingSeguimientoClientes.beanSeguimiento.cursoSeleccionado}"
+										required="true"
+										requiredMessage="#{mensajes['campoRequerido']}">
 										<f:selectItems
 											value="#{backingSeguimientoClientes.beanSeguimiento.listaCursos}"
-											var="cur" itemLabel="#{cur.cursNombre}" itemValue="#{cur}"
-											required="true"
-											requiredMessage="#{mensajes['campoRequerido']}" />
+											var="cur" itemLabel="#{cur.cursNombre}" itemValue="#{cur}" />
 										<p:ajax process="@this idcursos " partialSubmit="true"
 											event="change" />
 									</p:selectOneMenu>
@@ -89,11 +90,13 @@
 				</p:outputPanel>
 				<h:panelGrid columns="2" style="margin: 0 auto; text-align: center;">
 					<p:commandButton value="#{botones['aceptar']}"
-						update="tblSeg growl campanias" process="@this campanias tblSeg"
+						
 						icon="#{botones['icono.select']}"
-						oncomplete="PF('tblseguimiento').clearFilters(); PF('dlgEnProc').hide();"
-						onstart="PF('dlgEnProc').show();" partialSubmit="true"
+						oncomplete="PF('tblseguimiento').clearFilters(); hideLoading();"
+						onstart="showLoading();"
+						update="tblSeg growl campanias" process="@this campanias tblSeg" 
 						actionListener="#{backingSeguimientoClientes.cargarInformacion()}" />
+
 					<p:commandButton value="#{botones['cancelar']}"
 						icon="#{botones['icono.cancelar']}" process="@this"
 						partialSubmit="true" oncomplete="PF('dlgCargarInfo').hide()" />

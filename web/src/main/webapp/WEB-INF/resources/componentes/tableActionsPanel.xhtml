@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:composite="jakarta.faces.composite">
+
+<composite:interface>
+    <!-- MethodExpression para la acción de editar -->
+    <composite:attribute name="editAction" required="false"
+                         method-signature="void action()" />
+    <!-- MethodExpression para la acción de eliminar -->
+    <composite:attribute name="deleteAction" required="false"
+                         method-signature="void action()" />
+    <!-- MethodExpression para la acción de ver detalle -->
+    <composite:attribute name="viewAction" required="false"
+                         method-signature="void action()" />
+    <!-- Tooltip para el botón de editar -->
+    <composite:attribute name="editLabel" required="false" default="Editar" />
+    <!-- Tooltip para el botón de eliminar -->
+    <composite:attribute name="deleteLabel" required="false" default="Eliminar" />
+    <!-- Tooltip para el botón de ver -->
+    <composite:attribute name="viewLabel" required="false" default="Ver" />
+    <!-- Id del componente a actualizar tras la acción -->
+    <composite:attribute name="update" required="false" default="@form" />
+    <!-- Clase CSS adicional -->
+    <composite:attribute name="styleClass" required="false" default="" />
+</composite:interface>
+
+<composite:implementation>
+    <div class="flex-row gap-xs #{cc.attrs.styleClass}" style="align-items: center;">
+        <!-- Botón Ver -->
+        <ui:fragment rendered="#{not empty cc.attrs.viewAction}">
+            <p:commandLink action="#{cc.attrs.viewAction}"
+                           process="@this"
+                           update="#{cc.attrs.update}"
+                           title="#{cc.attrs.viewLabel}"
+                           aria-label="#{cc.attrs.viewLabel}"
+                           styleClass="command-link-edit">
+                <i class="pi pi-eye"></i>
+            </p:commandLink>
+        </ui:fragment>
+
+        <!-- Botón Editar -->
+        <ui:fragment rendered="#{not empty cc.attrs.editAction}">
+            <p:commandLink action="#{cc.attrs.editAction}"
+                           process="@this"
+                           update="#{cc.attrs.update}"
+                           title="#{cc.attrs.editLabel}"
+                           aria-label="#{cc.attrs.editLabel}"
+                           styleClass="command-link-edit">
+                <i class="pi pi-pencil"></i>
+            </p:commandLink>
+        </ui:fragment>
+
+        <!-- Botón Eliminar -->
+        <ui:fragment rendered="#{not empty cc.attrs.deleteAction}">
+            <p:commandLink action="#{cc.attrs.deleteAction}"
+                           process="@this"
+                           update="#{cc.attrs.update}"
+                           title="#{cc.attrs.deleteLabel}"
+                           aria-label="#{cc.attrs.deleteLabel}"
+                           styleClass="command-link-delete">
+                <i class="pi pi-trash"></i>
+            </p:commandLink>
+        </ui:fragment>
+
+        <!-- Acciones adicionales -->
+        <ui:insert name="extraActions" />
+    </div>
+</composite:implementation>
+</html>

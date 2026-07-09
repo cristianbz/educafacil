@@ -17,7 +17,7 @@
 			<p:dialog widgetVar="dlgOfertaCursos" showEffect="fade"
 				hideEffect="fade" modal="true" appendTo="@(body)"
 				header="#{titulos['informacionOferta']}" styleClass="ui-dialog shadow-lg"
-				width="480" resizable="false" closable="false">
+				width="520" resizable="false" closable="false" responsive="true" fitViewport="true">
 				
 				<p:scrollPanel mode="native" style="max-height: 480px; border: none; padding-right: 10px;">
 					<p:outputPanel id="panelNuevo">
@@ -29,13 +29,13 @@
 									<i class="pi pi-calendar-plus" style="color: var(--primary-color); font-size: 1.2rem;"></i>
 								</div>
 								<div>
-									<span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Programación Académica</span>
-									<div style="font-size: 0.9rem; font-weight: 700; color: var(--text-main);">Información de Oferta</div>
+									<span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">#{etiquetas['oferta.programacion']}</span>
+									<div style="font-size: 0.9rem; font-weight: 700; color: var(--text-main);">#{etiquetas['oferta.infoOferta']}</div>
 								</div>
 							</div>
 							
 							<!-- Grupo 1: Definición Académica -->
-							<h5 class="section-title-accent">Clasificación del Curso</h5>
+							<h5 class="section-title-accent">#{etiquetas['oferta.clasificacionCurso']}</h5>
 							
 							<!-- Área -->
 							<div style="margin-bottom: 1rem;">
@@ -44,7 +44,7 @@
 								<p:selectOneMenu id="comboArea"
 									value="#{backingAdminCursos.beanAdminCursos.codigoArea}"
 									required="true" requiredMessage="#{mensajes['campoRequerido']}">
-									<f:selectItem itemLabel="— Seleccionar área —" itemValue="#{null}" noSelectionOption="true" />
+									<f:selectItem itemLabel="#{etiquetas['seleccionarArea']}" itemValue="#{null}" noSelectionOption="true" />
 									<f:selectItems value="#{backingAdminCursos.beanAdminCursos.listaAreas}"
 										var="area" itemValue="#{area.areaId}" itemLabel="#{area.areaNombre}" />
 									<p:ajax process="@this" update="comboEspecialidad comboCurso" partialSubmit="true"
@@ -60,7 +60,7 @@
 								<p:selectOneMenu id="comboEspecialidad"
 									value="#{backingAdminCursos.beanAdminCursos.codigoEspecialidad}"
 									required="true" requiredMessage="#{mensajes['campoRequerido']}">
-									<f:selectItem itemLabel="— Seleccionar especialidad —" itemValue="#{null}" noSelectionOption="true" />
+									<f:selectItem itemLabel="#{etiquetas['seleccionarEspecialidad']}" itemValue="#{null}" noSelectionOption="true" />
 									<f:selectItems value="#{backingAdminCursos.beanAdminCursos.listaEspecialidad}"
 										var="especialidad" itemValue="#{especialidad.espeId}" itemLabel="#{especialidad.espeNombre}" />
 									<p:ajax process="@this" update="comboCurso" partialSubmit="true"
@@ -76,7 +76,7 @@
 								<p:selectOneMenu id="comboCurso" panelStyle="width: 35rem" style="width:100%;"
 									value="#{backingAdminCursos.beanAdminCursos.codigoCurso}"
 									required="true" requiredMessage="#{mensajes['campoRequerido']}">
-									<f:selectItem itemLabel="— Seleccionar curso —" itemValue="#{null}" noSelectionOption="true" />
+									<f:selectItem itemLabel="#{etiquetas['seleccionarCurso']}" itemValue="#{null}" noSelectionOption="true" />
 									<f:selectItems value="#{backingAdminCursos.beanAdminCursos.listaCurso}"
 										var="curso" itemValue="#{curso.cursId}" itemLabel="#{curso.cursNombre}" />
 									<p:ajax process="@this" event="change" />
@@ -91,7 +91,7 @@
 								<p:selectOneMenu id="comboTipoCurso"
 									value="#{backingAdminCursos.beanAdminCursos.codigoTipoCurso}"
 									required="true" requiredMessage="#{mensajes['campoRequerido']}">
-									<f:selectItem itemLabel="— Seleccionar tipo —" itemValue="#{null}" noSelectionOption="true" />
+									<f:selectItem itemLabel="#{etiquetas['seleccionarTipo']}" itemValue="#{null}" noSelectionOption="true" />
 									<f:selectItems value="#{backingAdminCursos.beanAdminCursos.listaCatalogo}"
 										var="catalogo" itemValue="#{catalogo.cataCodigoIndice}" itemLabel="#{catalogo.cataDescripcion}" />
 									<p:ajax process="@this" event="change" />
@@ -105,7 +105,7 @@
 								<p:selectOneMenu id="comboTipoModalidad"
 									value="#{backingAdminCursos.beanAdminCursos.codigoTipoModalidad}"
 									required="true" requiredMessage="#{mensajes['campoRequerido']}">
-									<f:selectItem itemLabel="— Seleccionar tipo —" itemValue="#{null}" noSelectionOption="true" />
+									<f:selectItem itemLabel="#{etiquetas['seleccionarTipo']}" itemValue="#{null}" noSelectionOption="true" />
 									<f:selectItems value="#{backingAdminCursos.beanAdminCursos.listaModalidadEstudio}"
 										var="catalogo" itemValue="#{catalogo.cataCodigoIndice}" itemLabel="#{catalogo.cataDescripcion}" />
 									<p:ajax process="@this" event="change" />
@@ -172,10 +172,9 @@
 								<div class="p-field p-col-12 p-md-6" style="margin-bottom: 0.5rem;">
 									<p:outputLabel value="#{etiquetas['fechaInicio']} *" for="fechaInicio"
 										class="form-label" />
-									<p:calendar value="#{backingAdminCursos.beanAdminCursos.ofertaCursos.ocurFechaInicio}"
+									<p:datePicker value="#{backingAdminCursos.beanAdminCursos.ofertaCursos.ocurFechaInicio}"
 										id="fechaInicio" required="true" requiredMessage="#{mensajes['campoRequerido']}"
-										pattern="yyyy-MM-dd" navigator="true" locale="es" style="width: 100%;">
-									</p:calendar>
+										pattern="yyyy-MM-dd" locale="es" showIcon="true" style="width: 100%;" />
 									<p:message for="fechaInicio" style="margin-top: 0.25rem;" />
 								</div>
 								
@@ -183,10 +182,9 @@
 								<div class="p-field p-col-12 p-md-6" style="margin-bottom: 0.5rem;">
 									<p:outputLabel value="#{etiquetas['fechaFin']} *" for="fechaFin"
 										class="form-label" />
-									<p:calendar value="#{backingAdminCursos.beanAdminCursos.ofertaCursos.ocurFechaFin}"
+									<p:datePicker value="#{backingAdminCursos.beanAdminCursos.ofertaCursos.ocurFechaFin}"
 										id="fechaFin" pattern="yyyy-MM-dd" locale="es" required="true"
-										requiredMessage="#{mensajes['campoRequerido']}" navigator="true" style="width: 100%;">
-									</p:calendar>
+										requiredMessage="#{mensajes['campoRequerido']}" showIcon="true" style="width: 100%;" />
 									<p:message for="fechaFin" style="margin-top: 0.25rem;" />
 								</div>
 							</div>
@@ -254,7 +252,7 @@
 			<!-- DIÁLOGO ACTUALIZAR CONFIRMACIÓN (dlgEditar) -->
 			<p:dialog widgetVar="dlgEditar" showEffect="fade" hideEffect="fade"
 				modal="true" appendTo="@(body)" header="#{titulos['actualizar']}"
-				width="300" closable="true" resizable="false" styleClass="ui-dialog shadow-md">
+				width="360" closable="true" resizable="false" styleClass="ui-dialog shadow-md" responsive="true">
 				<div style="text-align: center; padding: 1rem 0;">
 					<i class="pi pi-exclamation-triangle" style="font-size: 2.5rem; color: var(--warning-color); margin-bottom: 1rem;"></i>
 					<p style="color: var(--text-main); font-weight: 600; margin-bottom: 1.5rem;">¿Desea confirmar la actualización?</p>
@@ -273,9 +271,9 @@
 			</p:dialog>
 			
 			<!-- DIÁLOGO ASIGNACIÓN DE ENCUESTAS -->
-			<p:dialog header="#{titulos['asignacionEncu']}" appendTo="@(body)" width="520"
+			<p:dialog header="#{titulos['asignacionEncu']}" appendTo="@(body)" width="560"
 				id="AsignacionEncuCurso" widgetVar="dlgAsignacionEncuestasCurso" modal="true"
-				resizable="false" closable="false" responsive="true" styleClass="ui-dialog shadow-lg">
+				resizable="false" closable="false" responsive="true" fitViewport="true" styleClass="ui-dialog shadow-lg">
 				
 				<p:scrollPanel mode="native" style="max-height: 480px; border: none; padding-right: 8px;">
 					<p:outputPanel id="datosEncuestasCurso">
@@ -350,15 +348,15 @@
 									</p:column>	
 									
 									<p:column headerText="Fecha Máxima" style="width: 170px;">
-										<p:calendar value="#{tipoAsign.evcuFechaMaximaEvalua}" 
+										<p:datePicker value="#{tipoAsign.evcuFechaMaximaEvalua}" 
 											locale="es" readonlyInput="true" pattern="yyyy-MM-dd" id="fechaMax" 
-											required="true" requiredMessage="#{mensajes['campoRequerido']}" style="width: 100%;">
-										</p:calendar>
+											required="true" requiredMessage="#{mensajes['campoRequerido']}" showIcon="true" style="width: 100%;" />
 										<p:message for="fechaMax" style="margin-top: 0.25rem;" />
 									</p:column>   
 									
 									<p:column style="width: 50px; text-align: center;">
 										<p:commandLink title="#{tooltip['eliminar']}"
+											aria-label="#{tooltip['eliminar']}"
 											action="#{backingAdminCursos.eliminarEvaluacionCurso}"
 											process="@this tblevaluacionesAsig" immediate="true"
 											partialSubmit="true" 
@@ -401,16 +399,16 @@
 				
 				<!-- BREADCRUMB REDISEÑADO -->
 				<p:breadCrumb styleClass="ui-breadcrumb p-mb-3" style="border: none; background: transparent; padding-left: 0;">
-					<p:menuitem value="Inicio" outcome="/paginas/index?faces-redirect=true" icon="pi pi-home" />
-					<p:menuitem value="Administración" url="#" />
-					<p:menuitem value="Oferta de Cursos" url="#" />
+				<p:menuitem value="#{etiquetas['inicio']}" outcome="/paginas/index?faces-redirect=true" icon="pi pi-home" />
+				<p:menuitem value="#{etiquetas['administracion']}" url="#" />
+				<p:menuitem value="#{titulos['oferta.titulo']}" url="#" />
 				</p:breadCrumb>
 				
 				<!-- ENCABEZADO DE LA PÁGINA -->
 <div class="page-header">
 					<div>
-						<h2>Administración Oferta de Cursos</h2>
-						<small>Planificación, asignación y programación de cursos vigentes</small>
+						<h2>#{titulos['oferta.titulo']}</h2>
+						<small>#{etiquetas['oferta.subtitulo']}</small>
 					</div>
 					<div class="page-actions">
 						<!-- Acción primaria: Nueva Oferta -->
@@ -429,7 +427,7 @@
 					<!-- Total Ofertas -->
 					<div class="stats-card stats-card-primary shadow-sm">
 						<div class="stats-content">
-							<span class="stats-label">Total Ofertas</span>
+							<span class="stats-label">#{titulos['oferta.totalOfertas']}</span>
 							<span class="stats-value">#{backingAdminCursos.beanAdminCursos.listaOfertaCursos.size()}</span>
 						</div>
 						<div class="stats-icon-wrapper">
@@ -440,7 +438,7 @@
 					<!-- Cursos -->
 					<div class="stats-card stats-card-success shadow-sm">
 						<div class="stats-content">
-							<span class="stats-label">Cursos</span>
+							<span class="stats-label">#{titulos['oferta.cursos']}</span>
 							<span class="stats-value" style="color: var(--success-color);">
 								#{backingAdminCursos.beanAdminCursos.listaOfertaCursos.stream().filter(o -> 'TCAPA01'.equals(o.ocurTipo)).count()}
 							</span>
@@ -453,7 +451,7 @@
 					<!-- Talleres -->
 					<div class="stats-card stats-card-warning shadow-sm">
 						<div class="stats-content">
-							<span class="stats-label">Talleres</span>
+							<span class="stats-label">#{titulos['oferta.talleres']}</span>
 							<span class="stats-value" style="color: var(--warning-color);">
 								#{backingAdminCursos.beanAdminCursos.listaOfertaCursos.stream().filter(o -> 'TCAPA02'.equals(o.ocurTipo)).count()}
 							</span>
@@ -466,7 +464,7 @@
 					<!-- Seminarios -->
 					<div class="stats-card stats-card-danger shadow-sm">
 						<div class="stats-content">
-							<span class="stats-label">Seminarios</span>
+							<span class="stats-label">#{titulos['oferta.seminarios']}</span>
 							<span class="stats-value" style="color: var(--danger-color);">
 								#{backingAdminCursos.beanAdminCursos.listaOfertaCursos.stream().filter(o -> !'TCAPA01'.equals(o.ocurTipo) and !'TCAPA02'.equals(o.ocurTipo)).count()}
 							</span>
@@ -487,7 +485,7 @@
 					var="oferta"
 					styleClass="ui-datatable shadow-sm"
 					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
-					emptyMessage="No se encontraron ofertas de cursos programadas.">
+					emptyMessage="#{etiquetas['oferta.emptyOfertas']}">
 
 					<!-- Columna: Área (Agrupada) -->
 					<p:column headerText="#{etiquetas['area']}" groupRow="true" style="width: 180px; font-weight: 600; color: var(--text-main); vertical-align: middle;">
@@ -498,7 +496,7 @@
 					</p:column>
 
 					<!-- Columna: Curso / Especialidad / Tipo -->
-					<p:column headerText="Curso / Clasificación" filterBy="#{oferta.ofertaCapacitacion.curso.cursNombre}" filterMatchMode="contains" style="min-width: 260px;">
+					<p:column headerText="#{etiquetas['oferta.cursoClasificacion']}" filterBy="#{oferta.ofertaCapacitacion.curso.cursNombre}" filterMatchMode="contains" style="min-width: 260px;">
 						<div style="display: flex; align-items: flex-start; gap: 0.75rem;">
 							<!-- Icon with a dynamic gradient depending on ocurTipo -->
 							<div style="width: 42px; height: 42px; border-radius: 10px; background: #{oferta.ocurTipo.equals('TCAPA02') ? 'linear-gradient(135deg, #fef3c7, #fde68a)' : oferta.ocurTipo.equals('TCAPA01') ? 'linear-gradient(135deg, #eff6ff, #dbeafe)' : 'linear-gradient(135deg, #f3e8ff, #e9d5ff)'}; border: 1px solid #{oferta.ocurTipo.equals('TCAPA02') ? '#fde68a' : oferta.ocurTipo.equals('TCAPA01') ? '#bfdbfe' : '#ddd6fe'}; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">
@@ -546,7 +544,7 @@
 					</p:column>
 					
 					<!-- Columna: Encuestas Asociadas -->
-					<p:column headerText="Encuestas" style="min-width: 180px;">
+					<p:column headerText="#{etiquetas['oferta.encuestas']}" style="min-width: 180px;">
 						<ui:fragment rendered="#{not empty oferta.evaluacionCurso}">
 							<div style="display: flex; flex-direction: column; gap: 6px;">
 								<ui:repeat value="#{oferta.evaluacionCurso}" var="encur">
@@ -564,15 +562,16 @@
 						</ui:fragment>
 						<ui:fragment rendered="#{empty oferta.evaluacionCurso}">
 							<span style="color: var(--text-muted); font-style: italic; font-size: 0.85rem;">
-								Sin encuestas
+								#{etiquetas['oferta.sinEncuestas']}
 							</span>
 						</ui:fragment>
 					</p:column>
 					
 					<!-- Columna: Acciones -->
-					<p:column style="width: 100px; text-align: center;" headerText="Acciones">
+					<p:column style="width: 100px; text-align: center;" headerText="#{etiquetas['acciones']}">
 						<!-- Editar -->
 						<p:commandLink title="#{tooltip['editar']}"
+							aria-label="#{tooltip['editar']}"
 							action="#{backingAdminCursos.edicionOfertaCurso()}"
 							process="@this" resetValues="true"
 							update="panelNuevo"
@@ -587,6 +586,7 @@
 						
 						<!-- Encuestas -->
 						<p:commandLink title="#{tooltip['encuestas']}"
+							aria-label="#{tooltip['encuestas']}"
 							action="#{backingAdminCursos.asignarEncuestas()}" process="@this "
 							partialSubmit="true"
 							update="datosEncuestasCurso growl"

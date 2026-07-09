@@ -78,11 +78,11 @@ public class NotificacionService {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(from));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destinatario));
-            message.setSubject("Comprobante Electrónico: " + numFactura);
+            message.setSubject("Comprobante ElectrÃ³nico: " + numFactura);
 
             // Cuerpo del mensaje
             MimeBodyPart messageBodyPart = new MimeBodyPart();
-            messageBodyPart.setContent("Estimado cliente, adjunto enviamos su comprobante electrónico generado.", "text/html");
+            messageBodyPart.setContent("Estimado cliente, adjunto enviamos su comprobante electrÃ³nico generado.", "text/html");
 
             Multipart multipart = new MimeMultipart();
             multipart.addBodyPart(messageBodyPart);
@@ -104,7 +104,7 @@ public class NotificacionService {
             Transport.send(message);
             log.info("Correo enviado exitosamente a: " + destinatario + " para la factura: " + numFactura);
         } catch (Exception e) {
-            log.error("Error al enviar el comprobante electrónico por correo a " + destinatario, e);
+            log.error("Error al enviar el comprobante electrÃ³nico por correo a " + destinatario, e);
         }
     }
 }

@@ -15,12 +15,13 @@
 						<p:selectOneMenu id="idcampaniaFormFaces"
 							converter="selectOneMenuConverter" filterMatchMode="contains"
 							filter="true" panelStyle="width:300px;" style="width:300px;"
-							value="#{backingSeguimientoClientes.beanSeguimiento.campaniaSeleccionada}">
+							value="#{backingSeguimientoClientes.beanSeguimiento.campaniaSeleccionada}"
+							required="true"
+							requiredMessage="#{mensajes['campoRequerido']}">
 							<f:selectItems
 								value="#{backingSeguimientoClientes.beanSeguimiento.listaCampaniasTodas}"
 								var="camp" itemLabel="#{camp.campDescripcion}"
-								itemValue="#{camp}" required="true"
-								requiredMessage="#{mensajes['campoRequerido']}" />
+								itemValue="#{camp}" />
 							<p:ajax process="@this " update="nroPreguntas"
 								partialSubmit="true"							
 								event="change" />
@@ -64,8 +65,8 @@
 				<br />
 				<p:commandButton process="@this" value="#{botones['procesar']}"
 					partialSubmit="true" update="growl"
-					onstart="PF('dlgEnProc').show();"
-					oncomplete="PF('dlgEnProc').hide();"
+					onstart="showLoading();"
+					oncomplete="hideLoading();"
 					icon="#{botones['icono.ruedas']}"
 					actionListener="#{backingSeguimientoClientes.procesarFormularioFacebook()}" />
 				</p:outputPanel>

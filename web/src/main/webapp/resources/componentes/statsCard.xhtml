@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:composite="jakarta.faces.composite">
+
+<composite:interface>
+    <!-- Label de la tarjeta (ej: "CURSOS ACTIVOS") -->
+    <composite:attribute name="label" required="true" />
+    <!-- Valor a mostrar (ej: "42" o "$ 1,500.00") -->
+    <composite:attribute name="value" required="true" />
+    <!-- Color/estilo: primary, success, warning, danger -->
+    <composite:attribute name="color" required="false" default="primary" />
+    <!-- Icono PrimeFaces (ej: "pi pi-book") -->
+    <composite:attribute name="icon" required="true" />
+    <!-- Enlace de navegación al hacer clic en la tarjeta (opcional) -->
+    <composite:attribute name="link" required="false" default="" />
+    <!-- Tendencia: texto opcional (ej: "+12% vs mes anterior") -->
+    <composite:attribute name="trend" required="false" default="" />
+    <!-- Color de la tendencia: success (subió) o danger (bajó) -->
+    <composite:attribute name="trendColor" required="false" default="success" />
+    <!-- Clase CSS adicional -->
+    <composite:attribute name="styleClass" required="false" default="" />
+</composite:interface>
+
+<composite:implementation>
+    <ui:fragment rendered="#{not empty cc.attrs.link}">
+        <div class="stats-card stats-card-#{cc.attrs.color} card-hover clickable-card #{cc.attrs.styleClass}"
+             tabindex="0" role="button"
+             onclick="window.location.href='#{cc.attrs.link}'"
+             onkeydown="if(event.key==='Enter'||event.key===' '){window.location.href='#{cc.attrs.link}';}">
+            <div class="stats-content">
+                <span class="stats-label">#{cc.attrs.label}</span>
+                <span class="stats-value">#{cc.attrs.value}</span>
+                <ui:fragment rendered="#{not empty cc.attrs.trend}">
+                    <span class="stats-trend text-#{cc.attrs.trendColor}">#{cc.attrs.trend}</span>
+                </ui:fragment>
+            </div>
+            <div class="stats-icon-wrapper">
+                <i class="#{cc.attrs.icon}"></i>
+            </div>
+        </div>
+    </ui:fragment>
+    <ui:fragment rendered="#{empty cc.attrs.link}">
+        <div class="stats-card stats-card-#{cc.attrs.color} #{cc.attrs.styleClass}">
+            <div class="stats-content">
+                <span class="stats-label">#{cc.attrs.label}</span>
+                <span class="stats-value">#{cc.attrs.value}</span>
+                <ui:fragment rendered="#{not empty cc.attrs.trend}">
+                    <span class="stats-trend text-#{cc.attrs.trendColor}">#{cc.attrs.trend}</span>
+                </ui:fragment>
+            </div>
+            <div class="stats-icon-wrapper">
+                <i class="#{cc.attrs.icon}"></i>
+            </div>
+        </div>
+    </ui:fragment>
+</composite:implementation>
+</html>

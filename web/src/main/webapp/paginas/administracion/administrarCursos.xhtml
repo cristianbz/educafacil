@@ -13,13 +13,6 @@
 		<h:form id="formCursos" prependId="false">
 			<p:growl id="growl" life="3000" showDetail="true" />
 
-			<!-- DIÁLOGO DE CARGA -->
-			<p:dialog widgetVar="dlgCargando" header="Por favor espere.."
-				draggable="false" modal="true" resizable="false" closable="false" responsive="true"
-				style="font-size: 11px;">
-				<h:graphicImage value="/resources/img/cargando.gif" width="200" height="200"/>
-			</p:dialog>
-
 			<ui:include src="/paginas/administracion/fragmentos/dialogoNuevoCurso.xhtml" />
 
 			<!-- BREADCRUMB REDISEÑADO -->
@@ -64,7 +57,7 @@
 			<p:outputPanel id="panelResultados">
 
 				<!-- KPI / RESUMEN DASHBOARD -->
-				<div class="dashboard-stats" style="margin-bottom: 1.5rem;">
+				<div class="dashboard-stats">
 					<!-- Total cursos -->
 					<div class="stats-card stats-card-primary shadow-sm">
 						<div class="stats-content">
@@ -80,7 +73,7 @@
 					<div class="stats-card stats-card-success shadow-sm">
 						<div class="stats-content">
 							<span class="stats-label">Activos</span>
-							<span class="stats-value" style="color: var(--success-color);">
+							<span class="stats-value text-success">
 								#{backingCreacionCursos.beanCreacionCursos.listaOfertaCapacitacion.stream().filter(o -> o.ofcaEstado).count()}
 							</span>
 						</div>
@@ -93,7 +86,7 @@
 					<div class="stats-card stats-card-danger shadow-sm">
 						<div class="stats-content">
 							<span class="stats-label">Inactivos</span>
-							<span class="stats-value" style="color: var(--danger-color);">
+							<span class="stats-value text-danger">
 								#{backingCreacionCursos.beanCreacionCursos.listaOfertaCapacitacion.stream().filter(o -> !o.ofcaEstado).count()}
 							</span>
 						</div>
@@ -121,21 +114,22 @@
 					<p:column headerText="#{etiquetas['curso']}"
 						filterBy="#{oferta.curso.cursNombre}" filterMatchMode="contains"
 						style="min-width: 260px;">
-						<div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+						<div class="flex-row gap-sm" style="align-items: flex-start;">
 							<!-- Ícono representativo -->
-							<div style="width: 42px; height: 42px; border-radius: 10px; background: linear-gradient(135deg, #eff6ff, #dbeafe); border: 1px solid #bfdbfe; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">
-								<i class="pi pi-book" style="color: var(--primary-color); font-size: 1.1rem;"></i>
+							<div class="icon-container-sm bg-primary-light flex-center"
+								style="border: 1px solid #bfdbfe; margin-top: 2px;">
+								<i class="pi pi-book text-primary" style="font-size: 1.1rem;"></i>
 							</div>
 							<div>
-								<div style="font-weight: 700; color: var(--text-main); font-size: 0.95rem; margin-bottom: 0.2rem;">
+								<div class="text-main" style="font-weight: 700; font-size: var(--text-sm); margin-bottom: 0.2rem;">
 									<p:outputLabel value="#{oferta.curso.cursNombre}" />
 								</div>
-								<div style="display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.25rem;">
-									<span style="font-size: 0.75rem; background: #f1f5f9; color: var(--text-muted); border-radius: 6px; padding: 0.15rem 0.5rem; font-weight: 600; border: 1px solid var(--border-color);">
+								<div class="flex-row flex-wrap gap-xs" style="margin-top: 0.25rem;">
+									<span class="chip-pill">
 										<i class="pi pi-tag" style="margin-right: 3px; font-size: 0.7rem;"></i>
 										<h:outputText value="#{oferta.area.areaNombre}" />
 									</span>
-									<span style="font-size: 0.75rem; background: #fefce8; color: #92400e; border-radius: 6px; padding: 0.15rem 0.5rem; font-weight: 600; border: 1px solid #fde68a;">
+									<span class="chip-pill" style="background: #fefce8; color: #92400e; border-color: #fde68a;">
 										<i class="pi pi-star" style="margin-right: 3px; font-size: 0.7rem;"></i>
 										<h:outputText value="#{oferta.especialidad.espeNombre}" />
 									</span>
@@ -158,44 +152,39 @@
 						<!-- Chip Activo -->
 						<p:chip label="Activo" icon="pi pi-check-circle"
 							rendered="#{oferta.ofcaEstado}"
-							style="background: #d1fae5; color: #065f46; font-weight: 700; font-size: 0.78rem; border: 1px solid #a7f3d0;" />
+							styleClass="chip-active chipstamanio" />
 						<!-- Chip Inactivo -->
 						<p:chip label="Inactivo" icon="pi pi-times-circle"
 							rendered="#{!oferta.ofcaEstado}"
-							style="background: #fee2e2; color: #991b1b; font-weight: 700; font-size: 0.78rem; border: 1px solid #fca5a5;" />
+							styleClass="chip-inactive chipstamanio" />
 					</p:column>
 
 					<!-- Columna: Acciones -->
 					<p:column headerText="#{etiquetas['acciones']}" style="width: 110px; text-align: center;">
 						<!-- Editar oferta -->
-						<p:commandLink
+						<p:commandLink class="command-link-edit"
 							title="#{tooltip['editar']}"
+							aria-label="#{tooltip['editar']}"
 							process="@this"
 							update="idasignaoferta growl"
 							partialSubmit="true"
 							action="#{backingCreacionCursos.editarOferta()}"
-							style="margin-right: 10px; display: inline-block;">
+							style="margin-right: 10px;">
 							<f:setPropertyActionListener value="#{oferta}"
 								target="#{backingCreacionCursos.beanCreacionCursos.ofertaCapacitacion}" />
-							<i class="pi pi-pencil"
-								style="font-size: 1.2rem; color: var(--primary-color); transition: transform 0.2s;"
-								onmouseover="this.style.transform='scale(1.2)';"
-								onmouseout="this.style.transform='scale(1)';"></i>
+							<i class="pi pi-pencil text-primary" style="font-size: 1.2rem;"></i>
 						</p:commandLink>
 
 						<!-- Ver detalle del curso -->
-						<p:commandLink
+						<p:commandLink class="command-link-edit"
 							title="Ver detalle del curso"
+							aria-label="Ver detalle del curso"
 							oncomplete="PF('dlgDetalleCurso').show();"
 							process="@this"
-							update="panelDetalleCurso"
-							style="display: inline-block;">
+							update="panelDetalleCurso">
 							<f:setPropertyActionListener value="#{oferta}"
 								target="#{backingCreacionCursos.beanCreacionCursos.ofertaCapacitacion}" />
-							<i class="pi pi-eye"
-								style="font-size: 1.2rem; color: #64748b; transition: transform 0.2s;"
-								onmouseover="this.style.transform='scale(1.2)'; this.style.color='var(--primary-color)';"
-								onmouseout="this.style.transform='scale(1)'; this.style.color='#64748b';"></i>
+							<i class="pi pi-eye" style="font-size: 1.2rem; color: var(--text-muted);"></i>
 						</p:commandLink>
 					</p:column>
 
@@ -205,8 +194,8 @@
 				<h:panelGroup
 					rendered="#{backingCreacionCursos.beanCreacionCursos.listaOfertaCapacitacion == null or backingCreacionCursos.beanCreacionCursos.listaOfertaCapacitacion.size() == 0}">
 					<div class="empty-state">
-						<div style="margin-bottom: 1.5rem;">
-							<i class="pi pi-book" style="font-size: 4rem; color: #94a3b8; padding: 1.5rem; background-color: #f8fafc; border-radius: 50%;"></i>
+						<div class="icon-container-lg bg-primary-light flex-center" style="margin-bottom: 1.5rem; width: 96px; height: 96px;">
+							<i class="pi pi-book" style="font-size: 3rem; color: var(--primary-color);"></i>
 						</div>
 						<h3>Sin cursos registrados</h3>
 						<p>
@@ -215,7 +204,6 @@
 						<p:commandButton value="Crear primer curso"
 							icon="pi pi-plus"
 							styleClass="ui-button-success"
-							style="padding: 0.5rem 1.5rem !important;"
 							actionListener="#{backingCreacionCursos.nuevaOferta()}"
 							process="@this" update="idasignaoferta" />
 					</div>
@@ -234,15 +222,15 @@
 				<p:outputPanel id="panelDetalleCurso" styleClass="p-p-2">
 					<div class="ui-fluid">
 						<!-- Encabezado del curso -->
-						<div style="display: flex; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color);">
-							<div style="width: 52px; height: 52px; border-radius: 12px; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-right: 1rem; box-shadow: var(--shadow-sm);">
-								<i class="pi pi-book"></i>
+						<div class="flex-row gap-md" style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color);">
+							<div class="icon-container icon-bg-primary flex-center" style="box-shadow: var(--shadow-sm);">
+								<i class="pi pi-book" style="font-size: 1.5rem; color: white;"></i>
 							</div>
 							<div>
 								<h3 style="margin: 0; font-weight: 700; color: var(--text-main); font-size: 1.1rem;">
 									#{backingCreacionCursos.beanCreacionCursos.ofertaCapacitacion.curso.cursNombre}
 								</h3>
-								<span style="color: var(--text-muted); font-size: 0.85rem; display: flex; align-items: center; gap: 4px; margin-top: 3px;">
+								<span class="flex-row gap-xs text-muted" style="font-size: var(--text-sm); margin-top: 3px;">
 									<i class="pi pi-id-card"></i> ID: #{backingCreacionCursos.beanCreacionCursos.ofertaCapacitacion.ofcaId}
 								</span>
 							</div>
@@ -253,14 +241,14 @@
 							<!-- Columna Clasificación -->
 							<div class="p-field p-col-12 p-md-6" style="margin-bottom: 1rem; padding-right: 0.5rem;">
 								<h5 class="section-title-accent">Clasificación</h5>
-								<div style="display: flex; flex-direction: column; gap: 0.75rem;">
+								<div class="flex-col gap-sm">
 									<div>
-										<small style="display: block; color: var(--text-muted); font-weight: 700; font-size: 0.72rem; text-transform: uppercase;">Área</small>
-										<span style="font-size: 0.9rem; color: var(--text-main); font-weight: 500;">#{backingCreacionCursos.beanCreacionCursos.ofertaCapacitacion.area.areaNombre}</span>
+										<small class="form-label">Área</small>
+										<span style="font-size: var(--text-sm); color: var(--text-main); font-weight: 500;">#{backingCreacionCursos.beanCreacionCursos.ofertaCapacitacion.area.areaNombre}</span>
 									</div>
 									<div>
-										<small style="display: block; color: var(--text-muted); font-weight: 700; font-size: 0.72rem; text-transform: uppercase;">Especialidad</small>
-										<span style="font-size: 0.9rem; color: var(--text-main); font-weight: 500;">#{backingCreacionCursos.beanCreacionCursos.ofertaCapacitacion.especialidad.espeNombre}</span>
+										<small class="form-label">Especialidad</small>
+										<span style="font-size: var(--text-sm); color: var(--text-main); font-weight: 500;">#{backingCreacionCursos.beanCreacionCursos.ofertaCapacitacion.especialidad.espeNombre}</span>
 									</div>
 								</div>
 							</div>
@@ -268,15 +256,15 @@
 							<!-- Columna Estado -->
 							<div class="p-field p-col-12 p-md-6" style="margin-bottom: 1rem; padding-left: 0.5rem;">
 								<h5 class="section-title-accent">Estado</h5>
-								<div style="display: flex; flex-direction: column; gap: 0.75rem;">
+								<div class="flex-col gap-sm">
 									<div>
-										<small style="display: block; color: var(--text-muted); font-weight: 700; font-size: 0.72rem; text-transform: uppercase; margin-bottom: 0.4rem;">Disponibilidad</small>
+										<small class="form-label">Disponibilidad</small>
 										<p:chip label="Activo" icon="pi pi-check-circle"
 											rendered="#{backingCreacionCursos.beanCreacionCursos.ofertaCapacitacion.ofcaEstado}"
-											style="background: #d1fae5; color: #065f46; font-weight: 700; border: 1px solid #a7f3d0;" />
+											styleClass="chip-active" />
 										<p:chip label="Inactivo" icon="pi pi-times-circle"
 											rendered="#{!backingCreacionCursos.beanCreacionCursos.ofertaCapacitacion.ofcaEstado}"
-											style="background: #fee2e2; color: #991b1b; font-weight: 700; border: 1px solid #fca5a5;" />
+											styleClass="chip-inactive" />
 									</div>
 								</div>
 							</div>
@@ -284,11 +272,10 @@
 					</div>
 
 					<!-- Pie del diálogo -->
-					<div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+					<div class="flex-row flex-wrap gap-sm" style="justify-content: flex-end; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
 						<p:commandButton value="Editar Curso"
 							icon="pi pi-pencil"
 							styleClass="ui-button-primary"
-							style="padding: 0.35rem 1.25rem !important;"
 							process="@this"
 							update="idasignaoferta growl"
 							partialSubmit="true"
@@ -296,8 +283,7 @@
 							oncomplete="PF('dlgDetalleCurso').hide();" />
 						<p:commandButton value="Cerrar" type="button"
 							onclick="PF('dlgDetalleCurso').hide();"
-							styleClass="ui-button-outlined ui-button-secondary"
-							style="padding: 0.35rem 1.25rem !important;" />
+							styleClass="ui-button-outlined ui-button-secondary" />
 					</div>
 				</p:outputPanel>
 			</p:dialog>

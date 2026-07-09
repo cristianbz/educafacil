@@ -20,43 +20,43 @@ import org.apache.logging.log4j.Logger;
 @LocalBean
 public class AuthService {
 
-    private static final Logger log = LogManager.getLogger(AuthService.class);
+	private static final Logger log = LogManager.getLogger(AuthService.class);
 
-	 @EJB
-	    private UsuarioDao usuarioDao;
+	@EJB
+	private UsuarioDao usuarioDao;
 
-	    public Usuario autenticar(String username, String password) {
-	        Usuario usuario = usuarioDao.consultarUsuarioPorDocumento(username);
-	        
-	        if (usuario != null && usuario.isUsuaEstado()) {
-	            String hashAlmacenado = usuario.getUsuaClave();
-	            boolean valido = false;
+	public Usuario autenticar(String username, String password) {
+		Usuario usuario = usuarioDao.consultarUsuarioPorDocumento(username);
 
-	            if (Encriptar.esHashBCrypt(hashAlmacenado)) {
-	                valido = Encriptar.verificarBCrypt(password, hashAlmacenado);
-	            } else {
-	                valido = hashAlmacenado.equals(Encriptar.encriptarSHA512(password));
-	                if (valido) {
-	                    usuario.setUsuaClave(Encriptar.encriptarBCrypt(password));
-	                    usuarioDao.actualizar(usuario);
-	                }
-	            }
-	            if (valido) {
-	                return usuario;
-	            }
-	        }
-	        return null;
-	    }
+		if (usuario != null && usuario.isUsuaEstado()) {
+			String hashAlmacenado = usuario.getUsuaClave();
+			boolean valido = false;
 
-	    public List<String> obtenerRoles(int idUsuario) {
-	        Usuario usuario = usuarioDao.getEntityManager().find(Usuario.class, idUsuario);
-	        if (usuario != null && usuario.getUsuarioRol() != null) {
-	            return usuario.getUsuarioRol().stream()
-	                    .filter(UsuarioRol::getUrolEstado)
-	                    .map(ur -> ur.getRol().getRolNombre())
-	                    .collect(Collectors.toList());
-	        }
-	        return new ArrayList<>();
-	    }
+			if (Encriptar.esHashBCrypt(hashAlmacenado)) {
+				valido = Encriptar.verificarBCrypt(password, hashAlmacenado);
+			} else {
+				valido = hashAlmacenado.equals(Encriptar.encriptarSHA512(password));
+				if (valido) {
+					usuario.setUsuaClave(Encriptar.encriptarBCrypt(password));
+					usuarioDao.actualizar(usuario);
+				}
+			}
+			if (valido) {
+				return usuario;
+			}
+		}
+		return null;
 	}
+
+	public List<String> obtenerRoles(int idUsuario) {
+		Usuario usuario = usuarioDao.getEntityManager().find(Usuario.class, idUsuario);
+		if (usuario != null && usuario.getUsuarioRol() != null) {
+			return usuario.getUsuarioRol().stream()
+					.filter(UsuarioRol::getUrolEstado)
+					.map(ur -> ur.getRol().getRolNombre())
+					.collect(Collectors.toList());
+		}
+		return new ArrayList<>();
+	}
+}
 
