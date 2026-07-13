@@ -51,8 +51,8 @@
 								<p:ajax event="blur"
 									listener="#{backingMatriculaOnline.buscaPersonaPorCedula}"
 									partialSubmit="true" process="@this" update="panelPersona btnMatricula growl"
-									onstart="PF('dlgEnProc').show();"
-									oncomplete="PF('dlgEnProc').hide();" />
+									onstart="showLoading();"
+									oncomplete="hideLoading();" />
 							</p:inputText>
 						</div>
 						<div class="p-field p-col-12 p-md-3">

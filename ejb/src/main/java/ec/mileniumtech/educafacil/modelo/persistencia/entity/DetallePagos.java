@@ -1,5 +1,6 @@
 package ec.mileniumtech.educafacil.modelo.persistencia.entity;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 import jakarta.persistence.Column;
@@ -32,8 +33,8 @@ public class DetallePagos implements Serializable {
 	@Column(name="depa_id")
 	private Integer depaId;
 	
-	@Column(name="depa_valor")
-	private Double depaValor;
+	@Column(name="depa_valor", precision = 10, scale = 2)
+    private BigDecimal depaValor;
 	
 	@Column(name="depa_observacion")
 	private String depaObservacion;

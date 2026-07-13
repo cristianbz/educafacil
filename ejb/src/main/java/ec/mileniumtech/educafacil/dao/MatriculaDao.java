@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import ec.mileniumtech.educafacil.modelo.persistencia.dto.DtoFlujoDinero;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.DtoMatriculasCurso;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Matricula;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Persona;
@@ -40,4 +41,5 @@ public interface MatriculaDao extends GenericoDao<Matricula, Long> {
     Integer totalMatriculasDesertadas(int anio, int mes);
     Map<Integer, Integer> obtenerMatriculasHastaMes(int anio, int mesLimite);
     List<Matricula> listaMatriculasPorAnio(int anio);
+    List<DtoFlujoDinero> buscaDeudasPagosReporteria(Date fechaInicial, Date fechaFinal);
 }

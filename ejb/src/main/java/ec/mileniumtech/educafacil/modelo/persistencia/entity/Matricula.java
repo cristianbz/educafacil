@@ -1,6 +1,7 @@
 package ec.mileniumtech.educafacil.modelo.persistencia.entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -104,9 +105,15 @@ public class Matricula implements Serializable {
 	
 	@Column(name="matr_motivacion_curso")
 	private String matrMotivacionCurso;
+		
+	@Column(name="matr_saldo_pago_curso", precision = 10, scale = 2)
+    private BigDecimal matrSaldoPagoCurso;
+	
+	@Column(name="matr_fecha_ultimo_pago")
+	private Date matrFechaUltimoPago;
 	
 	@Transient
-	private double totalPagadoCurso;
+	private BigDecimal totalPagadoCurso;
 	
 	@NotNull(message = "{matricula.estudiante.required}")
 	@ManyToOne(optional = false)

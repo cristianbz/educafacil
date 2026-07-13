@@ -4,18 +4,20 @@
 package ec.mileniumtech.educafacil.dao.impl;
 
 
-import ec.mileniumtech.educafacil.dao.PagosDao;import java.text.DateFormat;
+import java.math.BigDecimal;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
+import ec.mileniumtech.educafacil.dao.PagosDao;
 import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.dao.util.JpaDaoSupport;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.DtoFlujoDinero;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetallePagos;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.Matricula;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Pagos;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
@@ -41,11 +43,19 @@ public class PagosDaoImpl extends GenericoDaoImpl<Pagos, Long> implements PagosD
 	}
 	public void agregarPago(Pagos pago) {
 		try{
+			Matricula matricula= pago.getMatricula();
+			BigDecimal totalPagado=BigDecimal.ZERO;
 			getEntityManager().persist(pago);
 			for (DetallePagos detalle : pago.getDetallePagos()) {
 //				detalle.setPagos(pago);
+				totalPagado = totalPagado.add(detalle.getDepaValor());
 				getEntityManager().persist(detalle);
 			}
+			BigDecimal nuevoSaldo = matricula.getMatrSaldoPagoCurso().subtract(totalPagado);
+
+			matricula.setMatrSaldoPagoCurso(nuevoSaldo);
+			matricula.setMatrFechaUltimoPago(new Date());
+			getEntityManager().merge(matricula);
 
 		}catch(PersistenceException e){
 			JpaDaoSupport.throwIfConstraintViolationDuplicate(e);
@@ -68,6 +78,24 @@ public class PagosDaoImpl extends GenericoDaoImpl<Pagos, Long> implements PagosD
 	public List<Pagos> listarTodosLosPagos() {
 		try {
 			Query query = getEntityManager().createQuery("SELECT p FROM Pagos p ORDER BY p.pagoFecha DESC");
+			return query.getResultList();
+		} catch (Exception e) {
+			throw new SystemException("Error al listar todos los pagos", "PAGO-LIST-ERR", e);
+		}
+	}
+	/**
+	 * Busca los pagos por rangos de fecha
+	 * @param fechaInicial
+	 * @param fechaFinal
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Pagos> listarTodosLosPagosPorRangoFecha(Date fechaInicial, Date fechaFinal) {
+		try {
+			Query query = getEntityManager().createQuery("SELECT p FROM Pagos p INNER JOIN FETCH p.detallePagos WHERE p.pagoFecha BETWEEN :fechaInicial AND :fechaFinal ORDER BY p.pagoFecha DESC");
+			query.setParameter("fechaInicial", fechaInicial);
+			query.setParameter("fechaFinal", fechaFinal);
+			
 			return query.getResultList();
 		} catch (Exception e) {
 			throw new SystemException("Error al listar todos los pagos", "PAGO-LIST-ERR", e);

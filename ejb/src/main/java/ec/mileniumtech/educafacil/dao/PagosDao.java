@@ -22,4 +22,5 @@ public interface PagosDao extends GenericoDao<Pagos, Long> {
     List<Pagos> listarTodosLosPagos();
     List<DetallePagos> buscaPagosPorMatricula(int codigoMatricula);
     List<DtoFlujoDinero> buscaIngresosReporteria(Date fechaInicial, Date fechaFinal);
+    List<Pagos> listarTodosLosPagosPorRangoFecha(Date fechaInicial, Date fechaFinal);
 }

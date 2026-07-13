@@ -120,7 +120,7 @@ public class FacturacionService {
             DetalleFactura df = new DetalleFactura();
             df.setFactura(factura);
             df.setCantidad(1);
-            df.setPrecioUnitario(new BigDecimal(dp.getDepaValor()));
+            df.setPrecioUnitario(dp.getDepaValor());
             df.setDescuento(BigDecimal.ZERO);
             df.setItem(itemDefecto);
             detalles.add(df);
@@ -140,7 +140,9 @@ public class FacturacionService {
         PagosFacturados pafa = new PagosFacturados();
         pafa.setFactura(factura);
         pafa.setFecha(LocalDate.now());
-        pafa.setMonto(new BigDecimal(pago.getDetallePagos().stream().mapToDouble(DetallePagos::getDepaValor).sum()));
+        pafa.setMonto(pago.getDetallePagos().stream()
+                .map(DetallePagos::getDepaValor)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
         pafa.setMetodo("01"); // Sin utilizaciÃ³n del sistema financiero por defecto
         pafa.setReferencia("PAGO-" + pago.getPagoId());
         pagosFact.add(pafa);

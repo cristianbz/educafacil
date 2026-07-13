@@ -105,5 +105,9 @@ public class ContabilidadFacade {
     public List<Pagos> listarTodosLosPagos() {
         return pagosDao.listarTodosLosPagos();
     }
+    
+    public List<Pagos> listarTodosLosPagosPorRangoFechas(Date fechaInicial,Date fechaFinal) {
+        return pagosDao.listarTodosLosPagosPorRangoFecha(fechaInicial,fechaFinal);
+    }
 }
 

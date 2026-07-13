@@ -27,5 +27,13 @@ public enum EnumFormaPago {
 	public static EnumFormaPago[] listaValores() {
 		return values();
 	}
+	public static String obtenerLabelPorCodigo(String codigo) {
+        for (EnumFormaPago fp : values()) {
+            if (fp.getCodigo().equals(codigo)) {
+                return fp.getLabel();
+            }
+        }
+        return "Otro"; // Tu valor por defecto
+    }
 }
 
