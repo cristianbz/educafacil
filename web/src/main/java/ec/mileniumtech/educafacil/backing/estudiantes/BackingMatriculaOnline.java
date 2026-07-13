@@ -6,6 +6,7 @@ package ec.mileniumtech.educafacil.backing.estudiantes;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -187,6 +188,9 @@ public class BackingMatriculaOnline implements Serializable {
 			getBeanMatricula().getMatricula().setOfertaCursos(getBeanMatricula().getCursoSeleccionado());
 			getBeanMatricula().getMatricula().setMatrMedioInformacion(getBeanMatricula().getCodigoMedioInformacion());
 			getBeanMatricula().getMatricula().setCampania(getBeanMatricula().getCampania());
+			double valorCurso = getBeanMatricula().getCursoSeleccionado().getOcurValor();
+			BigDecimal saldoInicial = BigDecimal.valueOf(valorCurso);
+			getBeanMatricula().getMatricula().setMatrSaldoPagoCurso(saldoInicial);
 			String cedula = getBeanMatricula().getPersona().getPersDocumentoIdentidad();
 			usuarioE.setUsuaUsuario(cedula);
 			password=getBeanMatricula().getPersona().getPersTelefonoMobil();

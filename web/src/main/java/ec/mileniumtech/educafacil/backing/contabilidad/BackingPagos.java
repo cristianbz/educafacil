@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -185,12 +186,12 @@ public class BackingPagos implements Serializable{
         }
     
         public void agregarServicio() {
-        Double valor = getBeanPagos().getDetallePagos().getDepaValor();
+        BigDecimal valor = getBeanPagos().getDetallePagos().getDepaValor();
         if (getBeanPagos().getServicioSeleccionado() == null) {
             Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), "Seleccione un servicio");
             return;
         }
-        if (valor != null && valor > 0.00) {
+        if (valor != null && valor.compareTo(BigDecimal.ZERO) > 0) {
             if(getBeanPagos().getMatricula().getMatrId()!=null) {
                 getBeanPagos().getPago().setMatricula(getBeanPagos().getMatricula());
                 getBeanPagos().getDetallePagos().setCatalogo(getBeanPagos().getServicioSeleccionado());
@@ -217,7 +218,7 @@ public class BackingPagos implements Serializable{
 
     public void grabarPago() {
         try {
-            double totalPagado = getBeanPagos().getMatricula().getTotalPagadoCurso(); 
+            BigDecimal totalPagado = getBeanPagos().getMatricula().getTotalPagadoCurso(); 
             getBeanPagos().getPago().setPagoFecha(new Date());            
             getBeanPagos().getPago().setDetallePagos(getBeanPagos().getListaDetallePagos());
             getBeanPagos().getPago().setPagoUsuarioIngreso(getBeanLogin().getUsuario().getUsuaUsuario());
@@ -227,7 +228,17 @@ public class BackingPagos implements Serializable{
             getBeanPagos().setListaDetallePagosRealizados(new ArrayList<>());
             getBeanPagos().setListaDetallePagosRealizados(getContabilidadDataService().buscaPagosPorMatricula(getBeanPagos().getPago().getMatricula().getMatrId()));
 
-            getBeanPagos().getMatricula().setTotalPagadoCurso(totalPagado + getBeanPagos().getPago().getDetallePagos().stream().mapToDouble(p -> p.getDepaValor()).sum());
+//            getBeanPagos().getMatricula().setTotalPagadoCurso(totalPagado + getBeanPagos().getPago().getDetallePagos().stream().mapToDouble(p -> p.getDepaValor()).sum());
+         // 1. Sumamos todos los depa_valor del detalle usando el Stream correcto para BigDecimal
+            BigDecimal sumaDetalles = getBeanPagos().getPago().getDetallePagos().stream()
+                .map(p -> p.getDepaValor()) // Obtenemos el BigDecimal de cada detalle
+                .reduce(BigDecimal.ZERO, BigDecimal::add); // Los sumamos todos empezando desde cero
+
+            // 2. Sumamos el 'totalPagado' acumulado previamente a la suma del Stream
+            BigDecimal totalFinal = totalPagado.add(sumaDetalles);
+
+            // 3. Lo asignamos finalmente a la matrícula
+            getBeanPagos().getMatricula().setTotalPagadoCurso(totalFinal);
 
             Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, getMensajesBacking().getPropiedad("info"), getMensajesBacking().getPropiedad("info.grabar"));
 
@@ -292,9 +303,9 @@ public class BackingPagos implements Serializable{
                     this.ticketDetalles = pago.getDetallePagos();
                 }
                 
-                double total = 0.0;
+                BigDecimal total = BigDecimal.ZERO;
                 if (this.ticketDetalles != null) {
-                    total = this.ticketDetalles.stream().mapToDouble(DetallePagos::getDepaValor).sum();
+                	total = this.ticketDetalles.stream().map(DetallePagos::getDepaValor).reduce(BigDecimal.ZERO, BigDecimal::add);
                 }
                 this.ticketValor = String.format(java.util.Locale.US, "%.2f", total);
                 
@@ -347,7 +358,7 @@ public class BackingPagos implements Serializable{
                     det.setPagos(nuevoPago);
                     det.setDepaFormaPago(getBeanPagos().getFormaPago() != null ? getBeanPagos().getFormaPago() : "FORMP01");
                     det.setDepaObservacion("Pago de Cuota N° " + cuota.getCuoNumero());
-                    det.setDepaValor(cuota.getCuoValor());
+                    det.setDepaValor(BigDecimal.valueOf(cuota.getCuoValor()));
                     det.setDepaEstado(true);
                     det.setDepaFechaInserto(new Date());
                     det.setDepaUsuarioInserto(getBeanLogin().getUsuario().getUsuaUsuario());
@@ -385,8 +396,8 @@ public class BackingPagos implements Serializable{
             }
 
             // 6. Actualizar el acumulado histórico en la matrícula del alumno
-            double totalAnterior = getBeanPagos().getMatricula().getTotalPagadoCurso();
-            getBeanPagos().getMatricula().setTotalPagadoCurso(totalAnterior + totalPagadoTransaccion);
+            BigDecimal totalAnterior = getBeanPagos().getMatricula().getTotalPagadoCurso();
+            getBeanPagos().getMatricula().setTotalPagadoCurso(totalAnterior.add(BigDecimal.valueOf(totalPagadoTransaccion)));
 
             // 7. Disparar impresión de Ticket Térmico en caliente
             imprimirTicketTermicoPorPago(nuevoPago);
@@ -616,9 +627,9 @@ public class BackingPagos implements Serializable{
         }
     }
 
-    public double getTotalLineasPago() {
-        if (getBeanPagos().getListaDetallePagos() == null) return 0;
-        return getBeanPagos().getListaDetallePagos().stream().mapToDouble(DetallePagos::getDepaValor).sum();
+    public BigDecimal getTotalLineasPago() {
+        if (getBeanPagos().getListaDetallePagos() == null) return BigDecimal.ZERO;
+        return getBeanPagos().getListaDetallePagos().stream().map(DetallePagos::getDepaValor).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public double getTotalCuotasSeleccionadas() {
@@ -662,22 +673,52 @@ public class BackingPagos implements Serializable{
             PrimeFaces.current().executeScript("PF('dlgDeudores').hide()");
             return;
         }
+//        for (Matricula mat : getBeanPagos().getListaCursosMatriculados()) {
+//            double valorCurso = mat.getOfertaCursos().getOcurValor();
+//            double descuento = mat.getOfertaCursos().getOcurDescuento();
+//            double valorFinal = valorCurso - descuento;
+//            double totalPagado = mat.getTotalPagadoCurso();
+//            double deuda = valorFinal - totalPagado;
+//            if (deuda > 0.01) {
+//                String cedula = mat.getEstudiante().getPersona().getPersDocumentoIdentidad() != null
+//                        ? mat.getEstudiante().getPersona().getPersDocumentoIdentidad() : "";
+//                listaDeudores.add(DtoDeudorCurso.builder()
+//                        .apellidos(mat.getEstudiante().getPersona().getPersApellidos())
+//                        .nombres(mat.getEstudiante().getPersona().getPersNombres())
+//                        .cedula(cedula)
+//                        .valorCurso(valorFinal)
+//                        .totalPagado(totalPagado)
+//                        .deuda(Math.round(deuda * 100.0) / 100.0)
+//                        .build());
+//            }
+//        }
         for (Matricula mat : getBeanPagos().getListaCursosMatriculados()) {
-            double valorCurso = mat.getOfertaCursos().getOcurValor();
-            double descuento = mat.getOfertaCursos().getOcurDescuento();
-            double valorFinal = valorCurso - descuento;
-            double totalPagado = mat.getTotalPagadoCurso();
-            double deuda = valorFinal - totalPagado;
-            if (deuda > 0.01) {
+            // 1. Convertimos los valores del curso y descuento a BigDecimal de forma segura
+            BigDecimal valorCurso = BigDecimal.valueOf(mat.getOfertaCursos().getOcurValor());
+            BigDecimal descuento = BigDecimal.valueOf(mat.getOfertaCursos().getOcurDescuento());
+            
+            // 2. Operaciones matemáticas exactas: valorFinal = valorCurso - descuento
+            BigDecimal valorFinal = valorCurso.subtract(descuento);
+            
+            // 3. Obtenemos el total pagado (que ya es BigDecimal)
+            BigDecimal totalPagado = mat.getTotalPagadoCurso();
+            
+            // 4. Calculamos la deuda exacta: deuda = valorFinal - totalPagado
+            BigDecimal deuda = valorFinal.subtract(totalPagado);
+            
+            // 5. Comparamos si la deuda es mayor a 0.01 usando .compareTo()
+            if (deuda.compareTo(new BigDecimal("0.01")) > 0) {
                 String cedula = mat.getEstudiante().getPersona().getPersDocumentoIdentidad() != null
                         ? mat.getEstudiante().getPersona().getPersDocumentoIdentidad() : "";
+                        
                 listaDeudores.add(DtoDeudorCurso.builder()
                         .apellidos(mat.getEstudiante().getPersona().getPersApellidos())
                         .nombres(mat.getEstudiante().getPersona().getPersNombres())
                         .cedula(cedula)
-                        .valorCurso(valorFinal)
-                        .totalPagado(totalPagado)
-                        .deuda(Math.round(deuda * 100.0) / 100.0)
+                        // 6. Pasamos los datos al DTO convirtiéndolos a double al final
+                        .valorCurso(valorFinal.doubleValue())
+                        .totalPagado(totalPagado.doubleValue())
+                        .deuda(deuda.doubleValue()) // Eliminamos el Math.round porque BigDecimal ya es exacto
                         .build());
             }
         }

@@ -5,16 +5,20 @@ package ec.mileniumtech.educafacil.dao.impl;
 
 
 import ec.mileniumtech.educafacil.dao.MatriculaDao;import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.hibernate.Hibernate;
 
 import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.dao.util.JpaDaoSupport;
+import ec.mileniumtech.educafacil.modelo.persistencia.dto.DtoFlujoDinero;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.DtoMatriculasCurso;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetallePagos;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Estudiante;
@@ -29,6 +33,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
+import jakarta.persistence.TemporalType;
 import lombok.Getter;
 
 /**
@@ -254,11 +259,11 @@ public class MatriculaDaoImpl extends GenericoDaoImpl<Matricula, Long> implement
 			query.setParameter("codigoOferta", codigoOferta);
 			for (Object obj : query.getResultList()) {
 				Matricula matricula = (Matricula) obj;
-				double total = matricula.getPagos().stream()
-						.flatMap(pago -> pago.getDetallePagos().stream())
-						.peek(dpago -> Hibernate.initialize(dpago))
-						.mapToDouble(DetallePagos::getDepaValor)
-						.sum();
+				BigDecimal total = matricula.getPagos().stream()
+				        .flatMap(pago -> pago.getDetallePagos().stream())
+				        .peek(dpago -> Hibernate.initialize(dpago)) // Mantiene la inicialización diferida de Hibernate
+				        .map(DetallePagos::getDepaValor)             // Cambiado de mapToDouble a map
+				        .reduce(BigDecimal.ZERO, BigDecimal::add);   // Cambiado de .sum() a .reduce()
 				matricula.setTotalPagadoCurso(total);
 			}
 			
@@ -483,6 +488,44 @@ public class MatriculaDaoImpl extends GenericoDaoImpl<Matricula, Long> implement
 			return null;
 		}catch(Exception e) {
 			throw new SystemException("Error al cargar lista  matriculasPorAnio", "MATRI-LIST-ERR", e);
+		}
+	}
+	
+	public List<DtoFlujoDinero> buscaDeudasPagosReporteria(Date fechaInicial, Date fechaFinal)
+	{
+		try {
+			DateFormat formatoFecha = new SimpleDateFormat ("yyyy-MM-dd");
+
+			List <DtoFlujoDinero> listaFlujo = new ArrayList<DtoFlujoDinero>();
+			String queryString;
+			queryString="SELECT EXTRACT(YEAR FROM matr_fecha_ultimo_pago) as anio, EXTRACT(MONTH FROM matr_fecha_ultimo_pago)as mes,matr_fecha_ultimo_pago, SUM(matr_saldo_pago_curso) "
+					+ "FROM cap.matricula WHERE matr_fecha_ultimo_pago BETWEEN :fechaInicial AND :fechaFinal "
+					+ "GROUP BY matr_fecha_ultimo_pago ORDER BY matr_fecha_ultimo_pago,anio,mes;";
+
+			Query query = getEntityManager().createNativeQuery(queryString);
+			query.setParameter("fechaInicial", fechaInicial, TemporalType.DATE);
+			query.setParameter("fechaFinal", fechaFinal, TemporalType.DATE);
+
+			List<Object[]> objetos = query.getResultList();
+
+			if(!objetos.isEmpty()){
+				return objetos.stream().map(registro -> {
+					DtoFlujoDinero flujoDinero = new DtoFlujoDinero();
+					flujoDinero.setAnio(Double.parseDouble(registro[0].toString()));
+					flujoDinero.setMes(Double.parseDouble(registro[1].toString()));					
+					try {
+						flujoDinero.setFecha(formatoFecha.parse(registro[2].toString()));
+					} catch (Exception e) {
+						flujoDinero.setFecha(null);
+					}
+					flujoDinero.setValor(Double.parseDouble(registro[3].toString()));
+					return flujoDinero;
+				}).collect(Collectors.toList());
+			}else{
+				return null;
+			}
+		} catch (Exception e) {
+			throw new SystemException("Error al cargar  lista flujo dinero por fecha inicio y fin", "PAGOS-LIST-ERR", e);
 		}
 	}
 }

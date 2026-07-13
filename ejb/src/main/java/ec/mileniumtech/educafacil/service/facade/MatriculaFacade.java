@@ -19,6 +19,7 @@ import ec.mileniumtech.educafacil.dao.OfertaCursosDao;
 import ec.mileniumtech.educafacil.dao.PersonaDao;
 import ec.mileniumtech.educafacil.dao.UsuarioDao;
 import ec.mileniumtech.educafacil.dao.UsuarioRolDao;
+import ec.mileniumtech.educafacil.modelo.persistencia.dto.DtoFlujoDinero;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.DtoMatriculasCurso;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.ObjetosMenuDto;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Area;
@@ -163,6 +164,9 @@ public class MatriculaFacade {
     
     public List<Matricula> listaMatriculasPorAnio(int anio){
     	return matriculaDao.listaMatriculasPorAnio(anio);
+    }
+    public List<DtoFlujoDinero> buscaDeudasPagosReporteria(Date fechaInicial, Date fechaFinal){
+    	return matriculaDao.buscaDeudasPagosReporteria(fechaInicial, fechaFinal);
     }
     // ========== Estudiante ==========
 

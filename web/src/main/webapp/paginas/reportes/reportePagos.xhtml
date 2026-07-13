@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="jakarta.faces.facelets" xmlns:f="jakarta.faces.core"
+	xmlns:h="jakarta.faces.html" xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
+
+	<ui:define name="contenido">
+		<f:event listener="#{backingLogin.validarSesion()}" type="preRenderView" />
+
+		<h:form id="form" prependId="false">
+			<p:growl id="growl" life="3000" showDetail="true" />
+
+			<!-- 🔵 BREADCRUMB -->
+			<p:breadCrumb styleClass="mb-3">
+				<p:menuitem value="Inicio" outcome="/paginas/inicio?faces-redirect=true" icon="pi pi-home" />
+				<p:menuitem value="Reportes" />
+				<p:menuitem value="Reporte de Pagos" />
+			</p:breadCrumb>
+
+			<!-- 🔵 HEADER SECTION -->
+			<div class="page-header">
+				<div class="page-title">
+					<h2>Reporte de Pagos</h2>
+					<small>Seguimiento de cobros, mora y métodos de pago —
+						#{backingReportePagos.beanReportes.fechaFiltro}</small>
+				</div>
+				<div class="page-actions">
+					<span class="filter-label">Filtrar Período:</span>
+					<p:inputText id="fechaFiltro" value="#{backingReportePagos.beanReportes.fechaFiltro}" type="month"
+						styleClass="filter-input" />
+
+					<p:commandButton value="Actualizar" actionListener="#{backingReportePagos.actualizarFiltro()}"
+						update="@form" icon="pi pi-refresh" styleClass="ui-button-outlined" />
+
+					<p:commandButton value="Exportar" actionListener="#{backingReportePagos.exportarReporte()}"
+						icon="pi pi-download" styleClass="ui-button-primary" />
+				</div>
+			</div>
+
+			<!-- 🔵 KPI CARDS SECTION -->
+			<div class="dashboard-stats mb-4">
+
+				<!-- Card 1: TOTAL COBRADO -->
+				<div class="stats-card stats-card-success">
+					<div class="stats-content">
+						<span class="stats-label">TOTAL COBRADO</span>
+						<span class="stats-value" style="color: #10b981;">
+							$<h:outputText value="#{backingReportePagos.beanReportes.totalCobrado}">
+								<f:convertNumber pattern="#,##0.00" />
+							</h:outputText>
+						</span>
+						<span class="stats-desc">#{backingReportePagos.beanReportes.fechaFiltro}</span>
+						<span class="stats-trend" style="font-size: 0.8rem; font-weight: 700;
+							color: #{backingReportePagos.beanReportes.tendenciaCobradoSubio ? '#10b981' : '#ef4444'};
+							margin-top: 4px; display: inline-flex; align-items: center; gap: 2px;">
+							#{backingReportePagos.beanReportes.tendenciaCobrado}
+						</span>
+					</div>
+					<div class="stats-icon-wrapper" style="background: rgba(16,185,129,0.1); color: #10b981;">
+						<i class="pi pi-dollar" style="font-size: 1.5rem;"></i>
+					</div>
+				</div>
+
+				<!-- Card 2: PENDIENTE DE COBRO -->
+				<div class="stats-card stats-card-warning">
+					<div class="stats-content">
+						<span class="stats-label">PENDIENTE DE COBRO</span>
+						<span class="stats-value" style="color: #f59e0b;">
+							$<h:outputText value="#{backingReportePagos.beanReportes.pendienteCobro}">
+								<f:convertNumber pattern="#,##0.00" />
+							</h:outputText>
+						</span>
+						<span class="stats-desc">#{backingReportePagos.beanReportes.facturasAbiertas} facturas
+							abiertas</span>
+						<span style="height: 20px; display: block;"></span>
+					</div>
+					<div class="stats-icon-wrapper" style="background: rgba(245,158,11,0.1); color: #f59e0b;">
+						<i class="pi pi-clock" style="font-size: 1.5rem;"></i>
+					</div>
+				</div>
+
+				<!-- Card 3: EN MORA -->
+				<div class="stats-card stats-card-danger">
+					<div class="stats-content">
+						<span class="stats-label">EN MORA</span>
+						<span class="stats-value" style="color: #ef4444;">
+							$<h:outputText value="#{backingReportePagos.beanReportes.totalMora}">
+								<f:convertNumber pattern="#,##0.00" />
+							</h:outputText>
+						</span>
+						<span class="stats-desc">#{backingReportePagos.beanReportes.alumnosEnMora} alumnos en
+							mora</span>
+						<span class="stats-trend" style="font-size: 0.8rem; font-weight: 700; color: #ef4444;
+							margin-top: 4px; display: inline-flex; align-items: center; gap: 2px;">
+							#{backingReportePagos.beanReportes.tendenciaMora}
+						</span>
+					</div>
+					<div class="stats-icon-wrapper" style="background: rgba(239,68,68,0.1); color: #ef4444;">
+						<i class="pi pi-exclamation-triangle" style="font-size: 1.5rem;"></i>
+					</div>
+				</div>
+
+				<!-- Card 4: INGRESOS YTD -->
+				<div class="stats-card stats-card-primary">
+					<div class="stats-content">
+						<span class="stats-label">INGRESOS YTD</span>
+						<span class="stats-value" style="color: #2563eb;">
+							$<h:outputText value="#{backingReportePagos.beanReportes.ingresosYtd}">
+								<f:convertNumber pattern="#,##0.00" />
+							</h:outputText>
+						</span>
+						<span class="stats-desc">Acum.
+							Ene–#{backingReportePagos.beanReportes.fechaFiltro.split('-')[0]}</span>
+						<span class="stats-trend" style="font-size: 0.8rem; font-weight: 700;
+							color: #{backingReportePagos.beanReportes.tendenciaYtdSubio ? '#10b981' : '#ef4444'};
+							margin-top: 4px; display: inline-flex; align-items: center; gap: 2px;">
+							#{backingReportePagos.beanReportes.tendenciaYtd}
+						</span>
+					</div>
+					<div class="stats-icon-wrapper" style="background: rgba(37,99,235,0.1); color: #2563eb;">
+						<i class="pi pi-chart-line" style="font-size: 1.5rem;"></i>
+					</div>
+				</div>
+
+			</div><!-- /dashboard-stats -->
+
+			<!-- 🔵 CHARTS ROW -->
+			<div class="ui-fluid p-formgrid p-grid mb-4">
+
+				<!-- LineChart: Ingresos Mensuales -->
+				<div class="p-field p-col-12 p-md-7 p-sm-12">
+					<p:card
+						style="border-radius: 12px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); height: 100%;">
+						<f:facet name="title">
+							<span style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">
+								Ingresos Mensuales #{backingReportePagos.beanReportes.fechaFiltro.split('-')[0]} ($)
+							</span>
+						</f:facet>
+						<p:lineChart model="#{backingReportePagos.beanReportes.ingresosMensualesModel}" />
+					</p:card>
+				</div>
+
+				<!-- PieChart: Métodos de Pago -->
+				<div class="p-field p-col-12 p-md-5 p-sm-12">
+					<p:card
+						style="border-radius: 12px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); height: 100%;">
+						<f:facet name="title">
+							<span style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">Métodos de Pago
+								(%)</span>
+						</f:facet>
+						<p:pieChart model="#{backingReportePagos.beanReportes.metodosPagoModel}"
+							style="width: 100%; height: 340px;" />
+					</p:card>
+				</div>
+
+			</div><!-- /charts row -->
+
+			<!-- 🔵 PAGOS RECIENTES TABLE -->
+			<p:card
+				style="border-radius: 12px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); margin-top: 1.5rem;">
+				<f:facet name="title">
+					<div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+						<span style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">Pagos
+							Recientes</span>
+						<span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">
+							#{backingReportePagos.beanReportes.listaPagosRecientes.size()} transacciones
+						</span>
+					</div>
+				</f:facet>
+
+				<p:dataTable id="tblPagos" value="#{backingReportePagos.beanReportes.listaPagosRecientes}" var="pago"
+					rows="10" paginator="true" reflow="true" styleClass="ui-datatable-striped"
+					emptyMessage="No hay pagos registrados para el período seleccionado.">
+
+					<!-- COMPROBANTE -->
+					<p:column headerText="COMPROBANTE" style="width: 18%;">
+						<h:outputText value="#{backingReportePagos.obtenerComprobante(pago)}"
+							style="font-family: monospace; font-size: 0.82rem; color: var(--text-muted);" />
+					</p:column>
+
+					<!-- ALUMNO -->
+					<p:column headerText="ALUMNO" style="width: 22%; font-weight: 600;">
+						<h:outputText value="#{backingReportePagos.obtenerNombreAlumno(pago)}"
+							style="font-weight: 600; text-transform: uppercase;" />
+					</p:column>
+
+					<!-- CONCEPTO -->
+					<p:column headerText="CONCEPTO" style="width: 22%;">
+						<h:outputText value="#{backingReportePagos.obtenerConcepto(pago)}" />
+					</p:column>
+
+					<!-- VALOR -->
+					<p:column headerText="VALOR" style="width: 10%; text-align: right;">
+						<h:outputText value="#{backingReportePagos.obtenerValorTotalPago(pago)}" style="font-weight: 700; color: var(--text-main);">
+							<f:convertNumber 
+								pattern="$#,##0.00" />
+						</h:outputText>
+					</p:column>
+
+					<!-- FECHA -->
+					<p:column headerText="FECHA" style="width: 11%; text-align: center;">
+						<h:outputText value="#{backingReportePagos.formatFechaPago(pago)}" />
+					</p:column>
+
+					<!-- MÉTODO -->
+					<p:column headerText="MÉTODO" style="width: 10%; text-align: center;">
+						<span style="font-size: 0.75rem; border-radius: 6px; padding: 0.25rem 0.6rem; font-weight: 700;
+									display: inline-block;
+									background: #{backingReportePagos.obtenerColorMetodo(pago)};
+									border: 1px solid #{backingReportePagos.obtenerColorMetodo(pago)};
+									color: #374151;">
+							#{backingReportePagos.obtenerMetodoPago(pago)}
+						</span>
+					</p:column>
+
+					<!-- ESTADO -->
+					<p:column headerText="ESTADO" style="width: 10%; text-align: center;">
+						<span style="font-size: 0.75rem; border-radius: 6px; padding: 0.25rem 0.6rem; font-weight: 700;
+									display: inline-block;
+									background: #{backingReportePagos.obtenerColorEstado(pago)};
+									color: #{backingReportePagos.obtenerColorTextoEstado(pago)};
+									border: 1px solid #{backingReportePagos.obtenerColorEstado(pago)};">
+							#{backingReportePagos.obtenerEstadoPago(pago)}
+						</span>
+					</p:column>
+
+				</p:dataTable>
+			</p:card>
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>
+
+</html>
