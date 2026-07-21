@@ -186,6 +186,19 @@
 								target="#{backingCreacionCursos.beanCreacionCursos.ofertaCapacitacion}" />
 							<i class="pi pi-eye" style="font-size: 1.2rem; color: var(--text-muted);"></i>
 						</p:commandLink>
+
+						<!-- Editar contenido del curso -->
+						<p:commandLink class="command-link-edit"
+							title="Editar contenido del curso"
+							aria-label="Editar contenido del curso"
+							process="@this"
+							update=":formContenidoCurso"
+							action="#{backingCreacionCursos.prepararContenidoCurso}"
+							oncomplete="PF('dlgContenidoCurso').show();">
+							<f:setPropertyActionListener value="#{oferta}"
+								target="#{backingCreacionCursos.beanCreacionCursos.ofertaCapacitacion}" />
+							<i class="pi pi-file-edit" style="font-size: 1.2rem; color: var(--primary-color);"></i>
+						</p:commandLink>
 					</p:column>
 
 				</p:dataTable>
@@ -291,6 +304,75 @@
 
 		<ui:include src="/paginas/administracion/fragmentos/dialogoGrabaCurso.xhtml" />
 		<ui:include src="/paginas/administracion/fragmentos/dialogoGrabaOferta.xhtml" />
+
+		<!-- DIÁLOGO CONTENIDO DEL CURSO (editor enriquecido + PDF) -->
+
+		<p:dialog widgetVar="dlgContenidoCurso"
+          header="Contenido del Curso"
+          modal="true" 
+          responsive="true"
+          resizable="false"
+          draggable="false"
+          width="90%"
+          style="max-width: 800px;"
+          height="auto"
+          styleClass="ui-dialog shadow-lg" 
+          appendTo="@(body)"
+          closable="true">
+    
+    <!-- El formulario envuelve todo el contenido del diálogo -->
+    <h:form id="formContenidoCurso" style="display: flex; flex-direction: column; max-height: 85vh;">
+        
+        <!-- 1. ZONA DE SCROLL: Solo el cuerpo se desliza si no hay espacio -->
+        <p:outputPanel id="panelContenidoCurso" style="flex-grow: 1; overflow-y: auto; padding: 0.5rem 0.75rem;">
+            
+            <!-- Encabezado con nombre del curso -->
+            <div class="flex-row gap-md" style="margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color); align-items: center;">
+                <div class="icon-container icon-bg-primary flex-center" style="box-shadow: var(--shadow-sm);">
+                    <i class="pi pi-book" style="font-size: 1.2rem; color: white;"></i>
+                </div>
+                <div>
+                    <h4 style="margin: 0; font-weight: 700; color: var(--text-main); font-size: 1rem;">
+                        #{backingCreacionCursos.beanCreacionCursos.ofertaCapacitacion.curso.cursNombre}
+                    </h4>
+                    <small class="text-muted">Editor de contenido enriquecido — HTML con formato</small>
+                </div>
+            </div>
+
+            <!-- Editor de texto enriquecido (Reducido a 300 para asegurar espacio móvil) -->
+            <div style="margin-bottom: 1rem;">
+                <p:textEditor id="editorContenido" secure="true"
+                    value="#{backingCreacionCursos.beanCreacionCursos.contenidoCurso}"
+                    height="300" placeholder="Escriba el contenido del curso aquí..."
+                    style="border-radius: 8px; border: 1px solid var(--border-color); background: white;" />
+            </div>
+
+            <!-- Información -->
+            <div class="flex-row gap-xs text-muted" style="font-size: 0.78rem; margin-bottom: 0.5rem;">
+                <i class="pi pi-info-circle"></i>
+                <span>El contenido se guarda en formato HTML. Usa el botón PDF para descargar.</span>
+            </div>
+            
+        </p:outputPanel>
+
+        <!-- 2. PIE DE PÁGINA FIJO SIMULADO: Dentro del formulario y fuera del área con scroll -->
+        <div class="flex-row gap-sm" style="justify-content: flex-end; padding-top: 0.75rem; border-top: 1px solid var(--border-color); flex-shrink: 0; background: white;">
+            <p:commandButton value="Guardar contenido"
+                icon="pi pi-save"
+                styleClass="ui-button-success"
+                action="#{backingCreacionCursos.guardarContenidoCurso}"
+                update="growl"
+                process="@form" />
+                
+            <p:commandButton value="Descargar PDF"
+                icon="pi pi-file-pdf"
+                styleClass="ui-button-danger"
+                action="#{backingCreacionCursos.descargarPdfContenido}"
+                ajax="false"
+                process="@form" />
+        </div>
+    </h:form>
+</p:dialog>
 
 	</ui:define>
 
