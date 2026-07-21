@@ -157,14 +157,7 @@ public class BackingReportePagos implements Serializable {
                             && !p.getPagoFecha().after(fechaFin)
                             && (p.getPagoNumeroFactura() == null || p.getPagoNumeroFactura().isEmpty()))
                     .count();
-//            double pendiente = todosPagos.stream()
-//                    .filter(p -> p.getPagoFecha() != null
-//                            && !p.getPagoFecha().before(fechaInicio)
-//                            && !p.getPagoFecha().after(fechaFin)
-//                            && (p.getPagoNumeroFactura() == null || p.getPagoNumeroFactura().isEmpty()))
-//                    .flatMap(p -> (p.getDetallePagos() != null ? p.getDetallePagos().stream() : new ArrayList<DetallePagos>().stream()))
-//                    .mapToDouble(d -> d.getDepaValor() != null ? d.getDepaValor() : 0.0)
-//                    .sum();
+
             BigDecimal pendiente = todosPagos.stream()
                     .filter(p -> p.getPagoFecha() != null
                             && !p.getPagoFecha().before(fechaInicio)
