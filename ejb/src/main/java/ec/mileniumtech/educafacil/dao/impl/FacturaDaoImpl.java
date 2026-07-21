@@ -149,8 +149,11 @@ public class FacturaDaoImpl extends GenericoDaoImpl<Factura, Integer> implements
             StringBuilder jpql = new StringBuilder("SELECT f FROM Factura f ");
             jpql.append("JOIN FETCH f.cliente ");
             jpql.append("JOIN FETCH f.documentoElectronico ");
-            jpql.append("WHERE f.documentoElectronico.estado = :estadoAutorizacion ");
+            jpql.append("WHERE 1=1 ");
 
+            if (estadoAutorizacion != null && !estadoAutorizacion.trim().isEmpty()) {
+                jpql.append("AND f.documentoElectronico.estado = :estadoAutorizacion ");
+            }
             if (fechaInicio != null) {
                 jpql.append("AND f.fechaEmision >= :fechaInicio ");
             }
@@ -158,7 +161,7 @@ public class FacturaDaoImpl extends GenericoDaoImpl<Factura, Integer> implements
                 jpql.append("AND f.fechaEmision <= :fechaFin ");
             }
             if (identificacion != null && !identificacion.trim().isEmpty()) {
-                jpql.append("AND f.cliente.persona.persIdentificacion = :identificacion ");
+                jpql.append("AND f.cliente.numeroIdentificacion = :identificacion ");
             }
             if (numeroAutorizacion != null && !numeroAutorizacion.trim().isEmpty()) {
                 jpql.append("AND (f.documentoElectronico.claveAcceso = :numeroAutorizacion OR f.documentoElectronico.numeroAutorizacion = :numeroAutorizacion) ");
