@@ -157,8 +157,8 @@
 				</div>
 
 				<!-- Contestó llamada? -->
-				<div class="p-field p-col-12 p-md-12"
-					rendered="#{backingSeguimientoClientes.beanSeguimiento.medioContactoLlamada}">
+				<div class="p-field p-col-12 p-md-12">
+					
 					<p:outputPanel id="respondiollamada">
 						<p:outputLabel value="#{etiquetas['respondioLlamada']}:*" rendered="#{backingSeguimientoClientes.beanSeguimiento.medioContactoLlamada}"/>
 					</p:outputPanel>
@@ -192,8 +192,8 @@
 				</div>
 
 				<!-- Deseo del curso -->
-				<div class="p-field p-col-12 p-md-12"
-					rendered="#{backingSeguimientoClientes.beanSeguimiento.detalleSeguimiento.dsegContestoLlamada or backingSeguimientoClientes.beanSeguimiento.medioContactoVisita}">
+				<div class="p-field p-col-12 p-md-12">
+					
 					<p:outputPanel id="lbliddeseocurso">
 						<p:outputLabel value="#{etiquetas['deseoCurso']}:*" rendered="#{backingSeguimientoClientes.beanSeguimiento.detalleSeguimiento.dsegContestoLlamada or backingSeguimientoClientes.beanSeguimiento.medioContactoVisita}" />
 					</p:outputPanel>
@@ -213,13 +213,12 @@
 				</div>
 
 				<!-- Ubicación de la llamada -->
-				<div class="p-field p-col-12 p-md-12"
-					rendered="#{backingSeguimientoClientes.beanSeguimiento.detalleSeguimiento.dsegContestoLlamada or backingSeguimientoClientes.beanSeguimiento.medioContactoVisita}">
+				<div class="p-field p-col-12 p-md-12">
 					<p:outputPanel id="ubicacionllamada">
-						<p:outputLabel value="#{etiquetas['desdeDondeLlama']}:*" />
+						<p:outputLabel value="#{etiquetas['desdeDondeLlama']}:*" rendered="#{backingSeguimientoClientes.beanSeguimiento.detalleSeguimiento.dsegContestoLlamada or backingSeguimientoClientes.beanSeguimiento.medioContactoVisita}"/>
 					</p:outputPanel>
-					<p:outputPanel id="idubicacionllamadas">
-						<p:selectOneRadio
+					<p:outputPanel id="idubicacionllamadas" >
+						<p:selectOneRadio rendered="#{backingSeguimientoClientes.beanSeguimiento.detalleSeguimiento.dsegContestoLlamada or backingSeguimientoClientes.beanSeguimiento.medioContactoVisita}"
 							value="#{backingSeguimientoClientes.beanSeguimiento.codigoUbicacionLlamada}"
 							layout="responsive" columns="4" required="true"
 							requiredMessage="#{mensajes['campoRequerido']}"
@@ -233,13 +232,13 @@
 				</div>
 
 				<!-- Trabaja en el área -->
-				<div class="p-field p-col-12 p-md-6"
-					rendered="#{backingSeguimientoClientes.beanSeguimiento.detalleSeguimiento.dsegContestoLlamada or backingSeguimientoClientes.beanSeguimiento.medioContactoVisita}">
+				<div class="p-field p-col-12 p-md-6">
+					
 					<p:outputPanel id="trabajaArea">
-						<p:outputLabel value="#{etiquetas['trabajaEnArea']}:*" />
+						<p:outputLabel value="#{etiquetas['trabajaEnArea']}:*" rendered="#{backingSeguimientoClientes.beanSeguimiento.detalleSeguimiento.dsegContestoLlamada or backingSeguimientoClientes.beanSeguimiento.medioContactoVisita}"/>
 					</p:outputPanel>
 					<p:outputPanel id="idtrabajaenarea">
-						<p:toggleSwitch
+						<p:toggleSwitch rendered="#{backingSeguimientoClientes.beanSeguimiento.detalleSeguimiento.dsegContestoLlamada or backingSeguimientoClientes.beanSeguimiento.medioContactoVisita}"
 							value="#{backingSeguimientoClientes.beanSeguimiento.seguimientoClientes.segcTrabajaEnArea}"
 							onIcon="pi pi-check" offIcon="pi pi-times">
 							<p:ajax process="@this" partialSubmit="true" event="change" />
@@ -327,16 +326,7 @@
 						emptyMessage="No hay interacciones registradas aún.">
 						<p:column headerText="#{etiquetas['datosSeguimiento']}">
 							#{det.dsegObservacion}
-						</p:column>
-						<p:column headerText="#{etiquetas['medioContacto']}">
-							<p:outputLabel
-								value="#{det.dsegMedioContacto.equals('MEC01') ? 'CORREO ELECTRÓNICO' : det.dsegMedioContacto.equals('MEC02') ? 'LLAMADA TELEFÓNICA' : det.dsegMedioContacto.equals('MEC03') ? 'WHATSAPP' : det.dsegMedioContacto.equals('MEC04') ? 'VISITA IN SITU' : 'OTRO'}" />
-						</p:column>
-						<p:column headerText="#{etiquetas['fechaIngreso']}" style="width: 110px;">
-							<p:outputLabel value="#{det.dsegFecha}" id="fechaIngreso">
-								<f:convertDateTime for="fechaIngreso" pattern="yyyy-MM-dd" locale="es_ES" />
-							</p:outputLabel>
-						</p:column>
+						</p:column>												
 						<p:column headerText="#{etiquetas['estado']}" style="width: 140px;">
 							<p:outputLabel
 								value="#{det.dsegEstado.equals('CONTAC01') ? 'EN SEGUIMIENTO' : det.dsegEstado.equals('CONTAC02') ? 'ABANDONADO' : det.dsegEstado.equals('CONTAC03') ? 'MATRICULADO' : det.dsegEstado.equals('CONTAC04') ? 'CANDIDATO' : 'PRÓXIMA OCASIÓN'}" />
