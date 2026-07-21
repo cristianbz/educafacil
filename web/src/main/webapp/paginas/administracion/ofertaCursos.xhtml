@@ -12,7 +12,23 @@
 		
 		<h:form id="formCursos" prependId="false">
 			<p:growl id="growl" life="3000" showDetail="true" />
-			
+			<p:dialog widgetVar="dlgContenidoCurso"
+			          header="Contenido del Curso"
+			          modal="true" 
+			          responsive="true"
+			          resizable="false"
+			          draggable="false"
+			          width="90%"
+			          style="max-width: 800px;"
+			          height="auto"
+			          styleClass="ui-dialog shadow-lg" 
+			          appendTo="@(body)"
+			          closable="true">
+			          <p:outputPanel id="panelContenido">
+			          	<p:textEditor readonly="true" 
+              				toolbarVisible="false" value="#{backingAdminCursos.beanAdminCursos.ofertaCursos.ofertaCapacitacion.curso.cursContenido}"/>
+			          </p:outputPanel>
+			 </p:dialog>  
 			<!-- DIÁLOGO CREAR / EDITAR OFERTA CURSO -->
 			<p:dialog widgetVar="dlgOfertaCursos" showEffect="fade"
 				hideEffect="fade" modal="true" appendTo="@(body)"
@@ -597,6 +613,15 @@
 								style="font-size: 1.25rem; color: #10b981; transition: transform 0.2s;"
 								onmouseover="this.style.transform='scale(1.2)';"
 								onmouseout="this.style.transform='scale(1)';" />
+						</p:commandLink>
+						<p:commandLink class="command-link-edit"
+							title="#{titulos['contenidoCurso']}"
+							aria-label="#{titulos['contenidoCurso']}"
+							process="@this"	update="panelContenido"						
+							oncomplete="PF('dlgContenidoCurso').show();">
+							<f:setPropertyActionListener value="#{oferta}"
+								target="#{backingAdminCursos.beanAdminCursos.ofertaCursos}" />
+							<i class="pi pi-eye" style="font-size: 1.2rem; color: var(--primary-color);"></i>
 						</p:commandLink>
 					</p:column>
 				</p:dataTable>
