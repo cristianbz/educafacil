@@ -298,7 +298,7 @@ public class BackingLogin implements Serializable{
 		String mensajeCorreo = "<fieldset>\r\n" + "<table> <tr ><th colspan='2'><h4>Sistema de Administración de Centros de Capacitación.</h4></th></tr>\r\n" + "<tr><td colspan='2'>Estimado(a) Sr./Sra.: </td></tr>\r\n" + "<tr><td colspan='2'>El sistema le informa que debe ingresar al siguiente enlace para cambiar su clave. Si usted no solicitó el cambio de clave por favor contáctese con el administrador del sistema.</td></tr>\r\n" + "<tr><td></td></tr><tr><td width='10%'>"
 			+ "</td></tr>\r\n"+
 				"<tr></tr> "+
-				"<tr><td>Enlace: </td><td><a href='"+Mensaje.obtenerUrlServidor()+ "/paginas/cambioClave.cap?tk="+CifradorBase.cifrarBase64(Encriptar.encriptarSHA256(String.valueOf(token)))
+				"<tr><td>Enlace: </td><td><a href='"+Mensaje.obtenerUrlServidor()+ "/paginas/cambioClave.xhtml?tk="+CifradorBase.cifrarBase64(Encriptar.encriptarSHA256(String.valueOf(token)))
 				+"&prm="+CifradorBase.cifrarBase64(persona.getPersDocumentoIdentidad())+"'>DAR CLICK AQUÍ</a></td></tr>";
 		
 		mensajeCorreo += "\r\n" + "<tr><td></td></tr></table>\r\n";

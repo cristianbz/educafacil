@@ -324,12 +324,11 @@ body {
    ════════════════════════════════════════════════════════════════ */
 .login-page-body {
     background: var(--bg-gradient, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
-    background-attachment: fixed;
-    height: 100vh;
     margin: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    /* CAMBIO CLAVE: min-height en vez de height fijo permite que el body crezca si hay scroll */
+    min-height: 100vh; 
+    /* Quitamos el flexbox de aquí para que no aplaste el contenido */
+    display: block; 
 }
 
 .container-modern {
@@ -337,7 +336,10 @@ body {
     align-items: center;
     justify-content: center;
     width: 100%;
-    padding: 1rem;
+    /* El contenedor se encarga de estirarse al 100% de la pantalla y centrar la tarjeta */
+    min-height: 100vh; 
+    padding: 2rem 1rem; /* Un colchón de seguridad arriba y abajo para pantallas chicas */
+    box-sizing: border-box;
 }
 
 .login-card-modern {

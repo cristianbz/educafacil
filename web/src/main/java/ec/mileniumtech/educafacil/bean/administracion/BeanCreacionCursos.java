@@ -59,6 +59,10 @@ public class BeanCreacionCursos implements Serializable {
 	@Getter
 	@Setter
 	private List<OfertaCapacitacion> listaOfertaCapacitacion;
+
+	@Getter
+	@Setter
+	private String contenidoCurso;
 	
 	@PostConstruct
 	public void init() {

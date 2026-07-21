@@ -1,11 +1,14 @@
 package ec.mileniumtech.educafacil.backing.administracion;
 
+import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import com.itextpdf.html2pdf.HtmlConverter;
 
 import ec.mileniumtech.educafacil.backing.MensajesBacking;
 import ec.mileniumtech.educafacil.bean.administracion.BeanCreacionCursos;
@@ -16,9 +19,11 @@ import ec.mileniumtech.educafacil.utilitario.Mensaje;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
 import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 
 /**
@@ -151,4 +156,124 @@ public class BackingCreacionCursos implements Serializable{
 			getBeanCreacionCursos().setListaCursos(ofertaService.listarTodosCursosOrdenados());
 			Mensaje.ocultarDialogo("dlgGrabaCurso");
 	}
+
+	/**
+	 * Prepara el contenido del curso en el editor al abrir el diálogo.
+	 */
+	public void prepararContenidoCurso() {
+		Curso curso = getBeanCreacionCursos().getOfertaCapacitacion().getCurso();
+		if (curso != null) {
+			getBeanCreacionCursos().setContenidoCurso(curso.getCursContenido());
+		} else {
+			getBeanCreacionCursos().setContenidoCurso("");
+		}
+	}
+
+	/**
+	 * Guarda el contenido HTML del curso (cursContenido) desde el editor enriquecido.
+	 */
+	public void guardarContenidoCurso() {
+		try {
+			OfertaCapacitacion oferta = getBeanCreacionCursos().getOfertaCapacitacion();
+			if (oferta == null || oferta.getCurso() == null) {
+				Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR,
+					getMensajesBacking().getPropiedad("error"),
+					"No se ha seleccionado un curso.");
+				return;
+			}
+			Curso curso = oferta.getCurso();
+			curso.setCursContenido(getBeanCreacionCursos().getContenidoCurso());
+			ofertaService.actualizarCurso(curso);
+			Mensaje.verMensaje(FacesMessage.SEVERITY_INFO,
+				getMensajesBacking().getPropiedad("info"),
+				"Contenido guardado correctamente.");
+		} catch (Exception e) {
+			log.error("Error al guardar contenido del curso", e);
+			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR,
+				getMensajesBacking().getPropiedad("error"),
+				"Error al guardar el contenido.");
+		}
+	}
+
+	/**
+	 * Descarga el contenido del curso como PDF.
+	 */
+	public void descargarPdfContenido() {
+		try {
+			String contenidoHtml = getBeanCreacionCursos().getContenidoCurso();
+			if (contenidoHtml == null || contenidoHtml.isBlank()) {
+				contenidoHtml = "<p style='color: #999; font-style: italic;'>Sin contenido disponible.</p>";
+			}
+
+			// Armar HTML completo con estilos básicos
+			String htmlCompleto = """
+				<!DOCTYPE html>
+				<html>
+				<head>
+					<meta charset="UTF-8" />
+					<style>
+						body { font-family: 'Helvetica', 'Arial', sans-serif; font-size: 11pt; color: #1e293b; line-height: 1.6; padding: 30px; }
+						h1 { color: #1d4ed8; font-size: 18pt; border-bottom: 2px solid #1d4ed8; padding-bottom: 8px; }
+						h2 { color: #2563eb; font-size: 14pt; }
+						h3 { color: #3b82f6; font-size: 12pt; }
+						p { margin: 6px 0; }
+						ul, ol { margin: 6px 0; padding-left: 20px; }
+						li { margin: 3px 0; }
+						strong { font-weight: bold; }
+						em { font-style: italic; }
+						table { border-collapse: collapse; width: 100%%; margin: 10px 0; }
+						th, td { border: 1px solid #cbd5e1; padding: 6px 10px; text-align: left; }
+						th { background: #eff6ff; font-weight: 600; }
+						img { max-width: 100%%; height: auto; }
+					</style>
+				</head>
+				<body>
+					<h1>%s</h1>
+					%s
+				</body>
+				</html>
+				""".formatted(
+					escapaHtml(getBeanCreacionCursos().getOfertaCapacitacion().getCurso().getCursNombre()),
+					contenidoHtml
+				);
+
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			HtmlConverter.convertToPdf(htmlCompleto, baos);
+			byte[] pdfBytes = baos.toByteArray();
+
+			// Escribir respuesta HTTP
+			FacesContext fc = FacesContext.getCurrentInstance();
+			HttpServletResponse response = (HttpServletResponse) fc.getExternalContext().getResponse();
+			response.setContentType("application/pdf");
+			response.setHeader("Content-Disposition",
+				"attachment; filename=\"contenido_%s.pdf\"".formatted(
+					getBeanCreacionCursos().getOfertaCapacitacion().getCurso().getCursNombre()
+						.replaceAll("[^a-zA-Z0-9\\-]", "_")
+				));
+			response.setContentLength(pdfBytes.length);
+			response.getOutputStream().write(pdfBytes);
+			response.getOutputStream().flush();
+			fc.responseComplete();
+
+		} catch (Exception e) {
+			log.error("Error al generar PDF", e);
+			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR,
+				getMensajesBacking().getPropiedad("error"),
+				"Error al generar el PDF.");
+		}
+	}
+
+	/**
+	 * Escapa caracteres HTML para evitar inyección.
+	 */
+	private String escapaHtml(String texto) {
+		if (texto == null) return "";
+		return texto
+			.replace("&", "&amp;")
+			.replace("<", "&lt;")
+			.replace(">", "&gt;")
+			.replace("\"", "&quot;")
+			.replace("'", "&#39;");
+	}
 }
+

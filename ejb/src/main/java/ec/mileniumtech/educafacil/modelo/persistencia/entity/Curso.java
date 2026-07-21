@@ -44,6 +44,9 @@ public class Curso implements Serializable {
 	@Size(min = 3, max = 200, message = "{curso.nombre.size}")
 	@Column(name="curs_nombre")
 	private String cursNombre;
+		   
+	@Column(name="curs_contenido", columnDefinition = "TEXT")
+	private String cursContenido;
    
 	@OneToMany(mappedBy="curso", fetch=FetchType.LAZY)
 	private List<OfertaCapacitacion> ofertaCapacitacion;

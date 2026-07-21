@@ -8,18 +8,18 @@
 <ui:composition template="/WEB-INF/templates/templateCambioClave.xhtml">
 
     <ui:define name="contenido">
-        <h:form id="form-principal">
-            <p:poll id="poll" widgetVar="poll" interval="1"
-                    listener="#{cambioClaveBacking.redireccionar()}"
-                    update="cambioExitosoId" autoStart="false" />
-            <p:growl id="growl" life="5000" showDetail="true" />
+
 
             <!-- ── LOGIN HEADER ─────────────────────────────────── -->
             <div class="login-header-modern">
                 <h2>#{titulos['cambioClave']}</h2>
                 <p>#{etiquetas['requisitosNuevaClave']}</p>
             </div>
-
+        <h:form id="form-principal">
+            <p:poll id="poll" widgetVar="poll" interval="1"
+                    listener="#{cambioClaveBacking.redireccionar()}"
+                    update="cambioExitosoId" autoStart="false" />
+            <p:growl id="growl" life="5000" showDetail="true" />
             <!-- ── FORMULARIO: USUARIO VÁLIDO ───────────────────── -->
             <div rendered="#{cambioClaveBacking.usuarioValido}">
 
@@ -89,30 +89,32 @@
             </div>
 
             <!-- ── USUARIO INVÁLIDO ─────────────────────────────── -->
-            <div rendered="#{cambioClaveBacking.usuarioInvalido}"
-                 class="text-center"
-                 style="padding: 2rem 0;">
-                <div style="width: 64px; height: 64px; border-radius: 50%; background: #fef2f2;
-                            display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
-                    <i class="pi pi-exclamation-triangle" style="font-size: 1.75rem; color: #ef4444;"></i>
+            <h:panelGroup id="usuarioInvalidoId" layout="block"
+                          rendered="#{cambioClaveBacking.usuarioInvalido}">
+                <div class="text-center" style="padding: 2rem 0;">
+                    <div style="width: 64px; height: 64px; border-radius: 50%; background: #fef2f2;
+                                display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                        <i class="pi pi-exclamation-triangle" style="font-size: 1.75rem; color: #ef4444;"></i>
+                    </div>
+                    <p style="font-weight: 600; color: var(--text-main); margin: 0;">
+                        #{etiquetas['claveExpirada']}
+                    </p>
                 </div>
-                <p style="font-weight: 600; color: var(--text-main); margin: 0;">
-                    #{etiquetas['claveExpirada']}
-                </p>
-            </div>
+            </h:panelGroup>
 
             <!-- ── CAMBIO EXITOSO ───────────────────────────────── -->
-            <div rendered="#{cambioClaveBacking.cambioExitoso}"
-                 class="text-center"
-                 style="padding: 2rem 0;">
-                <div style="width: 64px; height: 64px; border-radius: 50%; background: #f0fdf4;
-                            display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
-                    <i class="pi pi-check-circle" style="font-size: 1.75rem; color: #10b981;"></i>
+            <h:panelGroup id="cambioExitosoId" layout="block"
+                          rendered="#{cambioClaveBacking.cambioExitoso}">
+                <div class="text-center" style="padding: 2rem 0;">
+                    <div style="width: 64px; height: 64px; border-radius: 50%; background: #f0fdf4;
+                                display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                        <i class="pi pi-check-circle" style="font-size: 1.75rem; color: #10b981;"></i>
+                    </div>
+                    <p style="font-weight: 600; color: var(--text-main); margin: 0;">
+                        #{etiquetas['espereRedireccion1']} #{cambioClaveBacking.numero} #{etiquetas['espereRedireccion2']}
+                    </p>
                 </div>
-                <p style="font-weight: 600; color: var(--text-main); margin: 0;">
-                    #{etiquetas['espereRedireccion1']} #{cambioClaveBacking.numero} #{etiquetas['espereRedireccion2']}
-                </p>
-            </div>
+            </h:panelGroup>
 
         </h:form>
     </ui:define>
