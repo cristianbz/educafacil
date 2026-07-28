@@ -194,7 +194,7 @@ public class BackingMatriculaOnline implements Serializable {
 			String cedula = getBeanMatricula().getPersona().getPersDocumentoIdentidad();
 			usuarioE.setUsuaUsuario(cedula);
 			password=getBeanMatricula().getPersona().getPersTelefonoMobil();
-			usuarioE.setUsuaClave(Encriptar.encriptarSHA512(password));
+			usuarioE.setUsuaClave(Encriptar.encriptarBCrypt(password));
 			usuarioE.setUsuaFechaRegistro(getBeanMatricula().getMatricula().getMatrFechaRegistro());
 			usuarioE.setUsuaFechaInicio(getBeanMatricula().getCursoSeleccionado().getOcurFechaInicio());
 			usuarioE.setUsuaFechaCaducidad(getBeanMatricula().getCursoSeleccionado().getOcurFechaFin());

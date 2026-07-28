@@ -72,6 +72,7 @@ public class SessionTimeoutFilter extends HttpFilter {
 	        || path.startsWith("/paginas/cambioClave.xhtml")
 	        || path.startsWith("/rest/auth/")
 	        || path.startsWith("/rest/openapi")
+	        || path.startsWith("/api")
 	        || path.matches(".*\\.(css|js|png|jpg|jpeg|gif|ico|svg|woff2?|ttf|eot)$");
 	}
 
