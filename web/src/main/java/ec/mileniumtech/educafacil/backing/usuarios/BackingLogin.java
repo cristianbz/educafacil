@@ -61,6 +61,9 @@ public class BackingLogin implements Serializable{
 	@Getter
 	@Setter
 	private MenuModel menumodel = new DefaultMenuModel();
+	@Getter
+	@Setter
+	private boolean esAdmin;
 	
 	@EJB
 	private AuthService authService;
@@ -102,14 +105,14 @@ public class BackingLogin implements Serializable{
 				sesion=(HttpSession)ec.getSession(true);
 				sesion.setAttribute("logeado", true);
 				listaMenuUsuario = matriculaDataService.buscarAccesosUsuario(usuario.getUsuaUsuario());
-				boolean esAdmin = false;
+				this.esAdmin = false;
 				if(listaMenuUsuario!=null && !listaMenuUsuario.isEmpty()) {
 					List<UsuarioRol> listaRoles = matriculaDataService.listaUsuarioRolPorUsuario(usuario.getUsuaId());
 					if(listaRoles!=null) {
 						for (UsuarioRol usuarioRol : listaRoles) {
 							sesion.setAttribute("rol", usuarioRol.getRol().getRolId());
-							if (usuarioRol.getRol() != null && usuarioRol.getRol().getRolNombre() != null && usuarioRol.getRol().getRolNombre().equalsIgnoreCase("Administrador")) {
-								esAdmin = true;
+							if (usuarioRol.getRol() != null && usuarioRol.getRol().getRolNombre() != null && usuarioRol.getRol().getRolNombre().equalsIgnoreCase("Administrador")) {								
+								this.esAdmin = true;
 							}
 						}
 					}
@@ -149,7 +152,7 @@ public class BackingLogin implements Serializable{
 					getBeanLogin().setConfiguraciones(sistemaDataService.listaConfiguraciones().get(0));
 				}
 				this.menumodel.getElements();
-				if (esAdmin) {
+				if (this.esAdmin) {
 					getBeanLogin().setMostrarDialogoModulos(true);
 					PrimeFaces.current().executeScript("PF('dialogoModulos').show();");
 				} else {

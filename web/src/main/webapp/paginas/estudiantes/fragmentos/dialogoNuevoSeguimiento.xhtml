@@ -4,6 +4,7 @@
 	xmlns:h="jakarta.faces.html"
 	xmlns:p="http://primefaces.org/ui">
 
+
 <p:dialog widgetVar="dlgNuevoSeguimiento" showEffect="fade"
 	hideEffect="fade" modal="true" resizable="false"
 	header="#{titulos['seguimientoClientes']}" closable="false"
@@ -268,7 +269,7 @@
 						<f:selectItems var="estado"
 							value="#{backingSeguimientoClientes.beanSeguimiento.enumEstadosContacto}"
 							itemValue="#{estado.codigo}" itemLabel="#{estado.label}" />
-						<p:ajax process="@this motivos" event="change" update="motivos"
+						<p:ajax process="@this" event="change" update="motivos"
 							listener="#{backingSeguimientoClientes.mostrarDialogoMotivos()}"
 							partialSubmit="true" />
 					</p:selectOneMenu>

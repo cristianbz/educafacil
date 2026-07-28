@@ -35,10 +35,12 @@
                     <p:commandButton value="#{botones['inicio.irFacturacion']}" icon="pi pi-file"
                                      action="/paginas/contabilidad/facturacion?faces-redirect=true"
                                      styleClass="ui-button-primary"
-                                     process="@this" />
+                                     process="@this"
+                                     rendered="#{backingLogin.esAdmin}" />
                 </div>
             </div>
 
+            <ui:fragment rendered="#{backingLogin.esAdmin}">
             <!-- ── DASHBOARD STATS CARDS ──────────────────────────── -->
             <div class="dashboard-stats">
 
@@ -187,6 +189,7 @@
 
                 </div>
             </div>
+            </ui:fragment>
 
             <!-- ── INFORMACIÓN DEL USUARIO ───────────────────────── -->
             <div class="surface-card flex-between flex-wrap gap-md user-info-card">
@@ -208,7 +211,8 @@
                     <p:commandButton value="#{botones['inicio.configuracion']}" icon="pi pi-cog"
                                      action="/paginas/administracion/configuracionEmpresa?faces-redirect=true"
                                      styleClass="ui-button-outlined ui-button-secondary"
-                                     process="@this" />
+                                     process="@this"
+                                     rendered="#{backingLogin.esAdmin}" />
                 </div>
             </div>
 
