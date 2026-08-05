@@ -1283,6 +1283,94 @@ body {
     margin-right: 0.75rem !important;
 }
 
+/* ── SIDEBAR NORMAL: ocultar icono inyectado hasta que se colapse ── */
+.sidebar .ui-panelmenu-header .menu-icon-injected {
+    display: none !important;
+}
+
+/* Color diferenciado: icono principal = dorádo, icono secundario = azul */
+/* Azul ya definido en: .sidebar .ui-menuitem-icon { color: #60a5fa } */
+.sidebar.collapsed .ui-panelmenu-header .menu-icon-injected {
+    color: #f59e0b !important; /* Ámbar/dorado — iconos principales */
+}
+
+/* ── SIDEBAR COLAPSADO ────────────────────────────────────────────── */
+
+/* Ocultar texto de los items hijo */
+.sidebar.collapsed .ui-menuitem-text {
+    display: none !important;
+}
+
+/* Ocultar la flecha expand/collapse del encabezado */
+.sidebar.collapsed .ui-panelmenu-header > span {
+    display: none !important;
+}
+
+/* El h3 del encabezado: flex centrado y con position:relative para el icono absoluto */
+.sidebar.collapsed .ui-panelmenu-header {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 0.75rem 0 !important;
+    position: relative !important;
+    min-height: 3rem !important;
+}
+
+/* Ocultar el texto dentro del <a> sin afectar al icono hermano */
+.sidebar.collapsed .ui-panelmenu-header a {
+    font-size: 0 !important;
+    width: 0 !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* Mostrar el icono inyectado (hermano del <a>, hijo del h3) centrado */
+.sidebar.collapsed .ui-panelmenu-header .menu-icon-injected {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    font-size: 1.4rem !important;
+    color: #f59e0b !important; /* Ámbar/dorado — iconos principales */
+    pointer-events: none !important;
+    z-index: 2 !important;
+}
+
+/* Items hijo: centrar icono */
+.sidebar.collapsed .ui-menuitem-link {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 0.75rem 0 !important;
+}
+
+.sidebar.collapsed .ui-menuitem-icon {
+    margin-right: 0 !important;
+    font-size: 1.25rem !important;
+}
+
+/* Ocultar el texto del botón de cerrar sesión y centrar su icono */
+.sidebar.collapsed .logout-container .ui-button-text {
+    display: none !important;
+}
+
+.sidebar.collapsed .logout-container .ui-button {
+    padding: 0.75rem 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+/* Ajustar sangría del contenido de submenús colapsados */
+.sidebar.collapsed .ui-panelmenu-content {
+    padding-left: 0 !important;
+}
+
 /* -------------------------------------------------------------------------
    Responsive shell: off-canvas sidebar (tablet & phone)
    Desktop keeps fixed sidebar + collapse; narrow viewports use a drawer.

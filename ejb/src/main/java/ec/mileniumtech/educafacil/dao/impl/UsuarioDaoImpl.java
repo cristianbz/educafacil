@@ -96,23 +96,23 @@ public class UsuarioDaoImpl extends GenericoDaoImpl<Usuario, Long> implements Us
 			List <ObjetosMenuDto> listaAccesosUsuario = new ArrayList<ObjetosMenuDto>();
 			String queryString;
 			queryString=" SELECT  distinct   ROL.rol_id, ROL.rol_nombre, ROL.rol_estado, ROL_PERFIL.rper_estado, PERFIL.perf_id, PERFIL.perf_nombre, PERFIL.perf_estado,  "
-					+ "				 ACCION.acc_estado, ACCION.acc_padre, ACCION.acc_hija, ACCION.acc_nombre, ACCION.acc_descripcion, ACCION.acc_ruta,ACCION.acc_icono, PERFIL.perf_icono"
-					+ "		FROM        ACCION INNER JOIN "
-					+ " 				PERFIL_ACCION ON ACCION.acc_hija = PERFIL_ACCION.acc_hija INNER JOIN "
-					+ " 				PERFIL ON PERFIL_ACCION.perf_id = PERFIL.perf_id INNER JOIN "
-					+ "                 ROL_PERFIL ON PERFIL.perf_id = ROL_PERFIL.perf_id INNER JOIN "
-					+ "                 ROL ON ROL_PERFIL.rol_id = ROL.rol_id INNER JOIN "
-					+ "                 USUARIO_ROL ON ROL.rol_id = USUARIO_ROL.rol_id INNER JOIN "
-					+ "                 USUARIO ON USUARIO_ROL.usua_id = USUARIO.usua_id "
-					+ "		WHERE USUARIO.usua_usuario = :correo "
-					+ "			  and USUARIO.usua_estado = TRUE"
-					+ "			  and USUARIO_ROL.urol_estado =TRUE "
-					+ "			  and ROL.rol_estado = TRUE"
-					+ "			  and ROL_PERFIL.rper_estado = TRUE "
-					+ "			  and PERFIL.perf_estado = TRUE"
-					+ "			  and PERFIL_ACCION.pacc_estado = TRUE "
-					+ "			  and ACCION.acc_estado = TRUE "
-					+ "		ORDER BY rol_nombre, perf_nombre, acc_nombre";
+					+ "ACCION.acc_estado, ACCION.acc_padre, ACCION.acc_hija, ACCION.acc_nombre, ACCION.acc_descripcion, ACCION.acc_ruta,ACCION.acc_icono, PERFIL.perf_icono"
+					+ "	FROM  ACCION INNER JOIN "
+					+ "	PERFIL_ACCION ON ACCION.acc_hija = PERFIL_ACCION.acc_hija INNER JOIN "
+					+ "	PERFIL ON PERFIL_ACCION.perf_id = PERFIL.perf_id INNER JOIN "
+					+ " ROL_PERFIL ON PERFIL.perf_id = ROL_PERFIL.perf_id INNER JOIN "
+					+ " ROL ON ROL_PERFIL.rol_id = ROL.rol_id INNER JOIN "
+					+ " USUARIO_ROL ON ROL.rol_id = USUARIO_ROL.rol_id INNER JOIN "
+					+ " USUARIO ON USUARIO_ROL.usua_id = USUARIO.usua_id "
+					+ " WHERE USUARIO.usua_usuario = :correo "
+					+ "	and USUARIO.usua_estado = TRUE"
+					+ "	and USUARIO_ROL.urol_estado =TRUE "
+					+ "	and ROL.rol_estado = TRUE"
+					+ "	and ROL_PERFIL.rper_estado = TRUE "
+					+ "	and PERFIL.perf_estado = TRUE"
+					+ "	and PERFIL_ACCION.pacc_estado = TRUE "
+					+ "	and ACCION.acc_estado = TRUE "
+					+ "	ORDER BY rol_nombre, perf_nombre, acc_nombre";
 			
 			Query query = getEntityManager().createNativeQuery(queryString);
 			query.setParameter("correo", correo);

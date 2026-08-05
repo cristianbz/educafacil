@@ -36,6 +36,6 @@ public class RolPerfil implements Serializable {
     private Boolean estado;
 
     // Constructor vacío requerido por la especificación de Jakarta Persistence
-    public RolPerfil() {
+    public RolPerfil() {// Constructor por defecto metodo vacio
     }
 }

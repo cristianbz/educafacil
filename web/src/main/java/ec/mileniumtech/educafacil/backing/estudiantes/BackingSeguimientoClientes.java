@@ -937,8 +937,5 @@ public class BackingSeguimientoClientes implements Serializable{
 		agregarNuevoSeguimiento();
     }
  
-    public void onRowUnselect(UnselectEvent<SeguimientoClientes> event) {
-
-    }
     
 }

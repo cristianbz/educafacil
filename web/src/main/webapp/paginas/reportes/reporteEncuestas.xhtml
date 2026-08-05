@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="jakarta.faces.facelets" xmlns:f="jakarta.faces.core"
+	xmlns:h="jakarta.faces.html" xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/WEB-INF/templates/templateprincipal.xhtml">
+
+	<ui:define name="contenido">
+		<f:event listener="#{backingLogin.validarSesion()}" type="preRenderView" />
+
+		<h:form id="form" prependId="false">
+			<p:growl id="growl" life="3000" showDetail="true" />
+
+			<!-- 🔵 BREADCRUMB -->
+			<p:breadCrumb styleClass="mb-3">
+				<p:menuitem value="Inicio" outcome="/paginas/inicio?faces-redirect=true" icon="pi pi-home" />
+				<p:menuitem value="Reportes" />
+				<p:menuitem value="Encuestas de Seguimiento" />
+			</p:breadCrumb>
+
+			<!-- 🔵 HEADER SECTION -->
+			<div class="page-header">
+				<div class="page-title">
+					<h2>Reporte de Encuestas de Seguimiento</h2>
+					<small>Satisfacción por curso, tasa de respuesta y análisis por escala ordinal —
+						#{backingReporteEncuestas.beanReportes.fechaFiltro}</small>
+				</div>
+				<div class="page-actions">
+					<span class="filter-label">Filtrar Período:</span>
+					<h:inputText id="fechaFiltro"
+						value="#{backingReporteEncuestas.beanReportes.fechaFiltro}"
+						type="month" styleClass="filter-input" />
+
+					<p:commandButton value="Actualizar"
+						actionListener="#{backingReporteEncuestas.actualizarFiltro()}"
+						update="@form" icon="pi pi-refresh" styleClass="ui-button-outlined" />
+
+					<p:commandButton value="Exportar"
+						actionListener="#{backingReporteEncuestas.exportarReporte()}"
+						icon="pi pi-download" styleClass="ui-button-primary" />
+				</div>
+			</div>
+
+			<!-- 🔵 KPI CARDS -->
+			<div class="dashboard-stats mb-4">
+
+				<!-- Card 1: ENCUESTAS ACTIVAS -->
+				<div class="stats-card stats-card-primary">
+					<div class="stats-content">
+						<span class="stats-label">ENCUESTAS ACTIVAS</span>
+						<span class="stats-value" style="color: #2563eb;">
+							<h:outputText value="#{backingReporteEncuestas.beanReportes.encuestasActivas}" />
+						</span>
+						<span class="stats-desc">#{backingReporteEncuestas.beanReportes.totalEncuestas} total en el período</span>
+						<span style="height: 20px; display: block;"></span>
+					</div>
+					<div class="stats-icon-wrapper" style="background: rgba(37,99,235,0.1); color: #2563eb;">
+						<i class="pi pi-list" style="font-size: 1.5rem;"></i>
+					</div>
+				</div>
+
+				<!-- Card 2: TASA DE RESPUESTA -->
+				<div class="stats-card stats-card-success">
+					<div class="stats-content">
+						<span class="stats-label">TASA DE RESPUESTA</span>
+						<span class="stats-value" style="color: #10b981;">
+							<h:outputText value="#{backingReporteEncuestas.beanReportes.tasaRespuesta}">
+								<f:convertNumber pattern="##0.0" />
+							</h:outputText>%
+						</span>
+						<span class="stats-desc">#{backingReporteEncuestas.beanReportes.respondieron} de #{backingReporteEncuestas.beanReportes.asignados} alumnos</span>
+						<span style="font-size: 0.85rem; font-weight: 700; color: #{backingReporteEncuestas.beanReportes.tasaRespuestaDiff >= 0 ? '#10b981' : '#ef4444'}; display: block; margin-top: 4px;">
+							#{backingReporteEncuestas.beanReportes.tasaRespuestaDiff >= 0 ? '▲' : '▼'} #{backingReporteEncuestas.formatearDiff(backingReporteEncuestas.beanReportes.tasaRespuestaDiff)}% vs mes anterior
+						</span>
+					</div>
+					<div class="stats-icon-wrapper" style="background: rgba(16,185,129,0.1); color: #10b981;">
+						<i class="pi pi-check-circle" style="font-size: 1.5rem;"></i>
+					</div>
+				</div>
+
+				<!-- Card 3: RESPUESTAS PENDIENTES -->
+				<div class="stats-card stats-card-warning">
+					<div class="stats-content">
+						<span class="stats-label">RESPUESTAS PENDIENTES</span>
+						<span class="stats-value" style="color: #f59e0b;">
+							<h:outputText value="#{backingReporteEncuestas.beanReportes.pendientes}" />
+						</span>
+						<span class="stats-desc">Alumnos sin contestar</span>
+						<span style="height: 20px; display: block;"></span>
+					</div>
+					<div class="stats-icon-wrapper" style="background: rgba(245,158,11,0.1); color: #f59e0b;">
+						<i class="pi pi-clock" style="font-size: 1.5rem;"></i>
+					</div>
+				</div>
+
+				<!-- Card 4: SATISFACCIÓN PROMEDIO -->
+				<div class="stats-card stats-card-danger">
+					<div class="stats-content">
+						<span class="stats-label">SATISFACCIÓN PROMEDIO</span>
+						<span class="stats-value" style="color: #a855f7;">
+							<h:outputText value="#{backingReporteEncuestas.beanReportes.satisfaccionPromedio}">
+								<f:convertNumber pattern="0.0" />
+							</h:outputText> / 5
+						</span>
+						<span class="stats-desc">Escala ordinal 1-5</span>
+						<span style="font-size: 0.85rem; font-weight: 700; color: #{backingReporteEncuestas.beanReportes.satisfaccionDiff >= 0 ? '#10b981' : '#ef4444'}; display: block; margin-top: 4px;">
+							#{backingReporteEncuestas.beanReportes.satisfaccionDiff >= 0 ? '▲' : '▼'} #{backingReporteEncuestas.formatearDiff(backingReporteEncuestas.beanReportes.satisfaccionDiff)}pts vs mes anterior
+						</span>
+					</div>
+					<div class="stats-icon-wrapper" style="background: rgba(168,85,247,0.1); color: #a855f7;">
+						<i class="pi pi-star" style="font-size: 1.5rem;"></i>
+					</div>
+				</div>
+
+			</div><!-- /dashboard-stats -->
+
+			<!-- 🔵 CHARTS ROW -->
+			<div class="ui-fluid p-formgrid p-grid mb-4">
+
+				<!-- BarChart: Tasa de Respuesta por Encuesta (%) -->
+				<div class="p-field p-col-12 p-md-7 p-sm-12">
+					<p:card
+						style="border-radius: 12px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); height: 100%;">
+						<f:facet name="title">
+							<span style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">
+								Tasa de Respuesta por Encuesta (%)
+							</span>
+						</f:facet>
+						<p:barChart model="#{backingReporteEncuestas.beanReportes.tasaRespuestaModel}"
+							style="width: 100%; height: 340px;" />
+					</p:card>
+				</div>
+
+				<!-- LineChart: Satisfacción Promedio Mensual -->
+				<div class="p-field p-col-12 p-md-5 p-sm-12">
+					<p:card
+						style="border-radius: 12px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); height: 100%;">
+						<f:facet name="title">
+							<span style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">
+								Satisfacción Promedio Mensual
+							</span>
+						</f:facet>
+						<p:lineChart model="#{backingReporteEncuestas.beanReportes.satisfaccionMensualModel}"
+							style="width: 100%; height: 340px;" />
+					</p:card>
+				</div>
+
+			</div><!-- /charts row -->
+
+			<!-- 🔵 TABLA DE ENCUESTAS -->
+			<p:card
+				style="border-radius: 12px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); margin-top: 1.5rem;">
+				<f:facet name="title">
+					<div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+						<span style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">
+							Encuestas del Período
+						</span>
+						<span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">
+							#{backingReporteEncuestas.beanReportes.listaEncuestasPeriodo.size()} encuestas — clic en una fila para ver detalle
+						</span>
+					</div>
+				</f:facet>
+
+				<p:dataTable id="tblEncuestas"
+					value="#{backingReporteEncuestas.beanReportes.listaEncuestasPeriodo}"
+					var="enc" rows="10" paginator="true" reflow="true" styleClass="ui-datatable-striped"
+					emptyMessage="No hay encuestas para el período seleccionado.">
+
+					<!-- CÓDIGO -->
+					<p:column headerText="CÓDIGO" style="width: 12%;">
+						<h:outputText value="#{enc.codigo}"
+							style="font-family: monospace; font-size: 0.82rem; color: var(--text-muted); font-weight: bold;" />
+					</p:column>
+
+					<!-- ENCUESTA -->
+					<p:column headerText="ENCUESTA" style="width: 25%; font-weight: 600;">
+						<h:outputText value="#{enc.encuesta}"
+							style="font-weight: 600; text-transform: none;" />
+					</p:column>
+
+					<!-- CURSO -->
+					<p:column headerText="CURSO" style="width: 20%;">
+						<h:outputText value="#{enc.curso}" />
+					</p:column>
+
+					<!-- PERÍODO -->
+					<p:column headerText="PERÍODO" style="width: 15%; text-align: center;">
+						<h:outputText value="#{enc.periodo}" style="font-size: 0.85rem;" />
+					</p:column>
+
+					<!-- ASIGNADOS -->
+					<p:column headerText="ASIGNADOS" style="width: 8%; text-align: center;">
+						<h:outputText value="#{enc.asignados}" />
+					</p:column>
+
+					<!-- RESPONDIERON -->
+					<p:column headerText="RESPONDIERON" style="width: 10%; text-align: center;">
+						<h:outputText value="#{enc.respondieron}" style="font-weight: bold;" />
+					</p:column>
+
+					<!-- TASA -->
+					<p:column headerText="TASA" style="width: 12%;">
+						<div style="display: flex; align-items: center; gap: 8px;">
+							<div style="flex: 1; background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden; display: inline-block;">
+								<div style="background: #10b981; height: 100%; width: #{enc.tasa}%;" />
+							</div>
+							<span style="font-size: 0.8rem; font-weight: 600;">
+								<h:outputText value="#{enc.tasa}">
+									<f:convertNumber pattern="###" />
+								</h:outputText>%
+							</span>
+						</div>
+					</p:column>
+
+					<!-- PROMEDIO -->
+					<p:column headerText="PROMEDIO" style="width: 10%; text-align: center;">
+						<span style="font-size: 0.85rem; border-radius: 6px; padding: 0.25rem 0.6rem; font-weight: bold;
+									background: #dbeafe; color: #1e40af; display: inline-block;">
+							<h:outputText value="#{enc.promedio}">
+								<f:convertNumber pattern="0.0" />
+							</h:outputText> / 5.0
+						</span>
+					</p:column>
+
+					<!-- ESTADO -->
+					<p:column headerText="ESTADO" style="width: 10%; text-align: center;">
+						<h:outputText value="#{enc.estado}"
+							style="font-size: 0.75rem; border-radius: 6px; padding: 0.25rem 0.6rem; font-weight: 700;
+								display: inline-block;
+								background: #{enc.estado eq 'Activa' ? '#d1fae5' : '#e5e7eb'};
+								color: #{enc.estado eq 'Activa' ? '#065f46' : '#374151'};" />
+					</p:column>
+
+				</p:dataTable>
+			</p:card>
+
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>
+
+</html>

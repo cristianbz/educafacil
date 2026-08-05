@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
@@ -90,73 +91,81 @@ public class BackingReporteFacturas implements Serializable {
      */
     
     public StreamedContent descargarDocumento(ComprobanteReporteDto comprobante, String tipoArchivo) {
-        // 1. Validaciones iniciales
+        if (!esComprobanteValido(comprobante) || !esTipoArchivoValido(tipoArchivo)) {
+            return null;
+        }
+
+        boolean esPdf = "pdf".equalsIgnoreCase(tipoArchivo);
+        String urlArchivo = obtenerUrlArchivo(comprobante, esPdf);
+
+        if (urlArchivo == null || urlArchivo.isBlank()) {
+            Mensaje.verMensaje(FacesMessage.SEVERITY_WARN, "Aviso", 
+                    String.format("El archivo %s no está disponible para este documento (%s).", 
+                    tipoArchivo.toUpperCase(), comprobante.getTipoComprobante()));
+            return null;
+        }
+
+        abrirDescargaS3(urlArchivo, tipoArchivo);
+        return null;
+    }
+
+    // --- Métodos Auxiliares ---
+
+    private boolean esComprobanteValido(ComprobanteReporteDto comprobante) {
         if (comprobante == null || comprobante.getEntityId() == null || comprobante.getEntityType() == null) {
             Mensaje.verMensaje(FacesMessage.SEVERITY_WARN, "Aviso", "Datos del comprobante incompletos.");
-            return null;
+            return false;
         }
-        
-        if (tipoArchivo == null || (!tipoArchivo.equalsIgnoreCase("pdf") && !tipoArchivo.equalsIgnoreCase("xml"))) {
-            Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "Tipo de archivo no soportado.");
-            return null;
-        }
+        return true;
+    }
 
-        String tipoComprobante = comprobante.getTipoComprobante();
-        String urlArchivo = null;
-        boolean esPdf = tipoArchivo.equalsIgnoreCase("pdf");
+    private boolean esTipoArchivoValido(String tipo) {
+        if (tipo == null || (!tipo.equalsIgnoreCase("pdf") && !tipo.equalsIgnoreCase("xml"))) {
+            Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "Tipo de archivo no soportado.");
+            return false;
+        }
+        return true;
+    }
+
+    private String obtenerUrlArchivo(ComprobanteReporteDto comprobante, boolean esPdf) {
+        String tipo = comprobante.getTipoComprobante();
+        Integer id = comprobante.getEntityId();
 
         try {
-            // 2. Switch centralizado: recupera la URL correcta basándose en el tipoArchivo solicitado
-            switch (tipoComprobante) {
-                case "Factura":
-                    Factura factura = facturaServicio.buscarFacturaPorId(comprobante.getEntityId());
-                    if (factura != null && factura.getDocumentoElectronico() != null) {
-                        urlArchivo = esPdf ? factura.getDocumentoElectronico().getUrlPdf() 
-                                           : factura.getDocumentoElectronico().getUrlXml();
-                    }
-                    break;
-                    
-                case "Nota de Credito":
-                    NotaCredito notaCredito = facturaServicio.buscarNotaCreditoporId(comprobante.getEntityId());
-                    if (notaCredito != null) {
-                        urlArchivo = esPdf ? notaCredito.getUrlPdf() : notaCredito.getUrlXml();
-                    }
-                    break;
+            return switch (tipo) {
+                case "Factura" -> Optional.ofNullable(facturaServicio.buscarFacturaPorId(id))
+                        .map(Factura::getDocumentoElectronico)
+                        .map(doc -> esPdf ? doc.getUrlPdf() : doc.getUrlXml())
+                        .orElse(null);
 
-                case "Retencion":
-                    Retencion retencion = facturaServicio.buscarRetencionporId(comprobante.getEntityId());
-                    if (retencion != null) {
-                        urlArchivo = esPdf ? retencion.getUrlPdf() : retencion.getUrlXml();
-                    }
-                    break;
-                    
-                default:
-                    Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "Tipo de comprobante no reconocido: " + tipoComprobante);
-                    return null;
-            }
+                case "Nota de Credito" -> Optional.ofNullable(facturaServicio.buscarNotaCreditoporId(id))
+                        .map(nc -> esPdf ? nc.getUrlPdf() : nc.getUrlXml())
+                        .orElse(null);
+
+                case "Retencion" -> Optional.ofNullable(facturaServicio.buscarRetencionporId(id))
+                        .map(r -> esPdf ? r.getUrlPdf() : r.getUrlXml())
+                        .orElse(null);
+
+                default -> {
+                    Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "Tipo de comprobante no reconocido: " + tipo);
+                    yield null;
+                }
+            };
         } catch (Exception e) {
-            log.error("Error al buscar el comprobante tipo: " + tipoComprobante, e);
-            Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "Error al consultar la base de datos o procesar el documento.");
+            log.error("Error al buscar el comprobante tipo: {} con ID: {}", tipo, id, e);
+            Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "Error al consultar la base de datos.");
             return null;
         }
+    }
 
-        // 3. Validación unificada de la URL obtenida
-        if (urlArchivo == null || urlArchivo.trim().isEmpty()) {
-            Mensaje.verMensaje(FacesMessage.SEVERITY_WARN, "Aviso", 
-                    String.format("El archivo %s no está disponible para este documento (%s).", tipoArchivo.toUpperCase(), tipoComprobante));
-            return null;
-        }
-
-        // 4. Bloque único para AWS S3 y redirección con PrimeFaces
+    private void abrirDescargaS3(String urlArchivo, String tipoArchivo) {
         try {
             String presignedUrl = awsS3Service.generarUrlDescarga(urlArchivo);
             String script = String.format("window.open('%s', '_blank');", presignedUrl);
             PrimeFaces.current().executeScript(script);
-            return null;
         } catch (Exception e) {
-            log.error("Error al generar pre-signed URL para " + tipoArchivo, e);
-            Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo generar el enlace de descarga: " + e.getMessage());
-            return null;
+            log.error("Error al generar pre-signed URL para {}", tipoArchivo, e);
+            Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo generar el enlace de descarga.");
         }
     }
     

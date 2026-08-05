@@ -18,6 +18,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.UUID;
 
+import javax.xml.XMLConstants;
 import javax.xml.crypto.dsig.CanonicalizationMethod;
 import javax.xml.crypto.dsig.DigestMethod;
 import javax.xml.crypto.dsig.Reference;
@@ -115,6 +116,7 @@ public class XadesSignatureService {
 
         // ── 2. Parsear XML ───────────────────────────────────────────────────
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         dbf.setNamespaceAware(true);
         Document doc = dbf.newDocumentBuilder().parse(new ByteArrayInputStream(xmlDocument));
         doc.setXmlStandalone(true);

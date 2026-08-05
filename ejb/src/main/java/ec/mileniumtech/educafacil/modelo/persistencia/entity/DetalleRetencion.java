@@ -66,6 +66,6 @@ public class DetalleRetencion implements Serializable {
     @Column(name = "deret_fecha_sustento")
     private Date fechaSustento;
 
-    public DetalleRetencion() {
+    public DetalleRetencion() {// Constructor por defecto metodo vacio
     }
 }

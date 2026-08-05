@@ -3,8 +3,7 @@ package ec.mileniumtech.educafacil.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
-import ec.mileniumtech.educafacil.dao.impl.PersonaDaoImpl;
+import ec.mileniumtech.educafacil.dao.PersonaDao;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Persona;
 import java.lang.reflect.Field;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,22 +16,22 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class PersonaServiceTest {
 
     @Mock
-    private PersonaDaoImpl personaDaoImpl;
+    private PersonaDao personaDao;
 
     private PersonaService personaService;
 
     @BeforeEach
     void setUp() throws Exception {
         personaService = new PersonaService();
-        Field field = PersonaService.class.getDeclaredField("personaDaoImpl");
+        Field field = PersonaService.class.getDeclaredField("personaDao");
         field.setAccessible(true);
-        field.set(personaService, personaDaoImpl);
+        field.set(personaService, personaDao);
     }
 
     @Test
     void buscarPersonaPorCedulaCorreoExitosamente() {
         Persona persona = new Persona();
-        when(personaDaoImpl.buscarPersonaPorCedulaCorreo("1710034065", "test@mail.com")).thenReturn(persona);
+        when(personaDao.buscarPersonaPorCedulaCorreo("1710034065", "test@mail.com")).thenReturn(persona);
 
         Persona resultado = personaService.buscarPersonaPorCedulaCorreo("1710034065", "test@mail.com");
 
@@ -40,12 +39,13 @@ class PersonaServiceTest {
     }
 
     @Test
-    void buscarPersonaPorCedulaCorreoLanzaSystemException() {
-        when(personaDaoImpl.buscarPersonaPorCedulaCorreo(anyString(), anyString()))
-                .thenThrow(new RuntimeException("Error DB"));
+    void buscarPersonaPorCedulaCorreoPropagaExcepcionDelDao() {
+        RuntimeException original = new RuntimeException("Error DB");
+        when(personaDao.buscarPersonaPorCedulaCorreo(anyString(), anyString()))
+                .thenThrow(original);
 
-        SystemException ex = assertThrows(SystemException.class,
+        RuntimeException ex = assertThrows(RuntimeException.class,
                 () -> personaService.buscarPersonaPorCedulaCorreo("1", "x@y.com"));
-        assertEquals("PERS-SINGLE-ERR", ex.getCode());
+        assertSame(original, ex);
     }
 }

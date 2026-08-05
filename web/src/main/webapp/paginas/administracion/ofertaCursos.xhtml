@@ -60,7 +60,7 @@
 								<p:selectOneMenu id="comboArea"
 									value="#{backingAdminCursos.beanAdminCursos.codigoArea}"
 									required="true" requiredMessage="#{mensajes['campoRequerido']}">
-									<f:selectItem itemLabel="#{etiquetas['seleccionarArea']}" itemValue="#{null}" noSelectionOption="true" />
+									<f:selectItem itemLabel="#{etiquetas['oferta.seleccionarArea']}" itemValue="#{null}" noSelectionOption="true" />
 									<f:selectItems value="#{backingAdminCursos.beanAdminCursos.listaAreas}"
 										var="area" itemValue="#{area.areaId}" itemLabel="#{area.areaNombre}" />
 									<p:ajax process="@this" update="comboEspecialidad comboCurso" partialSubmit="true"
@@ -76,7 +76,7 @@
 								<p:selectOneMenu id="comboEspecialidad"
 									value="#{backingAdminCursos.beanAdminCursos.codigoEspecialidad}"
 									required="true" requiredMessage="#{mensajes['campoRequerido']}">
-									<f:selectItem itemLabel="#{etiquetas['seleccionarEspecialidad']}" itemValue="#{null}" noSelectionOption="true" />
+									<f:selectItem itemLabel="#{etiquetas['oferta.seleccionarEspecialidad']}" itemValue="#{null}" noSelectionOption="true" />
 									<f:selectItems value="#{backingAdminCursos.beanAdminCursos.listaEspecialidad}"
 										var="especialidad" itemValue="#{especialidad.espeId}" itemLabel="#{especialidad.espeNombre}" />
 									<p:ajax process="@this" update="comboCurso" partialSubmit="true"
@@ -92,7 +92,7 @@
 								<p:selectOneMenu id="comboCurso" panelStyle="width: 35rem" style="width:100%;"
 									value="#{backingAdminCursos.beanAdminCursos.codigoCurso}"
 									required="true" requiredMessage="#{mensajes['campoRequerido']}">
-									<f:selectItem itemLabel="#{etiquetas['seleccionarCurso']}" itemValue="#{null}" noSelectionOption="true" />
+									<f:selectItem itemLabel="#{etiquetas['oferta.seleccionarCurso']}" itemValue="#{null}" noSelectionOption="true" />
 									<f:selectItems value="#{backingAdminCursos.beanAdminCursos.listaCurso}"
 										var="curso" itemValue="#{curso.cursId}" itemLabel="#{curso.cursNombre}" />
 									<p:ajax process="@this" event="change" />
@@ -107,7 +107,7 @@
 								<p:selectOneMenu id="comboTipoCurso"
 									value="#{backingAdminCursos.beanAdminCursos.codigoTipoCurso}"
 									required="true" requiredMessage="#{mensajes['campoRequerido']}">
-									<f:selectItem itemLabel="#{etiquetas['seleccionarTipo']}" itemValue="#{null}" noSelectionOption="true" />
+									<f:selectItem itemLabel="#{etiquetas['oferta.seleccionarTipo']}" itemValue="#{null}" noSelectionOption="true" />
 									<f:selectItems value="#{backingAdminCursos.beanAdminCursos.listaCatalogo}"
 										var="catalogo" itemValue="#{catalogo.cataCodigoIndice}" itemLabel="#{catalogo.cataDescripcion}" />
 									<p:ajax process="@this" event="change" />
@@ -121,7 +121,7 @@
 								<p:selectOneMenu id="comboTipoModalidad"
 									value="#{backingAdminCursos.beanAdminCursos.codigoTipoModalidad}"
 									required="true" requiredMessage="#{mensajes['campoRequerido']}">
-									<f:selectItem itemLabel="#{etiquetas['seleccionarTipo']}" itemValue="#{null}" noSelectionOption="true" />
+									<f:selectItem itemLabel="#{etiquetas['oferta.seleccionarTipo']}" itemValue="#{null}" noSelectionOption="true" />
 									<f:selectItems value="#{backingAdminCursos.beanAdminCursos.listaModalidadEstudio}"
 										var="catalogo" itemValue="#{catalogo.cataCodigoIndice}" itemLabel="#{catalogo.cataDescripcion}" />
 									<p:ajax process="@this" event="change" />

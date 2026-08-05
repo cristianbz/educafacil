@@ -54,7 +54,7 @@ public class Accion implements Serializable {
     private List<Accion> subAcciones;
 
     // Constructor vacío requerido por JPA
-    public Accion() {
+    public Accion() { // Constructor por defecto metodo vacio
     }
 
 }

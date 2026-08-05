@@ -1,7 +1,13 @@
 package ec.mileniumtech.educafacil.dao.impl;
 
 
-import ec.mileniumtech.educafacil.dao.FacturaDao;import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import ec.mileniumtech.educafacil.dao.FacturaDao;
+import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleFactura;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Establecimiento;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Factura;
@@ -63,25 +69,6 @@ public class FacturaDaoImpl extends GenericoDaoImpl<Factura, Integer> implements
         	// Nota: Si usas una versión antigua de Java EE, usa "javax.persistence.loadgraph"
 
         	Factura factura = query.getSingleResult();
-//        	return factura;
-//            TypedQuery<Factura> query = getEntityManager().createQuery(
-//            		"SELECT f FROM Factura f " +
-//            			    "JOIN FETCH f.cliente " +
-//            			    "JOIN FETCH f.puntoEmision pe " +
-//            			    "JOIN FETCH pe.establecimientos est " +
-//            			    "JOIN FETCH est.empresaMatriz " +
-//            			    "LEFT JOIN FETCH f.detalles d " +
-//            			    "LEFT JOIN FETCH d.item " + // <--- ¡ESTA ES LA MAGIA!
-//            			    "WHERE f.id = :id", Factura.class);
-//            query.setParameter("id", id);
-//            Factura factura = query.getSingleResult();
-////            if (factura.getDetalles() != null) {
-////                for (DetalleFactura df : factura.getDetalles()) {
-////                    if (df.getItem() != null) {
-////                        df.getItem().getNombre(); // Forzar inicialización del proxy
-////                    }
-////                }
-////            }
             return factura;
         } catch (PersistenceException e) {
             throw new SystemException("Error al buscar factura con detalles", "FACTURA-FIND-ERR", e);
@@ -144,51 +131,51 @@ public class FacturaDaoImpl extends GenericoDaoImpl<Factura, Integer> implements
      * @param numeroAutorizacion Clave de acceso o número de autorización.
      * @return Lista de facturas que coinciden con los criterios.
      */
-    public java.util.List<Factura> buscarFacturasPorFiltros(java.time.LocalDate fechaInicio, java.time.LocalDate fechaFin, String identificacion, String numeroAutorizacion,String estadoAutorizacion) {
-        try {
-            StringBuilder jpql = new StringBuilder("SELECT f FROM Factura f ");
-            jpql.append("JOIN FETCH f.cliente ");
-            jpql.append("JOIN FETCH f.documentoElectronico ");
-            jpql.append("WHERE 1=1 ");
+    public List<Factura> buscarFacturasPorFiltros(
+            LocalDate fechaInicio, 
+            LocalDate fechaFin, 
+            String identificacion, 
+            String numeroAutorizacion, 
+            String estadoAutorizacion) {
 
-            if (estadoAutorizacion != null && !estadoAutorizacion.trim().isEmpty()) {
-                jpql.append("AND f.documentoElectronico.estado = :estadoAutorizacion ");
+        try {
+            StringBuilder jpql = new StringBuilder("""
+                SELECT f FROM Factura f 
+                JOIN FETCH f.cliente 
+                JOIN FETCH f.documentoElectronico 
+                WHERE 1=1
+                """);
+
+            Map<String, Object> params = new HashMap<>();
+
+            if (estadoAutorizacion != null && !estadoAutorizacion.isBlank()) {
+                jpql.append(" AND f.documentoElectronico.estado = :estadoAutorizacion");
+                params.put("estadoAutorizacion", estadoAutorizacion);
             }
             if (fechaInicio != null) {
-                jpql.append("AND f.fechaEmision >= :fechaInicio ");
+                jpql.append(" AND f.fechaEmision >= :fechaInicio");
+                params.put("fechaInicio", fechaInicio);
             }
             if (fechaFin != null) {
-                jpql.append("AND f.fechaEmision <= :fechaFin ");
+                jpql.append(" AND f.fechaEmision <= :fechaFin");
+                params.put("fechaFin", fechaFin);
             }
-            if (identificacion != null && !identificacion.trim().isEmpty()) {
-                jpql.append("AND f.cliente.numeroIdentificacion = :identificacion ");
+            if (identificacion != null && !identificacion.isBlank()) {
+                jpql.append(" AND f.cliente.numeroIdentificacion = :identificacion");
+                params.put("identificacion", identificacion);
             }
-            if (numeroAutorizacion != null && !numeroAutorizacion.trim().isEmpty()) {
-                jpql.append("AND (f.documentoElectronico.claveAcceso = :numeroAutorizacion OR f.documentoElectronico.numeroAutorizacion = :numeroAutorizacion) ");
+            if (numeroAutorizacion != null && !numeroAutorizacion.isBlank()) {
+                jpql.append(" AND (f.documentoElectronico.claveAcceso = :numeroAutorizacion OR f.documentoElectronico.numeroAutorizacion = :numeroAutorizacion)");
+                params.put("numeroAutorizacion", numeroAutorizacion);
             }
 
-            jpql.append("ORDER BY f.fechaEmision DESC, f.id DESC");
+            jpql.append(" ORDER BY f.fechaEmision DESC, f.id DESC");
 
             TypedQuery<Factura> query = getEntityManager().createQuery(jpql.toString(), Factura.class);
-
-            if (fechaInicio != null) {
-                query.setParameter("fechaInicio", fechaInicio);
-            }
-            if (fechaFin != null) {
-                query.setParameter("fechaFin", fechaFin);
-            }
-            if (identificacion != null && !identificacion.trim().isEmpty()) {
-                query.setParameter("identificacion", identificacion);
-            }
-            if (numeroAutorizacion != null && !numeroAutorizacion.trim().isEmpty()) {
-                query.setParameter("numeroAutorizacion", numeroAutorizacion);
-            }
-            if (estadoAutorizacion != null && !estadoAutorizacion.trim().isEmpty()){
-            	query.setParameter("estadoAutorizacion", estadoAutorizacion);            	
-            }
-            
+            params.forEach(query::setParameter);
 
             return query.getResultList();
+
         } catch (PersistenceException e) {
             throw new SystemException("Error al filtrar facturas para reporte", "FACTURA-FILTER-ERR", e);
         }

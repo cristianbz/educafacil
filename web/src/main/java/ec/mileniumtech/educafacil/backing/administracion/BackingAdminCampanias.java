@@ -192,7 +192,7 @@ public class BackingAdminCampanias implements Serializable{
 	        
 
 	}
-    public void createHorizontalBarModel() {
+    public void createHorizontalBarModel() {// Metodo no implementado
         
     }
 }

@@ -36,7 +36,7 @@ public class ObjectFactory {
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ec.mileniumtech.educafacil.service.sri.autorizacion
      * 
      */
-    public ObjectFactory() {
+    public ObjectFactory() {// Constructor por defecto metodo vacio
     }
 
     /**

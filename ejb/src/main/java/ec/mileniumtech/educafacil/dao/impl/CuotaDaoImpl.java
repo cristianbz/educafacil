@@ -17,7 +17,7 @@ import jakarta.persistence.Query;
 @Stateless
 public class CuotaDaoImpl extends GenericoDaoImpl<Cuota, Long> implements CuotaDao {
 
-    public CuotaDaoImpl() {
+    public CuotaDaoImpl() {// Constructor por defecto metodo vacio
     }
 
     @SuppressWarnings("unchecked")

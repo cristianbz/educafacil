@@ -9,7 +9,11 @@ import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.TypedQuery;
+
+import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * DAO para la entidad Retencion.
@@ -76,59 +80,52 @@ public class RetencionDaoImpl extends GenericoDaoImpl<Retencion, Integer> implem
             throw new SystemException("Error al actualizar retención", "RETENCION-UPDATE-ERR", e);
         }
     }
-    public java.util.List<Retencion> buscarRetencionesPorFiltros(
-            java.time.LocalDate fechaInicio,
-            java.time.LocalDate fechaFin,
+    public List<Retencion> buscarRetencionesPorFiltros(
+            LocalDate fechaInicio,
+            LocalDate fechaFin,
             String identificacion,
             String numeroAutorizacion,
             String estadoAutorizacion) {
-    try {
-        StringBuilder jpql = new StringBuilder("SELECT r FROM Retencion r ");
-        
-        // 1. Solo dejamos los JOINs normales con alias necesarios para el WHERE
-        jpql.append("JOIN r.egreso e ");
-        jpql.append("JOIN e.proveedor p ");
-        jpql.append("WHERE 1=1 ");
+        try {
+            StringBuilder jpql = new StringBuilder("""
+                SELECT r FROM Retencion r 
+                JOIN FETCH r.egreso 
+                JOIN FETCH r.egreso.proveedor 
+                WHERE 1=1
+                """);
 
-        if (fechaInicio != null) {
-            jpql.append("AND r.fechaEmision >= :fechaInicio ");
+            Map<String, Object> params = new HashMap<>();
+
+            if (fechaInicio != null) {
+                jpql.append(" AND r.fechaEmision >= :fechaInicio");
+                params.put("fechaInicio", fechaInicio);
+            }
+            if (fechaFin != null) {
+                jpql.append(" AND r.fechaEmision <= :fechaFin");
+                params.put("fechaFin", fechaFin);
+            }
+            if (identificacion != null && !identificacion.isBlank()) {
+                jpql.append(" AND r.egreso.proveedor.provRuc = :identificacion");
+                params.put("identificacion", identificacion.trim());
+            }
+            if (numeroAutorizacion != null && !numeroAutorizacion.isBlank()) {
+                jpql.append(" AND (r.claveAcceso = :numeroAutorizacion OR r.numeroAutorizacion = :numeroAutorizacion)");
+                params.put("numeroAutorizacion", numeroAutorizacion.trim());
+            }
+            if (estadoAutorizacion != null && !estadoAutorizacion.isBlank()) {
+                jpql.append(" AND r.estado = :estadoAutorizacion");
+                params.put("estadoAutorizacion", estadoAutorizacion.trim());
+            }
+
+            jpql.append(" ORDER BY r.fechaEmision DESC, r.id DESC");
+
+            TypedQuery<Retencion> query = getEntityManager().createQuery(jpql.toString(), Retencion.class);
+            params.forEach(query::setParameter);
+
+            return query.getResultList();
+
+        } catch (PersistenceException e) {
+            throw new SystemException("Error al filtrar retenciones para reporte", "RETENCION-FILTER-ERR", e);
         }
-        if (fechaFin != null) {
-            jpql.append("AND r.fechaEmision <= :fechaFin ");
-        }
-        if (identificacion != null && !identificacion.trim().isEmpty()) {
-            jpql.append("AND p.provRuc = :identificacion ");
-        }
-        if (numeroAutorizacion != null && !numeroAutorizacion.trim().isEmpty()) {
-            jpql.append("AND (r.claveAcceso = :numeroAutorizacion OR r.numeroAutorizacion = :numeroAutorizacion) ");
-        }
-        if (estadoAutorizacion != null && !estadoAutorizacion.trim().isEmpty()) {
-            jpql.append("AND r.estado = :estadoAutorizacion ");
-        }
-
-        jpql.append(" ORDER BY r.fechaEmision DESC, r.id DESC");
-
-        TypedQuery<Retencion> query = getEntityManager().createQuery(jpql.toString(), Retencion.class);
-
-        // 2. SOLUCIÓN AL ERROR: Creamos un Entity Graph dinámico para hacer el FETCH de forma externa
-        jakarta.persistence.EntityGraph<Retencion> graph = getEntityManager().createEntityGraph(Retencion.class);
-        // Le decimos que cargue de forma temprana 'egreso' y anidamos la carga de 'proveedor'
-        jakarta.persistence.Subgraph<Egresos> egresoSubgraph = graph.addSubgraph("egreso");
-        egresoSubgraph.addAttributeNodes("proveedor");
-        
-        // Le pasamos el grafo como un 'hint' a la consulta antes de ejecutarla
-        query.setHint("jakarta.persistence.fetchgraph", graph);
-
-        // 3. Asignación normal de parámetros
-        if (fechaInicio != null) query.setParameter("fechaInicio", java.sql.Date.valueOf(fechaInicio));
-        if (fechaFin != null) query.setParameter("fechaFin", java.sql.Date.valueOf(fechaFin));
-        if (identificacion != null && !identificacion.trim().isEmpty()) query.setParameter("identificacion", identificacion);
-        if (numeroAutorizacion != null && !numeroAutorizacion.trim().isEmpty()) query.setParameter("numeroAutorizacion", numeroAutorizacion);
-        if (estadoAutorizacion != null && !estadoAutorizacion.trim().isEmpty()) query.setParameter("estadoAutorizacion", estadoAutorizacion);
-
-        return query.getResultList();
-    } catch (PersistenceException e) {
-        throw new SystemException("Error al filtrar retenciones para reporte", "RETENCION-FILTER-ERR", e);
     }
-}
 }
