@@ -59,8 +59,8 @@ public class NotaCredito {
     
     @Column(name = "nocr_url_xml", length = 500)
     private String urlXml;
-    @Column(name = "nocr_fecha_autorizacion", columnDefinition = "TIMESTAMPTZ")
-    private OffsetDateTime fechaAutorizacionDb;
+    @Column(name = "nocr_fecha_autorizacion", nullable = false)
+    private LocalDate fechaAutorizacionDb;
     @Transient 
     private XMLGregorianCalendar fechaAutorizacion;
     @Transient

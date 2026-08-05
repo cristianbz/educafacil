@@ -3,6 +3,7 @@ package ec.mileniumtech.educafacil.backing.contabilidad;
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -64,14 +65,15 @@ public class BackingRetencion implements Serializable {
 
         Retencion nueva = new Retencion();
         nueva.setEgreso(egreso);
-        nueva.setFechaEmision(new Date());
+        
+        // 1. Asignar la fecha actual usando LocalDate
+        LocalDate fechaActual = LocalDate.now();
+        nueva.setFechaEmision(fechaActual);
 
-        // Calcular ejercicio fiscal MM/YYYY
-        java.util.Calendar cal = java.util.Calendar.getInstance();
-        cal.setTime(nueva.getFechaEmision());
-        String periodo = String.format("%02d/%d",
-                cal.get(java.util.Calendar.MONTH) + 1,
-                cal.get(java.util.Calendar.YEAR));
+        // 2. Calcular ejercicio fiscal MM/YYYY directamente con LocalDate
+        String periodo = String.format("%02d/%d", 
+                fechaActual.getMonthValue(), 
+                fechaActual.getYear());
         nueva.setEjercicioFiscal(periodo);
 
         nueva.setDetalles(new ArrayList<>());

@@ -190,7 +190,7 @@ public class FacturacionFacade {
     private ComprobanteReporteDto mapRetencionToDto(Retencion r) {
         java.time.LocalDate fechaEmision = null;
         if (r.getFechaEmision() != null) {
-            fechaEmision = new java.sql.Date(r.getFechaEmision().getTime()).toLocalDate();
+            fechaEmision = r.getFechaEmision();
         }
         return ComprobanteReporteDto.builder()
             .fechaEmision(fechaEmision)
