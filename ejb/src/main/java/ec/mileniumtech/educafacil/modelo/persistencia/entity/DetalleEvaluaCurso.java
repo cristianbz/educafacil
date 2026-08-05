@@ -9,6 +9,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -17,14 +19,14 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name="detalleEvaluaCurso")
-//@NamedQueries({
-//	@NamedQuery(name = TipoEncuesta.CARGAR_TIPOS_ENCUESTAS, query = "SELECT TE FROM TipoEncuesta TE ORDER BY TE.objetoEvaluacion.objeNombre,TE.tipeDescripcion")
-//})
+@NamedQueries({
+	@NamedQuery(name = DetalleEvaluaCurso.CARGAR_DETALLE_EVALUACION, query = "SELECT d FROM DetalleEvaluaCurso d")
+})
 
 public class DetalleEvaluaCurso implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
-	public static final String CARGAR_DETALLE_EVALUACION="cargarTiposEncuestas";
+	public static final String CARGAR_DETALLE_EVALUACION="cargarDetalleEvaluacion";
 	
 	@Id
 	@SequenceGenerator(name="detalleevaluacursoseq", sequenceName="detalleevaluacurso_seq", allocationSize = 1)

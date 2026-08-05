@@ -1,6 +1,7 @@
 package ec.mileniumtech.educafacil.modelo.persistencia.entity;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -49,9 +50,8 @@ public class Retencion implements Serializable {
     @Column(name = "rete_numero", length = 20, nullable = false)
     private String numero;
 
-    @Temporal(TemporalType.DATE)
     @Column(name = "rete_fecha_emision", nullable = false)
-    private Date fechaEmision;
+    private LocalDate fechaEmision;
 
     @Column(name = "rete_ejercicio_fiscal", length = 10, nullable = false)
     private String ejercicioFiscal;
@@ -81,9 +81,9 @@ public class Retencion implements Serializable {
     @Column(name = "rete_url_xml", length = 500)
     private String urlXml;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "rete_fecha_autorizacion")
-    private Date fechaAutorizacion;
+   
+    @Column(name = "rete_fecha_autorizacion", nullable = false)
+    private LocalDate fechaAutorizacion;
 
     @Column(name = "rete_mensaje_sri", columnDefinition = "text")
     private String mensajeSri;

@@ -36,7 +36,7 @@ public class PerfilAccion implements Serializable {
     private Boolean estado;
 
     // Constructor vacío requerido por JPA
-    public PerfilAccion() {
+    public PerfilAccion() {// Constructor por defecto metodo vacio
     }
 
 }

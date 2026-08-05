@@ -41,7 +41,9 @@ public class FormaPagoFactura implements Serializable{
     private String tiempo;
 
     // Constructores
-    public FormaPagoFactura() {}
+    public FormaPagoFactura() {// Constructor por defecto metodo vacio
+    	
+    }
     
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fact_id", nullable = false)

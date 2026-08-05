@@ -85,6 +85,7 @@ public class ProcesadorDocumentosElectronicos {
         try {
             respuestaEnvio = sriWebServiceService.enviarComprobante(xmlFirmado, esProduccion, configuraciones);
         } catch (Exception e) {
+        	log.error("Error al comunicar con el SRI en la recepción del comprobante. URL wsdl: {}", urlWsdl, e);
             throw new SystemException("Error al comunicar con el SRI.", "SYS-SRI-COMM-ERR", e);
         }
 

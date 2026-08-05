@@ -181,8 +181,71 @@
          JAVASCRIPT COMPARTIDO
          ════════════════════════════════════════════════════════════ -->
     <script type="text/javascript">
-        function showLoading() { if (window.PF &amp;&amp; PF('dlgCargando')) PF('dlgCargando').show(); }
-        function hideLoading() { if (window.PF &amp;&amp; PF('dlgCargando')) PF('dlgCargando').hide(); }
+    //<![CDATA[
+        function showLoading() { if (window.PF && PF('dlgCargando')) PF('dlgCargando').show(); }
+        function hideLoading() { if (window.PF && PF('dlgCargando')) PF('dlgCargando').hide(); }
+        
+        function initMenuIcons() {
+            if (!window.jQuery) return;
+
+            // ── 1. Iconos e tooltips en los encabezados principales (panelMenu) ──
+            var panels = jQuery('[class*="menu-icon_"]');
+            panels.each(function() {
+                var panelEl = jQuery(this);
+                var iconClass = '';
+                var classes = this.className.split(/\s+/);
+                for (var i = 0; i < classes.length; i++) {
+                    if (classes[i].indexOf('menu-icon_') === 0) {
+                        iconClass = classes[i].replace('menu-icon_', '').replace(/_/g, ' ');
+                        break;
+                    }
+                }
+                if (!iconClass) return;
+
+                var header = panelEl.find('.ui-panelmenu-header');
+                if (!header.length) return;
+
+                // Inyectar icono si aún no existe
+                if (!header.find('.menu-icon-injected').length) {
+                    header.append('<span class="menu-icon-injected ' + iconClass + '"></span>');
+                }
+
+                // Leer el texto del label y ponerlo como title nativo del navegador
+                var labelText = header.find('a').text().trim();
+                if (labelText) {
+                    header.attr('title', labelText);
+                    header.find('.menu-icon-injected').attr('title', labelText);
+                }
+            });
+
+            // ── 2. title nativo en los items hijo (menuitem links) ──
+            jQuery('.sidebar .ui-menuitem-link').each(function() {
+                var link = jQuery(this);
+                if (!link.attr('title')) {
+                    var text = link.find('.ui-menuitem-text').text().trim();
+                    if (text) {
+                        link.attr('title', text);
+                    }
+                }
+            });
+        }
+        
+        (function() {
+            var attempts = 0;
+            function tryInit() {
+                if (window.jQuery) {
+                    jQuery(document).ready(function() {
+                        setTimeout(initMenuIcons, 300);
+                    });
+                    jQuery(document).on('pfAjaxComplete', initMenuIcons);
+                } else if (attempts < 100) {
+                    attempts++;
+                    setTimeout(tryInit, 50);
+                }
+            }
+            tryInit();
+        })();
+    //]]>
     </script>
 
 </h:body> <!-- 1. CAMBIO: Cerrar con </h:body> -->

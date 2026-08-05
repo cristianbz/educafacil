@@ -37,6 +37,6 @@ public class BeanRetencion implements Serializable {
     private java.util.Date fechaInicio;
     private java.util.Date fechaFin;
 
-    public BeanRetencion() {
+    public BeanRetencion() {// Constructor por defecto metodo vacio
     }
 }

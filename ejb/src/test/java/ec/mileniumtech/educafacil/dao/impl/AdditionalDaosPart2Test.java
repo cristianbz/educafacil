@@ -476,13 +476,19 @@ class AdditionalDaosPart2Test {
     @Test
     void pagosAgregarPagoPersist() {
         Pagos p = mock(Pagos.class);
-        DetallePagos dp = new DetallePagos();
+        DetallePagos dp = mock(DetallePagos.class);
+        Matricula matricula = mock(Matricula.class);
+        when(dp.getDepaValor()).thenReturn(new BigDecimal("100"));
         when(p.getDetallePagos()).thenReturn(Arrays.asList(dp));
+        when(p.getMatricula()).thenReturn(matricula);
+        when(matricula.getMatrSaldoPagoCurso()).thenReturn(new BigDecimal("500"));
 
         pagosDao.agregarPago(p);
 
         verify(entityManager).persist(p);
         verify(entityManager).persist(dp);
+        verify(entityManager).merge(matricula);
+        verify(matricula).setMatrSaldoPagoCurso(new BigDecimal("400"));
     }
 
     @Test
@@ -1011,7 +1017,7 @@ class AdditionalDaosPart2Test {
     void seguimientoClientesTotalDatosCRMExitosamente() {
         when(entityManager.createNativeQuery(anyString())).thenReturn(query);
         when(query.setParameter("estado", "Interesado")).thenReturn(query);
-        when(query.getResultList()).thenReturn(Arrays.asList("10"));
+        when(query.getSingleResult()).thenReturn("10");
 
         BigDecimal resultado = seguimientoClientesDao.totalDatosCRM("Interesado");
         assertEquals(new BigDecimal("10"), resultado);
@@ -1023,7 +1029,7 @@ class AdditionalDaosPart2Test {
         when(query.setParameter("estado", "Interesado")).thenReturn(query);
         when(query.setParameter("vendedorId", 1)).thenReturn(query);
         when(query.setParameter("campId", 2)).thenReturn(query);
-        when(query.getResultList()).thenReturn(Arrays.asList("7"));
+        when(query.getSingleResult()).thenReturn("7");
 
         BigDecimal resultado = seguimientoClientesDao.totalDatosCRMVendedor("Interesado", 1, 2);
         assertEquals(new BigDecimal("7"), resultado);

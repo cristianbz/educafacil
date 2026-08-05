@@ -52,7 +52,7 @@ public class Perfil implements Serializable {
     @OneToMany (mappedBy="perfil", fetch=FetchType.LAZY)
 	private List<RolPerfil> rolPerfil;
     // Constructor vacío requerido por JPA
-    public Perfil() {
+    public Perfil() {// Constructor por defecto metodo vacio
     }
 
 }

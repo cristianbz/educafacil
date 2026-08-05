@@ -124,8 +124,11 @@ public class BackingLogin implements Serializable{
 						
 						if(flagPrimero) {
 							perfil=objetosMenuDto.getPer_id();								
-				            submenu.setIcon(null);
+							submenu.setIcon(objetosMenuDto.getPer_icono());
 				            submenu.setLabel(objetosMenuDto.getPer_nombre());
+				            if (objetosMenuDto.getPer_icono() != null) {
+				            	submenu.setStyleClass("menu-icon_" + objetosMenuDto.getPer_icono().trim().replace(" ", "_"));
+				            }
 				            this.menumodel.getElements().add(submenu);
 				            
 				            DefaultMenuItem item= DefaultMenuItem.builder().value(objetosMenuDto.getAcc_nombre()).url(objetosMenuDto.getAcc_ruta()).icon(objetosMenuDto.getAcc_icono()).build();
@@ -138,8 +141,11 @@ public class BackingLogin implements Serializable{
 							}else {
 								submenu = new DefaultSubMenu();
 								perfil=objetosMenuDto.getPer_id();								
-					            submenu.setIcon(null);
+								submenu.setIcon(objetosMenuDto.getPer_icono());
 					            submenu.setLabel(objetosMenuDto.getPer_nombre());
+					            if (objetosMenuDto.getPer_icono() != null) {
+					            	submenu.setStyleClass("menu-icon_" + objetosMenuDto.getPer_icono().trim().replace(" ", "_"));
+					            }
 					            this.menumodel.getElements().add(submenu);
 
 					            DefaultMenuItem item= DefaultMenuItem.builder().value(objetosMenuDto.getAcc_nombre()).url(objetosMenuDto.getAcc_ruta()).icon(objetosMenuDto.getAcc_icono()).build();

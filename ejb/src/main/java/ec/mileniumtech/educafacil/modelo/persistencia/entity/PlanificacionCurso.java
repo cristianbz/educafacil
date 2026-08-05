@@ -36,7 +36,7 @@ public class PlanificacionCurso {
     private String plcuUbicacion;
 
     // --- CONSTRUCTORES ---
-    public PlanificacionCurso() {
+    public PlanificacionCurso() {// Constructor por defecto metodo vacio
     }
     
 	@ManyToOne

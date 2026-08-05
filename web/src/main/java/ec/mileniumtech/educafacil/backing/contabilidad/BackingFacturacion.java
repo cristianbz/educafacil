@@ -710,27 +710,33 @@ public class BackingFacturacion implements Serializable {
      * @return StreamedContent para la descarga, o null si no hay PDF disponible.
      */
     public StreamedContent descargarRide(Factura factura) {
-        DocumentoElectronico doc = factura.getDocumentoElectronico();
-        if (doc == null) {
+        if (factura == null || factura.getDocumentoElectronico() == null) {
             Mensaje.verMensaje(FacesMessage.SEVERITY_WARN, "Aviso", "El RIDE no está disponible para esta factura.");
             return null;
         }
 
-        // Prioridad 1: Descargar desde S3 via pre-signed URL
-        if (doc.getUrlPdf() != null && !doc.getUrlPdf().isEmpty()) {
-            try {
-                String presignedUrl = awsS3Service.generarUrlDescarga(doc.getUrlPdf());
-             // ESCAPE Y EJECUCIÓN: Mandamos a abrir la ventana inmediatamente con la URL fresca
-                String script = String.format("window.open('%s', '_blank');", presignedUrl);
-                PrimeFaces.current().executeScript(script);
-                return null;
-            } catch (Exception e) {
-                log.error("Error al generar pre-signed URL para RIDE", e);
-                Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo generar el enlace de descarga: " + e.getMessage());
-                return null;
-            }
+        DocumentoElectronico doc = factura.getDocumentoElectronico();
+        String urlPdf = doc.getUrlPdf();
+
+        if (urlPdf == null || urlPdf.isBlank()) {
+            Mensaje.verMensaje(FacesMessage.SEVERITY_WARN, "Aviso", "La factura no tiene un PDF asociado.");
+            return null;
         }
+
+        try {
+            String presignedUrl = awsS3Service.generarUrlDescarga(urlPdf);
+            ejecutarAperturaVentana(presignedUrl);
+        } catch (Exception e) {
+            log.error("Error al generar pre-signed URL para RIDE de factura {}", factura.getId(), e);
+            Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo generar el enlace de descarga.");
+        }
+
         return null;
+    }
+
+    private void ejecutarAperturaVentana(String url) {
+        String script = String.format("window.open('%s', '_blank');", url);
+        PrimeFaces.current().executeScript(script);
     }
 
 

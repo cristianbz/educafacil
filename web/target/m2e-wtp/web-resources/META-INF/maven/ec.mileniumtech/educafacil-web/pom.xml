@@ -291,6 +291,12 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${version.surefire.plugin}</version>
+                <configuration>
+                    <systemPropertyVariables>
+                        <JWT_SECRET_KEY>Phe6lq4EzTuZhp5W8K2/Om+3TSVVF13MbosJFFeasDbP1igLs8cH267ycNyVBQluZ2vn8Q1G2Ce67Sci+7nk/g==</JWT_SECRET_KEY>
+                        <CRIPTO_LLAVE_MAESTRA>MiClaveMaestra16</CRIPTO_LLAVE_MAESTRA>
+                    </systemPropertyVariables>
+                </configuration>
             </plugin>
             <!--Build configuration for the WAR plugin: -->
             <plugin>

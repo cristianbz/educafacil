@@ -76,7 +76,7 @@ public class SessionTimeoutFilter extends HttpFilter {
 	        || path.matches(".*\\.(css|js|png|jpg|jpeg|gif|ico|svg|woff2?|ttf|eot)$");
 	}
 
-	public void init(FilterConfig fConfig) throws ServletException {
+	public void init(FilterConfig fConfig) throws ServletException {// Metodo no implementado
 	}
 
 }

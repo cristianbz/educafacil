@@ -67,7 +67,7 @@ public class CodigoSriRetencion implements Serializable {
     @Column(name = "csri_activo", nullable = false)
     private Boolean activo = true;
 
-    public CodigoSriRetencion() {
+    public CodigoSriRetencion() {// Constructor por defecto metodo vacio
     }
 
     /**

@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import ec.mileniumtech.educafacil.dao.excepciones.BaseException;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.ErrorDto;
 import ec.mileniumtech.educafacil.modelo.persistencia.dto.ErrorDto.ValidationError;
+import jakarta.ejb.EJBException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Path;
@@ -29,9 +30,11 @@ public class GlobalExceptionMapper implements ExceptionMapper<Throwable> {
 
     @Override
     public Response toResponse(Throwable exception) {
-        // Extraer la causa raíz si está envuelta (ej: en EJBException)
+        // Extraer la causa solo cuando la excepción viene envuelta en un EJBException
+        // (ej: excepciones lanzadas a través de la frontera EJB).
+        // No se desempaqueta toda la cadena de causas para no perder el tipo BaseException.
         Throwable cause = exception;
-        while (cause.getCause() != null && cause.getCause() != cause) {
+        while (cause instanceof EJBException && cause.getCause() != null && cause.getCause() != cause) {
             cause = cause.getCause();
         }
 
