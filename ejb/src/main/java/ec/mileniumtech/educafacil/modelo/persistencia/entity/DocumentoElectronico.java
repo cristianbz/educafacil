@@ -1,5 +1,6 @@
 package ec.mileniumtech.educafacil.modelo.persistencia.entity;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -71,8 +72,8 @@ public class DocumentoElectronico {
     private XMLGregorianCalendar fechaAutorizacion;
 
     // Este campo es el que JPA guarda en la base de datos
-    @Column(name = "doel_fecha_autorizacion", columnDefinition = "TIMESTAMPTZ")
-    private OffsetDateTime fechaAutorizacionDb;
+    @Column(name = "doel_fecha_autorizacion", nullable = false)
+    private LocalDate fechaAutorizacionDb;
     
 //    @Column(name = "doel_fecha_autorizacion")
 //    private LocalDateTime fechaAutorizacionDb;

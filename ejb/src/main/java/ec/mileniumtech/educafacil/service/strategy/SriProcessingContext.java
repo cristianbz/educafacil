@@ -1,5 +1,6 @@
 package ec.mileniumtech.educafacil.service.strategy;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Configuraciones;
@@ -17,7 +18,7 @@ public class SriProcessingContext {
     private byte[] pdfContent;
     private String estadoAutorizacion;
     private String numeroAutorizacion;
-    private OffsetDateTime fechaAutorizacion;
+    private LocalDate fechaAutorizacion;
     private String mensajeSri;
     private String urlPdf;
     private String urlXml;

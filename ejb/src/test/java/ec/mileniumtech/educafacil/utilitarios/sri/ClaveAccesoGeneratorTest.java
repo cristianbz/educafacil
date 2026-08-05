@@ -3,6 +3,8 @@ package ec.mileniumtech.educafacil.utilitarios.sri;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -19,8 +21,8 @@ class ClaveAccesoGeneratorTest {
 
     @Test
     void generarClaveAccesoConDatosValidos() throws Exception {
-        SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy");
-        Date fecha = sdf.parse("27112024");
+    	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyy");
+        LocalDate fecha = LocalDate.parse("27112024", formatter);
         String clave = generator.generarClaveAcceso(fecha, "01", "1790012345001", "1",
                 "001001", "000000001", "12345678", "1");
         assertNotNull(clave);
@@ -29,8 +31,8 @@ class ClaveAccesoGeneratorTest {
 
     @Test
     void generarClaveAccesoFormatoCorrecto() throws Exception {
-        SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy");
-        Date fecha = sdf.parse("27112024");
+    	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyy");
+        LocalDate fecha = LocalDate.parse("27112024", formatter);
         String clave = generator.generarClaveAcceso(fecha, "01", "1790012345001", "1",
                 "001001", "000000001", "12345678", "1");
         assertTrue(clave.matches("\\d{49}"));
@@ -38,8 +40,8 @@ class ClaveAccesoGeneratorTest {
 
     @Test
     void generarClaveAccesoDigitoVerificadorEntre0y9() throws Exception {
-        SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy");
-        Date fecha = sdf.parse("15052025");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyy");
+        LocalDate fecha = LocalDate.parse("15052025", formatter);
         String clave = generator.generarClaveAcceso(fecha, "01", "0999999999001", "2",
                 "001001", "000050000", "87654321", "1");
         char digitoVerificador = clave.charAt(48);
@@ -48,8 +50,8 @@ class ClaveAccesoGeneratorTest {
 
     @Test
     void generarClaveAccesoComienzaConFechaFormateada() throws Exception {
-        SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy");
-        Date fecha = sdf.parse("01012025");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyy");
+        LocalDate fecha = LocalDate.parse("01012025", formatter);
         String clave = generator.generarClaveAcceso(fecha, "01", "1790012345001", "1",
                 "001001", "000000001", "12345678", "1");
         assertTrue(clave.startsWith("01012025"));
@@ -57,8 +59,8 @@ class ClaveAccesoGeneratorTest {
 
     @Test
     void generarClaveAccesoContieneRuc() throws Exception {
-        SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy");
-        Date fecha = sdf.parse("01012025");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyy");
+        LocalDate fecha = LocalDate.parse("01012025", formatter);
         String ruc = "1790012345001";
         String clave = generator.generarClaveAcceso(fecha, "01", ruc, "1",
                 "001001", "000000001", "12345678", "1");
@@ -67,8 +69,8 @@ class ClaveAccesoGeneratorTest {
 
     @Test
     void generarClaveAccesoContieneTipoComprobante() throws Exception {
-        SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy");
-        Date fecha = sdf.parse("01012025");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyy");
+        LocalDate fecha = LocalDate.parse("01012025", formatter);
         String clave = generator.generarClaveAcceso(fecha, "04", "1790012345001", "1",
                 "001001", "000000001", "12345678", "1");
         assertTrue(clave.contains("04"));
@@ -76,8 +78,8 @@ class ClaveAccesoGeneratorTest {
 
     @Test
     void generarClaveAccesoDigitoVerificadorConsistente() throws Exception {
-        SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy");
-        Date fecha = sdf.parse("27112024");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyy");
+        LocalDate fecha = LocalDate.parse("27112024", formatter);
         String clave1 = generator.generarClaveAcceso(fecha, "01", "1790012345001", "1",
                 "001001", "000000001", "12345678", "1");
         String clave2 = generator.generarClaveAcceso(fecha, "01", "1790012345001", "1",
@@ -87,8 +89,8 @@ class ClaveAccesoGeneratorTest {
 
     @Test
     void generarClaveAccesoDigitoVerificadorMod11() throws Exception {
-        SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy");
-        Date fecha = sdf.parse("27112024");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyy");
+        LocalDate fecha = LocalDate.parse("27112024", formatter);
         String clave = generator.generarClaveAcceso(fecha, "01", "1790012345001", "1",
                 "001001", "000000001", "12345678", "1");
         int ultimoDigito = Character.getNumericValue(clave.charAt(48));
@@ -97,8 +99,8 @@ class ClaveAccesoGeneratorTest {
 
     @Test
     void generarClaveAccesoConAmbienteProduccion() throws Exception {
-        SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy");
-        Date fecha = sdf.parse("01012025");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyy");
+        LocalDate fecha = LocalDate.parse("01012025", formatter);
         String clave = generator.generarClaveAcceso(fecha, "01", "1790012345001", "2",
                 "001001", "000000001", "12345678", "1");
         assertEquals('2', clave.charAt(23));

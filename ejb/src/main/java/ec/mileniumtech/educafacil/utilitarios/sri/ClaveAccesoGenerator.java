@@ -1,6 +1,8 @@
 package ec.mileniumtech.educafacil.utilitarios.sri;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 import jakarta.ejb.LocalBean;
@@ -26,11 +28,11 @@ public class ClaveAccesoGenerator {
      * @param tipoEmision     Tipo de emisión (1 para Normal)
      * @return Clave de acceso de 49 dígitos
      */
-    public String generarClaveAcceso(Date fecha, String tipoComprobante, String ruc, String ambiente,
+    public String generarClaveAcceso(LocalDate fecha, String tipoComprobante, String ruc, String ambiente,
             String serie, String secuencial, String codigoNumerico, String tipoEmision) {
         
-        SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy");
-        String fechaFormateada = sdf.format(fecha);
+    	DateTimeFormatter dtf = DateTimeFormatter.ofPattern("ddMMyyyy");
+        String fechaFormateada = fecha.format(dtf);
 
         StringBuilder clave = new StringBuilder();
         clave.append(fechaFormateada);

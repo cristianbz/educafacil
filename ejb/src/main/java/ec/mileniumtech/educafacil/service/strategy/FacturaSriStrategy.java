@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -72,7 +73,7 @@ public class FacturaSriStrategy implements DocumentoElectronicoStrategy {
         String secuencial = String.format("%09d", Integer.parseInt(partesNumero.length > 2 ? partesNumero[2] : facturaEntity.getId().toString()));
         String serie = estab + ptoEmi;
 
-        java.util.Date fechaEmisionDate = java.sql.Date.valueOf(facturaEntity.getFechaEmision());
+        LocalDate fechaEmisionDate = facturaEntity.getFechaEmision();
         int random8Digits = ThreadLocalRandom.current().nextInt(10000000, 100000000);
         String claveAcceso = claveAccesoGenerator.generarClaveAcceso(
                 fechaEmisionDate, getCodigoDocumento(), empresa.getEmpmRuc(),

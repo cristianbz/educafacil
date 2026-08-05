@@ -3,6 +3,7 @@ package ec.mileniumtech.educafacil.service.strategy;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
 import javax.xml.datatype.DatatypeConstants;
@@ -201,9 +202,15 @@ public class ProcesadorDocumentosElectronicos {
         return null;
     }
 
-    private OffsetDateTime convertir(XMLGregorianCalendar xmlDate) {
-        if (xmlDate == null) return null;
-        if (xmlDate.getYear() == DatatypeConstants.FIELD_UNDEFINED) return null;
-        return xmlDate.toGregorianCalendar().toZonedDateTime().toOffsetDateTime();
+    private LocalDate convertir(XMLGregorianCalendar xmlDate) {
+        if (xmlDate == null || xmlDate.getYear() == DatatypeConstants.FIELD_UNDEFINED) {
+            return null;
+        }
+        // Convertimos directamente a LocalDate usando LocalDate.of
+        return LocalDate.of(
+            xmlDate.getYear(), 
+            xmlDate.getMonth(), 
+            xmlDate.getDay()
+        );
     }
 }

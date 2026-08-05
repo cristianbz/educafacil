@@ -153,7 +153,7 @@ public class RetencionSriStrategy implements DocumentoElectronicoStrategy {
         ret.setEstado(context.getEstadoAutorizacion());
         ret.setNumeroAutorizacion(context.getNumeroAutorizacion());
         if (context.getFechaAutorizacion() != null) {
-            ret.setFechaAutorizacion(java.util.Date.from(context.getFechaAutorizacion().toInstant()));
+            ret.setFechaAutorizacion(context.getFechaAutorizacion());
         }
         if (context.getMensajeSri() != null) {
             ret.setMensajeSri(context.getMensajeSri());
