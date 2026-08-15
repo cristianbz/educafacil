@@ -70,6 +70,7 @@
 		</var>		
 	</resource-bundle>
 </application>
+
 <navigation-rule>
 	<from-view-id>/login.xhtml</from-view-id>
 	<navigation-case>
