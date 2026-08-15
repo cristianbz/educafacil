@@ -32,7 +32,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <jakartaee.version>10.0.0</jakartaee.version>
         <primefaces.version>12.0.0</primefaces.version>
-        <jsf.version>3.0.0</jsf.version>
+        <jsf.version>4.1.0</jsf.version>
     </properties>
     <dependencies>
 		<!-- Jakarta EE -->
@@ -112,7 +112,7 @@
 <dependency>
     <groupId>jakarta.faces</groupId>
     <artifactId>jakarta.faces-api</artifactId>
-    <version>4.1.0</version>
+    <version>${jsf.version}</version>
     <scope>provided</scope>
 </dependency>
 
@@ -308,6 +308,7 @@
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
+            
         </plugins>
     </build>
 </project>
