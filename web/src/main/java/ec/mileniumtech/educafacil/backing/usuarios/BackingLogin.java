@@ -24,6 +24,7 @@ import ec.mileniumtech.educafacil.modelo.persistencia.entity.Persona;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Usuario;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.UsuarioRol;
 import ec.mileniumtech.educafacil.service.AuthService;
+import ec.mileniumtech.educafacil.service.LoginAttemptService;
 import ec.mileniumtech.educafacil.service.facade.InstructorFacade;
 import ec.mileniumtech.educafacil.service.facade.MatriculaFacade;
 import ec.mileniumtech.educafacil.utilitario.Mensaje;
@@ -69,6 +70,9 @@ public class BackingLogin implements Serializable{
 	private AuthService authService;
 
 	@EJB
+	private LoginAttemptService loginAttemptService;
+
+	@EJB
 	@Getter
 	private MatriculaFacade matriculaDataService;
 	
@@ -90,69 +94,136 @@ public class BackingLogin implements Serializable{
 	
 	private ExternalContext ec;
 
+	// -----------------------------------------------------------------------
+	// Propiedades auxiliares para la vista (rate-limiting)
+	// -----------------------------------------------------------------------
+
+	/**
+	 * Retorna cuántos intentos le quedan al usuario actual antes del bloqueo.
+	 * Usado en login.xhtml para mostrar la advertencia visual.
+	 */
+	public int getIntentosRestantes() {
+		String doc = getBeanLogin().getDocumentoIdentidad();
+		if (doc == null || doc.isBlank()) {
+			return loginAttemptService.getMaxIntentos();
+		}
+		return loginAttemptService.getIntentosRestantes(doc);
+	}
+
+	/**
+	 * Indica si la cuenta del usuario actual está bloqueada.
+	 * Usado en login.xhtml para mostrar el panel de bloqueo.
+	 */
+	public boolean isCuentaBloqueada() {
+		String doc = getBeanLogin().getDocumentoIdentidad();
+		if (doc == null || doc.isBlank()) {
+			return false;
+		}
+		return loginAttemptService.estaBloqueado(doc);
+	}
+
+	/**
+	 * Retorna los minutos restantes del bloqueo activo.
+	 * Usado en login.xhtml para mostrar el tiempo de espera.
+	 */
+	public long getMinutosRestantesBloqueo() {
+		String doc = getBeanLogin().getDocumentoIdentidad();
+		if (doc == null || doc.isBlank()) {
+			return 0;
+		}
+		return loginAttemptService.getMinutosRestantesBloqueo(doc);
+	}
+
+	// -----------------------------------------------------------------------
+	// Autenticación con protección contra fuerza bruta
+	// -----------------------------------------------------------------------
+
 	public String validarUsuario() {
-		String respuesta=null;
-		listaMenuUsuario= new ArrayList<>();
-		this.menumodel=new DefaultMenuModel();
-		
-		if(getBeanLogin().getUsuario()!=null) {
-			Usuario usuario = authService.autenticar(
-				getBeanLogin().getDocumentoIdentidad(),
-				getBeanLogin().getClave()
-			);
-			if(usuario != null) {
+		String respuesta = null;
+		listaMenuUsuario = new ArrayList<>();
+		this.menumodel = new DefaultMenuModel();
+
+		if (getBeanLogin().getUsuario() != null) {
+
+			String username = getBeanLogin().getDocumentoIdentidad();
+
+			// --- 1. Verificar si la cuenta está bloqueada por fuerza bruta ---
+			if (loginAttemptService.estaBloqueado(username)) {
+				long minutos = loginAttemptService.getMinutosRestantesBloqueo(username);
+				Mensaje.verMensaje("growl", FacesMessage.SEVERITY_ERROR,
+						getMensajesBacking().getPropiedad("error"),
+						"Cuenta bloqueada por demasiados intentos fallidos. Intente nuevamente en "
+								+ minutos + (minutos == 1 ? " minuto." : " minutos."));
+				log.warn("Intento de acceso a cuenta bloqueada: usuario='{}'", username);
+				return null;
+			}
+
+			// --- 2. Autenticar credenciales ---
+			Usuario usuario = authService.autenticar(username, getBeanLogin().getClave());
+
+			if (usuario != null) {
+				// --- 3. Autenticación exitosa: limpiar contador de intentos ---
+				loginAttemptService.limpiarIntentos(username);
+
 				ec = FacesContext.getCurrentInstance().getExternalContext();
-				sesion=(HttpSession)ec.getSession(true);
+				sesion = (HttpSession) ec.getSession(true);
 				sesion.setAttribute("logeado", true);
 				listaMenuUsuario = matriculaDataService.buscarAccesosUsuario(usuario.getUsuaUsuario());
 				this.esAdmin = false;
-				if(listaMenuUsuario!=null && !listaMenuUsuario.isEmpty()) {
+				if (listaMenuUsuario != null && !listaMenuUsuario.isEmpty()) {
 					List<UsuarioRol> listaRoles = matriculaDataService.listaUsuarioRolPorUsuario(usuario.getUsuaId());
-					if(listaRoles!=null) {
+					if (listaRoles != null) {
 						for (UsuarioRol usuarioRol : listaRoles) {
 							sesion.setAttribute("rol", usuarioRol.getRol().getRolId());
-							if (usuarioRol.getRol() != null && usuarioRol.getRol().getRolNombre() != null && usuarioRol.getRol().getRolNombre().equalsIgnoreCase("Administrador")) {								
+							if (usuarioRol.getRol() != null && usuarioRol.getRol().getRolNombre() != null
+									&& usuarioRol.getRol().getRolNombre().equalsIgnoreCase("Administrador")) {
 								this.esAdmin = true;
 							}
 						}
 					}
-					String perfil=null;
-					boolean flagPrimero=true;
+					String perfil = null;
+					boolean flagPrimero = true;
 					DefaultSubMenu submenu = new DefaultSubMenu();
-					
+
 					for (ObjetosMenuDto objetosMenuDto : listaMenuUsuario) {
-						
-						if(flagPrimero) {
-							perfil=objetosMenuDto.getPer_id();								
+						if (flagPrimero) {
+							perfil = objetosMenuDto.getPer_id();
 							submenu.setIcon(objetosMenuDto.getPer_icono());
-				            submenu.setLabel(objetosMenuDto.getPer_nombre());
-				            if (objetosMenuDto.getPer_icono() != null) {
-				            	submenu.setStyleClass("menu-icon_" + objetosMenuDto.getPer_icono().trim().replace(" ", "_"));
-				            }
-				            this.menumodel.getElements().add(submenu);
-				            
-				            DefaultMenuItem item= DefaultMenuItem.builder().value(objetosMenuDto.getAcc_nombre()).url(objetosMenuDto.getAcc_ruta()).icon(objetosMenuDto.getAcc_icono()).build();
-							submenu.getElements().add(item);
-				            flagPrimero=false;
-						}else {
-							if(perfil.equals(objetosMenuDto.getPer_id())) {
-								DefaultMenuItem item= DefaultMenuItem.builder().value(objetosMenuDto.getAcc_nombre()).url(objetosMenuDto.getAcc_ruta()).icon(objetosMenuDto.getAcc_icono()).build();
-								submenu.getElements().add(item);
-							}else {
-								submenu = new DefaultSubMenu();
-								perfil=objetosMenuDto.getPer_id();								
-								submenu.setIcon(objetosMenuDto.getPer_icono());
-					            submenu.setLabel(objetosMenuDto.getPer_nombre());
-					            if (objetosMenuDto.getPer_icono() != null) {
-					            	submenu.setStyleClass("menu-icon_" + objetosMenuDto.getPer_icono().trim().replace(" ", "_"));
-					            }
-					            this.menumodel.getElements().add(submenu);
-
-					            DefaultMenuItem item= DefaultMenuItem.builder().value(objetosMenuDto.getAcc_nombre()).url(objetosMenuDto.getAcc_ruta()).icon(objetosMenuDto.getAcc_icono()).build();
-
-					            submenu.getElements().add(item);
+							submenu.setLabel(objetosMenuDto.getPer_nombre());
+							if (objetosMenuDto.getPer_icono() != null) {
+								submenu.setStyleClass("menu-icon_"
+										+ objetosMenuDto.getPer_icono().trim().replace(" ", "_"));
 							}
-							
+							this.menumodel.getElements().add(submenu);
+							DefaultMenuItem item = DefaultMenuItem.builder()
+									.value(objetosMenuDto.getAcc_nombre())
+									.url(objetosMenuDto.getAcc_ruta())
+									.icon(objetosMenuDto.getAcc_icono()).build();
+							submenu.getElements().add(item);
+							flagPrimero = false;
+						} else {
+							if (perfil.equals(objetosMenuDto.getPer_id())) {
+								DefaultMenuItem item = DefaultMenuItem.builder()
+										.value(objetosMenuDto.getAcc_nombre())
+										.url(objetosMenuDto.getAcc_ruta())
+										.icon(objetosMenuDto.getAcc_icono()).build();
+								submenu.getElements().add(item);
+							} else {
+								submenu = new DefaultSubMenu();
+								perfil = objetosMenuDto.getPer_id();
+								submenu.setIcon(objetosMenuDto.getPer_icono());
+								submenu.setLabel(objetosMenuDto.getPer_nombre());
+								if (objetosMenuDto.getPer_icono() != null) {
+									submenu.setStyleClass("menu-icon_"
+											+ objetosMenuDto.getPer_icono().trim().replace(" ", "_"));
+								}
+								this.menumodel.getElements().add(submenu);
+								DefaultMenuItem item = DefaultMenuItem.builder()
+										.value(objetosMenuDto.getAcc_nombre())
+										.url(objetosMenuDto.getAcc_ruta())
+										.icon(objetosMenuDto.getAcc_icono()).build();
+								submenu.getElements().add(item);
+							}
 						}
 					}
 					getBeanLogin().setConfiguraciones(sistemaDataService.listaConfiguraciones().get(0));
@@ -162,18 +233,44 @@ public class BackingLogin implements Serializable{
 					getBeanLogin().setMostrarDialogoModulos(true);
 					PrimeFaces.current().executeScript("PF('dialogoModulos').show();");
 				} else {
-					respuesta="/paginas/index.cap?faces-redirect=true";
+					respuesta = "/paginas/index.cap?faces-redirect=true";
 				}
-			}else {
-				Mensaje.verMensaje("growl",FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.clave"));
+
+			} else {
+				// --- 4. Autenticación fallida: registrar intento y avisar al usuario ---
+				loginAttemptService.registrarIntentoFallido(username);
+
+				if (loginAttemptService.estaBloqueado(username)) {
+					// Este intento fue el que activó el bloqueo
+					long minutos = loginAttemptService.getMinutosRestantesBloqueo(username);
+					Mensaje.verMensaje("growl", FacesMessage.SEVERITY_FATAL,
+							getMensajesBacking().getPropiedad("error"),
+							"Cuenta bloqueada por exceder el número de intentos permitidos. "
+									+ "Intente nuevamente en " + minutos
+									+ (minutos == 1 ? " minuto." : " minutos."));
+				} else {
+					int restantes = loginAttemptService.getIntentosRestantes(username);
+					if (restantes == 1) {
+						Mensaje.verMensaje("growl", FacesMessage.SEVERITY_WARN,
+								getMensajesBacking().getPropiedad("error"),
+								getMensajesBacking().getPropiedad("error.clave")
+										+ " ¡Último intento! La cuenta será bloqueada si falla.");
+					} else {
+						Mensaje.verMensaje("growl", FacesMessage.SEVERITY_ERROR,
+								getMensajesBacking().getPropiedad("error"),
+								getMensajesBacking().getPropiedad("error.clave")
+										+ " Le quedan " + restantes + " intento"
+										+ (restantes == 1 ? "." : "s."));
+					}
+				}
 			}
-				
-		}else {
-			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"), getMensajesBacking().getPropiedad("error.usuario"));
+
+		} else {
+			Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, getMensajesBacking().getPropiedad("error"),
+					getMensajesBacking().getPropiedad("error.usuario"));
 		}
 
 		return respuesta;
-		
 	}
 	/**
 	 * Cierra la sesion 
@@ -234,7 +331,9 @@ public class BackingLogin implements Serializable{
 
 	}
 	/**
-	 * Regresa a pantalla login
+	 * Regresa a pantalla login y limpia el campo de clave.
+	 * No resetea el contador de intentos para conservar la protección
+	 * contra fuerza bruta si el usuario solo navega hacia atrás.
 	 */
 	public void retornarLogin() {
 		getBeanLogin().setPanelDocumento(true);
