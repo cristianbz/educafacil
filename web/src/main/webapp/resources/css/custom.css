@@ -619,6 +619,106 @@ body {
     color: #334155 !important;
 }
 
+/* =====================================================================
+   Rate-Limiting: Lockout & Attempts Warning Panels
+   ===================================================================== */
+
+/* Panel principal de cuenta bloqueada */
+.lockout-panel {
+    width: 100%;
+    margin-bottom: 1.2rem;
+}
+
+.lockout-warning {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, #fff1f0 0%, #ffe4e3 100%);
+    border: 1.5px solid #fca5a5;
+    border-radius: 14px;
+    padding: 1.2rem 1rem;
+    text-align: center;
+    animation: lockout-shake 0.4s ease;
+}
+
+@keyframes lockout-shake {
+    0%, 100% { transform: translateX(0); }
+    20%       { transform: translateX(-6px); }
+    40%       { transform: translateX(6px); }
+    60%       { transform: translateX(-4px); }
+    80%       { transform: translateX(4px); }
+}
+
+.lockout-icon {
+    font-size: 2rem !important;
+    color: #dc2626 !important;
+    margin-bottom: 0.2rem;
+}
+
+.lockout-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #991b1b;
+    letter-spacing: 0.2px;
+}
+
+.lockout-msg {
+    font-size: 0.88rem;
+    color: #b91c1c;
+    line-height: 1.5;
+}
+
+.lockout-msg strong {
+    font-weight: 700;
+    color: #7f1d1d;
+}
+
+/* Panel de advertencia de intentos bajos */
+.attempts-warning-panel {
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.attempts-warning {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    border: 1.5px solid #fcd34d;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    font-size: 0.88rem;
+    color: #92400e;
+    font-weight: 600;
+    animation: fadein-warning 0.3s ease;
+}
+
+@keyframes fadein-warning {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.attempts-warning .pi {
+    font-size: 1.1rem !important;
+    color: #d97706 !important;
+    flex-shrink: 0;
+}
+
+/* Campo y botón deshabilitados cuando la cuenta está bloqueada */
+.ui-inputfield[disabled],
+.ui-inputfield.ui-state-disabled {
+    opacity: 0.55 !important;
+    cursor: not-allowed !important;
+}
+
+.ui-button.ui-state-disabled.btn-modern-blue {
+    background: #94a3b8 !important;
+    box-shadow: none !important;
+    cursor: not-allowed !important;
+}
+
+
 .login-right-side .ui-button.ui-button-secondary .ui-button-icon-left {
     color: #64748b !important;
 }

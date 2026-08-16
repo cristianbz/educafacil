@@ -61,48 +61,75 @@
 						</p:panel>
 
 						<p:panel id="panelValidacion" rendered="#{backingLogin.beanLogin.panelValida}" styleClass="custom-login-panel">
-							<div class="ui-fluid">
-								<div class="p-field text-center field-spacing login-user-avatar">
-									<p:avatar icon="pi pi-user" size="xlarge" shape="circle"/>
-									<div class="login-user-name">
-										<p:outputLabel value="#{backingLogin.beanLogin.usuario.persona.persNombres} #{backingLogin.beanLogin.usuario.persona.persApellidos}"/>
-									</div>
-									<div class="login-user-doc">#{backingLogin.beanLogin.documentoIdentidad}</div>
-								</div>
+				<div class="ui-fluid">
+					<div class="p-field text-center field-spacing login-user-avatar">
+						<p:avatar icon="pi pi-user" size="xlarge" shape="circle"/>
+						<div class="login-user-name">
+							<p:outputLabel value="#{backingLogin.beanLogin.usuario.persona.persNombres} #{backingLogin.beanLogin.usuario.persona.persApellidos}"/>
+						</div>
+						<div class="login-user-doc">#{backingLogin.beanLogin.documentoIdentidad}</div>
+					</div>
 
-								<div class="p-field field-spacing"> 
-									<div class="icon-label-group">
-										<i class="pi pi-key icon-blue"></i>
-										<p:outputLabel value="#{etiquetas['clave']} " for="passwordField" styleClass="label-bold"/>
-									</div>
-									<p:password id="passwordField" value="#{backingLogin.beanLogin.clave}" 
-												title="#{tooltip['clave']}" required="true" 
-												requiredMessage="#{mensajes['campoRequerido']}"
-												toggleMask="true" redisplay="true"
-												placeholder="Ingrese su clave" styleClass="input-modern"/>
-								</div>
+					<!-- Panel de cuenta bloqueada -->
+					<p:outputPanel rendered="#{backingLogin.cuentaBloqueada}" styleClass="lockout-panel">
+						<div class="lockout-warning">
+							<i class="pi pi-lock lockout-icon"/>
+							<div class="lockout-title">Cuenta bloqueada temporalmente</div>
+							<div class="lockout-msg">
+								Demasiados intentos fallidos. Intente nuevamente en
+								<strong>#{backingLogin.minutosRestantesBloqueo}
+								#{backingLogin.minutosRestantesBloqueo == 1 ? 'minuto' : 'minutos'}</strong>.
+							</div>
+						</div>
+					</p:outputPanel>
 
-								<div class="p-field field-spacing">												
-									<p:commandButton value="#{botones['validar']}" 
-													 partialSubmit="true"
-													 icon="pi pi-sign-in" 
-													 process="@this panelValidacion" 
-													 update="panelContenedor growl" 
-													 action="#{backingLogin.validarUsuario()}"
-													 styleClass="btn-modern-blue"/>
-								</div>
-								
-								<div class="p-field field-spacing">
-									<p:commandButton value="#{botones['regresar']}" 
-													 partialSubmit="true"
-													 icon="pi pi-arrow-left" 
-													 process="@this" 
-													 update="panelContenedor" 
-												 	 actionListener="#{backingLogin.retornarLogin()}"
-													 styleClass="ui-button-secondary input-modern"/>
-								</div>
-							</div>			
-						</p:panel>
+					<!-- Advertencia de intentos restantes (cuando quedan 2 o menos) -->
+					<p:outputPanel rendered="#{not backingLogin.cuentaBloqueada and backingLogin.intentosRestantes le 2 and backingLogin.intentosRestantes gt 0}" styleClass="attempts-warning-panel">
+						<div class="attempts-warning">
+							<i class="pi pi-exclamation-triangle"/>
+							<span>
+								#{backingLogin.intentosRestantes == 1
+								  ? '¡Último intento! La cuenta se bloqueará si falla.'
+								  : 'Advertencia: le quedan '.concat(backingLogin.intentosRestantes).concat(' intentos antes del bloqueo.')}
+							</span>
+						</div>
+					</p:outputPanel>
+
+				<div class="p-field field-spacing"> 
+					<div class="icon-label-group">
+						<i class="pi pi-key icon-blue"></i>
+						<p:outputLabel value="#{etiquetas['clave']} " for="passwordField" styleClass="label-bold"/>
+					</div>
+					<p:password id="passwordField" value="#{backingLogin.beanLogin.clave}" 
+							title="#{tooltip['clave']}" required="true" 
+							requiredMessage="#{mensajes['campoRequerido']}"
+							toggleMask="true" redisplay="true"
+							placeholder="Ingrese su clave" styleClass="input-modern"
+							disabled="#{backingLogin.cuentaBloqueada}"/>
+				</div>
+
+				<div class="p-field field-spacing">						
+					<p:commandButton value="#{botones['validar']}" 
+								 partialSubmit="true"
+								 icon="pi pi-sign-in" 
+								 process="@this panelValidacion" 
+								 update="panelContenedor growl" 
+								 action="#{backingLogin.validarUsuario()}"
+								 styleClass="btn-modern-blue"
+								 disabled="#{backingLogin.cuentaBloqueada}"/>
+				</div>
+				
+				<div class="p-field field-spacing">
+					<p:commandButton value="#{botones['regresar']}" 
+								 partialSubmit="true"
+								 icon="pi pi-arrow-left" 
+								 process="@this" 
+								 update="panelContenedor" 
+							 	 actionListener="#{backingLogin.retornarLogin()}"
+								 styleClass="ui-button-secondary input-modern"/>
+				</div>
+				</div>			
+			</p:panel>
 
 						<p:panel id="panelReseteoClave" rendered="#{backingLogin.beanLogin.panelCambiaClave}" styleClass="custom-login-panel">
 							<div class="ui-fluid">
