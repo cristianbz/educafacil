@@ -20,9 +20,12 @@ import ec.mileniumtech.educafacil.modelo.sri.NotaCredito.TotalImpuesto;
 import ec.mileniumtech.educafacil.service.FacturaXmlService;
 import ec.mileniumtech.educafacil.service.RideGeneratorService;
 import ec.mileniumtech.educafacil.utilitarios.sri.ClaveAccesoGenerator;
+import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumEstadoDocumentoElectronico;
 import jakarta.ejb.EJB;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -69,12 +72,17 @@ public class NotaCreditoSriStrategy implements DocumentoElectronicoStrategy {
         String secuencial = String.format("%09d", Integer.parseInt(partesNumero.length > 2 ? partesNumero[2] : notaCreditoEntity.getId().toString()));
         String serie = estab + ptoEmi;
 
-        LocalDate fechaEmisionDate = notaCreditoEntity.getFechaEmision();
-        int random8Digits = ThreadLocalRandom.current().nextInt(10000000, 100000000);
-        String claveAcceso = claveAccesoGenerator.generarClaveAcceso(
-                fechaEmisionDate, getCodigoDocumento(), empresa.getEmpmRuc(),
-                empresa.getEmpmAmbiente().toString(), serie, secuencial,
-                String.valueOf(random8Digits), "1");
+        String claveAcceso;
+        if (notaCreditoEntity.getClaveAcceso() != null && !notaCreditoEntity.getClaveAcceso().isBlank()) {
+            claveAcceso = notaCreditoEntity.getClaveAcceso();
+        } else {
+            LocalDate fechaEmisionDate = notaCreditoEntity.getFechaEmision();
+            int random8Digits = ThreadLocalRandom.current().nextInt(10000000, 100000000);
+            claveAcceso = claveAccesoGenerator.generarClaveAcceso(
+                    fechaEmisionDate, getCodigoDocumento(), empresa.getEmpmRuc(),
+                    empresa.getEmpmAmbiente().toString(), serie, secuencial,
+                    String.valueOf(random8Digits), "1");
+        }
         context.setClaveAcceso(claveAcceso);
         notaCreditoEntity.setClaveAcceso(claveAcceso);
 
@@ -208,6 +216,29 @@ public class NotaCreditoSriStrategy implements DocumentoElectronicoStrategy {
     @Override
     public void persistir(Object entidad) {
         notaCreditoDao.actualizar((NotaCredito) entidad);
+    }
+
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public void persistirProgreso(Object entidad, SriProcessingContext context) {
+        NotaCredito nc = (NotaCredito) entidad;
+        if (context.getClaveAcceso() == null) {
+            return;
+        }
+        if (nc.getClaveAcceso() == null || nc.getClaveAcceso().isBlank()) {
+            nc.setClaveAcceso(context.getClaveAcceso());
+        }
+        if (nc.getEstado() == null || nc.getEstado().isBlank()) {
+            nc.setEstado(EnumEstadoDocumentoElectronico.EN_PROCESO.getLabel());
+        }
+        notaCreditoDao.actualizar(nc);
+    }
+
+    @Override
+    public void marcarEnProceso(Object entidad) {
+        NotaCredito nc = (NotaCredito) entidad;
+        nc.setEstado(EnumEstadoDocumentoElectronico.EN_PROCESO.getLabel());
+        notaCreditoDao.actualizar(nc);
     }
 
     @Override

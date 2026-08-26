@@ -35,6 +35,7 @@ public class NotaCreditoDaoImpl extends GenericoDaoImpl<NotaCredito, Integer> im
                 "SELECT nc FROM NotaCredito nc " +
                 "JOIN FETCH nc.cliente " +
                 "JOIN FETCH nc.puntoEmision " +
+                "JOIN FETCH nc.puntoEmision.establecimientos " +
                 "JOIN FETCH nc.puntoEmision.establecimientos.empresaMatriz " +
                 "JOIN FETCH nc.factura " +
                 "LEFT JOIN FETCH nc.detalles " +
@@ -112,6 +113,32 @@ public class NotaCreditoDaoImpl extends GenericoDaoImpl<NotaCredito, Integer> im
 
         } catch (PersistenceException e) {
             throw new SystemException("Error al filtrar notas de crédito para reporte", "NOTACREDITO-FILTER-ERR", e);
+        }
+    }
+
+    /**
+     * Lista las notas de crédito en estados pendientes de reconciliación
+     * (ENVIADO, EN_PROCESO, PENDIENTE) con clave de acceso persistida.
+     *
+     * @param estados estados pendientes de reconciliación.
+     * @return lista de notas de crédito candidatas a reconciliación.
+     */
+    public List<NotaCredito> listarNotasPorEstadosReconciliacion(List<String> estados) {
+        try {
+            TypedQuery<NotaCredito> query = getEntityManager().createQuery(
+                "SELECT nc FROM NotaCredito nc " +
+                "JOIN FETCH nc.cliente " +
+                "JOIN FETCH nc.puntoEmision " +
+                "JOIN FETCH nc.puntoEmision.establecimientos " +
+                "JOIN FETCH nc.puntoEmision.establecimientos.empresaMatriz " +
+                "WHERE nc.estado IN :estados " +
+                "AND nc.claveAcceso IS NOT NULL " +
+                "ORDER BY nc.id ASC", NotaCredito.class)
+                .setParameter("estados", estados)
+                .setMaxResults(50);
+            return query.getResultList();
+        } catch (PersistenceException e) {
+            throw new SystemException("Error al listar notas de crédito para reconciliación", "NOTACREDITO-RECON-ERR", e);
         }
     }
 }

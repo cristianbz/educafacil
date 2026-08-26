@@ -17,4 +17,5 @@ public interface NotaCreditoDao extends GenericoDao<NotaCredito, Integer> {
     NotaCredito buscarNotaCreditoPorId(Integer id);
     List<NotaCredito> listarTodas();
     List<NotaCredito> buscarNotasCreditoPorFiltros(LocalDate fechaInicio, LocalDate fechaFin, String identificacion, String numeroAutorizacion, String estadoAutorizacion);
+    List<NotaCredito> listarNotasPorEstadosReconciliacion(List<String> estados);
 }

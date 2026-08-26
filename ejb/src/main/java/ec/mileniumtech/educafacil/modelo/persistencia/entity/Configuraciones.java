@@ -73,4 +73,7 @@ public class Configuraciones implements Serializable {
 	@Column(name="conf_ws_autorizacion_produccion")
 	private String confWsAutorizacionProduccion;
 	
+	@Column(name="conf_ruc_fac_electronica")
+	private String confRucFacElectronica;
+	
 }

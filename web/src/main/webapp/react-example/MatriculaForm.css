@@ -1,0 +1,184 @@
+/* ─── MatriculaForm.css ──────────────────────────────────────── */
+
+.matricula-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  font-family: Inter, system-ui, sans-serif;
+  color: #333;
+}
+
+.matricula-container h1 {
+  margin-bottom: 1.5rem;
+  color: #1a237e;
+}
+
+/* Alertas */
+.alert {
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.alert-danger {
+  background: #fdecea;
+  color: #b71c1c;
+  border: 1px solid #f5c6cb;
+}
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  color: inherit;
+}
+
+/* PASO 1: Cédula */
+.step-cedula {
+  text-align: center;
+  padding: 2rem;
+}
+.step-cedula label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+.input-group {
+  display: flex;
+  gap: 0.5rem;
+  max-width: 400px;
+  margin: 0 auto;
+}
+.input-group input {
+  flex: 1;
+  padding: 0.625rem;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+.input-group input:focus {
+  border-color: #1a237e;
+  outline: none;
+}
+.input-group button {
+  padding: 0.625rem 1.25rem;
+  background: #1a237e;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.input-group button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.help-text {
+  color: #666;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+/* Formulario */
+.matricula-form fieldset {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+.matricula-form legend {
+  font-weight: 700;
+  color: #1a237e;
+  padding: 0 0.5rem;
+  font-size: 1rem;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+.form-group label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+  color: #555;
+}
+.form-group input,
+.form-group select {
+  padding: 0.5rem 0.625rem;
+  border: 1.5px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.925rem;
+}
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #1a237e;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(26,35,126,0.15);
+}
+.checkbox-group {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Botones */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.btn-primary {
+  padding: 0.75rem 2rem;
+  background: #1a237e;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.btn-secondary {
+  padding: 0.75rem 2rem;
+  background: #f5f5f5;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+/* Confirmación */
+.step-confirmacion {
+  text-align: center;
+  padding: 2rem;
+}
+.step-confirmacion .success-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+.step-confirmacion ul {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 2rem;
+}
+.step-confirmacion li {
+  padding: 0.35rem 0;
+  font-size: 1rem;
+}

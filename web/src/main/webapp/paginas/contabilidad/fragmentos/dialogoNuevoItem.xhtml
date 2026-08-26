@@ -16,7 +16,7 @@
 					<p:outputPanel id="pnlNuevoItem" styleClass="ui-fluid" style="padding: 1rem;">
 						<div class="p-field p-mb-3">
 							<p:outputLabel value="Código:" for="txtCodItem" styleClass="p-d-block p-mb-1" />
-							<p:inputText id="txtCodItem" value="#{beanFacturacion.nuevoItem.codigo}" required="true" maxlength="8" />
+							<p:inputText id="txtCodItem" value="#{beanFacturacion.nuevoItem.codigo}" required="true" maxlength="8" placeholder="Ej:00000006"/>
 							<p:message for="txtCodItem" />
 						</div>
 						<div class="p-field p-mb-3">
@@ -34,7 +34,7 @@
 						</div>
 						<div class="p-field p-mb-3">
 							<p:outputLabel value="Descripción:" for="txtDesItem" styleClass="p-d-block p-mb-1" />
-							<p:inputTextarea id="txtDesItem" value="#{beanFacturacion.nuevoItem.descripcion}" required="true" rows="2" />
+							<p:inputTextarea id="txtDesItem" value="#{beanFacturacion.nuevoItem.descripcion}" required="true" rows="2" maxlength="300"/>
 							<p:message for="txtDesItem" />
 						</div>
 						<div class="p-field p-mb-3">

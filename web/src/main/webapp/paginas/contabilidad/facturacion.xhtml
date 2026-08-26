@@ -10,6 +10,16 @@
 	<ui:define name="contenido">
 		<f:event listener="#{backingLogin.validarSesion()}" type="preRenderView" />
 		<h:form id="formFacturacion">
+			<script type="text/javascript">
+				window.handleFacturaPush = function(message, channel, event) {
+					console.log('[Faces Push WebSocket] Notificación recibida en canal "' + channel + '":', message);
+					if (typeof rcRefrescarFacturas === 'function') {
+						rcRefrescarFacturas();
+					} else {
+						console.warn('[Faces Push WebSocket] rcRefrescarFacturas no está disponible.');
+					}
+				};
+			</script>
 			<p:growl id="growl" life="3000" showDetail="true" />
 						
 			<p:breadCrumb>
@@ -38,7 +48,7 @@
 							styleClass="ui-button-success" 
 							actionListener="#{backingFacturacion.prepararNuevaFactura()}" process="@this"
 							oncomplete="PF('dlgNuevaFactura').show()"
-							update="dlgNuevaFactura" />	
+							update="dlgNuevaFactura pnlTablaFacturas" />	
 
 					<!-- Acciones secundarias -->
 					<p:menuButton value="Más acciones" icon="pi pi-ellipsis-v">
@@ -99,80 +109,80 @@
 				</div>
 			</p:outputPanel>
 
-			<p:dataTable id="tblFacturas" value="#{beanFacturacion.listaFacturas}" var="fac" 
-						 paginator="true" rows="10" responsiveLayout="scroll"
-						 emptyMessage="No se encontraron facturas registradas.">
-				
-				<p:column headerText="Fecha" sortBy="#{fac.fechaEmision}">
-					<h:outputText value="#{fac.fechaEmision}" />
-				</p:column>
-				
-				<p:column headerText="Número" filterBy="#{fac.numero}" filterMatchMode="contains">
-					<h:outputText value="#{fac.numero}" />
-				</p:column>
-				
-				<p:column headerText="Cliente">
-					<h:outputText value="#{fac.cliente.nombresCompletos}" />
-				</p:column>
-				
-				<p:column headerText="Total" style="text-align: right;">
-					<h:outputText value="#{fac.total}">
-						<f:convertNumber type="currency" currencySymbol="$" />
-					</h:outputText>
-				</p:column>
-				
-				<p:column headerText="Estado SRI" style="text-align: center; width: 150px;">
-					<h:panelGroup rendered="#{fac.documentoElectronico == null or fac.documentoElectronico.estado == 'PENDIENTE'}">
-						<span class="sri-tag sri-tag-pending">PENDIENTE</span>
-					</h:panelGroup>
-					<h:panelGroup rendered="#{fac.documentoElectronico != null and fac.documentoElectronico.estado == 'AUTORIZADO'}">
-						<span class="sri-tag sri-tag-authorized">AUTORIZADO</span>
-					</h:panelGroup>
-					<h:panelGroup rendered="#{fac.documentoElectronico != null and fac.documentoElectronico.estado == 'RECHAZADO'}">
-						<span class="sri-tag sri-tag-rejected">RECHAZADO</span>
-					</h:panelGroup>
-					<h:panelGroup rendered="#{fac.documentoElectronico != null and fac.documentoElectronico.estado == 'ANULADA'}">
-						<span class="sri-tag sri-tag-annulled">ANULADA</span>
-					</h:panelGroup>
-				</p:column>
-				
-				<p:column headerText="Acciones" style="width: 220px; text-align: center;">
-					<p:commandButton icon="pi pi-cloud-upload" title="Emitir al SRI" 
-									 actionListener="#{backingFacturacion.emitirFactura(fac)}"
-									 rendered="#{fac.documentoElectronico == null or fac.documentoElectronico.estado != 'AUTORIZADO'}"
-									 disabled="#{fac.documentoElectronico.estado == 'ANULADA'}"
-									 update=":formFacturacion:growl :formFacturacion:tblFacturas :formFacturacion:pnlMetrics" 
-									 styleClass="ui-button-warning datatable-action-btn" />
+			<p:outputPanel id="pnlTablaFacturas">
+				<p:dataTable id="tblFacturas" value="#{beanFacturacion.listaFacturas}" var="fac"
+							 rowKey="#{fac.id}"
+							 paginator="true" rows="10" responsiveLayout="scroll"
+							 emptyMessage="No se encontraron facturas registradas.">
 					
-					<p:commandButton icon="pi pi-cloud" title="Subir a AWS S3"
-									 rendered="#{fac.documentoElectronico != null 
-												and fac.documentoElectronico.estado == 'AUTORIZADO'
-												and (fac.documentoElectronico.urlPdf == null or fac.documentoElectronico.urlPdf == '')}"
-									 actionListener="#{backingFacturacion.subirDocumentosAws(fac)}"
-									 update=":formFacturacion:growl :formFacturacion:tblFacturas"
-									 styleClass="ui-button-primary datatable-action-btn" />
+					<p:column headerText="Fecha" sortBy="#{fac.fechaEmision}">
+						<h:outputText value="#{fac.fechaEmision}" />
+					</p:column>
+					
+					<p:column headerText="Número" filterBy="#{fac.numero}" filterMatchMode="contains">
+						<h:outputText value="#{fac.numero}" />
+					</p:column>
+					
+					<p:column headerText="Cliente">
+						<h:outputText value="#{fac.cliente.nombresCompletos}" />
+					</p:column>
+					
+					<p:column headerText="Total" style="text-align: right;">
+						<h:outputText value="#{fac.total}">
+							<f:convertNumber type="currency" currencySymbol="$" />
+						</h:outputText>
+					</p:column>
+					
+					<p:column headerText="Estado SRI" style="text-align: center; width: 150px;">
+						<span class="sri-tag #{backingFacturacion.styleClassEstadoSri(fac)}">
+							<h:outputText value="#{backingFacturacion.labelEstadoSri(fac)}" />
+						</span>
+					</p:column>
+					
+					<p:column headerText="Acciones" style="width: 220px; text-align: center;">
+						<h:panelGroup layout="block" style="display: flex; justify-content: center; gap: 0.35rem; flex-wrap: wrap;">
+							<p:commandButton icon="pi pi-cloud-upload" title="Emitir al SRI" 
+											 actionListener="#{backingFacturacion.emitirFactura(fac)}"
+											 rendered="#{backingFacturacion.isMostrarBotonEmitir(fac)}"
+											 process="@this"
+											 update=":formFacturacion:growl :formFacturacion:pnlTablaFacturas :formFacturacion:pnlMetrics"
+											 styleClass="ui-button-warning datatable-action-btn" />
+							
+							<p:commandButton icon="pi pi-cloud" title="Subir a AWS S3"
+											 rendered="#{backingFacturacion.isMostrarBotonSubirAws(fac)}"
+											 actionListener="#{backingFacturacion.subirDocumentosAws(fac)}"
+											 update=":formFacturacion:growl :formFacturacion:pnlTablaFacturas"
+											 styleClass="ui-button-primary datatable-action-btn" />
 
-					<p:commandButton icon="pi pi-file-pdf" title="Descargar RIDE" process="@this"
-									 rendered="#{fac.documentoElectronico != null 
-												and (fac.documentoElectronico.urlPdf != null and fac.documentoElectronico.urlPdf != '')}"
-									 styleClass="ui-button-success datatable-action-btn" 
-									 action="#{backingFacturacion.descargarRide(fac)}" />
+							<p:commandButton icon="pi pi-file-pdf" title="Descargar RIDE" process="@this"
+											 rendered="#{backingFacturacion.isMostrarBotonDescargarRide(fac)}"
+											 styleClass="ui-button-success datatable-action-btn" 
+											 action="#{backingFacturacion.descargarRide(fac)}" />
 
-					<p:commandButton icon="pi pi-file" title="Descargar XML" 
-									 action="#{backingFacturacion.descargarXml(fac)}" process="@this"
-									 rendered="#{fac.documentoElectronico != null 
-												and (fac.documentoElectronico.urlXml != null and fac.documentoElectronico.urlXml != '')}"
-									 styleClass="ui-button-info datatable-action-btn" />
-										
-					<p:commandButton icon="pi pi-credit-card" title="Generar Nota de Crédito" 
-									 rendered="#{fac.documentoElectronico != null and fac.documentoElectronico.estado == 'AUTORIZADO'}"
-									 actionListener="#{backingFacturacion.prepararNotaCredito(fac)}"
-									 update=":formNuevaNotaCredito"
-									 styleClass="ui-button-secondary datatable-action-btn" />
-				</p:column>
-				
-			</p:dataTable>
+							<p:commandButton icon="pi pi-file" title="Descargar XML" 
+											 action="#{backingFacturacion.descargarXml(fac)}" process="@this"
+											 rendered="#{backingFacturacion.isMostrarBotonDescargarXml(fac)}"
+											 styleClass="ui-button-info datatable-action-btn" />
+												
+							<p:commandButton icon="pi pi-credit-card" title="Generar Nota de Crédito" 
+											 rendered="#{backingFacturacion.isMostrarBotonNotaCredito(fac)}"
+											 actionListener="#{backingFacturacion.prepararNotaCredito(fac)}"
+											 update=":formNuevaNotaCredito"
+											 styleClass="ui-button-secondary datatable-action-btn" />
+						</h:panelGroup>
+					</p:column>
+					
+				</p:dataTable>
+			</p:outputPanel>
 
+			<!-- Faces Push (WebSockets) para actualización en tiempo real -->
+			
+			<f:websocket channel="facturacionChannel" onmessage="handleFacturaPush" scope="application" />
+			<p:remoteCommand name="rcRefrescarFacturas"
+							 actionListener="#{backingFacturacion.refrescarPorPush()}"
+							 process="@this"
+							 update=":formFacturacion:pnlTablaFacturas :formFacturacion:pnlMetrics :formFacturacion:growl" />
+			
 			<ui:include src="/paginas/contabilidad/fragmentos/dialogoNuevaFactura.xhtml" />							 
 			
 		</h:form>
@@ -187,6 +197,7 @@
 					No se pudo enviar el documento al SRI, se procesará luego.
 				</p>
 				<p:commandButton value="Aceptar" icon="pi pi-refresh" 								 
+								 process="@this"
 								 update=":formFacturacion:tblFacturas :formFacturacion:pnlMetrics"
 								 oncomplete="PF('dlgErrorSri').hide()"
 								 styleClass="ui-button-primary" style="min-width: 200px;" />
@@ -195,7 +206,9 @@
 				
 		<!-- DIÁLOGO DE NOTA DE CRÉDITO -->
 		<ui:include src="/paginas/contabilidad/fragmentos/dialogoNotaCredito.xhtml" />	
-			</ui:define>
+
+
+	</ui:define>
 </ui:composition>
 
 </html>

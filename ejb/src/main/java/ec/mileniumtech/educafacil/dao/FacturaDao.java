@@ -19,4 +19,5 @@ public interface FacturaDao extends GenericoDao<Factura, Integer> {
     List<Factura> listarTodasLasFacturas();
     List<Factura> listarTodasLasFacturasDelDia();
     List<Factura> buscarFacturasPorFiltros(LocalDate fechaInicio, LocalDate fechaFin, String identificacion, String numeroAutorizacion,String estadoAutorizacion);
+    List<Factura> listarFacturasPorEstadosReconciliacion(List<String> estados);
 }

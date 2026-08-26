@@ -9,6 +9,7 @@ import java.util.Map;
 import ec.mileniumtech.educafacil.dao.FacturaDao;
 import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.DetalleFactura;
+import ec.mileniumtech.educafacil.modelo.persistencia.entity.DocumentoElectronico;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Establecimiento;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Factura;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.PuntoEmision;
@@ -105,18 +106,33 @@ public class FacturaDaoImpl extends GenericoDaoImpl<Factura, Integer> implements
     }
     
     /**
-     * Lista todas las facturas cargando el cliente y documento electronico para la UI del día.
-     * @return Lista de facturas
+     * Lista las facturas del día para la UI (cliente + documento electrónico).
+     * Tras cargar, desasocia el persistence context y limpia LOBs en memoria
+     * para no arrastrar PDF/XML en el ViewScoped ni provocar flush indeseado.
      */
     public java.util.List<Factura> listarTodasLasFacturasDelDia() {
         try {
+            getEntityManager().clear();
             TypedQuery<Factura> query = getEntityManager().createQuery(
-                "SELECT f FROM Factura f " +
+                "SELECT DISTINCT f FROM Factura f " +
                 "JOIN FETCH f.cliente " +
                 "LEFT JOIN FETCH f.documentoElectronico " +
-                "WHERE f.fechaEmision=CURRENT_DATE " +
+                "WHERE f.fechaEmision = :fechaHoy " +
                 "ORDER BY f.id DESC", Factura.class);
-            return query.getResultList();
+            query.setParameter("fechaHoy", LocalDate.now());
+            query.setHint("jakarta.persistence.cache.retrieveMode", jakarta.persistence.CacheRetrieveMode.BYPASS);
+            query.setHint("jakarta.persistence.cache.storeMode", jakarta.persistence.CacheStoreMode.BYPASS);
+            java.util.List<Factura> facturas = query.getResultList();
+            getEntityManager().clear();
+            for (Factura f : facturas) {
+                DocumentoElectronico doc = f.getDocumentoElectronico();
+                if (doc != null) {
+                    doc.setPdfRide(null);
+                    doc.setXmlFirmado(null);
+                    doc.setXmlAutorizadoSri(null);
+                }
+            }
+            return facturas;
         } catch (PersistenceException e) {
             throw new SystemException("Error al listar facturas", "FACTURA-LIST-ERR", e);
         }
@@ -178,6 +194,30 @@ public class FacturaDaoImpl extends GenericoDaoImpl<Factura, Integer> implements
 
         } catch (PersistenceException e) {
             throw new SystemException("Error al filtrar facturas para reporte", "FACTURA-FILTER-ERR", e);
+        }
+    }
+
+    /**
+     * Lista las facturas cuyo documento electrónico se encuentra en estados pendientes de
+     * reconciliación (ENVIADO, EN_PROCESO con clave de acceso persistida, PENDIENTE).
+     *
+     * @param estados estados pendientes de reconciliación (nunca vacío).
+     * @return lista de facturas candidatas a reconciliación.
+     */
+    public List<Factura> listarFacturasPorEstadosReconciliacion(List<String> estados) {
+        try {
+            TypedQuery<Factura> query = getEntityManager().createQuery(
+                "SELECT f FROM Factura f " +
+                "JOIN FETCH f.cliente " +
+                "JOIN FETCH f.documentoElectronico " +
+                "WHERE f.documentoElectronico.estado IN :estados " +
+                "AND f.documentoElectronico.claveAcceso IS NOT NULL " +
+                "ORDER BY f.id ASC", Factura.class)
+                .setParameter("estados", estados)
+                .setMaxResults(50);
+            return query.getResultList();
+        } catch (PersistenceException e) {
+            throw new SystemException("Error al listar facturas para reconciliación", "FACTURA-RECON-ERR", e);
         }
     }
 }

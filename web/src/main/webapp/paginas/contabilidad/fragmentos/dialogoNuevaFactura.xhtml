@@ -368,7 +368,7 @@
 												<p:commandButton id="btnGuardarFactura" value="Guardar y Emitir Factura" icon="pi pi-check" 
 																 actionListener="#{backingFacturacion.guardarFactura()}" 
 																 process="@this :formFacturacion:pnlNuevaFactura"
-																 update=":formFacturacion:growl :formFacturacion:tblFacturas :formFacturacion:pnlMetrics" 
+																 update=":formFacturacion:growl :formFacturacion:pnlTablaFacturas :formFacturacion:pnlMetrics"
 																 disabled="#{not backingFacturacion.saldoCero or empty beanFacturacion.listaFormasPagoAgregadas}"
 																 styleClass="ui-button-success" 
 																 style="width: 100%; font-weight: 700; padding: 0.75rem !important;" />

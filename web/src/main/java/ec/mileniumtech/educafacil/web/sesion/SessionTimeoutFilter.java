@@ -16,7 +16,7 @@ import jakarta.servlet.http.HttpSession;
 /**
  * Servlet Filter implementation class SessionTimeoutFilter
  */
-@WebFilter(description = "Gestiona el estado de la sesion", urlPatterns = { "/*" })
+@WebFilter(description = "Gestiona el estado de la sesion", urlPatterns = { "/*" },asyncSupported = true)
 public class SessionTimeoutFilter extends HttpFilter {
         
 	private static final long serialVersionUID = 1L;

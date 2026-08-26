@@ -19,9 +19,12 @@ import ec.mileniumtech.educafacil.modelo.sri.ComprobanteRetencion.InfoTributaria
 import ec.mileniumtech.educafacil.service.RetencionRideService;
 import ec.mileniumtech.educafacil.service.RetencionXmlService;
 import ec.mileniumtech.educafacil.utilitarios.sri.ClaveAccesoGenerator;
+import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumEstadoDocumentoElectronico;
 import jakarta.ejb.EJB;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -67,11 +70,16 @@ public class RetencionSriStrategy implements DocumentoElectronicoStrategy {
         String secuencial = String.format("%09d", Integer.parseInt(partesNumero[2]));
         String serie = estab + ptoEmi;
 
-        int random8Digits = ThreadLocalRandom.current().nextInt(10000000, 100000000);
-        String claveAcceso = claveAccesoGenerator.generarClaveAcceso(
-                retencionEntity.getFechaEmision(), getCodigoDocumento(), empresa.getEmpmRuc(),
-                empresa.getEmpmAmbiente().toString(), serie, secuencial,
-                String.valueOf(random8Digits), "1");
+        String claveAcceso;
+        if (retencionEntity.getClaveAcceso() != null && !retencionEntity.getClaveAcceso().isBlank()) {
+            claveAcceso = retencionEntity.getClaveAcceso();
+        } else {
+            int random8Digits = ThreadLocalRandom.current().nextInt(10000000, 100000000);
+            claveAcceso = claveAccesoGenerator.generarClaveAcceso(
+                    retencionEntity.getFechaEmision(), getCodigoDocumento(), empresa.getEmpmRuc(),
+                    empresa.getEmpmAmbiente().toString(), serie, secuencial,
+                    String.valueOf(random8Digits), "1");
+        }
         context.setClaveAcceso(claveAcceso);
         retencionEntity.setClaveAcceso(claveAcceso);
 
@@ -163,6 +171,32 @@ public class RetencionSriStrategy implements DocumentoElectronicoStrategy {
     @Override
     public void persistir(Object entidad) {
         retencionDao.actualizarRetencion((Retencion) entidad);
+    }
+
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public void persistirProgreso(Object entidad, SriProcessingContext context) {
+        Retencion ret = (Retencion) entidad;
+        if (context.getClaveAcceso() == null) {
+            return;
+        }
+        if (ret.getClaveAcceso() == null || ret.getClaveAcceso().isBlank()) {
+            ret.setClaveAcceso(context.getClaveAcceso());
+        }
+        if (context.getXmlFirmado() != null) {
+            ret.setXmlFirmado(context.getXmlFirmado());
+        }
+        if (ret.getEstado() == null || ret.getEstado().isBlank()) {
+            ret.setEstado(EnumEstadoDocumentoElectronico.EN_PROCESO.getLabel());
+        }
+        retencionDao.actualizarRetencion(ret);
+    }
+
+    @Override
+    public void marcarEnProceso(Object entidad) {
+        Retencion ret = (Retencion) entidad;
+        ret.setEstado(EnumEstadoDocumentoElectronico.EN_PROCESO.getLabel());
+        retencionDao.actualizarRetencion(ret);
     }
 
     @Override

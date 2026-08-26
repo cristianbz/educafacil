@@ -18,4 +18,5 @@ public interface RetencionDao extends GenericoDao<Retencion, Integer> {
     List<Retencion> listarTodas();
     void actualizarRetencion(Retencion retencion);
     List<Retencion> buscarRetencionesPorFiltros(LocalDate fechaInicio, LocalDate fechaFin, String identificacion, String numeroAutorizacion, String estadoAutorizacion);
+    List<Retencion> listarRetencionesPorEstadosReconciliacion(List<String> estados);
 }
