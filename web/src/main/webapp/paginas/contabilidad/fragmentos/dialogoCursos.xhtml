@@ -57,7 +57,10 @@
 					<p:commandButton value="#{botones['aceptar']}" process="@form" partialSubmit="true"
 							update="@form" icon="#{botones['icono.select']}" tabindex="2"
 							actionListener="#{backingPagos.buscarMatriculadosCurso()}" />
-						<p:commandButton value="#{botones['cancelar']}" process="@this" icon="#{botones['icono.cancelar']}" oncomplete="PF('dlgCursos').hide();" tabindex="3"/>
+						<p:commandButton value="#{botones['cancelar']}" process="@this" 
+							styleClass="ui-button-secondary ui-button-outlined"
+							 
+							icon="#{botones['icono.cancelar']}" oncomplete="PF('dlgCursos').hide();" tabindex="3"/>
 				</h:panelGrid>
 			</p:dialog>
 </ui:composition>

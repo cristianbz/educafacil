@@ -25,9 +25,12 @@ import ec.mileniumtech.educafacil.modelo.sri.Factura.TotalImpuesto;
 import ec.mileniumtech.educafacil.service.FacturaXmlService;
 import ec.mileniumtech.educafacil.service.RideGeneratorService;
 import ec.mileniumtech.educafacil.utilitarios.sri.ClaveAccesoGenerator;
+import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumEstadoDocumentoElectronico;
 import jakarta.ejb.EJB;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -73,12 +76,19 @@ public class FacturaSriStrategy implements DocumentoElectronicoStrategy {
         String secuencial = String.format("%09d", Integer.parseInt(partesNumero.length > 2 ? partesNumero[2] : facturaEntity.getId().toString()));
         String serie = estab + ptoEmi;
 
-        LocalDate fechaEmisionDate = facturaEntity.getFechaEmision();
-        int random8Digits = ThreadLocalRandom.current().nextInt(10000000, 100000000);
-        String claveAcceso = claveAccesoGenerator.generarClaveAcceso(
-                fechaEmisionDate, getCodigoDocumento(), empresa.getEmpmRuc(),
-                empresa.getEmpmAmbiente().toString(), serie, secuencial,
-                String.valueOf(random8Digits), "1");
+        String claveAcceso;
+        if (facturaEntity.getDocumentoElectronico() != null 
+                && facturaEntity.getDocumentoElectronico().getClaveAcceso() != null 
+                && !facturaEntity.getDocumentoElectronico().getClaveAcceso().isBlank()) {
+            claveAcceso = facturaEntity.getDocumentoElectronico().getClaveAcceso();
+        } else {
+            LocalDate fechaEmisionDate = facturaEntity.getFechaEmision();
+            int random8Digits = ThreadLocalRandom.current().nextInt(10000000, 100000000);
+            claveAcceso = claveAccesoGenerator.generarClaveAcceso(
+                    fechaEmisionDate, getCodigoDocumento(), empresa.getEmpmRuc(),
+                    empresa.getEmpmAmbiente().toString(), serie, secuencial,
+                    String.valueOf(random8Digits), "1");
+        }
         context.setClaveAcceso(claveAcceso);
 
         ec.mileniumtech.educafacil.modelo.sri.Factura facturaSri = new ec.mileniumtech.educafacil.modelo.sri.Factura();
@@ -174,7 +184,7 @@ public class FacturaSriStrategy implements DocumentoElectronicoStrategy {
             campoDir.setNombre("Direccion");
             campoDir.setValor(facturaEntity.getCliente().getDireccion());
             facturaSri.getInfoAdicionalList().add(campoDir);
-        }
+        }        
         if (facturaEntity.getCliente().getCorreo() != null) {
             ec.mileniumtech.educafacil.modelo.sri.Factura.CampoAdicional campoEmail = new ec.mileniumtech.educafacil.modelo.sri.Factura.CampoAdicional();
             campoEmail.setNombre("Email");
@@ -189,7 +199,11 @@ public class FacturaSriStrategy implements DocumentoElectronicoStrategy {
                 facturaSri.getInfoAdicionalList().add(campoAD);
             }
         }
-
+      //Informacion del proveedor de facturacion electronica
+        ec.mileniumtech.educafacil.modelo.sri.Factura.CampoAdicional proveedorFE = new ec.mileniumtech.educafacil.modelo.sri.Factura.CampoAdicional();
+        proveedorFE.setNombre("RUC proveedor facturación electrónica");
+        proveedorFE.setValor(context.getConfiguraciones().getConfRucFacElectronica());
+        facturaSri.getInfoAdicionalList().add(proveedorFE);
         return facturaSri;
     }
 
@@ -227,7 +241,7 @@ public class FacturaSriStrategy implements DocumentoElectronicoStrategy {
         factura.getDocumentoElectronico().setClaveAcceso(context.getClaveAcceso());
         factura.getDocumentoElectronico().setEstado(context.getEstadoAutorizacion());
         factura.getDocumentoElectronico().setNumeroAutorizacion(context.getNumeroAutorizacion());
-        factura.getDocumentoElectronico().setFechaAutorizacionDb(context.getFechaAutorizacion());
+        factura.getDocumentoElectronico().setFechaAutorizacionDb(context.getFechaAutorizacion() != null ? context.getFechaAutorizacion() : LocalDate.now());
         factura.getDocumentoElectronico().setUrlPdf(context.getUrlPdf());
         factura.getDocumentoElectronico().setUrlXml(context.getUrlXml());
         if (context.getMensajeSri() != null) {
@@ -238,6 +252,50 @@ public class FacturaSriStrategy implements DocumentoElectronicoStrategy {
     @Override
     public void persistir(Object entidad) {
         facturaDao.actualizarFactura((Factura) entidad);
+    }
+
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public void persistirProgreso(Object entidad, SriProcessingContext context) {
+        Factura factura = (Factura) entidad;
+        if (context.getClaveAcceso() == null) {
+            return; // Aún no hay clave de acceso, nada que perservar
+        }
+        DocumentoElectronico docElec = factura.getDocumentoElectronico();
+        if (docElec == null) {
+            docElec = new DocumentoElectronico();
+            docElec.setFactura(factura);
+            docElec.setFechaAutorizacionDb(LocalDate.now());
+            factura.setDocumentoElectronico(docElec);
+        }
+        if (docElec.getFechaAutorizacionDb() == null) {
+            docElec.setFechaAutorizacionDb(LocalDate.now());
+        }
+        docElec.setClaveAcceso(context.getClaveAcceso());
+        if (context.getXmlFirmado() != null) {
+            docElec.setXmlFirmado(context.getXmlFirmado());
+        }
+        if (docElec.getEstado() == null || docElec.getEstado().isBlank()) {
+            docElec.setEstado(EnumEstadoDocumentoElectronico.EN_PROCESO.getLabel());
+        }
+        facturaDao.actualizarFactura(factura);
+    }
+
+    @Override
+    public void marcarEnProceso(Object entidad) {
+        Factura factura = (Factura) entidad;
+        DocumentoElectronico docElec = factura.getDocumentoElectronico();
+        if (docElec == null) {
+            docElec = new DocumentoElectronico();
+            docElec.setFactura(factura);
+            docElec.setFechaAutorizacionDb(LocalDate.now());
+            factura.setDocumentoElectronico(docElec);
+        }
+        if (docElec.getFechaAutorizacionDb() == null) {
+            docElec.setFechaAutorizacionDb(LocalDate.now());
+        }
+        docElec.setEstado(EnumEstadoDocumentoElectronico.EN_PROCESO.getLabel());
+        facturaDao.actualizarFactura(factura);
     }
 
     @Override

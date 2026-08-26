@@ -1,7 +1,6 @@
 package ec.mileniumtech.educafacil.service;
 
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Retencion;
-import ec.mileniumtech.educafacil.service.strategy.ProcesadorDocumentosElectronicos;
 import ec.mileniumtech.educafacil.service.strategy.RetencionSriStrategy;
 import jakarta.ejb.EJB;
 import jakarta.ejb.LocalBean;
@@ -17,14 +16,24 @@ public class RetencionIntegracionService {
 
 
     @EJB
-    private ProcesadorDocumentosElectronicos procesador;
-
-    @EJB
     private RetencionSriStrategy retencionStrategy;
 
+    @EJB
+    private ProcesamientoSriAsincronoService procesamientoSriAsincrono;
+
+    /**
+     * Marca la retención en estado {@code EN_PROCESO} y dispara el procesamiento
+     * electrónico del SRI de forma asíncrona (Paso 3 del plan).
+     *
+     * @param retencionEntity retención ya persistida (debe tener ID).
+     * @throws IllegalStateException si la retención no tiene ID.
+     */
     public void procesarRetencionElectronica(Retencion retencionEntity) throws Exception {
-        log.info("Iniciando procesamiento de retención electrónica: {}", retencionEntity.getNumero());
-        procesador.procesar(retencionEntity, retencionStrategy);
-        log.info("Retención electrónica procesada exitosamente: {}", retencionEntity.getNumero());
+        if (retencionEntity.getId() == null) {
+            throw new IllegalStateException("La retención debe estar persistida antes de iniciar el procesamiento electrónico.");
+        }
+        retencionStrategy.marcarEnProceso(retencionEntity);
+        log.info("Disparando procesamiento asíncrono de retención: {}", retencionEntity.getId());
+        procesamientoSriAsincrono.procesarRetencion(retencionEntity.getId());
     }
 }

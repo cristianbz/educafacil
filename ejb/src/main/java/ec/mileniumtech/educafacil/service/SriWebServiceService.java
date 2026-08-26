@@ -26,6 +26,31 @@ public class SriWebServiceService {
     private static final Logger log = LogManager.getLogger(SriWebServiceService.class);
 
     /**
+     * Tiempo máximo (ms) para establecer la conexión TCP con los servidores del SRI.
+     * Configurable con la propiedad de sistema {@code educafacil.sri.connect.timeout}.
+     * 15 segundos da margen cuando el SRI está bajo carga sin bloquear el hilo indefinidamente.
+     */
+    private static final int CONNECT_TIMEOUT_MS =
+            Integer.getInteger("educafacil.sri.connect.timeout", 15_000);
+
+    /**
+     * Tiempo máximo (ms) de espera de respuesta del WS de RECEPCIÓN luego de enviar el comprobante.
+     * Configurable con {@code educafacil.sri.envio.request.timeout}. El envío es una operación pesada:
+     * firma XAdES + transmisión del XML; se deja un margen amplio para servidores saturados.
+     */
+    private static final int REQUEST_TIMEOUT_ENVIO_MS =
+            Integer.getInteger("educafacil.sri.envio.request.timeout", 45_000);
+
+    /**
+     * Tiempo máximo (ms) de espera de respuesta del WS de AUTORIZACIÓN por clave de acceso.
+     * Configurable con {@code educafacil.sri.autorizacion.request.timeout}.
+     * La autorización suele ser la llamada más lenta cuando el SRI tiene problemas de carga,
+     * por eso usa el timeout más alto. El reintento con backoff lo gestiona el procesador.
+     */
+    private static final int REQUEST_TIMEOUT_AUTORIZACION_MS =
+            Integer.getInteger("educafacil.sri.autorizacion.request.timeout", 60_000);
+
+    /**
      * Envía un comprobante firmado al SRI para su recepción.
      * 
      * @param xmlFirmado   XML firmado en bytes.
@@ -38,10 +63,10 @@ public class SriWebServiceService {
         RecepcionComprobantesOfflineService service = new RecepcionComprobantesOfflineService(new URL(urlWsdl));
         RecepcionComprobantesOffline port = service.getRecepcionComprobantesOfflinePort();
 
-        // Configurar timeouts
+        // Configurar timeouts (configurables, con valores por defecto tolerantes a carga)
         BindingProvider bp = (BindingProvider) port;
-        bp.getRequestContext().put("com.sun.xml.ws.connect.timeout", 5000); // 5 segundos para conectar
-        bp.getRequestContext().put("com.sun.xml.ws.request.timeout", 10000); // 10 segundos para recibir respuesta
+        bp.getRequestContext().put("com.sun.xml.ws.connect.timeout", CONNECT_TIMEOUT_MS);
+        bp.getRequestContext().put("com.sun.xml.ws.request.timeout", REQUEST_TIMEOUT_ENVIO_MS);
 
         return port.validarComprobante(xmlFirmado);
     }
@@ -58,10 +83,10 @@ public class SriWebServiceService {
         String urlWsdl = esProduccion ? configuracion.getConfWsAutorizacionProduccion() : configuracion.getConf_wsAutorizacionPruebas();
         AutorizacionComprobantesOfflineService service = new AutorizacionComprobantesOfflineService(new URL(urlWsdl));
         AutorizacionComprobantesOffline port = service.getAutorizacionComprobantesOfflinePort();
-        // Configurar timeouts
+        // Configurar timeouts (configurables; la autorización es la llamada más lenta del SRI)
         BindingProvider bp = (BindingProvider) port;
-        bp.getRequestContext().put("com.sun.xml.ws.connect.timeout", 5000); 
-        bp.getRequestContext().put("com.sun.xml.ws.request.timeout", 10000);
+        bp.getRequestContext().put("com.sun.xml.ws.connect.timeout", CONNECT_TIMEOUT_MS);
+        bp.getRequestContext().put("com.sun.xml.ws.request.timeout", REQUEST_TIMEOUT_AUTORIZACION_MS);
         RespuestaComprobante respuesta = port.autorizacionComprobante(claveAcceso);
 
         if (log.isDebugEnabled() && respuesta.getAutorizaciones() != null

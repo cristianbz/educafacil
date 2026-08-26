@@ -323,6 +323,8 @@ public class BackingReporteFacturacionElectronica implements Serializable {
         return switch (dto.getEstado().toUpperCase()) {
             case "AUTORIZADO" -> "#d1fae5";
             case "ANULADO"    -> "#fef2f2";
+            case "EN_PROCESO" -> "#e0e7ff";
+            case "ENVIADO"    -> "#cffafe";
             case "PENDIENTE"  -> "#fef9c3";
             case "RECHAZADO"  -> "#fee2e2";
             default           -> "#f3f4f6";
@@ -335,6 +337,8 @@ public class BackingReporteFacturacionElectronica implements Serializable {
         return switch (dto.getEstado().toUpperCase()) {
             case "AUTORIZADO" -> "#065f46";
             case "ANULADO"    -> "#991b1b";
+            case "EN_PROCESO" -> "#3730a3";
+            case "ENVIADO"    -> "#155e75";
             case "PENDIENTE"  -> "#92400e";
             case "RECHAZADO"  -> "#991b1b";
             default           -> "#374151";
@@ -347,6 +351,8 @@ public class BackingReporteFacturacionElectronica implements Serializable {
         return switch (dto.getEstado().toUpperCase()) {
             case "AUTORIZADO" -> "Autorizado";
             case "ANULADO"    -> "Anulado";
+            case "EN_PROCESO" -> "En proceso";
+            case "ENVIADO"    -> "Enviado (pendiente autorización)";
             case "PENDIENTE"  -> "Pendiente";
             case "RECHAZADO"  -> "Rechazado";
             default           -> dto.getEstado();

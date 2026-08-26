@@ -459,10 +459,10 @@ public class BackingFacturacion implements Serializable {
 
             facturacionDataService.guardarFactura(f);
             
-            // Emitir electrónicamente
+            // Emitir electrónicamente (asíncrono: no bloquea la respuesta de la UI)
             facturacionService.emitirFactura(f.getId(),getBeanFacturacion().getListaInfoAdicional());
             
-            Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Éxito", "Factura generada y enviada al SRI.");
+            Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Éxito", "Factura generada. El envío al SRI se está procesando.");
             cargarFacturas();
             prepararNuevaFactura();
             Mensaje.ocultarDialogo("dlgNuevaFactura");
@@ -486,11 +486,63 @@ public class BackingFacturacion implements Serializable {
      */
     public void cargarFacturas() {
         try {
-            getBeanFacturacion().setListaFacturas(facturacionDataService.listarTodasLasFacturasDelDia());
+            List<Factura> facturas = facturacionDataService.listarTodasLasFacturasDelDia();
+            getBeanFacturacion().setListaFacturas(facturas);
+            log.info("Facturas cargadas: size={}", facturas != null ? facturas.size() : 0);
         } catch (Exception e) {
             log.error("Error al cargar facturas", e);
             Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "No se pudieron cargar las facturas.");
         }
+    }
+
+    /**
+     * Invocado mediante remoteCommand cuando llega una notificación vía Faces Push / WebSockets.
+     */
+    public void refrescarPorPush() {
+        cargarFacturas();
+        PrimeFaces.current().ajax().update("formFacturacion:pnlTablaFacturas", "formFacturacion:pnlMetrics", "formFacturacion:growl");
+        Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Notificación en Tiempo Real", "Estado y acciones de facturación actualizados por el SRI.");
+    }
+
+    public boolean isMostrarBotonEmitir(Factura fac) {
+        if (fac == null || fac.getDocumentoElectronico() == null) {
+            return true;
+        }
+        String estado = fac.getDocumentoElectronico().getEstado();
+        return !"AUTORIZADO".equalsIgnoreCase(estado) && !"ANULADA".equalsIgnoreCase(estado);
+    }
+
+    public boolean isMostrarBotonSubirAws(Factura fac) {
+        if (fac == null || fac.getDocumentoElectronico() == null) {
+            return false;
+        }
+        String estado = fac.getDocumentoElectronico().getEstado();
+        String urlPdf = fac.getDocumentoElectronico().getUrlPdf();
+        return "AUTORIZADO".equalsIgnoreCase(estado) && (urlPdf == null || urlPdf.isBlank());
+    }
+
+    public boolean isMostrarBotonDescargarRide(Factura fac) {
+        if (fac == null || fac.getDocumentoElectronico() == null) {
+            return false;
+        }
+        String urlPdf = fac.getDocumentoElectronico().getUrlPdf();
+        return urlPdf != null && !urlPdf.isBlank();
+    }
+
+    public boolean isMostrarBotonDescargarXml(Factura fac) {
+        if (fac == null || fac.getDocumentoElectronico() == null) {
+            return false;
+        }
+        String urlXml = fac.getDocumentoElectronico().getUrlXml();
+        return urlXml != null && !urlXml.isBlank();
+    }
+
+    public boolean isMostrarBotonNotaCredito(Factura fac) {
+        if (fac == null || fac.getDocumentoElectronico() == null) {
+            return false;
+        }
+        String estado = fac.getDocumentoElectronico().getEstado();
+        return "AUTORIZADO".equalsIgnoreCase(estado);
     }
 
     /**
@@ -500,7 +552,7 @@ public class BackingFacturacion implements Serializable {
     public void emitirFactura(Factura factura) {
         try {
             facturacionService.emitirFactura(factura.getId(),getBeanFacturacion().getListaInfoAdicional());
-            cargarFacturas(); // Refrescar lista para ver cambios en estado
+            cargarFacturas();
             Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Éxito", "Proceso de facturación iniciado.");
         } catch (Exception e) {
             log.error("Error al emitir factura", e);
@@ -589,7 +641,7 @@ public class BackingFacturacion implements Serializable {
             
             notaCreditoService.procesarNotaCreditoElectronica(nc);
             
-            Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Éxito", "Nota de Crédito generada y procesada correctamente.");
+            Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Éxito", "Nota de Crédito generada. El envío al SRI se está procesando.");
             Mensaje.ocultarDialogo("dlgNuevaNotaCredito");
             cargarFacturas(); // para refrescar estados si fuera necesario
         } catch (Exception e) {
@@ -788,6 +840,70 @@ public class BackingFacturacion implements Serializable {
             log.error("Error al subir documentos a S3", e);
             Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage());
         }
+    }
+
+    /**
+     * Indica si existen facturas cuyo documento electrónico aún no alcanza un
+     * estado terminal (AUTORIZADO/RECHAZADO/ANULADA).
+     *
+     * <p>Usado por {@code p:poll} en {@code facturacion.xhtml}.</p>
+     *
+     * @return {@code true} si hay al menos una factura en PENDIENTE, EN_PROCESO o ENVIADO.
+     */
+    public boolean isHayFacturasEnProceso() {
+        if (getBeanFacturacion().getListaFacturas() == null) {
+            return false;
+        }
+        return getBeanFacturacion().getListaFacturas().stream()
+                .anyMatch(f -> {
+                    if (f.getDocumentoElectronico() == null || f.getDocumentoElectronico().getEstado() == null) {
+                        return true;
+                    }
+                    String estado = f.getDocumentoElectronico().getEstado();
+                    return "PENDIENTE".equals(estado)
+                            || "EN_PROCESO".equals(estado)
+                            || "ENVIADO".equals(estado);
+                });
+    }
+
+    public boolean getHayFacturasEnProceso() {
+        return isHayFacturasEnProceso();
+    }
+
+    /**
+     * Etiqueta de estado SRI para la grilla (evita varios {@code rendered} en AJAX).
+     */
+    public String labelEstadoSri(Factura fac) {
+        if (fac == null || fac.getDocumentoElectronico() == null
+                || fac.getDocumentoElectronico().getEstado() == null
+                || fac.getDocumentoElectronico().getEstado().isBlank()) {
+            return "PENDIENTE";
+        }
+        return switch (fac.getDocumentoElectronico().getEstado()) {
+            case "EN_PROCESO" -> "EN PROCESO";
+            case "ENVIADO" -> "ENVIADO";
+            case "AUTORIZADO" -> "AUTORIZADO";
+            case "RECHAZADO" -> "RECHAZADO";
+            case "ANULADA" -> "ANULADA";
+            case "PENDIENTE" -> "PENDIENTE";
+            default -> fac.getDocumentoElectronico().getEstado();
+        };
+    }
+
+    /**
+     * Clase CSS del badge de estado SRI.
+     */
+    public String styleClassEstadoSri(Factura fac) {
+        if (fac == null || fac.getDocumentoElectronico() == null
+                || fac.getDocumentoElectronico().getEstado() == null) {
+            return "sri-tag-pending";
+        }
+        return switch (fac.getDocumentoElectronico().getEstado()) {
+            case "AUTORIZADO" -> "sri-tag-authorized";
+            case "RECHAZADO" -> "sri-tag-rejected";
+            case "ANULADA" -> "sri-tag-annulled";
+            default -> "sri-tag-pending";
+        };
     }
 
     /**

@@ -40,6 +40,7 @@ public class RetencionDaoImpl extends GenericoDaoImpl<Retencion, Integer> implem
             TypedQuery<Retencion> query = getEntityManager().createQuery(
                 "SELECT r FROM Retencion r " +
                 "JOIN FETCH r.puntoEmision " +
+                "JOIN FETCH r.puntoEmision.establecimientos " +
                 "JOIN FETCH r.puntoEmision.establecimientos.empresaMatriz " +
                 "JOIN FETCH r.egreso " +
                 "JOIN FETCH r.egreso.proveedor " +
@@ -126,6 +127,31 @@ public class RetencionDaoImpl extends GenericoDaoImpl<Retencion, Integer> implem
 
         } catch (PersistenceException e) {
             throw new SystemException("Error al filtrar retenciones para reporte", "RETENCION-FILTER-ERR", e);
+        }
+    }
+
+    /**
+     * Lista las retenciones en estados pendientes de reconciliación
+     * (ENVIADO, EN_PROCESO, PENDIENTE) con clave de acceso persistida.
+     *
+     * @param estados estados pendientes de reconciliación.
+     * @return lista de retenciones candidatas a reconciliación.
+     */
+    public List<Retencion> listarRetencionesPorEstadosReconciliacion(List<String> estados) {
+        try {
+            TypedQuery<Retencion> query = getEntityManager().createQuery(
+                "SELECT r FROM Retencion r " +
+                "JOIN FETCH r.puntoEmision " +
+                "JOIN FETCH r.puntoEmision.establecimientos " +
+                "JOIN FETCH r.puntoEmision.establecimientos.empresaMatriz " +
+                "WHERE r.estado IN :estados " +
+                "AND r.claveAcceso IS NOT NULL " +
+                "ORDER BY r.id ASC", Retencion.class)
+                .setParameter("estados", estados)
+                .setMaxResults(50);
+            return query.getResultList();
+        } catch (PersistenceException e) {
+            throw new SystemException("Error al listar retenciones para reconciliación", "RETENCION-RECON-ERR", e);
         }
     }
 }

@@ -1,6 +1,7 @@
 package ec.mileniumtech.educafacil.dao.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -116,15 +117,44 @@ class FacturaDaoImplTest {
     @Test
     void listarTodasLasFacturasDelDiaExitosamente() {
         when(entityManager.createQuery(anyString(), eq(Factura.class))).thenReturn(typedQuery);
+        when(typedQuery.setHint(anyString(), any())).thenReturn(typedQuery);
+        // Sin id: no dispara la consulta de metadatos del documento electrónico
         when(typedQuery.getResultList()).thenReturn(java.util.Collections.singletonList(new Factura()));
 
         java.util.List<Factura> resultado = dao.listarTodasLasFacturasDelDia();
         assertEquals(1, resultado.size());
+        verify(entityManager, times(1)).createQuery(anyString(), eq(Factura.class));
+        // clear al inicio + clear tras la consulta (antes de metadatos sintéticos)
+        verify(entityManager, times(2)).clear();
+    }
+
+    @Test
+    void listarTodasLasFacturasDelDiaConMetadatosDocumento() {
+        Factura factura = new Factura();
+        factura.setId(10);
+        when(entityManager.createQuery(anyString(), eq(Factura.class))).thenReturn(typedQuery);
+        when(typedQuery.setHint(anyString(), any())).thenReturn(typedQuery);
+        when(typedQuery.getResultList()).thenReturn(java.util.Collections.singletonList(factura));
+
+        @SuppressWarnings("rawtypes")
+        TypedQuery metaQuery = mock(TypedQuery.class);
+        when(entityManager.createQuery(anyString())).thenReturn(metaQuery);
+        when(metaQuery.setParameter(anyString(), any())).thenReturn(metaQuery);
+        when(metaQuery.setHint(anyString(), any())).thenReturn(metaQuery);
+        when(metaQuery.getResultList()).thenReturn(java.util.Collections.singletonList(
+                new Object[]{10, 20, "AUTORIZADO", "pdf/key", "xml/key", null, "123"}));
+
+        java.util.List<Factura> resultado = dao.listarTodasLasFacturasDelDia();
+        assertEquals(1, resultado.size());
+        assertNotNull(resultado.get(0).getDocumentoElectronico());
+        assertEquals("AUTORIZADO", resultado.get(0).getDocumentoElectronico().getEstado());
+        assertEquals("pdf/key", resultado.get(0).getDocumentoElectronico().getUrlPdf());
     }
 
     @Test
     void listarTodasLasFacturasDelDiaLanzaPersistenceException() {
         when(entityManager.createQuery(anyString(), eq(Factura.class))).thenReturn(typedQuery);
+        when(typedQuery.setHint(anyString(), any())).thenReturn(typedQuery);
         when(typedQuery.getResultList()).thenThrow(new PersistenceException("Error DB"));
 
         assertThrows(SystemException.class, () -> dao.listarTodasLasFacturasDelDia());

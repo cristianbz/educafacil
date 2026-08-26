@@ -64,6 +64,7 @@ ec\mileniumtech\educafacil\modelo\persistencia\entity\Proveedor.class
 ec\mileniumtech\educafacil\modelo\persistencia\entity\Sriformapago.class
 ec\mileniumtech\educafacil\service\RetencionService.class
 ec\mileniumtech\educafacil\dao\impl\ConfiguracionesDaoImpl.class
+ec\mileniumtech\educafacil\service\ReconciliacionSriScheduler.class
 ec\mileniumtech\educafacil\dao\MatriculaDao.class
 ec\mileniumtech\educafacil\modelo\sri\NotaCredito$TotalImpuesto.class
 ec\mileniumtech\educafacil\modelo\persistencia\dto\DtoMapper.class
@@ -173,6 +174,7 @@ ec\mileniumtech\educafacil\dao\FacturaDao.class
 ec\mileniumtech\educafacil\modelo\persistencia\entity\Pregunta.class
 ec\mileniumtech\educafacil\modelo\persistencia\entity\DetalleEvaluaCurso.class
 ec\mileniumtech\educafacil\modelo\sri\Factura$InfoTributaria.class
+ec\mileniumtech\educafacil\utilitarios\enumeraciones\EnumEstadoDocumentoElectronico$1.class
 ec\mileniumtech\educafacil\dao\impl\CampaniaDaoImpl.class
 ec\mileniumtech\educafacil\dao\impl\OfertaCapacitacionDaoImpl.class
 ec\mileniumtech\educafacil\modelo\persistencia\entity\PagosFacturados.class
@@ -290,6 +292,8 @@ ec\mileniumtech\educafacil\dao\RespuestasDao.class
 ec\mileniumtech\educafacil\modelo\persistencia\entity\Establecimiento.class
 ec\mileniumtech\educafacil\dao\impl\RolDaoImpl.class
 ec\mileniumtech\educafacil\service\AwsS3Service.class
+ec\mileniumtech\educafacil\utilitarios\enumeraciones\EnumEstadoDocumentoElectronico.class
+ec\mileniumtech\educafacil\service\ProcesamientoSriAsincronoService.class
 ec\mileniumtech\educafacil\dao\impl\CuotaDaoImpl.class
 ec\mileniumtech\educafacil\dao\impl\RespuestasDaoImpl.class
 ec\mileniumtech\educafacil\dao\OfertaCapacitacionDao.class

@@ -6,7 +6,6 @@ import org.apache.logging.log4j.Logger;
 import ec.mileniumtech.educafacil.dao.NotaCreditoDao;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.NotaCredito;
 import ec.mileniumtech.educafacil.service.strategy.NotaCreditoSriStrategy;
-import ec.mileniumtech.educafacil.service.strategy.ProcesadorDocumentosElectronicos;
 import jakarta.ejb.EJB;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
@@ -21,14 +20,26 @@ public class NotaCreditoService {
     private NotaCreditoDao notaCreditoDao;
 
     @EJB
-    private ProcesadorDocumentosElectronicos procesador;
-
-    @EJB
     private NotaCreditoSriStrategy notaCreditoStrategy;
 
+    @EJB
+    private ProcesamientoSriAsincronoService procesamientoSriAsincrono;
+
+    /**
+     * Persiste la nota de crédito con estado {@code EN_PROCESO} y dispara el
+     * procesamiento electrónico del SRI de forma asíncrona (Paso 3 del plan).
+     *
+     * @param notaCreditoEntity nota de crédito a procesar.
+     * @throws IllegalStateException si la nota de crédito no quedó persistida.
+     */
     public void procesarNotaCreditoElectronica(NotaCredito notaCreditoEntity) throws Exception {
         notaCreditoDao.guardar(notaCreditoEntity);
-        procesador.procesar(notaCreditoEntity, notaCreditoStrategy);
+        notaCreditoStrategy.marcarEnProceso(notaCreditoEntity);
+        if (notaCreditoEntity.getId() == null) {
+            throw new IllegalStateException("La nota de crédito debe tener ID antes de iniciar el procesamiento electrónico.");
+        }
+        log.info("Disparando procesamiento asíncrono de nota de crédito: {}", notaCreditoEntity.getId());
+        procesamientoSriAsincrono.procesarNotaCredito(notaCreditoEntity.getId());
     }
 }
 

@@ -9,6 +9,7 @@ import java.time.OffsetDateTime;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import ec.mileniumtech.educafacil.dao.ConfiguracionesDao;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.Configuraciones;
 import ec.mileniumtech.educafacil.modelo.persistencia.entity.EmpresaMatriz;
 import ec.mileniumtech.educafacil.service.AwsS3Service;
@@ -22,6 +23,7 @@ import ec.mileniumtech.educafacil.dao.excepciones.BusinessException;
 import ec.mileniumtech.educafacil.dao.excepciones.SystemException;
 import ec.mileniumtech.educafacil.utilitarios.ValidacionUtil;
 import ec.mileniumtech.educafacil.utilitarios.encriptacion.CriptografiaUtil;
+import ec.mileniumtech.educafacil.utilitarios.enumeraciones.EnumEstadoDocumentoElectronico;
 import jakarta.ejb.EJB;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
@@ -34,6 +36,18 @@ public class ProcesadorDocumentosElectronicos {
 
     private static final Logger log = LogManager.getLogger(ProcesadorDocumentosElectronicos.class);
 
+    /**
+     * Número máximo de consultas de autorización que se ejecutan luego de recibir "RECIBIDA".
+     * Si el SRI está saturado, la autorización puede tardar varios segundos en resolverse.
+     */
+    private static final int MAX_INTENTOS_AUTORIZACION = 6;
+
+    /**
+     * Backoff progresivo (ms) entre consultas de autorización:
+     * 3s, 5s, 10s, 20s, 30s.
+     */
+    private static final long[] BACKOFF_AUTORIZACION_MS = {3_000L, 5_000L, 10_000L, 20_000L, 30_000L};
+
     @EJB
     private XadesSignatureService xadesSignatureService;
 
@@ -45,6 +59,9 @@ public class ProcesadorDocumentosElectronicos {
 
     @EJB
     private AwsS3Service awsS3Service;
+
+    @EJB
+    private ConfiguracionesDao configuracionesDao;
 
     public void procesar(Object entidad, DocumentoElectronicoStrategy strategy) throws Exception {
         SriProcessingContext context = new SriProcessingContext();
@@ -73,6 +90,15 @@ public class ProcesadorDocumentosElectronicos {
                 xmlString.getBytes(StandardCharsets.UTF_8), pkcs12, password);
         context.setXmlFirmado(xmlFirmado);
 
+        // Persistencia temprana (hotfix): guardar clave de acceso y XML firmado apenas están
+        // disponibles, para que una caída o saturación del SRI no deje el documento sin
+        // referencia y para evitar re-envíos duplicados.
+        try {
+            strategy.persistirProgreso(entidad, context);
+        } catch (Exception e) {
+            log.warn("No se pudo persistir el progreso temprano del documento (claveAcceso/xmlFirmado).", e);
+        }
+
         boolean esProduccion = empresa.getEmpmAmbiente() == 2;
         String urlWsdl = esProduccion
                 ? configuraciones.getConfWsRecepcionProduccion()
@@ -91,16 +117,16 @@ public class ProcesadorDocumentosElectronicos {
         }
 
         if ("RECIBIDA".equals(respuestaEnvio.getEstado())) {
-            Thread.sleep(3000);
-            RespuestaComprobante respuestaAut = sriWebServiceService.autorizarComprobante(
+            // Paso 1b: reintentos con backoff en lugar de una única consulta tras sleep fijo.
+            RespuestaComprobante respuestaAut = consultarAutorizacionConReintentos(
                     context.getClaveAcceso(), esProduccion, configuraciones);
 
-            if (!respuestaAut.getAutorizaciones().getAutorizacion().isEmpty()) {
+            if (respuestaAut != null && !respuestaAut.getAutorizaciones().getAutorizacion().isEmpty()) {
                 Autorizacion aut = respuestaAut.getAutorizaciones().getAutorizacion().get(0);
                 context.setEstadoAutorizacion(aut.getEstado());
                 context.setNumeroAutorizacion(aut.getNumeroAutorizacion());
 
-                if ("AUTORIZADO".equals(aut.getEstado())) {
+                if (EnumEstadoDocumentoElectronico.AUTORIZADO.getLabel().equals(aut.getEstado())) {
                     context.setAutorizado(true);
                     context.setFechaAutorizacion(convertir(aut.getFechaAutorizacion()));
                     byte[] pdfContent = strategy.generarRide(jaxbObject, empresa, context);
@@ -140,14 +166,80 @@ public class ProcesadorDocumentosElectronicos {
                         context.setMensajeSri(aut.getMensajes().getMensaje().get(0).getMensaje());
                     }
                 }
+            } else {
+                // El SRI recibió el comprobante pero la autorización no se resolvió tras
+                // los reintentos. Se deja en ENVIADO para reconciliación posterior.
+                context.setEstadoAutorizacion(EnumEstadoDocumentoElectronico.ENVIADO.getLabel());
+                context.setMensajeSri("El comprobante fue RECIBIDO por el SRI, pero la autorización aún no se ha resuelto. Se consultará nuevamente.");
+                log.warn("Comprobante RECIBIDO por el SRI sin autorización resuelta tras {} reintentos. ClaveAcceso: {}",
+                        MAX_INTENTOS_AUTORIZACION, context.getClaveAcceso());
             }
         } else {
-            context.setEstadoAutorizacion("RECHAZADO");
+            String mensajeErr = "";
             if (respuestaEnvio.getComprobantes() != null
-                    && !respuestaEnvio.getComprobantes().getComprobante().isEmpty()) {
-                context.setMensajeSri(respuestaEnvio.getComprobantes().getComprobante().get(0)
-                        .getMensajes().getMensaje().get(0).getMensaje());
+                    && !respuestaEnvio.getComprobantes().getComprobante().isEmpty()
+                    && respuestaEnvio.getComprobantes().getComprobante().get(0).getMensajes() != null
+                    && !respuestaEnvio.getComprobantes().getComprobante().get(0).getMensajes().getMensaje().isEmpty()) {
+                mensajeErr = respuestaEnvio.getComprobantes().getComprobante().get(0)
+                        .getMensajes().getMensaje().get(0).getMensaje();
             }
+            context.setMensajeSri(mensajeErr);
+
+            // Si el comprobante o secuencial ya fue registrado en el SRI previamente,
+            // intentamos verificar su autorización en lugar de marcar como fallo inmediato.
+            if (mensajeErr != null && (mensajeErr.toUpperCase().contains("SECUENCIAL REGISTRADO") 
+                    || mensajeErr.toUpperCase().contains("CLAVE ACCESO REGISTRADA")
+                    || mensajeErr.toUpperCase().contains("CLAVE DE ACCESO REGISTRADA"))) {
+                
+                log.info("Secuencial o clave ya registrada en el SRI para clave {}. Consultando autorización...", context.getClaveAcceso());
+                RespuestaComprobante respuestaAut = consultarAutorizacionConReintentos(
+                        context.getClaveAcceso(), esProduccion, configuraciones);
+
+                if (respuestaAut != null && !respuestaAut.getAutorizaciones().getAutorizacion().isEmpty()) {
+                    Autorizacion aut = respuestaAut.getAutorizaciones().getAutorizacion().get(0);
+                    context.setEstadoAutorizacion(aut.getEstado());
+                    context.setNumeroAutorizacion(aut.getNumeroAutorizacion());
+                    if (EnumEstadoDocumentoElectronico.AUTORIZADO.getLabel().equals(aut.getEstado())) {
+                        context.setAutorizado(true);
+                        context.setFechaAutorizacion(convertir(aut.getFechaAutorizacion()));
+                        byte[] pdfContent = strategy.generarRide(jaxbObject, empresa, context);
+                        context.setPdfContent(pdfContent);
+
+                        String identifier = null;
+                        try {
+                            identifier = strategy.getEntityIdentifier(entidad);
+                            if (pdfContent != null) {
+                                String documento = resolverDocumento(entidad);
+                                String ambiente = empresa.getEmpmAmbiente() == 2 ? "produccion" : "pruebas";
+                                String clavePdf = awsS3Service.construirClavePdf(identifier, documento, ambiente);
+                                awsS3Service.subirArchivo(pdfContent, clavePdf, "application/pdf");
+                                context.setUrlPdf(clavePdf);
+                            }
+                            String documento = resolverDocumento(entidad);
+                            String ambiente = empresa.getEmpmAmbiente() == 2 ? "produccion" : "pruebas";
+                            String claveXml = awsS3Service.construirClaveXml(identifier, documento, ambiente);
+                            awsS3Service.subirArchivo(xmlFirmado, claveXml, "text/xml");
+                            context.setUrlXml(claveXml);
+                        } catch (Exception e3) {
+                            log.error("Error al subir documentos a S3 para identifier: {}", identifier, e3);
+                        }
+
+                        if (pdfContent != null) {
+                            String destinatario = obtenerDestinatario(entidad);
+                            if (destinatario != null) {
+                                notificacionService.enviarComprobante(
+                                        destinatario, xmlFirmado, pdfContent,
+                                        context.getClaveAcceso().substring(Math.max(0, context.getClaveAcceso().length() - 9)));
+                            }
+                        }
+                        strategy.actualizarEntidad(entidad, context);
+                        strategy.persistir(entidad);
+                        return;
+                    }
+                }
+            }
+
+            context.setEstadoAutorizacion(EnumEstadoDocumentoElectronico.RECHAZADO.getLabel());
             strategy.actualizarEntidad(entidad, context);
             strategy.persistir(entidad);
             throw new SystemException("Error en envío al SRI: " + context.getMensajeSri(), "SYS-SRI-SEND-ERR");
@@ -202,6 +294,65 @@ public class ProcesadorDocumentosElectronicos {
         return null;
     }
 
+    /**
+     * Consulta la autorización con reintentos y backoff progresivo.
+     * <p>
+     * Cada iteración que devuelve una autorización "definitiva" (AUTORIZADO,
+     * RECHAZADO, DEVUELTA, NO AUTORIZADO) corta el ciclo de inmediato. Si el
+     * servicio de autorización devuelve una respuesta sin autorizaciones (aún
+     * procesando) o lanza un error de red/timeout, se reintenta con backoff.
+     *
+     * @return la primera respuesta con autorización definitiva, la última
+     *         respuesta obtenida, o {@code null} si todos los intentos fallaron
+     *         o devolvieron {@code null}.
+     */
+    private RespuestaComprobante consultarAutorizacionConReintentos(
+            String claveAcceso, boolean esProduccion, Configuraciones configuraciones) {
+
+        RespuestaComprobante respuesta = null;
+        for (int intento = 1; intento <= MAX_INTENTOS_AUTORIZACION; intento++) {
+            try {
+                respuesta = sriWebServiceService.autorizarComprobante(claveAcceso, esProduccion, configuraciones);
+                if (respuesta != null && tieneAutorizacionDefinitiva(respuesta)) {
+                    String estado = respuesta.getAutorizaciones().getAutorizacion().get(0).getEstado();
+                    log.info("Autorización resuelta (intento {}): {} para claveAcceso {}", intento, estado, claveAcceso);
+                    return respuesta;
+                }
+                log.info("Intento {}/{}: el SRI aún no tiene autorización para la clave {}", intento, MAX_INTENTOS_AUTORIZACION, claveAcceso);
+            } catch (Exception e) {
+                log.warn("Intento {}/{}: error al consultar autorización clave {}: {}", intento, MAX_INTENTOS_AUTORIZACION, claveAcceso, e.getMessage());
+            }
+
+            if (intento < MAX_INTENTOS_AUTORIZACION) {
+                long backoff = BACKOFF_AUTORIZACION_MS[Math.min(intento - 1, BACKOFF_AUTORIZACION_MS.length - 1)];
+                try {
+                    Thread.sleep(backoff);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    log.warn("Interrupción durante backoff de autorización para clave {}", claveAcceso);
+                    break;
+                }
+            }
+        }
+        return respuesta;
+    }
+
+    /**
+     * Determina si la respuesta del SRI contiene una resolución de autorización
+     * definitiva (no requiere más reintentos).
+     */
+    private boolean tieneAutorizacionDefinitiva(RespuestaComprobante respuesta) {
+        if (respuesta == null || respuesta.getAutorizaciones() == null
+                || respuesta.getAutorizaciones().getAutorizacion() == null
+                || respuesta.getAutorizaciones().getAutorizacion().isEmpty()) {
+            return false;
+        }
+        String estado = respuesta.getAutorizaciones().getAutorizacion().get(0).getEstado();
+        return EnumEstadoDocumentoElectronico.AUTORIZADO.getLabel().equals(estado)
+                || EnumEstadoDocumentoElectronico.RECHAZADO.getLabel().equals(estado)
+                || "DEVUELTA".equals(estado) || "NO AUTORIZADO".equals(estado);
+    }
+
     private LocalDate convertir(XMLGregorianCalendar xmlDate) {
         if (xmlDate == null || xmlDate.getYear() == DatatypeConstants.FIELD_UNDEFINED) {
             return null;
@@ -212,5 +363,53 @@ public class ProcesadorDocumentosElectronicos {
             xmlDate.getMonth(), 
             xmlDate.getDay()
         );
+    }
+
+    /**
+     * Reconciliación de comprobantes enviados al SRI cuya autorización no se resolvió
+     * de forma síncrona (quedaron en estado ENVIADO/EN_PROCESO/PENDIENTE).
+     * <p>
+     * NO re-envía ni re-firma el comprobante: solo consulta la autorización por la
+     * claveAcceso ya persistida y actualiza el estado (AUTORIZADO/RECHAZADO) más los
+     * metadatos asociados (número de autorización, fecha, mensaje SRI).
+     *
+     * @param entidad entidad de negocio (Factura, NotaCredito, Retencion) ya persistida
+     * @param claveAcceso clave de acceso del comprobante a reconciliar
+     * @param strategy estrategia del tipo de documento
+     */
+    public void reconciliar(Object entidad, String claveAcceso, DocumentoElectronicoStrategy strategy) {
+        try {
+            EmpresaMatriz empresa = resolverEmpresa(entidad);
+            Configuraciones configuraciones = configuracionesDao.findAll().get(0);
+            boolean esProduccion = empresa.getEmpmAmbiente() == 2;
+
+            RespuestaComprobante respuesta = consultarAutorizacionConReintentos(
+                    claveAcceso, esProduccion, configuraciones);
+
+            if (respuesta == null || respuesta.getAutorizaciones() == null
+                    || respuesta.getAutorizaciones().getAutorizacion().isEmpty()) {
+                log.info("Reconciliación: el SRI aún no resuelve la autorización de la clave {}. Se mantiene el estado.", claveAcceso);
+                return;
+            }
+
+            Autorizacion aut = respuesta.getAutorizaciones().getAutorizacion().get(0);
+            SriProcessingContext context = new SriProcessingContext();
+            context.setClaveAcceso(claveAcceso);
+            context.setEstadoAutorizacion(aut.getEstado());
+            context.setNumeroAutorizacion(aut.getNumeroAutorizacion());
+            if (aut.getMensajes() != null && !aut.getMensajes().getMensaje().isEmpty()) {
+                context.setMensajeSri(aut.getMensajes().getMensaje().get(0).getMensaje());
+            }
+            if (EnumEstadoDocumentoElectronico.AUTORIZADO.getLabel().equals(aut.getEstado())) {
+                context.setAutorizado(true);
+                context.setFechaAutorizacion(convertir(aut.getFechaAutorizacion()));
+            }
+
+            strategy.actualizarEntidad(entidad, context);
+            strategy.persistir(entidad);
+            log.info("Reconciliación clave {} resuelta: {}", claveAcceso, aut.getEstado());
+        } catch (Exception e) {
+            log.error("Error durante la reconciliación del comprobante con clave {}.", claveAcceso, e);
+        }
     }
 }
