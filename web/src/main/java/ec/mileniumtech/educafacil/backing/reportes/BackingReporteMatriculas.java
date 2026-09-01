@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -162,24 +163,21 @@ public class BackingReporteMatriculas implements Serializable {
         
         dataSet.setLabel("Matrículas por Mes");
         
-        List<Number> values = new ArrayList<>();
-        List<String> labels = new ArrayList<>();
+//        List<Number> values = new ArrayList<>();
+//        List<String> labels = new ArrayList<>();
         String[] nombresMeses = {"Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"};
         // Agrupar por mes para el año seleccionado
         int limitMonth = (Calendar.getInstance().get(Calendar.YEAR) == selectedYear) ? selectedMonth : 12;
         Map<Integer,Integer> mesesGraficaBarras=getMatriculaFacade().obtenerMatriculasHastaMes(selectedYear, limitMonth);
-        for (int i = 0; i < limitMonth; i++) {
-            Map.Entry<Integer, Integer> elemento = mesesGraficaBarras.entrySet()
-            	    .stream()
-            	    .skip(i)
-            	    .findFirst()
-            	    .orElse(null);
-            if(elemento!=null)
-            	values.add(elemento.getValue());
-            else
-            	values.add(0);
-            labels.add(nombresMeses[i]);
-        }
+        List<Integer> meses = IntStream.rangeClosed(1, limitMonth).boxed().toList();
+
+        List<Number> values = meses.stream()
+            .map(mes -> mesesGraficaBarras.getOrDefault(mes, 0))
+            .collect(Collectors.toList());
+
+        List<String> labels = meses.stream()
+            .map(mes -> nombresMeses[mes - 1])
+            .collect(Collectors.toList());
         dataSet.setData(values);
         
         List<String> bgColors = new ArrayList<>();
