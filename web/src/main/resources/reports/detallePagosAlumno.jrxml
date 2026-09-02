@@ -6,7 +6,7 @@
 		<fieldDescription><![CDATA[pagos.pagoFecha]]></fieldDescription>
 	</field>
 	<field name="depaObservacion" class="java.lang.String"/>
-	<field name="depaValor" class="java.lang.Double"/>
+	<field name="depaValor" class="java.math.BigDecimal"/>
 	<columnHeader>
 		<band height="20" splitType="Stretch">
 			<staticText>
