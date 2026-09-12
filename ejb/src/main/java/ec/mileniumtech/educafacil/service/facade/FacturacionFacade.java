@@ -371,7 +371,7 @@ public class FacturacionFacade {
     public void emitirFactura(Integer facturaId, List<InfoAdicionalDto> informacionAdicional) throws Exception {
         Factura factura = facturaDao.buscarFacturaPorId(facturaId);
         if (factura == null) {
-            throw new BusinessException("No se encontrÃ³ la factura con ID: " + facturaId, "BIZ-FACADE-NOT-FOUND");
+            throw new BusinessException("No se encontró la factura con ID: " + facturaId, "BIZ-FACADE-NOT-FOUND");
         }
         factura.setListaInfoAdicional(informacionAdicional);
         integracionSriService.procesarFacturaElectronica(factura);
@@ -380,7 +380,7 @@ public class FacturacionFacade {
     public void subirDocumentosFacturaAws(Integer facturaId) throws Exception {
         Factura factura = facturaDao.buscarFacturaPorId(facturaId);
         if (factura == null) {
-            throw new BusinessException("No se encontrÃ³ la factura con ID: " + facturaId, "BIZ-FACADE-NOT-FOUND");
+            throw new BusinessException("No se encontró la factura con ID: " + facturaId, "BIZ-FACADE-NOT-FOUND");
         }
 
         ec.mileniumtech.educafacil.modelo.persistencia.entity.DocumentoElectronico doc = factura.getDocumentoElectronico();

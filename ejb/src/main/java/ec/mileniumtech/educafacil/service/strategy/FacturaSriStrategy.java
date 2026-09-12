@@ -246,6 +246,7 @@ public class FacturaSriStrategy implements DocumentoElectronicoStrategy {
         factura.getDocumentoElectronico().setUrlXml(context.getUrlXml());
         if (context.getMensajeSri() != null) {
             factura.getDocumentoElectronico().setMensajeSri(context.getMensajeSri());
+            System.out.println("Mensaje SRI " + context.getMensajeSri());
         }
     }
 
