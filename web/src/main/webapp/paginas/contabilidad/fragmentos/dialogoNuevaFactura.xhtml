@@ -365,10 +365,12 @@
 											</h:panelGroup>
 
 											<div class="p-mt-4" style="display: flex; flex-direction: column; gap: 0.75rem;">
-												<p:commandButton id="btnGuardarFactura" value="Guardar y Emitir Factura" icon="pi pi-check" 
+												<p:commandButton id="btnGuardarFactura" widgetVar="btnGuardarFactura" value="Guardar y Emitir Factura" icon="pi pi-check" 
 																 actionListener="#{backingFacturacion.guardarFactura()}" 
 																 process="@this :formFacturacion:pnlNuevaFactura"
 																 update=":formFacturacion:growl :formFacturacion:pnlTablaFacturas :formFacturacion:pnlMetrics"
+																 onstart="PF('btnGuardarFactura').disable();"
+																 oncomplete="PF('btnGuardarFactura').enable();"
 																 disabled="#{not backingFacturacion.saldoCero or empty beanFacturacion.listaFormasPagoAgregadas}"
 																 styleClass="ui-button-success" 
 																 style="width: 100%; font-weight: 700; padding: 0.75rem !important;" />

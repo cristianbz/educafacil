@@ -9,6 +9,7 @@ ec\mileniumtech\educafacil\dao\impl\AreaDaoImplTest.class
 ec\mileniumtech\educafacil\modelo\persistencia\dto\DtoMapperTest.class
 ec\mileniumtech\educafacil\service\PerfilServiceTest$EliminarLogicoPerfil.class
 ec\mileniumtech\educafacil\dao\util\JpaDaoSupportTest.class
+ec\mileniumtech\educafacil\service\sri\validacion\SriXmlSchemaValidatorTest.class
 ec\mileniumtech\educafacil\service\UsuarioServiceTest$GuardarUsuario.class
 ec\mileniumtech\educafacil\dao\impl\CatalogoItemDaoImplTest.class
 ec\mileniumtech\educafacil\PruebasUnitarias.class
@@ -24,6 +25,7 @@ ec\mileniumtech\educafacil\dao\impl\CampaniaDaoImplTest.class
 ec\mileniumtech\educafacil\dao\excepciones\BusinessExceptionTest.class
 ec\mileniumtech\educafacil\dao\impl\CodigoSriRetencionDaoImplTest.class
 ec\mileniumtech\educafacil\dao\impl\EstudianteDaoImplTest.class
+ec\mileniumtech\educafacil\service\sri\validacion\SriComprobanteValidadorTest.class
 ec\mileniumtech\educafacil\service\PerfilServiceTest$ListarAccionesPorPerfil.class
 ec\mileniumtech\educafacil\dao\excepciones\SystemExceptionTest.class
 ec\mileniumtech\educafacil\service\UsuarioServiceTest$EliminarLogicoUsuario.class

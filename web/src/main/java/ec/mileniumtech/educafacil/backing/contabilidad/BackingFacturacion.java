@@ -369,10 +369,22 @@ public class BackingFacturacion implements Serializable {
         Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Éxito", "Información adicional removida.");
     }
 
+    private boolean guardandoFactura = false;
+
     /**
      * Guarda la nueva factura y procesa la emisión electrónica.
      */
-    public void guardarFactura() {
+    public synchronized void guardarFactura() {
+        if (guardandoFactura) {
+            log.warn("Solicitud concurrente de guardarFactura ignorada.");
+            return;
+        }
+        Factura f = getBeanFacturacion().getNuevaFactura();
+        if (f == null || f.getId() != null) {
+            log.warn("La factura ya fue persistida previamente o es nula (id={}).", f != null ? f.getId() : null);
+            return;
+        }
+        guardandoFactura = true;
         try {
             if (getBeanFacturacion().getClienteSeleccionado() == null) {
                 throw new BusinessException("Debe seleccionar un cliente.", "BIZ-FACT-NO-CLIENT");
@@ -404,15 +416,7 @@ public class BackingFacturacion implements Serializable {
                 throw new BusinessException("La suma de las formas de pago (" + totalPagos + ") no coincide con el total de la factura (" + totalFactura + ").", "BIZ-FACT-TOT-MISMATCH");
             }
 
-            Factura f = getBeanFacturacion().getNuevaFactura();
             Cliente c = getBeanFacturacion().getClienteSeleccionado();
-            
-            // Si el cliente no existe en la base de datos (ID nulo), lo guardamos primero
-            if (c.getId() == null) {
-            	 facturacionDataService.guardarCliente(c);
-            } else {
-            	facturacionDataService.actualizarCliente(c);
-            }
             
             f.setCliente(c);
             f.setDetalles(getBeanFacturacion().getListaDetallesNueva());
@@ -430,13 +434,12 @@ public class BackingFacturacion implements Serializable {
             PuntoEmision puem = puntos.get(0);
             f.setPuntoEmision(puem);
             
-            // Secuencial
+            // Secuencial proyectado para la validación
             int nuevoSec = puem.getSecuencialFactura() + 1;
             f.setNumero(String.format("001-%s-%09d", puem.getCodigo(), nuevoSec));
-            puem.setSecuencialFactura(nuevoSec);
-            facturacionDataService.actualizarPuntoEmision(puem);
             
             for (DetalleFactura df : f.getDetalles()) {
+                df.setFactura(f);
                 BigDecimal tasaImpuesto = df.getImpuestoIva().divide(
                         BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP
                     );
@@ -457,9 +460,23 @@ public class BackingFacturacion implements Serializable {
             f.setDescuentoTotal(totalDescuento);
             f.setListaInfoAdicional(getBeanFacturacion().getListaInfoAdicional());
 
+            // 1. Validar la estructura del documento electrónico ANTES de persistir en base de datos
+            facturacionDataService.validarEstructuraFactura(f);
+
+            // 2. Si la validación es exitosa, guardar cliente si es nuevo
+            if (c.getId() == null) {
+            	 facturacionDataService.guardarCliente(c);
+            } else {
+            	facturacionDataService.actualizarCliente(c);
+            }
+
+            // 3. Actualizar secuencial del punto de emisión y persistir la factura
+            puem.setSecuencialFactura(nuevoSec);
+            facturacionDataService.actualizarPuntoEmision(puem);
+
             facturacionDataService.guardarFactura(f);
             
-            // Emitir electrónicamente (asíncrono: no bloquea la respuesta de la UI)
+            // 4. Emitir electrónicamente (asíncrono: no bloquea la respuesta de la UI)
             facturacionService.emitirFactura(f.getId(),getBeanFacturacion().getListaInfoAdicional());
             
             Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Éxito", "Factura generada. El envío al SRI se está procesando.");
@@ -467,6 +484,9 @@ public class BackingFacturacion implements Serializable {
             prepararNuevaFactura();
             Mensaje.ocultarDialogo("dlgNuevaFactura");
             
+        } catch (BusinessException e) {
+            log.warn("Validación de factura no superada: {}", e.getMessage());
+            Mensaje.verMensaje(FacesMessage.SEVERITY_WARN, "Validación", e.getMessage());
         } catch (Exception e) {
             log.error("Error al guardar factura", e);
             if (e.getMessage() != null && e.getMessage().contains("No se pudo establecer comunicación")) {
@@ -477,6 +497,8 @@ public class BackingFacturacion implements Serializable {
             } else {
                 Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage());
             }
+        } finally {
+            guardandoFactura = false;
         }
     }
     
@@ -525,6 +547,10 @@ public class BackingFacturacion implements Serializable {
         if (fac == null || fac.getDocumentoElectronico() == null) {
             return false;
         }
+        String estado = fac.getDocumentoElectronico().getEstado();
+        if ("ANULADA".equalsIgnoreCase(estado)) {
+            return false;
+        }
         String urlPdf = fac.getDocumentoElectronico().getUrlPdf();
         return urlPdf != null && !urlPdf.isBlank();
     }
@@ -533,8 +559,36 @@ public class BackingFacturacion implements Serializable {
         if (fac == null || fac.getDocumentoElectronico() == null) {
             return false;
         }
+        String estado = fac.getDocumentoElectronico().getEstado();
+        if ("ANULADA".equalsIgnoreCase(estado)) {
+            return false;
+        }
         String urlXml = fac.getDocumentoElectronico().getUrlXml();
         return urlXml != null && !urlXml.isBlank();
+    }
+
+    public boolean isMostrarBotonDescargas(Factura fac) {
+        if (fac == null || fac.getDocumentoElectronico() == null) {
+            return false;
+        }
+        String estado = fac.getDocumentoElectronico().getEstado();
+        if ("ANULADA".equalsIgnoreCase(estado)) {
+            return false;
+        }
+        return isMostrarBotonDescargarRide(fac) || isMostrarBotonDescargarXml(fac);
+    }
+
+    public boolean isMostrarBotonAnular(Factura fac) {
+        if (fac == null || fac.getDocumentoElectronico() == null) {
+            return false;
+        }
+        String estado = fac.getDocumentoElectronico().getEstado();
+        if (estado == null) {
+            return false;
+        }
+        return "EN_PROCESO".equalsIgnoreCase(estado) 
+                || "ENPROCESO".equalsIgnoreCase(estado) 
+                || "AUTORIZADO".equalsIgnoreCase(estado);
     }
 
     public boolean isMostrarBotonNotaCredito(Factura fac) {
@@ -543,6 +597,31 @@ public class BackingFacturacion implements Serializable {
         }
         String estado = fac.getDocumentoElectronico().getEstado();
         return "AUTORIZADO".equalsIgnoreCase(estado);
+    }
+
+    /**
+     * Anula una factura en estado EN_PROCESO o AUTORIZADO.
+     * @param fac Factura a anular.
+     */
+    public void anularFactura(Factura fac) {
+        if (fac == null || fac.getId() == null) {
+            Mensaje.verMensaje(FacesMessage.SEVERITY_WARN, "Aviso", "No se seleccionó una factura válida para anular.");
+            return;
+        }
+        try {
+            Factura factura = facturacionDataService.buscarFacturaPorId(fac.getId());
+            if (factura != null && factura.getDocumentoElectronico() != null) {
+                factura.getDocumentoElectronico().setEstado("ANULADA");
+                facturacionDataService.actualizar(factura);
+                cargarFacturas();
+                Mensaje.verMensaje(FacesMessage.SEVERITY_INFO, "Éxito", "Factura Nro: " + factura.getNumero() + " anulada correctamente.");
+            } else {
+                Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "No se encontró el documento electrónico de la factura.");
+            }
+        } catch (Exception e) {
+            log.error("Error al anular factura con ID {}", fac.getId(), e);
+            Mensaje.verMensaje(FacesMessage.SEVERITY_ERROR, "Error", "No se pudo anular la factura: " + e.getMessage());
+        }
     }
 
     /**

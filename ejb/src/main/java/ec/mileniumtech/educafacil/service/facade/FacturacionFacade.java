@@ -84,7 +84,56 @@ public class FacturacionFacade {
     @EJB
     private RetencionDao retencionDao;
 
+    @EJB
+    private ec.mileniumtech.educafacil.service.strategy.FacturaSriStrategy facturaStrategy;
+
+    @EJB
+    private ec.mileniumtech.educafacil.service.sri.validacion.SriComprobanteValidador sriComprobanteValidador;
+
     // ========== Factura CRUD ==========
+
+    /**
+     * Valida la estructura técnica, reglas tributarias y esquema XSD del SRI
+     * de una factura antes de registrarla en la base de datos.
+     *
+     * @param factura Entidad Factura a validar.
+     * @throws BusinessException si la estructura es inválida.
+     * @throws Exception si ocurre un error durante la generación del XML/JAXB.
+     */
+    public void validarEstructuraFactura(Factura factura) throws Exception {
+        if (factura == null) {
+            throw new BusinessException("La factura no puede ser nula.", "BIZ-FACT-NULL");
+        }
+        PuntoEmision puem = null;
+        if (factura.getPuntoEmision() != null && factura.getPuntoEmision().getId() != null) {
+            puem = puntoEmisionDao.buscarPuntoEmisionPorId(factura.getPuntoEmision().getId());
+            if (puem != null) {
+                factura.setPuntoEmision(puem);
+            }
+        }
+        if (puem == null && factura.getPuntoEmision() != null) {
+            puem = factura.getPuntoEmision();
+        }
+
+        EmpresaMatriz empresa = null;
+        if (puem != null && puem.getEstablecimientos() != null) {
+            empresa = puem.getEstablecimientos().getEmpresaMatriz();
+        }
+        if (empresa == null) {
+            List<EmpresaMatriz> matrices = empresaMatrizDao.findAll();
+            if (!matrices.isEmpty()) {
+                empresa = matrices.get(0);
+            }
+        }
+        if (empresa == null) {
+            throw new BusinessException("No se encontró la empresa matriz para validar la factura.", "BIZ-FACT-NO-EMPRESA");
+        }
+
+        ec.mileniumtech.educafacil.service.strategy.SriProcessingContext context = new ec.mileniumtech.educafacil.service.strategy.SriProcessingContext();
+        Object jaxbObject = facturaStrategy.construirJaxb(factura, empresa, context);
+        String xml = facturaStrategy.generarXml(jaxbObject);
+        sriComprobanteValidador.validar(facturaStrategy.getCodigoDocumento(), jaxbObject, xml);
+    }
 
     public Factura guardarFactura(Factura factura) {
         return facturaDao.guardar(factura);
@@ -371,7 +420,7 @@ public class FacturacionFacade {
     public void emitirFactura(Integer facturaId, List<InfoAdicionalDto> informacionAdicional) throws Exception {
         Factura factura = facturaDao.buscarFacturaPorId(facturaId);
         if (factura == null) {
-            throw new BusinessException("No se encontró la factura con ID: " + facturaId, "BIZ-FACADE-NOT-FOUND");
+            throw new BusinessException("No se encontrÃ³ la factura con ID: " + facturaId, "BIZ-FACADE-NOT-FOUND");
         }
         factura.setListaInfoAdicional(informacionAdicional);
         integracionSriService.procesarFacturaElectronica(factura);
@@ -380,7 +429,7 @@ public class FacturacionFacade {
     public void subirDocumentosFacturaAws(Integer facturaId) throws Exception {
         Factura factura = facturaDao.buscarFacturaPorId(facturaId);
         if (factura == null) {
-            throw new BusinessException("No se encontró la factura con ID: " + facturaId, "BIZ-FACADE-NOT-FOUND");
+            throw new BusinessException("No se encontrÃ³ la factura con ID: " + facturaId, "BIZ-FACADE-NOT-FOUND");
         }
 
         ec.mileniumtech.educafacil.modelo.persistencia.entity.DocumentoElectronico doc = factura.getDocumentoElectronico();

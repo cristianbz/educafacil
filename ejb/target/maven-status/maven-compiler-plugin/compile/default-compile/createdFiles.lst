@@ -31,12 +31,14 @@ ec\mileniumtech\educafacil\modelo\sri\ComprobanteRetencion$InfoTributaria.class
 ec\mileniumtech\educafacil\dao\RolPerfilDao.class
 ec\mileniumtech\educafacil\modelo\sri\ComprobanteRetencion$ImpuestosWrapper.class
 ec\mileniumtech\educafacil\service\facade\MatriculaFacade.class
+ec\mileniumtech\educafacil\service\sri\validacion\SriXmlSchemaValidator$FirmaCheckHandler.class
 ec\mileniumtech\educafacil\service\sri\autorizacion\package-info.class
 ec\mileniumtech\educafacil\dao\impl\PreguntaDaoImpl.class
 ec\mileniumtech\educafacil\modelo\persistencia\entity\DocumentacionProveedor.class
 ec\mileniumtech\educafacil\modelo\persistencia\entity\Persona.class
 ec\mileniumtech\educafacil\service\sri\recepcion\Mensaje.class
 ec\mileniumtech\educafacil\modelo\persistencia\entity\Perfil.class
+ec\mileniumtech\educafacil\service\sri\validacion\SriXmlSchemaValidator$ClasspathXsdResolver.class
 ec\mileniumtech\educafacil\modelo\persistencia\entity\DetallePagos.class
 ec\mileniumtech\educafacil\dao\impl\SriformapagoDaoImpl.class
 ec\mileniumtech\educafacil\modelo\persistencia\entity\Capacitacion.class
@@ -47,6 +49,7 @@ ec\mileniumtech\educafacil\utilitarios\enumeraciones\EnumNivelEstudio.class
 ec\mileniumtech\educafacil\modelo\persistencia\entity\Usuario.class
 ec\mileniumtech\educafacil\service\facade\EncuestaFacade.class
 ec\mileniumtech\educafacil\service\facade\FacturacionFacade.class
+ec\mileniumtech\educafacil\modelo\persistencia\dto\ComprobanteElectronicoEvent.class
 ec\mileniumtech\educafacil\dao\EspecialidadDao.class
 ec\mileniumtech\educafacil\modelo\persistencia\entity\Seguimiento.class
 ec\mileniumtech\educafacil\dao\PreguntaDao.class
@@ -54,6 +57,7 @@ ec\mileniumtech\educafacil\utilitarios\enumeraciones\EnumModalidadCurso.class
 ec\mileniumtech\educafacil\modelo\persistencia\dto\ErrorDto$ValidationError$ValidationErrorBuilder.class
 ec\mileniumtech\educafacil\modelo\persistencia\entity\Egresos.class
 ec\mileniumtech\educafacil\modelo\persistencia\entity\Area.class
+ec\mileniumtech\educafacil\service\sri\validacion\SriXmlSchemaValidator$CollectingErrorHandler.class
 ec\mileniumtech\educafacil\dao\SeguimientoClientesDao.class
 ec\mileniumtech\educafacil\dao\impl\EstudianteDaoImpl.class
 ec\mileniumtech\educafacil\service\sri\autorizacion\AutorizacionComprobanteResponse.class
@@ -231,9 +235,12 @@ ec\mileniumtech\educafacil\service\strategy\DocumentoElectronicoStrategy.class
 ec\mileniumtech\educafacil\dao\EstablecimientoDao.class
 ec\mileniumtech\educafacil\dao\impl\NotaCreditoDaoImpl.class
 ec\mileniumtech\educafacil\modelo\sri\ComprobanteRetencion$CampoAdicional.class
+ec\mileniumtech\educafacil\modelo\persistencia\dto\ComprobanteElectronicoEvent$ComprobanteElectronicoEventBuilder.class
 ec\mileniumtech\educafacil\modelo\persistencia\dto\CursoDto.class
 ec\mileniumtech\educafacil\modelo\persistencia\entity\Empresa.class
+ec\mileniumtech\educafacil\service\sri\validacion\SriXmlSchemaValidator.class
 ec\mileniumtech\educafacil\modelo\persistencia\entity\Vendedor.class
+ec\mileniumtech\educafacil\service\sri\validacion\SriComprobanteValidador.class
 ec\mileniumtech\educafacil\dao\impl\UsuarioRolDaoImpl.class
 ec\mileniumtech\educafacil\modelo\persistencia\entity\Curso.class
 ec\mileniumtech\educafacil\service\sri\autorizacion\AutorizacionComprobanteLote.class
@@ -251,6 +258,7 @@ ec\mileniumtech\educafacil\modelo\sri\Factura$CampoAdicional.class
 ec\mileniumtech\educafacil\modelo\persistencia\entity\Accion.class
 ec\mileniumtech\educafacil\modelo\persistencia\entity\Rol.class
 ec\mileniumtech\educafacil\dao\CapacitacionDao.class
+ec\mileniumtech\educafacil\service\LoginAttemptService$AttemptInfo.class
 ec\mileniumtech\educafacil\modelo\persistencia\entity\Formacion.class
 ec\mileniumtech\educafacil\modelo\persistencia\dto\DtoDeudorCurso.class
 ec\mileniumtech\educafacil\utilitarios\enumeraciones\EnumMedioInformacion.class
@@ -287,6 +295,8 @@ ec\mileniumtech\educafacil\modelo\sri\NotaCredito.class
 ec\mileniumtech\educafacil\dao\CatalogoDao.class
 ec\mileniumtech\educafacil\dao\EgresoDao.class
 ec\mileniumtech\educafacil\modelo\persistencia\dto\ComprobanteReporteDto$ComprobanteReporteDtoBuilder.class
+ec\mileniumtech\educafacil\service\sri\validacion\SriXmlSchemaValidator$SimpleLSInput.class
+ec\mileniumtech\educafacil\service\LoginAttemptService.class
 ec\mileniumtech\educafacil\dao\impl\EvaluacionCursoDaoImpl.class
 ec\mileniumtech\educafacil\dao\RespuestasDao.class
 ec\mileniumtech\educafacil\modelo\persistencia\entity\Establecimiento.class

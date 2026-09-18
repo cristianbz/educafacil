@@ -15,4 +15,5 @@ public interface PuntoEmisionDao extends GenericoDao<PuntoEmision, Integer> {
 
     List<PuntoEmision> listarPuntosEmisionActivos();
     List<PuntoEmision> listarPuntosEmisionPorEstablecimiento(int estaId);
+    PuntoEmision buscarPuntoEmisionPorId(Integer id);
 }

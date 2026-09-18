@@ -52,6 +52,20 @@ public class ClaveAccesoGenerator {
     }
 
     /**
+     * Verifica que la clave tenga 49 dígitos y que el dígito verificador módulo 11 sea correcto.
+     *
+     * @param clave clave de acceso a validar
+     * @return {@code true} si la clave es estructuralmente válida
+     */
+    public boolean esClaveAccesoValida(String clave) {
+        if (clave == null || !clave.matches("\\d{49}")) {
+            return false;
+        }
+        int esperado = calcularModulo11(clave.substring(0, 48));
+        return Character.getNumericValue(clave.charAt(48)) == esperado;
+    }
+
+    /**
      * Calcula el dígito verificador usando el algoritmo módulo 11.
      * 
      * @param clave Clave de 48 dígitos

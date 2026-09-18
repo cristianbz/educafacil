@@ -3,8 +3,7 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 	xmlns:ns1="http://www.w3.org/2000/09/xmldsig#" elementFormDefault="qualified"
 	attributeFormDefault="unqualified">
-	<xsd:import namespace="http://www.w3.org/2000/09/xmldsig#"
-		schemaLocation="xmldsig-core-schema.xsd"/>
+	<xsd:import namespace="http://www.w3.org/2000/09/xmldsig#"/>
 	<xsd:simpleType name="numeroRuc">
 		<xsd:annotation>
 			<xsd:documentation>Se detalla el numero de RUC del Contribuyente</xsd:documentation>
