@@ -37,7 +37,7 @@ public class DocumentoElectronico {
 
     @NotNull(message = "{documentoElectronico.factura.required}")
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "fact_id", nullable = false)
+    @JoinColumn(name = "fact_id", nullable = false, unique = true)
     @EqualsAndHashCode.Exclude
     private Factura factura;
 

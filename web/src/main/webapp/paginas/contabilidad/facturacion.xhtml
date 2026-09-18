@@ -139,7 +139,7 @@
 						</span>
 					</p:column>
 					
-					<p:column headerText="Acciones" style="width: 220px; text-align: center;">
+					<p:column headerText="Acciones" style="width: 240px; text-align: center;">
 						<h:panelGroup layout="block" style="display: flex; justify-content: center; gap: 0.35rem; flex-wrap: wrap;">
 							<p:commandButton icon="pi pi-cloud-upload" title="Emitir al SRI" 
 											 actionListener="#{backingFacturacion.emitirFactura(fac)}"
@@ -154,21 +154,37 @@
 											 update=":formFacturacion:growl :formFacturacion:pnlTablaFacturas"
 											 styleClass="ui-button-primary datatable-action-btn" />
 
-							<p:commandButton icon="pi pi-file-pdf" title="Descargar RIDE" process="@this"
-											 rendered="#{backingFacturacion.isMostrarBotonDescargarRide(fac)}"
-											 styleClass="ui-button-success datatable-action-btn" 
-											 action="#{backingFacturacion.descargarRide(fac)}" />
-
-							<p:commandButton icon="pi pi-file" title="Descargar XML" 
-											 action="#{backingFacturacion.descargarXml(fac)}" process="@this"
-											 rendered="#{backingFacturacion.isMostrarBotonDescargarXml(fac)}"
-											 styleClass="ui-button-info datatable-action-btn" />
+							<p:splitButton icon="pi pi-download" title="Descargar Documentos"
+										   action="#{backingFacturacion.descargarRide(fac)}"
+										   rendered="#{backingFacturacion.isMostrarBotonDescargas(fac)}"
+										   process="@this"
+										   styleClass="ui-button-success datatable-action-btn">
+								<p:menuitem value="Descargar RIDE (PDF)" icon="pi pi-file-pdf"
+											action="#{backingFacturacion.descargarRide(fac)}"
+											rendered="#{backingFacturacion.isMostrarBotonDescargarRide(fac)}"
+											process="@this" />
+								<p:menuitem value="Descargar XML" icon="pi pi-file"
+											action="#{backingFacturacion.descargarXml(fac)}"
+											rendered="#{backingFacturacion.isMostrarBotonDescargarXml(fac)}"
+											process="@this" />
+							</p:splitButton>
 												
 							<p:commandButton icon="pi pi-credit-card" title="Generar Nota de Crédito" 
 											 rendered="#{backingFacturacion.isMostrarBotonNotaCredito(fac)}"
 											 actionListener="#{backingFacturacion.prepararNotaCredito(fac)}"
 											 update=":formNuevaNotaCredito"
 											 styleClass="ui-button-secondary datatable-action-btn" />
+
+							<p:commandButton icon="pi pi-ban" title="Anular Factura"
+											 rendered="#{backingFacturacion.isMostrarBotonAnular(fac)}"
+											 actionListener="#{backingFacturacion.anularFactura(fac)}"
+											 process="@this"
+											 update=":formFacturacion:growl :formFacturacion:pnlTablaFacturas :formFacturacion:pnlMetrics"
+											 styleClass="ui-button-danger datatable-action-btn">
+								<p:confirm header="Confirmar Anulación" 
+										   message="¿Está seguro de anular la factura #{fac.numero}?" 
+										   icon="pi pi-exclamation-triangle" />
+							</p:commandButton>
 						</h:panelGroup>
 					</p:column>
 					
@@ -207,7 +223,18 @@
 		<!-- DIÁLOGO DE NOTA DE CRÉDITO -->
 		<ui:include src="/paginas/contabilidad/fragmentos/dialogoNotaCredito.xhtml" />	
 
-
+		<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="420">
+			<div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
+				<p:commandButton value="Sí, Anular" type="button" 
+								 styleClass="ui-confirmdialog-yes ui-button-danger" 
+								 icon="pi pi-check" 
+								 style="width: 140px !important; min-width: 140px !important;" />
+				<p:commandButton value="No, Cancelar" type="button" 
+								 styleClass="ui-confirmdialog-no ui-button-secondary ui-button-outlined" 
+								 icon="pi pi-times" 
+								 style="width: 140px !important; min-width: 140px !important;" />
+			</div>
+		</p:confirmDialog>
 	</ui:define>
 </ui:composition>
 

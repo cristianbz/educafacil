@@ -70,10 +70,28 @@ public class FacturaSriStrategy implements DocumentoElectronicoStrategy {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         String fechaEmisionStr = facturaEntity.getFechaEmision().format(dtf);
 
-        String[] partesNumero = facturaEntity.getNumero().split("-");
-        String estab = String.format("%03d", Integer.parseInt(facturaEntity.getPuntoEmision().getEstablecimientos().getEstaCodigo()));
-        String ptoEmi = String.format("%03d", Integer.parseInt(facturaEntity.getPuntoEmision().getCodigo()));
-        String secuencial = String.format("%09d", Integer.parseInt(partesNumero.length > 2 ? partesNumero[2] : facturaEntity.getId().toString()));
+        String[] partesNumero = facturaEntity.getNumero() != null ? facturaEntity.getNumero().split("-") : new String[0];
+        String estaCodigo = null;
+        try {
+            if (facturaEntity.getPuntoEmision() != null && facturaEntity.getPuntoEmision().getEstablecimientos() != null) {
+                estaCodigo = facturaEntity.getPuntoEmision().getEstablecimientos().getEstaCodigo();
+            }
+        } catch (Exception e) {
+            log.warn("No se pudo obtener estaCodigo de establecimiento (Lazy/Proxy)", e);
+        }
+        String estab = (estaCodigo != null && !estaCodigo.isBlank())
+                ? String.format("%03d", Integer.parseInt(estaCodigo))
+                : (partesNumero.length > 0 ? String.format("%03d", Integer.parseInt(partesNumero[0])) : "001");
+
+        String ptoEmiCodigo = null;
+        if (facturaEntity.getPuntoEmision() != null && facturaEntity.getPuntoEmision().getCodigo() != null) {
+            ptoEmiCodigo = facturaEntity.getPuntoEmision().getCodigo();
+        }
+        String ptoEmi = (ptoEmiCodigo != null && !ptoEmiCodigo.isBlank())
+                ? String.format("%03d", Integer.parseInt(ptoEmiCodigo))
+                : (partesNumero.length > 1 ? String.format("%03d", Integer.parseInt(partesNumero[1])) : "001");
+
+        String secuencial = String.format("%09d", Integer.parseInt(partesNumero.length > 2 ? partesNumero[2] : (facturaEntity.getId() != null ? facturaEntity.getId().toString() : "1")));
         String serie = estab + ptoEmi;
 
         String claveAcceso;
@@ -111,7 +129,18 @@ public class FacturaSriStrategy implements DocumentoElectronicoStrategy {
 
         InfoFactura infoFact = new InfoFactura();
         infoFact.setFechaEmision(fechaEmisionStr);
-        infoFact.setDirEstablecimiento(facturaEntity.getPuntoEmision().getEstablecimientos().getEstaUbicacion());
+        String dirEstablecimiento = null;
+        try {
+            if (facturaEntity.getPuntoEmision() != null && facturaEntity.getPuntoEmision().getEstablecimientos() != null) {
+                dirEstablecimiento = facturaEntity.getPuntoEmision().getEstablecimientos().getEstaUbicacion();
+            }
+        } catch (Exception e) {
+            log.warn("No se pudo obtener estaUbicacion de establecimiento", e);
+        }
+        if (dirEstablecimiento == null || dirEstablecimiento.isBlank()) {
+            dirEstablecimiento = empresa.getEmpmDireccion() != null ? empresa.getEmpmDireccion() : "Matriz";
+        }
+        infoFact.setDirEstablecimiento(dirEstablecimiento);
         infoFact.setObligadoContabilidad(empresa.isEmpmObligadoContabilidad() ? "SI" : "NO");
 
         String tipoIdentComprador = "05";
@@ -146,7 +175,7 @@ public class FacturaSriStrategy implements DocumentoElectronicoStrategy {
                 impDet.setCodigoPorcentaje(mapCodigoIva(empresa.getEmpmPorcentajeIva().intValueExact()));
                 impDet.setBaseImponible(det.getPrecioTotalSinImpuesto());
                 BigDecimal tarifaDetalle = empresa.getEmpmPorcentajeIva() != null ? empresa.getEmpmPorcentajeIva() : BigDecimal.ZERO;
-                impDet.setTarifa(tarifaDetalle.toPlainString());
+                impDet.setTarifa(tarifaDetalle.setScale(2, RoundingMode.HALF_UP).toPlainString());
                 BigDecimal valorIvaDetalle = det.getPrecioTotalSinImpuesto()
                         .multiply(tarifaDetalle)
                         .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
@@ -179,31 +208,40 @@ public class FacturaSriStrategy implements DocumentoElectronicoStrategy {
 
         facturaSri.setInfoFactura(infoFact);
 
-        if (facturaEntity.getCliente().getDireccion() != null) {
-            ec.mileniumtech.educafacil.modelo.sri.Factura.CampoAdicional campoDir = new ec.mileniumtech.educafacil.modelo.sri.Factura.CampoAdicional();
-            campoDir.setNombre("Direccion");
-            campoDir.setValor(facturaEntity.getCliente().getDireccion());
-            facturaSri.getInfoAdicionalList().add(campoDir);
-        }        
-        if (facturaEntity.getCliente().getCorreo() != null) {
-            ec.mileniumtech.educafacil.modelo.sri.Factura.CampoAdicional campoEmail = new ec.mileniumtech.educafacil.modelo.sri.Factura.CampoAdicional();
-            campoEmail.setNombre("Email");
-            campoEmail.setValor(facturaEntity.getCliente().getCorreo());
-            facturaSri.getInfoAdicionalList().add(campoEmail);
+        if (facturaEntity.getCliente() != null) {
+            String dir = facturaEntity.getCliente().getDireccion();
+            if (dir != null && !dir.trim().isEmpty()) {
+                ec.mileniumtech.educafacil.modelo.sri.Factura.CampoAdicional campoDir = new ec.mileniumtech.educafacil.modelo.sri.Factura.CampoAdicional();
+                campoDir.setNombre("Direccion");
+                campoDir.setValor(dir.trim());
+                facturaSri.getInfoAdicionalList().add(campoDir);
+            }        
+            String email = facturaEntity.getCliente().getCorreo();
+            if (email != null && !email.trim().isEmpty()) {
+                ec.mileniumtech.educafacil.modelo.sri.Factura.CampoAdicional campoEmail = new ec.mileniumtech.educafacil.modelo.sri.Factura.CampoAdicional();
+                campoEmail.setNombre("Email");
+                campoEmail.setValor(email.trim());
+                facturaSri.getInfoAdicionalList().add(campoEmail);
+            }
         }
         if (facturaEntity.getListaInfoAdicional() != null && !facturaEntity.getListaInfoAdicional().isEmpty()) {
             for (InfoAdicionalDto infoado : facturaEntity.getListaInfoAdicional()) {
                 ec.mileniumtech.educafacil.modelo.sri.Factura.CampoAdicional campoAD = new ec.mileniumtech.educafacil.modelo.sri.Factura.CampoAdicional();
-                campoAD.setNombre(infoado.getNombre());
-                campoAD.setValor(infoado.getDescripcion());
+                campoAD.setNombre(infoado != null ? infoado.getNombre() : null);
+                campoAD.setValor(infoado != null ? infoado.getDescripcion() : null);
                 facturaSri.getInfoAdicionalList().add(campoAD);
             }
         }
-      //Informacion del proveedor de facturacion electronica
-        ec.mileniumtech.educafacil.modelo.sri.Factura.CampoAdicional proveedorFE = new ec.mileniumtech.educafacil.modelo.sri.Factura.CampoAdicional();
-        proveedorFE.setNombre("RUC proveedor facturación electrónica");
-        proveedorFE.setValor(context.getConfiguraciones().getConfRucFacElectronica());
-        facturaSri.getInfoAdicionalList().add(proveedorFE);
+        // Informacion del proveedor de facturacion electronica (solo si está configurado)
+        if (context.getConfiguraciones() != null) {
+            String rucFacElec = context.getConfiguraciones().getConfRucFacElectronica();
+            if (rucFacElec != null && !rucFacElec.trim().isEmpty()) {
+                ec.mileniumtech.educafacil.modelo.sri.Factura.CampoAdicional proveedorFE = new ec.mileniumtech.educafacil.modelo.sri.Factura.CampoAdicional();
+                proveedorFE.setNombre("RUC proveedor facturación electrónica");
+                proveedorFE.setValor(rucFacElec.trim());
+                facturaSri.getInfoAdicionalList().add(proveedorFE);
+            }
+        }
         return facturaSri;
     }
 
@@ -233,20 +271,15 @@ public class FacturaSriStrategy implements DocumentoElectronicoStrategy {
     @Override
     public void actualizarEntidad(Object entidad, SriProcessingContext context) {
         Factura factura = (Factura) entidad;
-        if (factura.getDocumentoElectronico() == null) {
-            DocumentoElectronico docElec = new DocumentoElectronico();
-            docElec.setFactura(factura);
-            factura.setDocumentoElectronico(docElec);
-        }
-        factura.getDocumentoElectronico().setClaveAcceso(context.getClaveAcceso());
-        factura.getDocumentoElectronico().setEstado(context.getEstadoAutorizacion());
-        factura.getDocumentoElectronico().setNumeroAutorizacion(context.getNumeroAutorizacion());
-        factura.getDocumentoElectronico().setFechaAutorizacionDb(context.getFechaAutorizacion() != null ? context.getFechaAutorizacion() : LocalDate.now());
-        factura.getDocumentoElectronico().setUrlPdf(context.getUrlPdf());
-        factura.getDocumentoElectronico().setUrlXml(context.getUrlXml());
+        DocumentoElectronico docElec = obtenerOCrearDocumentoElectronico(factura);
+        docElec.setClaveAcceso(context.getClaveAcceso());
+        docElec.setEstado(context.getEstadoAutorizacion());
+        docElec.setNumeroAutorizacion(context.getNumeroAutorizacion());
+        docElec.setFechaAutorizacionDb(context.getFechaAutorizacion() != null ? context.getFechaAutorizacion() : LocalDate.now());
+        docElec.setUrlPdf(context.getUrlPdf());
+        docElec.setUrlXml(context.getUrlXml());
         if (context.getMensajeSri() != null) {
-            factura.getDocumentoElectronico().setMensajeSri(context.getMensajeSri());
-            System.out.println("Mensaje SRI " + context.getMensajeSri());
+            docElec.setMensajeSri(context.getMensajeSri());
         }
     }
 
@@ -260,15 +293,9 @@ public class FacturaSriStrategy implements DocumentoElectronicoStrategy {
     public void persistirProgreso(Object entidad, SriProcessingContext context) {
         Factura factura = (Factura) entidad;
         if (context.getClaveAcceso() == null) {
-            return; // Aún no hay clave de acceso, nada que perservar
+            return; // Aún no hay clave de acceso, nada que preservar
         }
-        DocumentoElectronico docElec = factura.getDocumentoElectronico();
-        if (docElec == null) {
-            docElec = new DocumentoElectronico();
-            docElec.setFactura(factura);
-            docElec.setFechaAutorizacionDb(LocalDate.now());
-            factura.setDocumentoElectronico(docElec);
-        }
+        DocumentoElectronico docElec = obtenerOCrearDocumentoElectronico(factura);
         if (docElec.getFechaAutorizacionDb() == null) {
             docElec.setFechaAutorizacionDb(LocalDate.now());
         }
@@ -285,18 +312,34 @@ public class FacturaSriStrategy implements DocumentoElectronicoStrategy {
     @Override
     public void marcarEnProceso(Object entidad) {
         Factura factura = (Factura) entidad;
+        DocumentoElectronico docElec = obtenerOCrearDocumentoElectronico(factura);
+        if (docElec.getFechaAutorizacionDb() == null) {
+            docElec.setFechaAutorizacionDb(LocalDate.now());
+        }
+        docElec.setEstado(EnumEstadoDocumentoElectronico.EN_PROCESO.getLabel());
+        facturaDao.actualizarFactura(factura);
+    }
+
+    private DocumentoElectronico obtenerOCrearDocumentoElectronico(Factura factura) {
         DocumentoElectronico docElec = factura.getDocumentoElectronico();
+        if (docElec == null && factura.getId() != null) {
+            try {
+                Factura fDb = facturaDao.buscarFacturaPorId(factura.getId());
+                if (fDb != null && fDb.getDocumentoElectronico() != null) {
+                    docElec = fDb.getDocumentoElectronico();
+                    factura.setDocumentoElectronico(docElec);
+                }
+            } catch (Exception e) {
+                log.warn("No se pudo verificar DocumentoElectronico existente en BD para factura id={}: {}", factura.getId(), e.getMessage());
+            }
+        }
         if (docElec == null) {
             docElec = new DocumentoElectronico();
             docElec.setFactura(factura);
             docElec.setFechaAutorizacionDb(LocalDate.now());
             factura.setDocumentoElectronico(docElec);
         }
-        if (docElec.getFechaAutorizacionDb() == null) {
-            docElec.setFechaAutorizacionDb(LocalDate.now());
-        }
-        docElec.setEstado(EnumEstadoDocumentoElectronico.EN_PROCESO.getLabel());
-        facturaDao.actualizarFactura(factura);
+        return docElec;
     }
 
     @Override

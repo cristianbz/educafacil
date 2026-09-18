@@ -16,6 +16,7 @@ import ec.mileniumtech.educafacil.service.AwsS3Service;
 import ec.mileniumtech.educafacil.service.NotificacionService;
 import ec.mileniumtech.educafacil.service.SriWebServiceService;
 import ec.mileniumtech.educafacil.service.XadesSignatureService;
+import ec.mileniumtech.educafacil.service.sri.validacion.SriComprobanteValidador;
 import ec.mileniumtech.educafacil.service.sri.autorizacion.Autorizacion;
 import ec.mileniumtech.educafacil.service.sri.autorizacion.RespuestaComprobante;
 import ec.mileniumtech.educafacil.service.sri.recepcion.RespuestaSolicitud;
@@ -63,6 +64,9 @@ public class ProcesadorDocumentosElectronicos {
     @EJB
     private ConfiguracionesDao configuracionesDao;
 
+    @EJB
+    private SriComprobanteValidador sriComprobanteValidador;
+
     public void procesar(Object entidad, DocumentoElectronicoStrategy strategy) throws Exception {
         SriProcessingContext context = new SriProcessingContext();
 
@@ -79,6 +83,16 @@ public class ProcesadorDocumentosElectronicos {
 
         String xmlString = strategy.generarXml(jaxbObject);
         context.setXmlString(xmlString);
+
+        try {
+            sriComprobanteValidador.validar(strategy.getCodigoDocumento(), jaxbObject, xmlString);
+        } catch (BusinessException e) {
+            log.warn("Comprobante inválido; no se envía al SRI. ClaveAcceso: {}. {}",
+                    context.getClaveAcceso(), e.getMessage());
+            persistirRechazoLocal(entidad, strategy, context, e.getMessage());
+            return;
+        }
+
         byte[] pkcs12 = empresa.getEmpmCertificado();
         String password = CriptografiaUtil.desencriptar(empresa.getEmpmPasswordCertificado());
 
@@ -89,6 +103,15 @@ public class ProcesadorDocumentosElectronicos {
         byte[] xmlFirmado = xadesSignatureService.firmarDocumento(
                 xmlString.getBytes(StandardCharsets.UTF_8), pkcs12, password);
         context.setXmlFirmado(xmlFirmado);
+
+        try {
+            sriComprobanteValidador.validarXmlFirmado(xmlFirmado);
+        } catch (BusinessException e) {
+            log.warn("XML firmado inválido; no se envía al SRI. ClaveAcceso: {}. {}",
+                    context.getClaveAcceso(), e.getMessage());
+            persistirRechazoLocal(entidad, strategy, context, e.getMessage());
+            return;
+        }
 
         // Persistencia temprana (hotfix): guardar clave de acceso y XML firmado apenas están
         // disponibles, para que una caída o saturación del SRI no deje el documento sin
@@ -245,6 +268,14 @@ public class ProcesadorDocumentosElectronicos {
             throw new SystemException("Error en envío al SRI: " + context.getMensajeSri(), "SYS-SRI-SEND-ERR");
         }
 
+        strategy.actualizarEntidad(entidad, context);
+        strategy.persistir(entidad);
+    }
+
+    private void persistirRechazoLocal(Object entidad, DocumentoElectronicoStrategy strategy,
+                                       SriProcessingContext context, String mensaje) {
+        context.setEstadoAutorizacion(EnumEstadoDocumentoElectronico.RECHAZADO.getLabel());
+        context.setMensajeSri(mensaje);
         strategy.actualizarEntidad(entidad, context);
         strategy.persistir(entidad);
     }

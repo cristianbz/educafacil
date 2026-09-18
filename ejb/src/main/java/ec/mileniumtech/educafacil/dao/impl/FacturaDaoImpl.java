@@ -47,7 +47,7 @@ public class FacturaDaoImpl extends GenericoDaoImpl<Factura, Integer> implements
         	EntityGraph<Factura> graph = getEntityManager().createEntityGraph(Factura.class);
 
         	// 2. Agregamos las relaciones simples a cargar
-        	graph.addAttributeNodes("cliente", "puntoEmision");
+        	graph.addAttributeNodes("cliente", "puntoEmision", "documentoElectronico");
 
         	// 3. Para las relaciones anidadas profundas, creamos "Subgraphs"
         	// Esto equivale a: puntoEmision -> establecimientos -> empresaMatriz

@@ -122,7 +122,7 @@ public class NotaCreditoSriStrategy implements DocumentoElectronicoStrategy {
         infoNC.setRazonSocialComprador(notaCreditoEntity.getCliente().getNombresCompletos());
 
         infoNC.setCodDocModificado("01");
-        infoNC.setNumDocModificado(notaCreditoEntity.getFactura().getNumero());
+        infoNC.setNumDocModificado(formatearNumDocModificado(notaCreditoEntity.getFactura().getNumero()));
         infoNC.setFechaEmisionDocSustento(fechaSustentoStr);
         infoNC.setMotivo(notaCreditoEntity.getMotivo());
 
@@ -145,7 +145,7 @@ public class NotaCreditoSriStrategy implements DocumentoElectronicoStrategy {
                 impDet.setCodigoPorcentaje(mapCodigoIva(empresa.getEmpmPorcentajeIva().intValueExact()));
                 impDet.setBaseImponible(det.getPrecioTotalSinImpuesto());
                 BigDecimal tarifaDetalle = empresa.getEmpmPorcentajeIva() != null ? empresa.getEmpmPorcentajeIva() : BigDecimal.ZERO;
-                impDet.setTarifa(tarifaDetalle.toPlainString());
+                impDet.setTarifa(tarifaDetalle.setScale(2, RoundingMode.HALF_UP).toPlainString());
                 BigDecimal valorIvaDetalle = det.getPrecioTotalSinImpuesto()
                         .multiply(tarifaDetalle)
                         .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
@@ -163,17 +163,21 @@ public class NotaCreditoSriStrategy implements DocumentoElectronicoStrategy {
         infoNC.getTotalConImpuestosList().add(ti);
         ncSri.setInfoNotaCredito(infoNC);
 
-        if (notaCreditoEntity.getCliente().getDireccion() != null) {
-            ec.mileniumtech.educafacil.modelo.sri.NotaCredito.CampoAdicional campoDir = new ec.mileniumtech.educafacil.modelo.sri.NotaCredito.CampoAdicional();
-            campoDir.setNombre("Direccion");
-            campoDir.setValor(notaCreditoEntity.getCliente().getDireccion());
-            ncSri.getInfoAdicionalList().add(campoDir);
-        }
-        if (notaCreditoEntity.getCliente().getCorreo() != null) {
-            ec.mileniumtech.educafacil.modelo.sri.NotaCredito.CampoAdicional campoEmail = new ec.mileniumtech.educafacil.modelo.sri.NotaCredito.CampoAdicional();
-            campoEmail.setNombre("Email");
-            campoEmail.setValor(notaCreditoEntity.getCliente().getCorreo());
-            ncSri.getInfoAdicionalList().add(campoEmail);
+        if (notaCreditoEntity.getCliente() != null) {
+            String dir = notaCreditoEntity.getCliente().getDireccion();
+            if (dir != null && !dir.trim().isEmpty()) {
+                ec.mileniumtech.educafacil.modelo.sri.NotaCredito.CampoAdicional campoDir = new ec.mileniumtech.educafacil.modelo.sri.NotaCredito.CampoAdicional();
+                campoDir.setNombre("Direccion");
+                campoDir.setValor(dir.trim());
+                ncSri.getInfoAdicionalList().add(campoDir);
+            }
+            String email = notaCreditoEntity.getCliente().getCorreo();
+            if (email != null && !email.trim().isEmpty()) {
+                ec.mileniumtech.educafacil.modelo.sri.NotaCredito.CampoAdicional campoEmail = new ec.mileniumtech.educafacil.modelo.sri.NotaCredito.CampoAdicional();
+                campoEmail.setNombre("Email");
+                campoEmail.setValor(email.trim());
+                ncSri.getInfoAdicionalList().add(campoEmail);
+            }
         }
 
         return ncSri;
@@ -245,6 +249,24 @@ public class NotaCreditoSriStrategy implements DocumentoElectronicoStrategy {
     public String getEntityIdentifier(Object entidad) {
         NotaCredito nc = (NotaCredito) entidad;
         return nc.getNumero().replace("/", "-");
+    }
+
+    private String formatearNumDocModificado(String numero) {
+        if (numero == null || numero.isBlank()) {
+            return numero;
+        }
+        String[] partes = numero.trim().split("-");
+        if (partes.length != 3) {
+            return numero;
+        }
+        try {
+            return String.format("%03d-%03d-%09d",
+                    Integer.parseInt(partes[0].trim()),
+                    Integer.parseInt(partes[1].trim()),
+                    Integer.parseInt(partes[2].trim()));
+        } catch (NumberFormatException e) {
+            return numero;
+        }
     }
 
     private String mapCodigoIva(Integer porcentaje) {
